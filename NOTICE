@@ -10,18 +10,21 @@ BUNDLED RECORDINGS (Salah/Resources/Audio/)
 
 The app plays these recordings for adhan alerts and the optional du'a after the adhan.
 All seven came into this code base with the app it was rebuilt from, Guidance for Mac
-by Batoul Apps, where they were added in that repository's first commit (4de9e46,
-24 October 2019). That repository has no license file, and nothing in it names the
-recordings' original sources, performers' permissions or distribution terms.
+by Batoul Apps. They were added to Batoul Apps' GuidanceMac repository on 24 October
+2019, in its second commit (4de9e46). At that time the repository carried an MIT
+license, "Copyright (c) 2019 Batoul Apps", added by its first commit (a21eb77) and
+removed on 16 November 2019 (e9633ea). Nothing in the repository names the recordings'
+original sources or the terms under which Batoul Apps obtained them, and an MIT
+license from Batoul Apps covers only what Batoul Apps owned.
 
   File                 Shown in the app as   Source                          License
-  Adhan-Alafasy.m4a    Mishary Alafasy       Guidance for Mac (Batoul Apps)  Unknown
-  Adhan-Aqsa.mp3       Al-Aqsa               Guidance for Mac (Batoul Apps)  Unknown
-  Adhan-Fajr.mp3       Fajr Adhan            Guidance for Mac (Batoul Apps)  Unknown
-  Adhan-Istanbul.mp3   Istanbul              Guidance for Mac (Batoul Apps)  Unknown
-  Adhan-Makkah.mp3     Makkah                Guidance for Mac (Batoul Apps)  Unknown
-  Adhan-Yusuf.mp3      Yusuf Islam           Guidance for Mac (Batoul Apps)  Unknown
-  Dua.m4a              (du'a after adhan)    Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Alafasy.m4a    Mishary Alafasy       Guidance for Mac (Batoul Apps)  Unconfirmed
+  Adhan-Aqsa.mp3       Al-Aqsa               Guidance for Mac (Batoul Apps)  Unconfirmed
+  Adhan-Fajr.mp3       Fajr Adhan            Guidance for Mac (Batoul Apps)  Unconfirmed
+  Adhan-Istanbul.mp3   Istanbul              Guidance for Mac (Batoul Apps)  Unconfirmed
+  Adhan-Makkah.mp3     Makkah                Guidance for Mac (Batoul Apps)  Unconfirmed
+  Adhan-Yusuf.mp3      Yusuf Islam           Guidance for Mac (Batoul Apps)  Unconfirmed
+  Dua.m4a              (du'a after adhan)    Guidance for Mac (Batoul Apps)  Unconfirmed
 
 Adhan-Alafasy.m4a is a recording of the adhan by Mishary Rashid Alafasy, a third-party
 recording. Adhan-Yusuf.mp3 is presented as Yusuf Islam's adhan.
@@ -35,5 +38,27 @@ release. The MIT License of this repository does not cover them.
 LINKED CODE
 
 Adhan (adhan-swift) 1.4.0, https://github.com/batoulapps/adhan-swift
-  Prayer-time calculation, fetched by Swift Package Manager and linked into the app.
-  The MIT License (MIT). Copyright (c) 2016 Batoul Apps.
+Prayer-time calculation, fetched by Swift Package Manager and linked into the app.
+Its license:
+
+  The MIT License (MIT)
+
+  Copyright (c) 2016 Batoul Apps
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.

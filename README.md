@@ -32,9 +32,10 @@ checked on every change, so they show what the app draws today.
   rules, per-prayer adjustments, a Hijri offset and a delayed Isha in Ramadan.
 - **Nine languages:** English, Arabic, French, Urdu, Indonesian, Turkish, Persian,
   Bengali and Malay, with right-to-left layouts and local digits.
-- **Private.** Prayer times are computed on your Mac. Your location stays on it: the
-  network is used only to name your city and to search for places. No accounts, no
-  analytics, no tracking.
+- **Private.** Prayer times are computed on your Mac, and work offline. The only
+  network use is Apple's: your coordinates go to Apple's geocoding service to name your
+  city, and what you type in the location search goes to Apple Maps' search. No
+  accounts, no analytics, no tracking.
 
 What it deliberately isn't:
 

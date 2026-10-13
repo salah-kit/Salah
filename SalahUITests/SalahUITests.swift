@@ -19,13 +19,18 @@ final class SalahUITests: XCTestCase {
   }
 
   /// A launch that asks for nothing: no automatic location (no location prompt) and every
-  /// alert off (no notification prompt), in English.
+  /// alert off (no notification prompt), in English, with the default menu-bar format
+  /// (icon, full prayer name, time until it) whatever this Mac's Salah is set to.
   static var quietLaunch: [String] {
     [
       "-salah.autoLocation", "NO",
       "-salah.notificationSettings", alertsOff,
       "-salah.appLanguage", "english",
       "-AppleLanguages", "(en)",
+      "-salah.displayIcon", "YES",
+      "-salah.displayNextPrayer", "YES",
+      "-salah.displayNextPrayerName", "0",
+      "-salah.displayNextPrayerType", "0",
     ]
   }
 
@@ -53,7 +58,7 @@ final class SalahUITests: XCTestCase {
     return frame.maxX <= housing.lowerBound || frame.minX >= housing.upperBound
   }
 
-  /// The status item shows the next prayer, as the menu bar format defaults to.
+  /// The status item shows the next prayer's full name, as the default menu-bar format does.
   @MainActor
   func testStatusItemShowsTheNextPrayer() {
     let app = launchQuietly()

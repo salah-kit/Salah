@@ -26,6 +26,8 @@ Salah's first release, 1.0.0, is in preparation.
     and Malay), with right-to-left layouts and local digits.
 - Characterization tests and 450 visual baselines of the widget faces and the menu-bar
   dropdown, in English, Arabic and French, light and dark.
+- UI tests that drive the real app: its status item, menu-bar dropdown, Settings link
+  and About panel.
 
 ### Changed
 

@@ -23,7 +23,8 @@ match `project.yml`.
 |---|---|
 | `Salah` | The menu-bar app (`io.github.salah-kit.Salah`) |
 | `SalahWidgetsExtension` | The WidgetKit extension (`io.github.salah-kit.Salah.Widgets`) |
-| `SalahTests` | Unit, characterization and visual-baseline tests |
+| `SalahTests` | Unit, characterization and visual-baseline tests (the `Salah` scheme) |
+| `SalahUITests` | UI tests that drive the real app (their own `SalahUITests` scheme) |
 
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
 compile (the widget's snapshot model, store, theme and views). The two share the App Group
@@ -40,9 +41,9 @@ cp Config/Local.xcconfig.example Config/Local.xcconfig
 ```
 
 With a team, Xcode signs automatically; add `-allowProvisioningUpdates` to command-line
-builds so it can register the bundle identifiers and the App Group. The app needs a team
-to run with its App Group: macOS asks before an app signed without one reads the shared
-container.
+builds so it can register the bundle identifiers and the App Group. Sign with a team to
+run the app: the App Group it shares with its widget comes from your team's provisioning
+profile.
 
 Without a team you can still build and test:
 
@@ -73,6 +74,32 @@ xcodebuild test -project Salah.xcodeproj -scheme Salah -destination 'platform=ma
 The scheme pins the test process's languages to US English; keep it that way, or the
 visual baselines depend on the machine's language list.
 
+### UI tests
+
+`SalahUITests` launches the real app and checks its status item, the menu-bar dropdown,
+the `salah://settings` link a widget tap opens, the Settings window and the About panel.
+It builds and launches the app, so it needs your team in `Config/Local.xcconfig`. UI
+testing on macOS runs in Automation Mode; the first time, macOS may ask an administrator
+to allow it (`automationmodetool` shows whether it will):
+
+```sh
+xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
+  -allowProvisioningUpdates
+```
+
+CI builds these tests but doesn't run them, because its runners have no team to sign
+the app with. The tests launch Salah under its real identity, without prompts: no
+automatic location, every alert off, English, the default menu-bar format. Two things
+follow on the Mac you run them on:
+
+- They quit a running Salah, and leave it quit.
+- Salah saves the settings it was launched with, so afterwards your own Salah has
+  automatic location and every alert off. Run them on a Mac where you don't rely on
+  Salah, or check its settings afterwards.
+
+The dropdown test skips when the menu bar is so full that macOS puts Salah's status
+item behind the camera housing, where it can't be clicked.
+
 ### Visual baselines
 
 `SalahTests/Baselines/` holds PNG renders of every widget face and the menu-bar dropdown,
@@ -100,8 +127,10 @@ Code is formatted with `swift format` and the shared `.swift-format` (2-space in
 100 columns). CI's lint job fails on any finding.
 
 ```sh
-swift format format --in-place --recursive Salah SalahWidgetsExtension Shared SalahTests Scripts
-swift format lint --strict --recursive Salah SalahWidgetsExtension Shared SalahTests Scripts
+swift format format --in-place --recursive \
+  Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
+swift format lint --strict --recursive \
+  Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
 ```
 
 ## Strings and languages
