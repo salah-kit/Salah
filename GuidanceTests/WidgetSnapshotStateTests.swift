@@ -49,13 +49,20 @@ struct WidgetSnapshotStateTests {
   }
 
   /// The current prayer is the last one started, skipping Sunrise; the previous one
-  /// includes Sunrise. Neither exists before Fajr: yesterday isn't in the snapshot.
+  /// includes Sunrise.
   @Test func currentPrayerSkipsSunriseAndPreviousPrayerDoesNot() {
-    #expect(snapshot.currentPrayer(at: at(4, 17)) == nil)
-    #expect(snapshot.previousPrayer(at: at(4, 17)) == nil)
     #expect(snapshot.currentPrayer(at: at(4, 18))?.id == "fajr")
     #expect(snapshot.currentPrayer(at: at(6, 0))?.id == "fajr")
     #expect(snapshot.previousPrayer(at: at(6, 0))?.id == "sunrise")
+  }
+
+  /// Defect (F2, §7.1): the snapshot holds one day, so before Fajr there's neither a
+  /// current nor a previous prayer. SalahCore's state crosses midnight through the
+  /// neighboring day: at 04:17 yesterday's Isha is the latest prayer and the
+  /// previous event.
+  @Test func characterizesNoPrayerBeforeFajr() {
+    #expect(snapshot.currentPrayer(at: at(4, 17)) == nil)
+    #expect(snapshot.previousPrayer(at: at(4, 17)) == nil)
   }
 
   /// Approaching: the next prayer turns imminent in its last 15 minutes, both ends
@@ -199,8 +206,11 @@ struct WidgetSnapshotStateTests {
     #expect(timeline.reload == at(15, 46))
   }
 
-  /// After Isha the timeline runs every five minutes to midnight and reloads there.
-  @Test func timelineAfterIshaEndsAtMidnight() {
+  /// Defect (F2, §7.3): the snapshot holds one day, so after Isha the timeline runs
+  /// every five minutes to midnight and reloads there, leaving the next day to the
+  /// app's republish. SalahWidgets builds timelines across midnight within a 48-hour
+  /// horizon and ends each with `.expired(knownThrough:)`.
+  @Test func characterizesTheTimelineAfterIshaEndsAtMidnight() {
     let timeline = snapshot.timeline(from: at(21, 0))
     #expect(
       timeline.dates
@@ -208,8 +218,9 @@ struct WidgetSnapshotStateTests {
     #expect(timeline.reload == at(0, 0, dayOffset: 1))
   }
 
-  /// The horizon is at least two hours and at most four, never past midnight, and a
-  /// timeline never exceeds 96 entries.
+  /// The horizon is at least two hours and at most four, and a timeline never
+  /// exceeds 96 entries. (Its midnight bound is
+  /// `characterizesTheTimelineAfterIshaEndsAtMidnight`.)
   @Test func timelineHorizonBounds() {
     // 05:00: the next prayer is Sunrise (05:41); two hours wins.
     #expect(snapshot.timeline(from: at(5, 0)).reload == at(7, 0))

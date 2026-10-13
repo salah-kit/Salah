@@ -11,7 +11,9 @@ struct VisualBaselineTests {
 
   static let mode = BaselineMode.current
 
-  @Test(.enabled(if: BaselineMode.current.renders), arguments: BaselineCatalog.all)
+  @Test(
+    .enabled(if: BaselineMode.current.renders, BaselineMode.current.skipReason),
+    arguments: BaselineCatalog.all)
   func baseline(_ baseline: Baseline) throws {
     // Rendering settles on one image: no live clock, animation or timer leaks into
     // it (`stablePNG` throws if four renders in a row never agree).
@@ -31,11 +33,9 @@ struct VisualBaselineTests {
       try BaselineStore.write(png, to: url)
     case .compare:
       let recorded = try Data(contentsOf: url)
-      let result = try #require(PixelComparison.compare(png, to: recorded))
-      if !result.matches {
-        try BaselineStore.write(
-          png, to: BaselineStore.failuresDirectory.appending(path: baseline.path))
-      }
+      let failure = BaselineStore.failuresDirectory.appending(path: baseline.path)
+      let checked = try PixelComparison.check(png, against: recorded, failure: failure)
+      let result = try #require(checked)
       #expect(result.matches, "\(baseline.path): \(result)")
     case .skip:
       break
@@ -62,7 +62,8 @@ struct VisualBaselineTests {
   }
 
   /// Every PNG under `Baselines/` is in the catalog, so stale images can't linger.
-  @Test(.enabled(if: BaselineMode.current == .compare)) func noOrphanedImages() throws {
+  @Test(.enabled(if: BaselineMode.current == .compare, BaselineMode.current.skipReason))
+  func noOrphanedImages() throws {
     let expected = Set(BaselineCatalog.all.map(\.path))
     let enumerator = FileManager.default.enumerator(
       at: BaselineStore.directory, includingPropertiesForKeys: nil)
@@ -100,23 +101,43 @@ struct VisualBaselineTests {
     }
   }
 
+  /// Caption-size text, light on dark, as the faces show it.
+  static func textPNG(_ text: String) throws -> Data {
+    try BaselineRenderer.stablePNG {
+      Text(verbatim: text).font(.caption2).foregroundStyle(.white).padding(4)
+        .background(.black)
+    }
+  }
+
   /// The tolerance absorbs antialiasing jitter, not a changed mark: a diacritic alone
   /// changes about ten pixels at caption size, each by far more than jitter does.
   @Test func aDiacriticAloneIsADifference() throws {
-    func png(_ text: String) throws -> Data {
-      try BaselineRenderer.stablePNG {
-        Text(verbatim: text).font(.caption2).foregroundStyle(.white).padding(4)
-          .background(.black)
-      }
-    }
     for (marked, plain) in [("تنبيه مُفعّل", "تنبيه مفعّل"), ("Ishā", "Isha")] {
-      let markedPNG = try png(marked)
-      let markedAgain = try png(marked)
-      let plainPNG = try png(plain)
+      let markedPNG = try Self.textPNG(marked)
+      let markedAgain = try Self.textPNG(marked)
+      let plainPNG = try Self.textPNG(plain)
       let result = try #require(PixelComparison.compare(markedPNG, to: plainPNG))
       #expect(!result.matches, "\(marked) vs \(plain): \(result)")
       #expect(PixelComparison.compare(markedPNG, to: markedAgain)?.matches == true)
     }
+  }
+
+  /// A failed comparison leaves the render in the failures folder; once the face
+  /// matches again, a render left by an earlier run is removed.
+  @Test func failedRendersStayOnlyWhileTheyDiffer() throws {
+    let folder = FileManager.default.temporaryDirectory.appending(
+      path: "GuidanceTests-failures-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let failure = folder.appending(path: "widget/face.png")
+    let marked = try Self.textPNG("Ishā")
+    let plain = try Self.textPNG("Isha")
+
+    let differing = try PixelComparison.check(marked, against: plain, failure: failure)
+    #expect(differing?.matches == false)
+    #expect(FileManager.default.fileExists(atPath: failure.path))
+    let matching = try PixelComparison.check(plain, against: plain, failure: failure)
+    #expect(matching?.matches == true)
+    #expect(!FileManager.default.fileExists(atPath: failure.path))
   }
 
   @Test func catalogCoversEveryStateFamilyLanguageAndAppearance() {

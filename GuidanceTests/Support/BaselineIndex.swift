@@ -118,6 +118,9 @@ enum BaselineIndex {
       "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language."
     )
     add(
+      "- The test process prefers US English only: the scheme's test arguments pass `-AppleLanguages (en-US)`, and `environment.json` records the list. With a tall script such as Arabic among the preferred languages, macOS gives system-font text taller lines in every language, so a machine's own list would change every image."
+    )
+    add(
       "- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it."
     )
     add(

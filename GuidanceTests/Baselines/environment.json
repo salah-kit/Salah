@@ -1,4 +1,7 @@
 {
+  "languages" : [
+    "en-US"
+  ],
   "macOS" : "Version 27.0.1 (Build 26A434)",
   "macOSMajor" : 27,
   "scale" : 1,

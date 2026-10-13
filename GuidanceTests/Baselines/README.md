@@ -16,6 +16,7 @@ In the salah-kit workspace, run it through `orchestration/heavy.sh` and add `-de
 
 - SwiftUI `ImageRenderer` at scale 1 (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized.
 - Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language.
+- The test process prefers US English only: the scheme's test arguments pass `-AppleLanguages (en-US)`, and `environment.json` records the list. With a tall script such as Arabic among the preferred languages, macOS gives system-font text taller lines in every language, so a machine's own list would change every image.
 - Light and dark through the `colorScheme` environment; the default Nocturne theme follows it.
 - Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
 - The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.

@@ -27,19 +27,32 @@ struct TestEnvironmentTests {
     #expect(AppResources.bundle.url(forResource: "Dua", withExtension: "m4a") != nil)
   }
 
-  /// A released suite's name is taken again, emptied, so runs leave a few preference
-  /// files behind instead of one per test; suites in use at once never share a name.
-  @Test func scratchSuitesReuseTheirNamesAndStartEmpty() {
-    var first: ScratchDefaults? = ScratchDefaults()
-    let name = first!.suiteName
-    first!.defaults.set(true, forKey: "leftover")
-    let other = ScratchDefaults()
-    #expect(other.suiteName != name)
+  /// Every defaults suite the tests use keeps its file in this run's own folder
+  /// under the temporary directory: nothing lands in `~/Library/Preferences`, and
+  /// two test runs at once never share a suite.
+  @Test func defaultsSuitesLiveInTheRunsOwnFolder() {
+    let folder = TestEnvironment.preferencesDirectory
+    #expect(folder.path.hasPrefix(FileManager.default.temporaryDirectory.path))
+    #expect(TestEnvironment.sharedSuiteName.hasPrefix(folder.path + "/"))
 
-    first = nil
-    let reused = ScratchDefaults()
-    #expect(reused.suiteName == name)
-    #expect(reused.defaults.object(forKey: "leftover") == nil)
+    let scratch = ScratchDefaults()
+    scratch.defaults.set(true, forKey: "probe")
+    #expect(CFPreferencesAppSynchronize(scratch.suiteName as CFString))
+    let file = URL(fileURLWithPath: scratch.suiteName + ".plist")
+    #expect(file.deletingLastPathComponent().path == folder.path)
+    #expect(FileManager.default.fileExists(atPath: file.path))
+    let library = FileManager.default.homeDirectoryForCurrentUser.appending(
+      path: "Library/Preferences")
+    #expect(
+      !FileManager.default.fileExists(atPath: library.appending(path: file.lastPathComponent).path))
+    #expect(ScratchDefaults().suiteName != scratch.suiteName)
+  }
+
+  /// The scheme pins the test process's preferred languages. With a tall script such
+  /// as Arabic among them, macOS gives system-font text taller lines in every
+  /// language, so every visual baseline would depend on the machine's list.
+  @Test func processLanguagesArePinned() {
+    #expect(Locale.preferredLanguages == ["en-US"])
   }
 
   /// The scheme's test action builds only this bundle. A build of the app registers

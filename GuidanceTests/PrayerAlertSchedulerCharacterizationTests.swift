@@ -72,17 +72,25 @@ struct PrayerAlertSchedulerCharacterizationTests {
   // MARK: - The three-day window and the 60-request cap
 
   /// Defect (F2): `PrayerManager` hands the scheduler only yesterday, today and
-  /// tomorrow in the prayer calendar (`PrayerManager.swift:249-313`, by calendar day,
-  /// not 24-hour steps), so alerts run out about two days after the app last ran.
-  /// SalahAlerts plans a horizon (14 days by default) within a request budget.
+  /// tomorrow (`PrayerManager.swift:249-313`), so alerts run out about two days after
+  /// the app last ran. SalahAlerts plans a horizon (14 days by default) within a
+  /// request budget.
   @Test func characterizesTheAlertWindowIsYesterdayTodayAndTomorrow() throws {
+    let window = try #require(
+      PrayerManager.alertWindowDays(around: Fixture.date(13, 0), calendar: Fixture.calendar))
+    #expect(window.yesterday.1 == Fixture.dayComponents(offset: -1))
+    #expect(window.today.1 == Fixture.dayComponents(offset: 0))
+    #expect(window.tomorrow.1 == Fixture.dayComponents(offset: 1))
+  }
+
+  /// The window's days are civil days in the prayer calendar's zone, a calendar day
+  /// apart rather than 24 hours (SalahCore keeps this rule, §7.1).
+  @Test func alertWindowDaysAreCivilDaysInThePrayerZone() throws {
     // 01:30 in Riyadh is still 1 June in UTC: the window follows the prayer zone.
     let now = Fixture.date(1, 30)
     let window = try #require(
       PrayerManager.alertWindowDays(around: now, calendar: Fixture.calendar))
-    #expect(window.yesterday.1 == Fixture.dayComponents(offset: -1))
     #expect(window.today.1 == Fixture.dayComponents(offset: 0))
-    #expect(window.tomorrow.1 == Fixture.dayComponents(offset: 1))
     #expect(window.today.0 == Fixture.date(0, 0))
     #expect(window.yesterday.0 == Fixture.date(0, 0, dayOffset: -1))
     #expect(window.tomorrow.0 == Fixture.date(0, 0, dayOffset: 1))

@@ -2,6 +2,7 @@ import Adhan
 import AppKit
 import Foundation
 import SwiftUI
+import Testing
 
 // MARK: - Pipeline: catalog entry → snapshot → view
 
@@ -345,6 +346,19 @@ enum PixelComparison {
     return drawn ? (width, height, bytes) : nil
   }
 
+  /// Compares a render with its recorded PNG and keeps `failure` in step: the render
+  /// is left there when it differs, and one left by an earlier run is removed once
+  /// the render matches again.
+  static func check(_ rendered: Data, against recorded: Data, failure: URL) throws -> Result? {
+    guard let result = compare(rendered, to: recorded) else { return nil }
+    if !result.matches {
+      try BaselineStore.write(rendered, to: failure)
+    } else if FileManager.default.fileExists(atPath: failure.path) {
+      try FileManager.default.removeItem(at: failure)
+    }
+    return result
+  }
+
   static func compare(_ rendered: Data, to recorded: Data) -> Result? {
     guard let a = rgba(rendered), let b = rgba(recorded) else { return nil }
     var result = Result(
@@ -389,6 +403,9 @@ nonisolated struct BaselineEnvironment: Codable, Equatable {
   var xcodeBuild: String
   var scale: Double
   var timeZone: String
+  /// The test process's preferred languages, which the scheme's test arguments pin:
+  /// they change system-font line heights (see `processLanguagesArePinned`).
+  var languages: [String]
 
   static var url: URL { BaselineStore.directory.appending(path: "environment.json") }
 
@@ -400,7 +417,8 @@ nonisolated struct BaselineEnvironment: Codable, Equatable {
       macOSMajor: os.majorVersion,
       xcodeBuild: info?["DTXcodeBuild"] as? String ?? "unknown",
       scale: Double(BaselineRenderer.scale),
-      timeZone: "Asia/Riyadh")
+      timeZone: "Asia/Riyadh",
+      languages: Locale.preferredLanguages)
   }
 
   static var recorded: BaselineEnvironment? {
@@ -430,5 +448,11 @@ nonisolated enum BaselineMode: Equatable {
   var renders: Bool {
     if case .skip = self { return false }
     return true
+  }
+
+  /// Why nothing is rendered, shown on the skipped tests.
+  var skipReason: Comment? {
+    if case .skip(let reason) = self { return Comment(rawValue: reason) }
+    return nil
   }
 }
