@@ -84,7 +84,7 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
     case .playingPostReminder: "Maghrib + 5 min, Maghrib's 5-min after-reminder playing"
     case .silent: "Dhuhr + 60 min, silent mode on"
     case .setupNeeded:
-      "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min"
+      "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min"
     case .stale: "the fixture day's snapshot shown at 00:10 the next day"
     }
   }

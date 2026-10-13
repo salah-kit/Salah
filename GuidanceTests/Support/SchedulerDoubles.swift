@@ -16,7 +16,9 @@ final class FakeNotificationCenter: PrayerAlertNotificationCenter {
 
   struct AddFailure: Error {}
 
-  var delegate: (any UNUserNotificationCenterDelegate)?
+  /// Weak, as `UNUserNotificationCenter.delegate` is: the scheduler makes itself the
+  /// delegate of the center it holds.
+  weak var delegate: (any UNUserNotificationCenterDelegate)?
   var status: UNAuthorizationStatus = .authorized
   /// The status `requestAuthorization` leaves behind.
   var statusAfterRequest: UNAuthorizationStatus = .authorized

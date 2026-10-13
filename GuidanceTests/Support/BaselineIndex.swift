@@ -115,7 +115,7 @@ enum BaselineIndex {
       "- SwiftUI `ImageRenderer` at scale \(BaselineRenderer.scale) (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized."
     )
     add(
-      "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French)."
+      "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language."
     )
     add(
       "- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it."
@@ -125,7 +125,7 @@ enum BaselineIndex {
     )
     add("- The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.")
     add(
-      "- Compared pixel by pixel. A channel difference of up to \(PixelComparison.noiseFloor)/255 counts as equal, and up to \(PixelComparison.allowedOutliers) pixels per image may differ by more: antialiasing can shift a pixel or two between processes, while a changed digit, glyph, icon or color moves far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases."
+      "- Compared pixel by pixel. A channel difference of up to \(PixelComparison.noiseFloor)/255 counts as equal, and up to \(PixelComparison.allowedOutliers) pixels per image may differ by more, none of them by more than \(PixelComparison.jitterCeiling)/255: antialiasing can shift a pixel or two by a few levels between processes, while a changed digit, glyph, diacritic, icon or color moves pixels far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases."
     )
     add()
     add("## Fixture")

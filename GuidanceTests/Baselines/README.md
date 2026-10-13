@@ -15,11 +15,11 @@ In the salah-kit workspace, run it through `orchestration/heavy.sh` and add `-de
 ## How they're rendered
 
 - SwiftUI `ImageRenderer` at scale 1 (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized.
-- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French).
+- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language.
 - Light and dark through the `colorScheme` environment; the default Nocturne theme follows it.
 - Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
 - The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.
-- Compared pixel by pixel. A channel difference of up to 2/255 counts as equal, and up to 16 pixels per image may differ by more: antialiasing can shift a pixel or two between processes, while a changed digit, glyph, icon or color moves far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases.
+- Compared pixel by pixel. A channel difference of up to 2/255 counts as equal, and up to 16 pixels per image may differ by more, none of them by more than 32/255: antialiasing can shift a pixel or two by a few levels between processes, while a changed digit, glyph, diacritic, icon or color moves pixels far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases.
 
 ## Fixture
 
@@ -46,7 +46,7 @@ The states the widget spec's verification plan lists (`Guidance/docs/superpowers
 | `playingPreReminder` | playing audio (stop control): before-reminder, orange | 2026-06-02 18:50 | Maghrib − 10 min, Maghrib's 10-min before-reminder playing |
 | `playingPostReminder` | playing audio (stop control): after-reminder, purple | 2026-06-02 19:05 | Maghrib + 5 min, Maghrib's 5-min after-reminder playing |
 | `silent` | silent mode | 2026-06-02 13:19 | Dhuhr + 60 min, silent mode on |
-| `setupNeeded` | setup-needed | 2026-06-02 13:19 | no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min |
+| `setupNeeded` | setup-needed | 2026-06-02 13:19 | no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min |
 | `stale` | stale | 2026-06-03 00:10 | the fixture day's snapshot shown at 00:10 the next day |
 
 ## `WidgetPreviewContainer` scenarios: `preview/` and `theme/`

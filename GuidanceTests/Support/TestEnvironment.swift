@@ -58,16 +58,32 @@ enum TestEnvironment {
   }
 }
 
-/// A `UserDefaults` suite of its own for one test, removed when released.
+/// A `UserDefaults` suite of its own for one test, emptied when it's taken and
+/// when it's released. Every suite leaves a preference file behind, even emptied,
+/// so the names come from a small pool that every run reuses: a unique name per
+/// test would add hundreds of files to `~/Library/Preferences` on each run.
 nonisolated final class ScratchDefaults {
-  let suiteName = "GuidanceTests.scratch.\(UUID().uuidString)"
+  private static let lock = NSLock()
+  nonisolated(unsafe) private static var freeSlots: [Int] = []
+  nonisolated(unsafe) private static var slotCount = 0
+
+  let suiteName: String
   let defaults: UserDefaults
+  private let slot: Int
 
   init() {
+    slot = Self.lock.withLock {
+      if let slot = Self.freeSlots.popLast() { return slot }
+      Self.slotCount += 1
+      return Self.slotCount
+    }
+    suiteName = "GuidanceTests.scratch.\(slot)"
     defaults = UserDefaults(suiteName: suiteName)!
+    defaults.removePersistentDomain(forName: suiteName)
   }
 
   deinit {
     defaults.removePersistentDomain(forName: suiteName)
+    Self.lock.withLock { Self.freeSlots.append(slot) }
   }
 }

@@ -11,9 +11,13 @@ import Testing
 /// Maghrib 18:42 (10 min before, 5 min after), Isha 20:00, and tomorrow's Fajr 04:18.
 @Suite("Widget snapshot state")
 struct WidgetSnapshotStateTests {
-  init() { TestEnvironment.configure() }
+  let snapshot: GuidanceWidgetSnapshot
 
-  let snapshot = GuidanceWidgetSnapshot.sample(now: Fixture.date(9, 0))
+  init() {
+    TestEnvironment.configure()
+    // After configure(): the sample day is built in the process time zone.
+    snapshot = GuidanceWidgetSnapshot.sample(now: Fixture.date(9, 0))
+  }
 
   func at(_ hour: Int, _ minute: Int, _ second: Int = 0, dayOffset: Int = 0) -> Date {
     Fixture.date(hour, minute, second, dayOffset: dayOffset)

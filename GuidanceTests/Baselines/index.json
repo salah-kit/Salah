@@ -396,7 +396,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-en-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -406,7 +406,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-en-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -416,7 +416,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-en-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1136,7 +1136,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-en-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1146,7 +1146,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-en-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1156,7 +1156,7 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-en-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1876,7 +1876,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-ar-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1886,7 +1886,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-ar-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1896,7 +1896,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-ar-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2616,7 +2616,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-ar-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2626,7 +2626,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-ar-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2636,7 +2636,7 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-ar-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3356,7 +3356,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-fr-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3366,7 +3366,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-fr-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3376,7 +3376,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-fr-light.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4096,7 +4096,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-small-fr-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4106,7 +4106,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-medium-fr-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4116,7 +4116,7 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/setupNeeded-large-fr-dark.png",
-      "setup" : "no published snapshot: the extension's setup entry (sample data), at Dhuhr + 60 min",
+      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },

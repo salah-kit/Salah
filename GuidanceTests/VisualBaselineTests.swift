@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Testing
 
 /// Renders every widget state, `WidgetPreviewContainer` scenario, widget family and
@@ -71,6 +72,51 @@ struct VisualBaselineTests {
       found.insert(url.path.replacingOccurrences(of: BaselineStore.directory.path + "/", with: ""))
     }
     #expect(found == expected)
+  }
+
+  /// The setup face has no snapshot to take a language from: the extension shows it
+  /// under the sample snapshot's locale, so it's English whatever the app's language,
+  /// although the extension's catalog has the message in Arabic and French.
+  @Test func setupFaceIsEnglishInEveryLanguage() throws {
+    let messages = try ["en", "ar", "fr"].map {
+      try ExtensionCatalog.string("widget.openToSetUp", localeIdentifier: $0)
+    }
+    #expect(Set(messages).count == 3)
+
+    func png(_ language: Baseline.Language) throws -> Data {
+      let baseline = Baseline(
+        surface: .widget, state: SpecState.setupNeeded.rawValue, family: .medium,
+        language: language, appearance: .light)
+      return try AppLanguageScope.with(BaselinePipeline.appLanguage(language)) {
+        try BaselineRenderer.stablePNG { try BaselinePipeline.view(for: baseline) }
+      }
+    }
+    // Compared like the baselines: a face's first render in a process can settle a
+    // few pixels apart from later ones.
+    let english = try png(.en)
+    for language in [Baseline.Language.ar, .fr] {
+      let result = try #require(PixelComparison.compare(png(language), to: english))
+      #expect(result.matches, "\(language): \(result)")
+    }
+  }
+
+  /// The tolerance absorbs antialiasing jitter, not a changed mark: a diacritic alone
+  /// changes about ten pixels at caption size, each by far more than jitter does.
+  @Test func aDiacriticAloneIsADifference() throws {
+    func png(_ text: String) throws -> Data {
+      try BaselineRenderer.stablePNG {
+        Text(verbatim: text).font(.caption2).foregroundStyle(.white).padding(4)
+          .background(.black)
+      }
+    }
+    for (marked, plain) in [("تنبيه مُفعّل", "تنبيه مفعّل"), ("Ishā", "Isha")] {
+      let markedPNG = try png(marked)
+      let markedAgain = try png(marked)
+      let plainPNG = try png(plain)
+      let result = try #require(PixelComparison.compare(markedPNG, to: plainPNG))
+      #expect(!result.matches, "\(marked) vs \(plain): \(result)")
+      #expect(PixelComparison.compare(markedPNG, to: markedAgain)?.matches == true)
+    }
   }
 
   @Test func catalogCoversEveryStateFamilyLanguageAndAppearance() {

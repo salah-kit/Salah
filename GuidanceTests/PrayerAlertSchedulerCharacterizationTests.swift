@@ -401,10 +401,12 @@ struct PrayerAlertSchedulerCharacterizationTests {
   }
 
   /// Defect (§7.5 "Identity and updates", A-30): pending requests that are no longer
-  /// wanted are removed before any new request is added (`:330-349`), leaving a
-  /// moment with neither; SalahAlerts replaces by identifier and removes obsolete
-  /// requests without that gap. Requests still wanted aren't removed first, and
-  /// other apps' requests are left alone.
+  /// wanted are removed before any new request is added (`:330-349`). With timestamp
+  /// identifiers a moved alert is one of them, so its old request goes before the new
+  /// one exists. SalahAlerts replaces a changed request by adding it under its stable
+  /// identifier, without removing it first; it promises no atomic or gap-free batch,
+  /// and obsolete cleanup is reconciled. Requests still wanted aren't removed first,
+  /// and other apps' requests are left alone.
   @Test func characterizesStaleRequestsAreRemovedBeforeAnyAdd() async throws {
     let stale = "guidance.prayer.asr.prayerTime.1"
     let wanted = Self.identifier("maghrib", "prayerTime", Self.today.maghrib)
@@ -567,6 +569,8 @@ struct PrayerAlertSchedulerCharacterizationTests {
       preferences, _ in preferences.duaEnabled = false
     }
     await noDua.schedule()
+    #expect(noDua.audio.plays.count == 1)
+    #expect(Self.soundFile(noDua.audio.plays.first) == "Adhan-Makkah.mp3")
     #expect(noDua.audio.plays.first?.followUp == nil)
   }
 

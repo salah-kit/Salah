@@ -154,12 +154,15 @@ enum BaselinePipeline {
       let now = moment(for: state)
       switch state {
       case .setupNeeded:
-        // No snapshot was ever published: the provider's setup entry.
-        let message = try ExtensionCatalog.string("widget.openToSetUp", language: baseline.language)
+        // No snapshot was ever published: the provider's setup entry. The extension
+        // resolves the message under the sample snapshot's locale, English, so the
+        // face doesn't follow the app's language.
+        let sample = GuidanceWidgetSnapshot.sample(now: now)
+        let message = try ExtensionCatalog.string(
+          "widget.openToSetUp", localeIdentifier: sample.localeIdentifier)
         content = AnyView(
           WidgetShellMessage(
-            snapshot: .sample(now: now), size: size, date: now, systemImage: "moon.stars",
-            message: message))
+            snapshot: sample, size: size, date: now, systemImage: "moon.stars", message: message))
       case .stale:
         let snapshot = snapshot(for: state, language: baseline.language)
         content = AnyView(
@@ -231,20 +234,21 @@ struct WidgetShellMessage: View {
 
 /// Reads the widget extension's String Catalog from the source tree. The extension
 /// resolves `widget.openToSetUp` from its own bundle, which the test bundle doesn't
-/// contain.
+/// contain, in the language of the locale its view has in the environment.
 enum ExtensionCatalog {
   struct MissingString: Error, CustomStringConvertible {
     var key: String
     var description: String { "widget catalog has no value for \(key)" }
   }
 
-  static func string(_ key: String, language: Baseline.Language) throws -> String {
+  static func string(_ key: String, localeIdentifier: String) throws -> String {
     let url = BaselineStore.repositoryRoot.appending(
       path: "GuidanceWidgetsExtension/Localizable.xcstrings")
     let catalog = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
     let strings = catalog?["strings"] as? [String: Any]
     let localizations = (strings?[key] as? [String: Any])?["localizations"] as? [String: Any]
-    let localization = (localizations?[language.rawValue] ?? localizations?["en"]) as? [String: Any]
+    let language = Locale(identifier: localeIdentifier).language.languageCode?.identifier ?? "en"
+    let localization = (localizations?[language] ?? localizations?["en"]) as? [String: Any]
     guard let value = (localization?["stringUnit"] as? [String: Any])?["value"] as? String else {
       throw MissingString(key: key)
     }
@@ -297,7 +301,7 @@ enum PixelComparison {
     var maxChannelDelta: Int
 
     var matches: Bool {
-      size == recordedSize && differingPixels <= allowedOutliers
+      size == recordedSize && differingPixels <= allowedOutliers && maxChannelDelta <= jitterCeiling
     }
 
     var description: String {
@@ -306,7 +310,7 @@ enum PixelComparison {
           "size \(size.width)×\(size.height) px, recorded \(recordedSize.width)×\(recordedSize.height) px"
       }
       return
-        "\(differingPixels) pixels differ by more than \(noiseFloor)/255, \(allowedOutliers) allowed (largest channel difference \(maxChannelDelta))"
+        "\(differingPixels) pixels differ by more than \(noiseFloor)/255 (\(allowedOutliers) allowed), the largest by \(maxChannelDelta)/255 (\(jitterCeiling) allowed)"
     }
   }
 
@@ -314,8 +318,12 @@ enum PixelComparison {
   static let noiseFloor = 2
   /// Pixels that may differ by more than the noise floor. A face rendered in another
   /// process can move a pixel or two of antialiasing by a few levels; a changed digit,
-  /// glyph, icon or color moves dozens to hundreds by far more.
+  /// glyph, icon or color moves dozens to hundreds.
   static let allowedOutliers = 16
+  /// The most any pixel may differ by. Antialiasing jitter stays far below it, while
+  /// a mark that appears or disappears, even a diacritic covering only a few pixels,
+  /// moves its pixels by far more.
+  static let jitterCeiling = 32
 
   static func rgba(_ png: Data) -> (width: Int, height: Int, bytes: [UInt8])? {
     guard let image = NSBitmapImageRep(data: png)?.cgImage,
