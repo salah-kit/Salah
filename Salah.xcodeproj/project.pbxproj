@@ -52,6 +52,7 @@
 		390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FBA9F0E069647A5AC1D2BE /* WidgetPreviewContainer.swift */; };
 		3B8565A2783270F8EC417BE7 /* SidebarRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AD839B18C7F2F81698FC2C /* SidebarRow.swift */; };
 		3B856D8B86918CFA7B6408F5 /* MenuDropdownHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06059980F31B4026C5E8F0A7 /* MenuDropdownHeader.swift */; };
+		3C17A1F0E9B5E1DCB09B0163 /* SalahUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85502C7E155811EF17729F5A /* SalahUITests.swift */; };
 		3D554C9CBF55F65F663D37E5 /* SalahWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0623A8755AF9D8667A573 /* SalahWidgetModels.swift */; };
 		3D6D218E60FF7621F22AD9B1 /* SalahWidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7303DFBD5EC16833F227FCDD /* SalahWidgetStore.swift */; };
 		3E8B9E6D9BE54C008C617BA3 /* PreferencesNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */; };
@@ -196,6 +197,13 @@
 			remoteGlobalIDString = 3440F406C212D69F875F9D06;
 			remoteInfo = SalahWidgetsExtension;
 		};
+		A5F88A4E7F7656EDB63CDEB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A95D210DB698E4F7E3E7212 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F3E5FBBCFC5EF89ADD705298;
+			remoteInfo = Salah;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -271,6 +279,7 @@
 		7850779C111D56324DA71023 /* AdjustmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentRow.swift; sourceTree = "<group>"; };
 		7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Makkah.mp3"; sourceTree = "<group>"; };
 		84B2D5FD87ADFC8EAC0CE78C /* SalahWidgetCommandObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetCommandObserver.swift; sourceTree = "<group>"; };
+		85502C7E155811EF17729F5A /* SalahUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahUITests.swift; sourceTree = "<group>"; };
 		8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityMonitor.swift; sourceTree = "<group>"; };
 		8C27B824CF1B9C5D41E580EA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		8DBD5424A2D64F71FADE609F /* RelativeDurationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDurationFormatterTests.swift; sourceTree = "<group>"; };
@@ -316,6 +325,7 @@
 		EE983C97E1004EDA58316CBC /* Adhan-Istanbul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Istanbul.mp3"; sourceTree = "<group>"; };
 		F028CE4DD8CF7CEA18EA0D99 /* PrayerManager+Widgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrayerManager+Widgets.swift"; sourceTree = "<group>"; };
 		F08079F85278A2CDDF25F399 /* AdjustmentsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentsTab.swift; sourceTree = "<group>"; };
+		F4DCE5255B40B630D5E587C3 /* SalahUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalahUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailureCategoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -442,6 +452,7 @@
 				7AB7C0BA3AF75781B8BBA553 /* Config */,
 				F0718792249B6E6563D0F8FC /* Salah */,
 				18BC47C8F4CA074587E2F61C /* SalahTests */,
+				C4D84F1B0E6A6C000DE84FFF /* SalahUITests */,
 				2FB1769EB7D518ABAACF9819 /* SalahWidgetsExtension */,
 				93B5E14F017C998CF1D6FE84 /* Shared */,
 				082B3B3692A4BBD5BCB47C27 /* Frameworks */,
@@ -630,11 +641,20 @@
 			path = Notifications;
 			sourceTree = "<group>";
 		};
+		C4D84F1B0E6A6C000DE84FFF /* SalahUITests */ = {
+			isa = PBXGroup;
+			children = (
+				85502C7E155811EF17729F5A /* SalahUITests.swift */,
+			);
+			path = SalahUITests;
+			sourceTree = "<group>";
+		};
 		CC006CE3826E35F4BBF02B9D /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				1A090191B2CF26A55B3E6D08 /* Salah.app */,
 				5DC04AD29F9B9E7C929C7154 /* SalahTests.xctest */,
+				F4DCE5255B40B630D5E587C3 /* SalahUITests.xctest */,
 				CB7D479E323D965E2DBE5FDE /* SalahWidgetsExtension.appex */,
 			);
 			name = Products;
@@ -716,6 +736,24 @@
 			productReference = 5DC04AD29F9B9E7C929C7154 /* SalahTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		D043A3CC356D7A50ECFE2B33 /* SalahUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94B1DA176E653AFDE247696A /* Build configuration list for PBXNativeTarget "SalahUITests" */;
+			buildPhases = (
+				0B307B42A6151A211E0C1EB8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F71C61757906E48F11CAE1C7 /* PBXTargetDependency */,
+			);
+			name = SalahUITests;
+			packageProductDependencies = (
+			);
+			productName = SalahUITests;
+			productReference = F4DCE5255B40B630D5E587C3 /* SalahUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		F3E5FBBCFC5EF89ADD705298 /* Salah */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2762DF63F928383EFCFD494 /* Build configuration list for PBXNativeTarget "Salah" */;
@@ -756,6 +794,11 @@
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
+					D043A3CC356D7A50ECFE2B33 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = F3E5FBBCFC5EF89ADD705298;
+					};
 					F3E5FBBCFC5EF89ADD705298 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -790,6 +833,7 @@
 				F3E5FBBCFC5EF89ADD705298 /* Salah */,
 				3440F406C212D69F875F9D06 /* SalahWidgetsExtension */,
 				877ED6A841EF0A94B555F645 /* SalahTests */,
+				D043A3CC356D7A50ECFE2B33 /* SalahUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -841,6 +885,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0B307B42A6151A211E0C1EB8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C17A1F0E9B5E1DCB09B0163 /* SalahUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4888C7673E440D9AE23FE862 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1022,6 +1074,11 @@
 			target = 3440F406C212D69F875F9D06 /* SalahWidgetsExtension */;
 			targetProxy = 184A3891098F519691DD0A07 /* PBXContainerItemProxy */;
 		};
+		F71C61757906E48F11CAE1C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F3E5FBBCFC5EF89ADD705298 /* Salah */;
+			targetProxy = A5F88A4E7F7656EDB63CDEB0 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -1079,6 +1136,27 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		1F54789EAEE71749AE547C0C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = Salah;
 			};
 			name = Debug;
 		};
@@ -1269,6 +1347,27 @@
 			};
 			name = Release;
 		};
+		D48E893969AF1D516DAFFB1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = Salah;
+			};
+			name = Release;
+		};
 		EDDD3FB9C953C6E75975E9B5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2E16295CA7B8B26483F8F9AF /* Shared.xcconfig */;
@@ -1342,6 +1441,15 @@
 			buildConfigurations = (
 				7BE22A85041AE5D0FF4923BF /* Debug */,
 				EDDD3FB9C953C6E75975E9B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		94B1DA176E653AFDE247696A /* Build configuration list for PBXNativeTarget "SalahUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F54789EAEE71749AE547C0C /* Debug */,
+				D48E893969AF1D516DAFFB1E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

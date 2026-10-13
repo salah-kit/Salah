@@ -200,6 +200,30 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: NO
         SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
         SWIFT_VERSION: "6.0"
+  # Drives the real app (XCUITest). It builds and launches the app, which opens its App
+  # Group, so it needs a signing team (Config/Local.xcconfig) and has its own scheme: the
+  # Salah scheme's tests never build the app.
+  SalahUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: SalahUITests
+    dependencies:
+      - target: Salah
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: "-"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MARKETING_VERSION: 1.0.0
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.SalahUITests
+        PRODUCT_NAME: $(TARGET_NAME)
+        SDKROOT: macosx
+        SWIFT_VERSION: "6.0"
+        TEST_TARGET_NAME: Salah
 schemes:
   Salah:
     build:
@@ -223,3 +247,11 @@ schemes:
       config: Debug
     archive:
       config: Release
+  SalahUITests:
+    build:
+      targets:
+        SalahUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - SalahUITests
