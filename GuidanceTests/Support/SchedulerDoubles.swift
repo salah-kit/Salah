@@ -2,7 +2,9 @@ import Foundation
 import UserNotifications
 
 /// An in-memory notification center that logs every call in order. Adding a
-/// request whose identifier is already pending replaces it, as Apple documents.
+/// request whose identifier is already pending replaces it, with or without a
+/// trigger, as Apple documents. The real center also delivers an immediate
+/// (nil-trigger) request at once; the fake leaves `delivered` to the test.
 final class FakeNotificationCenter: PrayerAlertNotificationCenter {
   enum Call: Equatable {
     case authorizationStatus
@@ -64,8 +66,8 @@ final class FakeNotificationCenter: PrayerAlertNotificationCenter {
     calls.append(.add(request.identifier))
     if failingIdentifiers.contains(request.identifier) { throw AddFailure() }
     added.append(request)
-    guard request.trigger != nil else { return }
     pending.removeAll { $0.identifier == request.identifier }
+    guard request.trigger != nil else { return }
     pending.append(request)
   }
 

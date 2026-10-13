@@ -1,6 +1,6 @@
 # Visual baselines
 
-PNG renders of the imported Guidance app (`Salah` at `4bc00e9`, before the rebrand), made by `VisualBaselineTests` in GuidanceTests. B2 re-renders them after the rebrand and D1 after the move onto SalahKit; each diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand.
+PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in GuidanceTests. A2 first recorded them from the imported Guidance app (`4bc00e9` plus test seams), before the rebrand; the folder's `git log` shows every later re-record. B2 re-renders them after the rebrand and D1 after the move onto SalahKit; each diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand.
 
 ## Re-render or check
 
@@ -18,6 +18,7 @@ In the salah-kit workspace, run it through `orchestration/heavy.sh` and add `-de
 - Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language.
 - The test process prefers US English only: the scheme's test arguments pass `-AppleLanguages (en-US)`, and `environment.json` records the list. With a tall script such as Arabic among the preferred languages, macOS gives system-font text taller lines in every language, so a machine's own list would change every image.
 - Light and dark through the `colorScheme` environment; the default Nocturne theme follows it.
+- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `GuidanceWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off.
 - Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
 - The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.
 - Compared pixel by pixel. A channel difference of up to 2/255 counts as equal, and up to 16 pixels per image may differ by more, none of them by more than 32/255: antialiasing can shift a pixel or two by a few levels between processes, while a changed digit, glyph, diacritic, icon or color moves pixels far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases.
@@ -33,14 +34,14 @@ The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura,
 
 ## Spec states: `widget/` and `menu/`
 
-The states the widget spec's verification plan lists (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`), built by the app's real snapshot builder from the fixture. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
+The states the widget spec's verification plan lists (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`), built by the app's real snapshot builder from the fixture. The images show what the app renders; where that departs from the spec (silent count-up, setup face), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
 
 | State | Spec | Moment (Riyadh) | Setup |
 |---|---|---|---|
 | `idle` | idle/normal | 2026-06-02 13:19 | Dhuhr + 60 min |
 | `imminent` | imminent (fixed 15-min red, not before Sunrise) | 2026-06-02 15:25 | Asr − 10 min |
 | `countUp` | Iqama count-up (green, leads 15 min, next prayer secondary) | 2026-06-02 12:23 | Dhuhr + 4 min |
-| `countUpSilent` | count-up in silent mode (muted grey) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
+| `countUpSilent` | count-up in silent mode (spec: muted grey; the app keeps the count-up green, badge, timer and row, while silent mode mutes the rest) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
 | `countUpImminent` | count-up overlapping an imminent next (count-up leads, next line red) | 2026-06-02 19:04 | Maghrib + 4 min, Isha adjusted −78 min (19:12) |
 | `endOfDay` | end-of-day Tomorrow card | 2026-06-02 21:30 | Isha + 60 min |
 | `playingAdhan` | playing audio (stop control): adhan, green | 2026-06-02 19:02 | Maghrib + 2 min, Maghrib's adhan playing |

@@ -94,7 +94,7 @@ enum BaselineIndex {
     add("# Visual baselines")
     add()
     add(
-      "PNG renders of the imported Guidance app (`Salah` at `4bc00e9`, before the rebrand), made by `VisualBaselineTests` in GuidanceTests. B2 re-renders them after the rebrand and D1 after the move onto SalahKit; each diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand."
+      "PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in GuidanceTests. A2 first recorded them from the imported Guidance app (`4bc00e9` plus test seams), before the rebrand; the folder's `git log` shows every later re-record. B2 re-renders them after the rebrand and D1 after the move onto SalahKit; each diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand."
     )
     add()
     add("## Re-render or check")
@@ -124,6 +124,9 @@ enum BaselineIndex {
       "- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it."
     )
     add(
+      "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `GuidanceWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off."
+    )
+    add(
       "- Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
     )
     add("- The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.")
@@ -149,7 +152,7 @@ enum BaselineIndex {
     add("## Spec states: `widget/` and `menu/`")
     add()
     add(
-      "The states the widget spec's verification plan lists (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`), built by the app's real snapshot builder from the fixture. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
+      "The states the widget spec's verification plan lists (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`), built by the app's real snapshot builder from the fixture. The images show what the app renders; where that departs from the spec (silent count-up, setup face), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
     )
     add()
     add("| State | Spec | Moment (Riyadh) | Setup |")

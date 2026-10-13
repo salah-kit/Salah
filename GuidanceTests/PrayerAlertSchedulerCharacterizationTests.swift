@@ -71,10 +71,12 @@ struct PrayerAlertSchedulerCharacterizationTests {
 
   // MARK: - The three-day window and the 60-request cap
 
-  /// Defect (F2): `PrayerManager` hands the scheduler only yesterday, today and
-  /// tomorrow (`PrayerManager.swift:249-313`), so alerts run out about two days after
-  /// the app last ran. SalahAlerts plans a horizon (14 days by default) within a
-  /// request budget.
+  /// Defect (F2): `PrayerManager.calculatePrayerTimes()` computes its alert window
+  /// with `alertWindowDays`, pinned here: yesterday, today and tomorrow. It hands the
+  /// scheduler those three days' times and no others, so alerts run out about two
+  /// days after the app last ran. (The list itself is built in that method, which
+  /// tests can't reach: `PrayerManager()` starts location and notifications.)
+  /// SalahAlerts plans a horizon (14 days by default) within a request budget.
   @Test func characterizesTheAlertWindowIsYesterdayTodayAndTomorrow() throws {
     let window = try #require(
       PrayerManager.alertWindowDays(around: Fixture.date(13, 0), calendar: Fixture.calendar))
@@ -193,15 +195,22 @@ struct PrayerAlertSchedulerCharacterizationTests {
     /// Seconds after the fire date that the scheduler runs; negative is early.
     var lateness: Double
     var caughtUp: Bool
+    /// Whether the alert still gets a calendar request: only one not yet due does.
+    var requested = false
 
     var testDescription: String { name }
   }
 
   /// Catch-up after launch, wake or a late recalculation (`PrayerAlertScheduler.swift:133-146`):
   /// at-time alerts within five minutes, reminders within two, and a before-reminder
-  /// never once its prayer has started. Anything within 1.5 s ahead counts as due.
-  /// Caught-up alerts are delivered at once and their sound plays.
+  /// never once its prayer has started. Anything within 1.5 s ahead counts as due;
+  /// further ahead it gets a calendar request instead. Caught-up alerts are
+  /// delivered at once and their sound plays.
   @Test(arguments: [
+    CatchUpCase(
+      name: "adhan 2 s ahead, not yet due", kind: .prayerTime, lateness: -2, caughtUp: false,
+      requested: true),
+    CatchUpCase(name: "adhan due 1.5 s ahead", kind: .prayerTime, lateness: -1.5, caughtUp: true),
     CatchUpCase(name: "adhan due 1 s ahead", kind: .prayerTime, lateness: -1, caughtUp: true),
     CatchUpCase(name: "adhan on time", kind: .prayerTime, lateness: 0, caughtUp: true),
     CatchUpCase(name: "adhan 299 s late", kind: .prayerTime, lateness: 299, caughtUp: true),
@@ -222,6 +231,9 @@ struct PrayerAlertSchedulerCharacterizationTests {
     CatchUpCase(
       name: "before-reminder 59 s late, prayer not started", kind: .preReminder, offset: 1,
       lateness: 59, caughtUp: true),
+    CatchUpCase(
+      name: "before-reminder at its prayer's start", kind: .preReminder, offset: 1,
+      lateness: 60, caughtUp: false),
     CatchUpCase(
       name: "before-reminder 90 s late, prayer started", kind: .preReminder, offset: 1,
       lateness: 90, caughtUp: false),
@@ -254,7 +266,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
       #expect(Self.soundFile(harness.audio.plays.first) == "Adhan-Makkah.mp3")
     }
     // A passed or due alert never gets a calendar request.
-    #expect(!harness.center.scheduled.contains { $0.identifier == id })
+    #expect(harness.center.scheduled.contains { $0.identifier == id } == testCase.requested)
   }
 
   // MARK: - Requests: identifiers, content, triggers
@@ -529,6 +541,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
 
   @Test func adhanBeatsABeforeReminderAtTheSameInstant() async {
     // Isha (20:30) minus 90 minutes is Maghrib (19:00).
+    #expect(Self.today.isha.adding(minutes: -90) == Self.today.maghrib)
     let harness = Harness(
       now: Self.today.maghrib.adding(seconds: 0.5),
       settings: [
@@ -543,6 +556,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
 
   @Test func beforeReminderBeatsAnAfterReminderAtTheSameInstant() async {
     // Maghrib + 45 and Isha − 45 are both 19:45.
+    #expect(Self.today.isha.adding(minutes: -45) == Self.today.maghrib.adding(minutes: 45))
     let harness = Harness(
       now: Self.today.maghrib.adding(minutes: 45),
       settings: [

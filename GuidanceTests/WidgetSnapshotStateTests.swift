@@ -65,12 +65,14 @@ struct WidgetSnapshotStateTests {
     #expect(snapshot.previousPrayer(at: at(4, 17)) == nil)
   }
 
-  /// Approaching: the next prayer turns imminent in its last 15 minutes, both ends
-  /// inclusive; the focus stays its countdown.
+  /// Approaching: the next prayer turns imminent from 15 minutes before it
+  /// (inclusive) until it starts; the focus stays its countdown. At its start it's
+  /// no longer the next prayer, so the tone follows the one after it.
   @Test func theNextPrayerIsImminentInItsLastFifteenMinutes() {
     #expect(snapshot.tone(at: at(15, 15, 59)) == .normal)
     #expect(snapshot.tone(at: at(15, 16)) == .imminent)
     #expect(snapshot.tone(at: at(15, 30, 59)) == .imminent)
+    #expect(snapshot.tone(at: at(15, 31)) == .normal)
     #expect(snapshot.rowState(for: prayer("asr"), at: at(15, 20)) == .next(.imminent))
     #expect(snapshot.rowState(for: prayer("asr"), at: at(15, 0)) == .next(.normal))
     #expect(snapshot.focus(at: at(15, 20)) == .countdown(prayer("asr")))

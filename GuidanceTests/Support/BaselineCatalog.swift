@@ -52,13 +52,14 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
   case setupNeeded
   case stale
 
-  /// The spec's words for the state.
+  /// The spec's words for the state, and where the app departs from them.
   var specName: String {
     switch self {
     case .idle: "idle/normal"
     case .imminent: "imminent (fixed 15-min red, not before Sunrise)"
     case .countUp: "Iqama count-up (green, leads 15 min, next prayer secondary)"
-    case .countUpSilent: "count-up in silent mode (muted grey)"
+    case .countUpSilent:
+      "count-up in silent mode (spec: muted grey; the app keeps the count-up green, badge, timer and row, while silent mode mutes the rest)"
     case .countUpImminent: "count-up overlapping an imminent next (count-up leads, next line red)"
     case .endOfDay: "end-of-day Tomorrow card"
     case .playingAdhan: "playing audio (stop control): adhan, green"

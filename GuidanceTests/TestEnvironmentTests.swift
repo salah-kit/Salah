@@ -84,4 +84,18 @@ struct TestEnvironmentTests {
     delegate = nil
     #expect(center.delegate == nil)
   }
+
+  /// Adding a request whose identifier is pending replaces it, as Apple documents,
+  /// also when the new request has no trigger and is delivered at once.
+  @Test func fakeCenterReplacesAPendingRequestOnEveryAdd() async throws {
+    let center = FakeNotificationCenter()
+    let content = UNMutableNotificationContent()
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
+    try await center.add(UNNotificationRequest(identifier: "a", content: content, trigger: trigger))
+    try await center.add(UNNotificationRequest(identifier: "a", content: content, trigger: trigger))
+    #expect(center.pending.map(\.identifier) == ["a"])
+    try await center.add(UNNotificationRequest(identifier: "a", content: content, trigger: nil))
+    #expect(center.pending.isEmpty)
+    #expect(center.immediate.map(\.identifier) == ["a"])
+  }
 }
