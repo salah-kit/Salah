@@ -55,10 +55,9 @@ struct TestEnvironmentTests {
     #expect(Locale.preferredLanguages == ["en-US"])
   }
 
-  /// The scheme's test action builds only this bundle. A build of the app registers
-  /// its widget extension with PlugInKit under the identifier of the Guidance
-  /// installed on the machine, and PlugInKit can then serve that user's widget from
-  /// the build folder.
+  /// The scheme's test action builds only this bundle. A build of the app registers it
+  /// and its widget extension with LaunchServices and PlugInKit, and PlugInKit can then
+  /// serve the widget of a Salah installed on the machine from the build folder.
   @Test func testActionDoesNotBuildTheApp() throws {
     let scheme = BaselineStore.repositoryRoot.appending(
       path: "Salah.xcodeproj/xcshareddata/xcschemes/Salah.xcscheme")

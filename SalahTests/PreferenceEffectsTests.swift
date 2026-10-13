@@ -112,7 +112,7 @@ struct PreferenceEffectsTests {
   /// Loading stored values posts nothing.
   @Test func loadingPostsNothing() {
     let scratch = ScratchDefaults()
-    scratch.defaults.set(true, forKey: "kBAUserDefaultsSilentMode")
+    scratch.defaults.set(true, forKey: "salah.silentMode")
     var loaded: Preferences?
     let posted = Self.effects(
       of: { _ in loaded = Preferences(defaults: scratch.defaults) }, on: Preferences.shared)

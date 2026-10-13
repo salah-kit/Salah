@@ -92,6 +92,21 @@ struct PrayerNotificationConfig: Codable, Equatable {
     }
   }
 
+  /// The settings a fresh install starts with: every prayer's default, except that each
+  /// before-reminder sounds the prayer's own alert sound, and Sunrise's alert, off, is set
+  /// to the Fajr adhan.
+  static var initialSettings: [String: PrayerNotificationConfig] {
+    Dictionary(
+      uniqueKeysWithValues: Prayer.allCases.map { prayer in
+        var config = defaultConfig(for: prayer)
+        if prayer == .sunrise {
+          config.alertSound = .fajr
+        }
+        config.preReminderSound = config.alertSound
+        return (prayer.settingsKey, config)
+      })
+  }
+
   func sanitized() -> PrayerNotificationConfig {
     PrayerNotificationConfig(
       alertEnabled: alertEnabled,
@@ -154,13 +169,6 @@ struct CustomAdhanFile: Codable, Equatable, Hashable {
       includingResourceValuesForKeys: nil,
       relativeTo: nil
     )
-  }
-
-  init(legacyBookmarkData: Data) {
-    self.bookmarkData = legacyBookmarkData
-    self.fileName =
-      Self.resolve(bookmarkData: legacyBookmarkData)?.url.lastPathComponent
-      ?? "Custom sound"
   }
 
   func resolvedURL() -> ResolvedCustomAdhanFile? {
@@ -243,14 +251,6 @@ enum AdhanSound: Codable, Equatable, Hashable {
   }
 
   init(from decoder: Decoder) throws {
-    let singleValue = try? decoder.singleValueContainer()
-    if let rawValue = try? singleValue?.decode(String.self),
-      let legacySound = Self.legacySound(rawValue: rawValue)
-    {
-      self = legacySound
-      return
-    }
-
     let container = try decoder.container(keyedBy: CodingKeys.self)
     switch try container.decode(Kind.self, forKey: .kind) {
     case .builtIn:
@@ -359,14 +359,6 @@ enum AdhanSound: Codable, Equatable, Hashable {
     }
   }
 
-  private static func legacySound(rawValue: String) -> AdhanSound? {
-    switch rawValue {
-    case "system": .system
-    case "none": AdhanSound.none
-    default:
-      BuiltInAdhanSound(rawValue: rawValue).map(AdhanSound.builtIn)
-    }
-  }
 }
 
 // MARK: - Prayer Helpers

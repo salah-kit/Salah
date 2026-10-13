@@ -63,7 +63,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
   }
 
   static func identifier(_ prayer: String, _ kind: String, _ fireDate: Date) -> String {
-    "guidance.prayer.\(prayer).\(kind).\(Int(fireDate.timeIntervalSince1970))"
+    "salah.prayer.\(prayer).\(kind).\(Int(fireDate.timeIntervalSince1970))"
   }
 
   static let today = Fixture.prayerTimes()
@@ -286,7 +286,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
         Self.identifier("dhuhr", "prayerTime", Self.today.dhuhr),
         Self.identifier("dhuhr", "postReminder", Self.today.dhuhr.adding(minutes: 5)),
       ])
-    #expect(preTen == "guidance.prayer.dhuhr.preReminder.1780391340")
+    #expect(preTen == "salah.prayer.dhuhr.preReminder.1780391340")
 
     harness.preferences.setConfig(.alert(before: 15, after: 5), for: .dhuhr)
     await harness.schedule([Self.today])
@@ -316,7 +316,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
     #expect(atTime.interruptionLevel == .timeSensitive)
     #expect(post.interruptionLevel == .active)
     #expect([pre.relevanceScore, atTime.relevanceScore, post.relevanceScore] == [0.7, 1.0, 0.5])
-    #expect(Set([pre, atTime, post].map(\.threadIdentifier)) == ["guidance-prayers"])
+    #expect(Set([pre, atTime, post].map(\.threadIdentifier)) == ["salah-prayers"])
     #expect([pre, atTime, post].allSatisfy { $0.title == "Dhuhr" })
 
     #expect(atTime.body == "It's time for Dhuhr (\(Fixture.formattedTime(Self.today.dhuhr)))")
@@ -381,9 +381,9 @@ struct PrayerAlertSchedulerCharacterizationTests {
   @Test func launchHousekeepingRemovesOnlyOldOwnDeliveredNotifications() async {
     let now = Fixture.date(13, 0)
     let cutoff = now.adding(seconds: -2 * 86_400)
-    let old = "guidance.prayer.fajr.prayerTime.1"
-    let atCutoff = "guidance.prayer.dhuhr.prayerTime.2"
-    let recent = "guidance.prayer.asr.prayerTime.3"
+    let old = "salah.prayer.fajr.prayerTime.1"
+    let atCutoff = "salah.prayer.dhuhr.prayerTime.2"
+    let recent = "salah.prayer.asr.prayerTime.3"
     let foreign = "com.example.other"
     let harness = Harness(now: now) { _, center in
       center.delivered = [
@@ -406,7 +406,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
     let fajr = Self.identifier("fajr", "prayerTime", Self.today.fajr)
     let fajrBody = "It's time for Fajr (\(Fixture.formattedTime(Self.today.fajr)))"
     let changed = Self.identifier("dhuhr", "prayerTime", Self.today.dhuhr)
-    let unknown = "guidance.prayer.fajr.prayerTime.1"
+    let unknown = "salah.prayer.fajr.prayerTime.1"
     let foreign = "com.example.other"
     let harness = Harness(now: now, settings: [.fajr: .alert(), .dhuhr: .alert()]) { _, center in
       center.delivered = [
@@ -445,7 +445,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
   /// stay, and other apps' requests are left alone (§7.5 keeps reconciling obsolete
   /// requests and sets no order for it, so this test pins none).
   @Test func obsoleteOwnRequestsAreRemovedAndOthersKept() async throws {
-    let stale = "guidance.prayer.asr.prayerTime.1"
+    let stale = "salah.prayer.asr.prayerTime.1"
     let wanted = Self.identifier("maghrib", "prayerTime", Self.today.maghrib)
     let foreign = "com.example.other"
     func request(_ id: String) -> UNNotificationRequest {
@@ -473,7 +473,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
   /// An empty schedule (no prayer times) removes every own pending request and
   /// every own delivered notification.
   @Test func emptyScheduleClearsOwnRequestsAndDeliveries() async {
-    let own = "guidance.prayer.isha.prayerTime.1"
+    let own = "salah.prayer.isha.prayerTime.1"
     let harness = Harness(now: Fixture.date(13, 0)) { _, center in
       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
       center.pending = [
@@ -497,7 +497,7 @@ struct PrayerAlertSchedulerCharacterizationTests {
 
   /// Denied notifications: own pending requests are removed and nothing is added.
   @Test func deniedAuthorizationRemovesOwnRequestsAndAddsNone() async {
-    let own = "guidance.prayer.isha.prayerTime.1"
+    let own = "salah.prayer.isha.prayerTime.1"
     let harness = Harness(now: Fixture.date(13, 0), settings: [.isha: .alert()]) { _, center in
       center.status = .denied
       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)

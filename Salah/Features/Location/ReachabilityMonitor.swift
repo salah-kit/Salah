@@ -11,7 +11,7 @@ import Network
 final class ReachabilityMonitor {
   private(set) var isOnline = true  // optimistic until the first path update
   private let monitor = NWPathMonitor()
-  private let queue = DispatchQueue(label: "com.batoulapps.GuidanceMac.reachability")
+  private let queue = DispatchQueue(label: "io.github.salah-kit.Salah.reachability")
   private var started = false
 
   /// Invoked on the main actor each time the path flips unsatisfied -> satisfied.

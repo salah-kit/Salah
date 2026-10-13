@@ -527,7 +527,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
     let content = UNMutableNotificationContent()
     content.title = event.title
     content.body = event.message
-    content.threadIdentifier = "guidance-prayers"
+    content.threadIdentifier = "salah-prayers"
     content.userInfo = [
       "prayer": event.prayer.settingsKey,
       "kind": event.kind.rawValue,
@@ -666,7 +666,7 @@ private enum PrayerAlertKind: String {
 }
 
 private struct PrayerAlertEvent {
-  nonisolated static let identifierPrefix = "guidance.prayer."
+  nonisolated static let identifierPrefix = "salah.prayer."
 
   let prayer: Prayer
   let kind: PrayerAlertKind

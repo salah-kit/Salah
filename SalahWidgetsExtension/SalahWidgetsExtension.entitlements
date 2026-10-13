@@ -6,7 +6,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.batoulapps.GuidanceMac</string>
+		<string>group.io.github.salah-kit.Salah</string>
 	</array>
 </dict>
 </plist>

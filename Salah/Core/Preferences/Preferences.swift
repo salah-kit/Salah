@@ -410,7 +410,6 @@ final class Preferences {
   init(defaults: UserDefaults) {
     self.defaults = defaults
     registerDefaults()
-    migrateLegacyPreferencesIfNeeded()
 
     displayNextPrayer = defaults.bool(forKey: Key.displayNextPrayer)
     nextPrayerDisplayType =
@@ -464,7 +463,7 @@ final class Preferences {
 
       notificationSettings = resolved
     } else {
-      notificationSettings = migrateLegacyNotificationSettings().mapValues { $0.sanitized() }
+      notificationSettings = PrayerNotificationConfig.initialSettings
     }
 
     jumuahOverrideEnabled = defaults.bool(forKey: Key.jumuahOverrideEnabled)

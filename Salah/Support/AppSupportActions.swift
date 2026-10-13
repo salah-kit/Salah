@@ -3,7 +3,7 @@ import SwiftUI
 
 enum AppSupportActions {
   static func openHelp() {
-    if let url = URL(string: "https://batoulapps.com/software/guidance/help/") {
+    if let url = URL(string: "https://github.com/salah-kit/Salah#readme") {
       NSWorkspace.shared.open(url)
     }
   }
@@ -52,17 +52,8 @@ enum AppSupportActions {
       "\n\(localizedString("about.credits.development", locale: .app)):\n",
       attributes: bold
     )
-    credits.append(linked("Batoul Apps\n\n", url: "https://batoulapps.com/"))
-    append(
-      "\(localizedString("about.credits.design", locale: .app)):\n",
-      attributes: bold
-    )
-    credits.append(linked("@Bandar\n\n", url: "https://twitter.com/bandar"))
-    append(
-      "\(localizedString("about.credits.specialThanks", locale: .app)):\n",
-      attributes: bold
-    )
-    append("Hamza & Yasir\n\n\n", attributes: regular)
+    credits.append(
+      linked("The Salah Kit Authors\n\n\n", url: "https://github.com/salah-kit/Salah"))
     append(
       "\(localizedString("about.credits.calculationSource", locale: .app))\n",
       attributes: regular

@@ -60,6 +60,7 @@
 		437A119ED0082F596A05711A /* BaselineRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A739B3A33C1689F5860C1F5 /* BaselineRendering.swift */; };
 		4408B9DD2DC6FF2EA0FDA8C2 /* Adhan-Aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 08F3510F20456EFE4FCBB6F6 /* Adhan-Aqsa.mp3 */; };
 		4597A2F317CF6F2976326FBC /* MenuBarDropdownPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70354F24024F5ADE9ADBECAB /* MenuBarDropdownPreviews.swift */; };
+		466E238C5917B3B57BE791BB /* PreferenceStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9FF051711D26787B8D5BE4 /* PreferenceStorageTests.swift */; };
 		47A002132256C71B18E92A39 /* Adhan-Istanbul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EE983C97E1004EDA58316CBC /* Adhan-Istanbul.mp3 */; };
 		47AF64E98ECD15995C221CCC /* InlineNoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52A400F1902D63656AE733 /* InlineNoticeLabel.swift */; };
 		4A5EBCA7451E9C1B4CC3E079 /* LocationSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E811762213EA0827DFD2C8E /* LocationSearchService.swift */; };
@@ -72,7 +73,6 @@
 		594574A8CB027F50C9A60214 /* SalahWidgetDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C0AB68BAB5CD64A695C9A /* SalahWidgetDesignSystem.swift */; };
 		5BB6B368DD7D09598F975312 /* MenuLiveCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C91D0346BB9B137F6DBA2C /* MenuLiveCountdown.swift */; };
 		5D1D857355FC195B9C915B6A /* MenuHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3852BBDB7E322EF2ABBAB3 /* MenuHeroCard.swift */; };
-		5D55B192F8D22C283F89EB69 /* LegacyMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137B8F97DB2E80F91E57EE45 /* LegacyMigration.swift */; };
 		5D6E8D1C9CFFA0CD0F45AC64 /* LanguagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */; };
 		5D85DB7AAA550AABCA954081 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB737BA897DB588818B580D2 /* SettingsView.swift */; };
 		5E2101014CBE0E75455EEEEE /* Adhan-Alafasy.m4a in Resources */ = {isa = PBXBuildFile; fileRef = C56A7BACC2303019D64B6BEC /* Adhan-Alafasy.m4a */; };
@@ -172,6 +172,7 @@
 		DBC539D1C2DC30157833B2E7 /* FailureReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90CDC28201C7CB276B43801 /* FailureReporter.swift */; };
 		DDB3D0BA490A9017B7B86283 /* PrayerTimesInvarianceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120B79302A9A31F76FFB96CA /* PrayerTimesInvarianceTests.swift */; };
 		DEB70C999379A833EABE4E26 /* PrayerDisplayFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4277E55F1E41EE26B5D8D1 /* PrayerDisplayFormatter.swift */; };
+		E20DCCF791E19E380CF060DE /* IdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */; };
 		E3C737F31AE195EC8D98C787 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B96E3F5DB244E89AA6C8AA21 /* PrivacyInfo.xcprivacy */; };
 		E4D1CC0D1F34AAF7ECC85941 /* SalahWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E61E71AFF940C3AF83D8B2 /* SalahWidgetsBundle.swift */; };
 		E511E533253397E6AD7A80DA /* SalahWidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7303DFBD5EC16833F227FCDD /* SalahWidgetStore.swift */; };
@@ -182,7 +183,6 @@
 		F5EE41E3AECFAB16C863B5A2 /* LocationNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD80627E90B010963831E2FF /* LocationNotifications.swift */; };
 		F61E9732058C323293F0792E /* AppFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A855F46C7172EFE3F0658 /* AppFailure.swift */; };
 		F7F023DA2E68D9359BD3276F /* SalahWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0623A8755AF9D8667A573 /* SalahWidgetModels.swift */; };
-		F86FC9018033507F7C0A4A91 /* LegacyMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137B8F97DB2E80F91E57EE45 /* LegacyMigration.swift */; };
 		F99DB9A5F39BC036CD47BCDE /* AppSupportActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AA0132B344E5E89BD675F3 /* AppSupportActions.swift */; };
 		FAC174DD586D706858FACA35 /* AppearanceTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234F045E664BEDC26ECA97E3 /* AppearanceTab.swift */; };
 		FE8C7FB912387EC1D655C8D1 /* StopSalahAudioIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AA1DBFB3EE76CC59F8FE77 /* StopSalahAudioIntent.swift */; };
@@ -226,7 +226,6 @@
 		0D2E519F24E6DB17B28FCADB /* GeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTab.swift; sourceTree = "<group>"; };
 		0DA4E51F88D694408BE9E0ED /* MenuDropdownFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDropdownFooter.swift; sourceTree = "<group>"; };
 		120B79302A9A31F76FFB96CA /* PrayerTimesInvarianceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesInvarianceTests.swift; sourceTree = "<group>"; };
-		137B8F97DB2E80F91E57EE45 /* LegacyMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMigration.swift; sourceTree = "<group>"; };
 		14B5ECEB4860AB0BB8F6444A /* PrayerAlertScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertScheduler.swift; sourceTree = "<group>"; };
 		1A090191B2CF26A55B3E6D08 /* Salah.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salah.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ACF2E6A89287473F212C736 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -245,6 +244,7 @@
 		3CFE2197A0A0548742324EA8 /* Numbers+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numbers+Localized.swift"; sourceTree = "<group>"; };
 		4684DDFE610DED57ECEE7F0D /* SalahWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SalahWidgetsExtension.entitlements; sourceTree = "<group>"; };
 		4C1C0AB68BAB5CD64A695C9A /* SalahWidgetDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetDesignSystem.swift; sourceTree = "<group>"; };
+		4D9FF051711D26787B8D5BE4 /* PreferenceStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStorageTests.swift; sourceTree = "<group>"; };
 		4E811762213EA0827DFD2C8E /* LocationSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchService.swift; sourceTree = "<group>"; };
 		54AA1DBFB3EE76CC59F8FE77 /* StopSalahAudioIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopSalahAudioIntent.swift; sourceTree = "<group>"; };
 		58C70B02127EBCA7B043C322 /* SalahWidgetSnapshotBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetSnapshotBuilder.swift; sourceTree = "<group>"; };
@@ -276,6 +276,7 @@
 		8DBD5424A2D64F71FADE609F /* RelativeDurationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDurationFormatterTests.swift; sourceTree = "<group>"; };
 		937EE3120B57A9F89B234605 /* PrayerAlertSchedulerCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertSchedulerCharacterizationTests.swift; sourceTree = "<group>"; };
 		99AD839B18C7F2F81698FC2C /* SidebarRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRow.swift; sourceTree = "<group>"; };
+		A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
 		A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownView.swift; sourceTree = "<group>"; };
 		ABA58A6BEAC64F188DCC199F /* BaselineIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineIndex.swift; sourceTree = "<group>"; };
 		AD80627E90B010963831E2FF /* LocationNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotifications.swift; sourceTree = "<group>"; };
@@ -383,9 +384,11 @@
 			isa = PBXGroup;
 			children = (
 				FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */,
+				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
 				937EE3120B57A9F89B234605 /* PrayerAlertSchedulerCharacterizationTests.swift */,
 				120B79302A9A31F76FFB96CA /* PrayerTimesInvarianceTests.swift */,
 				65ED69414083ED778314A8E0 /* PreferenceEffectsTests.swift */,
+				4D9FF051711D26787B8D5BE4 /* PreferenceStorageTests.swift */,
 				8DBD5424A2D64F71FADE609F /* RelativeDurationFormatterTests.swift */,
 				646444C8D7F539850A7433B7 /* TestEnvironmentTests.swift */,
 				2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */,
@@ -410,7 +413,6 @@
 		22F5D9DAD08A1034C0DC94E2 /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				137B8F97DB2E80F91E57EE45 /* LegacyMigration.swift */,
 				D8EC32D7FCEE7E9AAFD7F809 /* PreferenceEnums.swift */,
 				DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */,
 				66C4D45ACF670852D66F36C6 /* Preferences.swift */,
@@ -860,9 +862,9 @@
 				A54591D0ABE75D4FFA2CBE1C /* FailureReporter.swift in Sources */,
 				929BA3B8C21DCC99D0190573 /* Fixtures.swift in Sources */,
 				72B5925D33447893D6A5FE40 /* GeneralTab.swift in Sources */,
+				E20DCCF791E19E380CF060DE /* IdentityTests.swift in Sources */,
 				6B79905BFE642F54D75A15B7 /* InlineNoticeLabel.swift in Sources */,
 				5D6E8D1C9CFFA0CD0F45AC64 /* LanguagePicker.swift in Sources */,
-				F86FC9018033507F7C0A4A91 /* LegacyMigration.swift in Sources */,
 				4156357497B7EDBB7A52F25E /* Locale+App.swift in Sources */,
 				7E8145A6AE27CCA48787794F /* LocationFailure.swift in Sources */,
 				2AAA42EA9ADDB619859BAD04 /* LocationManager.swift in Sources */,
@@ -894,6 +896,7 @@
 				265DD7F82C046058B7528A00 /* PreferenceEffectsTests.swift in Sources */,
 				8A2D554ACE146BBE8A8BD248 /* PreferenceEnums.swift in Sources */,
 				38282006C00E5F58947A6CB0 /* PreferenceKeys.swift in Sources */,
+				466E238C5917B3B57BE791BB /* PreferenceStorageTests.swift in Sources */,
 				52BA0420B0B0062D0DCBDA7B /* Preferences+API.swift in Sources */,
 				6EC7195A88B9D4103CE6E264 /* Preferences+Computed.swift in Sources */,
 				974F2C43024D34A3537F6EDB /* Preferences.swift in Sources */,
@@ -943,7 +946,6 @@
 				B051FBB95232D30C4B04D21D /* GeneralTab.swift in Sources */,
 				47AF64E98ECD15995C221CCC /* InlineNoticeLabel.swift in Sources */,
 				B7B012B57629E0FCE2E1D645 /* LanguagePicker.swift in Sources */,
-				5D55B192F8D22C283F89EB69 /* LegacyMigration.swift in Sources */,
 				852ED85F11A9C1204BC3F970 /* Locale+App.swift in Sources */,
 				7CCFBC35016AC6867A12718D /* LocationFailure.swift in Sources */,
 				0688A63C84C48354D878A6FC /* LocationManager.swift in Sources */,
@@ -1030,24 +1032,18 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Guidance;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Guidance pauses Music or iTunes before playing the adhan.";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2019 Batoul Apps. All rights reserved.";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Your location is used to calculate prayer times for your area.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to calculate prayer times for your area.";
+				INFOPLIST_FILE = Salah/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1063,8 +1059,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Salah/Info.plist;
 				INFOPLIST_KEY_NSPrincipalClass = SalahTestEnvironment;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1072,8 +1069,8 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac.GuidanceTests;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1089,8 +1086,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Salah/Info.plist;
 				INFOPLIST_KEY_NSPrincipalClass = SalahTestEnvironment;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1098,8 +1096,8 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac.GuidanceTests;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1117,7 +1115,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = SalahWidgetsExtension/SalahWidgetsExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWidgetsExtension/Info.plist;
@@ -1129,8 +1127,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac.GuidanceWidgetsExtension;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -1213,7 +1211,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = SalahWidgetsExtension/SalahWidgetsExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWidgetsExtension/Info.plist;
@@ -1225,8 +1223,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac.GuidanceWidgetsExtension;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -1247,25 +1245,19 @@
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Guidance;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Guidance pauses Music or iTunes before playing the adhan.";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2019 Batoul Apps. All rights reserved.";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Your location is used to calculate prayer times for your area.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to calculate prayer times for your area.";
+				INFOPLIST_FILE = Salah/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 3.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.batoulapps.GuidanceMac;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

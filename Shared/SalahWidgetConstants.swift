@@ -14,16 +14,16 @@ nonisolated enum SalahWidgetConstants {
   /// Enable this App Group on BOTH targets (Signing & Capabilities ▸ App Groups):
   /// - Salah
   /// - SalahWidgetsExtension
-  static let appGroupID = "group.com.batoulapps.GuidanceMac"
+  static let appGroupID = "group.io.github.salah-kit.Salah"
 
-  static let prayerTimesWidgetKind = "com.batoulapps.GuidanceMac.widgets.prayerTimes"
+  static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
   static let snapshotDefaultsKey = "SalahWidgetSnapshot.v1"
   static let stopAudioCommandDefaultsKey = "SalahWidgetStopAudioCommand.v1"
-  static let stopAudioDarwinNotification = "com.batoulapps.GuidanceMac.widget.stopAudio"
+  static let stopAudioDarwinNotification = "io.github.salah-kit.Salah.widget.stopAudio"
 
   /// Tap target for the widget. A menu-bar (`LSUIElement`) app can't open its
   /// `MenuBarExtra` popover via URL, so the widget routes taps to the Settings
   /// window - the app's only window, and where the config it reflects lives.
-  static let deepLinkScheme = "guidance"
-  static let settingsDeepLinkURL = URL(string: "guidance://settings")!
+  static let deepLinkScheme = "salah"
+  static let settingsDeepLinkURL = URL(string: "salah://settings")!
 }

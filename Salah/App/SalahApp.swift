@@ -8,9 +8,9 @@ struct SalahApp: App {
   // Run BEFORE @State property initialization so the AppleLanguages override
   // is in place before any Bundle.preferredLocalizations cache forms. This is
   // what makes the macOS Settings window title use the localized
-  // CFBundleDisplayName (هداية / Guidance) instead of always English.
+  // CFBundleDisplayName (صلاة / Salah) instead of always English.
   init() {
-    if let raw = UserDefaults.standard.string(forKey: "kBAUserDefaultsAppLanguage"),
+    if let raw = UserDefaults.standard.string(forKey: Preferences.Key.appLanguage),
       let lang = AppLanguage(rawValue: raw),
       let override = lang.appleLanguagesOverride
     {
