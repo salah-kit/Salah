@@ -1,157 +1,122 @@
-<div align="center">
+# Salah
 
-# Guidance · هداية
+<img src="Salah/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png" alt="" width="96" align="right">
 
-### Prayer times, beautifully at home in your menu bar.
+A calm macOS menu-bar app for the five daily prayers, with desktop widgets and adhan alerts.
 
-Guidance is a calm, native macOS companion for the five daily prayers. It lives in your menu bar, brings a living prayer schedule to Desktop and Notification Center widgets, and sounds the adhan exactly when it should - accurate, private, and quietly elegant.
+[![CI](https://github.com/salah-kit/Salah/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/salah-kit/Salah/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/salah-kit/Salah?sort=semver)](https://github.com/salah-kit/Salah/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-![macOS 14+](https://img.shields.io/badge/macOS-14.0%2B-000000?logo=apple&logoColor=white) ![Swift 6](https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white) ![SwiftUI](https://img.shields.io/badge/Built%20with-SwiftUI-0A84FF?logo=swift&logoColor=white) ![Languages](https://img.shields.io/badge/languages-9-2EA043) ![Version](https://img.shields.io/badge/version-3.0-2EA043) ![Privacy](https://img.shields.io/badge/tracking-none-2EA043)
+## What it is
 
-<br>
+Salah lives in your menu bar. It shows how long until the next prayer, opens a dropdown
+with the day's schedule, brings the same schedule to desktop and Notification Center
+widgets, and sounds the adhan when a prayer begins.
 
-<a href="https://apps.apple.com/eg/app/guidance/id412759995">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/badges/mac-app-store-en-white.svg">
-    <img alt="Download Guidance on the Mac App Store" src="docs/badges/mac-app-store-en-black.svg" height="48">
-  </picture>
-</a>
-&nbsp;&nbsp;
-<a href="https://apps.apple.com/eg/app/guidance/id412759995">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/badges/mac-app-store-ar-white.svg">
-    <img alt="حمّل هداية من ماك آب ستور" src="docs/badges/mac-app-store-ar-black.svg" height="48">
-  </picture>
-</a>
-
-</div>
-
----
-
-## Why Guidance
-
-- **A living menu bar.** More than a clock - the status item shifts color as a prayer approaches, counts down to the minute, then counts up after the adhan, and badges itself when something needs your attention.
-- **Widgets that breathe.** Small, medium, and large widgets render the same refined "living schedule" as the app, with the next prayer expanding in place, a Hijri date, your location, reminders, and one-tap adhan control.
-- **Adhan, your way.** Per-prayer sounds, pre- and post-prayer reminders, a Friday Jumu'ah override, custom audio, and a global silent mode - all with a graceful catch-up after sleep or launch.
-- **Genuinely yours.** Five hand-tuned themes plus a guard-railed custom theme, nine languages with full right-to-left support, and localized digits throughout.
-- **Private by design.** Prayer times are computed on your Mac. Your location never leaves it. No analytics, no tracking, no accounts.
-
-<div align="center">
-
-| Menu bar | Widgets | Settings |
+| Menu bar | Arabic, right to left | Widgets |
 | :---: | :---: | :---: |
-| <img src="https://github.com/batoulapps/GuidanceMac/blob/main/docs/menu-bar.png?raw=true" alt="Guidance menu bar dropdown" height="200"> | <img src="https://github.com/batoulapps/GuidanceMac/blob/main/docs/widgets.png?raw=true" alt="Guidance widgets in small, medium, and large sizes" height="200"> | <img src="https://github.com/batoulapps/GuidanceMac/blob/main/docs/settings.png?raw=true" alt="Guidance settings window" height="200"> |
+| <img src="SalahTests/Baselines/menu/idle-dropdown-en-dark.png" alt="The menu-bar dropdown: the Hijri date, Makkah, and the day's six prayers with Asr expanded as the next prayer, in dark mode" width="240"> | <img src="SalahTests/Baselines/menu/idle-dropdown-ar-light.png" alt="The same dropdown in Arabic, laid out right to left with Arabic digits, in light mode" width="240"> | <img src="SalahTests/Baselines/widget/idle-small-en-light.png" alt="The small widget: the next prayer and its countdown" width="120"><br><img src="SalahTests/Baselines/widget/idle-medium-en-dark.png" alt="The medium widget: the next prayer and the day's schedule" width="240"> |
 
-</div>
+These images are the test suite's own renders ([`SalahTests/Baselines`](SalahTests/Baselines/README.md)),
+checked on every change, so they show what the app draws today.
 
----
+- **The menu bar.** A countdown or the next prayer's time, which turns red in the last
+  15 minutes and green for a 15-minute count-up after the adhan. The dropdown shows the
+  Hijri date, the six times, per-prayer alert toggles, silent mode and a stop button.
+- **Widgets** in small, medium and large sizes, with a stop button while audio plays.
+- **Alerts.** Per-prayer adhan alerts with before and after reminders, a Jumu'ah
+  override, six built-in recordings or your own audio, a du'a after the adhan, and a
+  catch-up when the Mac wakes from sleep.
+- **Calculation.** Eleven methods plus custom angles, Shafi or Hanafi Asr, high-latitude
+  rules, per-prayer adjustments, a Hijri offset and a delayed Isha in Ramadan.
+- **Nine languages:** English, Arabic, French, Urdu, Indonesian, Turkish, Persian,
+  Bengali and Malay, with right-to-left layouts and local digits.
+- **Private.** Prayer times are computed on your Mac. Your location stays on it: the
+  network is used only to name your city and to search for places. No accounts, no
+  analytics, no tracking.
 
-## Features
+What it deliberately isn't:
 
-### The menu bar
+- It isn't a mosque timetable app: it calculates times from your location, and doesn't
+  show a mosque's published iqama times.
+- It isn't on the Mac App Store, and there is no signed download yet. Salah is released
+  as source; you build it yourself.
+- It's macOS only. The prayer-time code it is moving onto,
+  [SalahKit](https://github.com/salah-kit/SalahKit) and
+  [SalahTimes](https://github.com/salah-kit/SalahTimes), is how other apps on other
+  platforms share it.
 
-The heart of Guidance. A click opens a themed "living schedule": a Hijri-dated header, the day's six prayers in a vertical list, and the next prayer expanded inline into a hero card with a live countdown.
+Salah is the [salah-kit](https://github.com/salah-kit) ecosystem's own app and a working
+sample of the packages. Today it calculates with
+[adhan-swift](https://github.com/batoulapps/adhan-swift); its 1.0 release moves it onto
+SalahKit and SalahTimes.
 
-- **Status item, at a glance.** Choose what shows in the menu bar: the moon-and-stars icon, the next prayer's name (full or abbreviated), and either a countdown or the prayer's clock time - in any combination.
-- **State you can read in a color.** The label turns **red** in the final 15 minutes before a prayer, **green** for a 15-minute Iqama count-up after the adhan, and takes on the **active audio** color while a sound is playing. A subtle badge appears if location needs attention.
-- **Interactive, not just informative.** Toggle any prayer's alert, flip global silent mode, and stop a playing adhan right from the dropdown.
-- **To the second when it matters.** The countdown ticks per-second only in the last minute, and stays calm and minute-resolution the rest of the time.
+## Installation
 
-### Widgets
+Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
-Native WidgetKit widgets for the Desktop and Notification Center, in **small, medium, and large** sizes - all driven by the same design system as the menu bar, so the two never drift.
+1. Clone the repo and add your signing team. The app shares an App Group with its widget,
+   so it needs a team to run; a free Apple Developer account works.
 
-- The **next prayer** with a live countdown, today's full schedule, the **Hijri date**, your location, and per-prayer reminder details.
-- Reflects **silent mode**, the **imminent** state, the post-prayer count-up, and any **active adhan**.
-- **Tap to stop** audio directly from the widget, or tap to open the app.
-- An honest empty state: before the app has ever run, the widget invites setup instead of showing stale or fake times.
+   ```sh
+   git clone https://github.com/salah-kit/Salah.git
+   cd Salah
+   cp Config/Local.xcconfig.example Config/Local.xcconfig
+   # Edit Config/Local.xcconfig: DEVELOPMENT_TEAM = <your team ID>
+   ```
 
-### Notifications & adhan
+2. Build a release copy:
 
-A notification and audio engine built for real life.
+   ```sh
+   xcodebuild build -project Salah.xcodeproj -scheme Salah -configuration Release \
+     -destination 'platform=macOS' -derivedDataPath build -allowProvisioningUpdates
+   ```
 
-- **Per-prayer configuration.** Each prayer has its own main alert, an optional **pre-prayer reminder** and **post-prayer reminder**, with independent sounds and offsets from 1 to 120 minutes.
-- **Jumu'ah override.** Give Friday's Dhuhr its own notification and sound settings, applied automatically on Fridays.
-- **Sounds.** Six built-in adhans - **Mishary Alafasy, Fajr Adhan, Makkah, Istanbul, Yusuf Islam, and Al-Aqsa** - plus your own **custom audio file**, the system sound, or silence. Per-prayer volume and an optional **du'ā'** after the adhan.
-- **Considerate playback.** Guidance pauses Music or iTunes while the adhan plays, then steps out of the way. A global **silent mode** mutes everything in one switch.
-- **Stop from anywhere.** End a playing adhan from the menu bar, the notification, or the widget.
-- **Never misses, never double-fires.** After sleep, a clock change, or a cold launch, Guidance catches up on a missed alert within a sensible grace window instead of staying silent or replaying old ones.
+   Or open `Salah.xcodeproj` in Xcode and run the `Salah` scheme.
 
-### Appearance & themes
+3. Move `build/Build/Products/Release/Salah.app` to `/Applications` and open it.
 
-Guidance ships with five calm, hand-built widget themes:
+## Quick start
 
-| Theme | Mood |
-| --- | --- |
-| **Nocturne** | Midnight blue with a brass guiding light (the default) |
-| **Dawn** | Warm sand and soft teal, a light-first palette |
-| **Oasis** | Deep midnight with emerald and teal |
-| **Ink** | Near-monochrome graphite with a brass whisper |
-| **High Contrast** | Color-blind-safe yellow and blue on near-black or white |
+1. Open Salah. A moon-and-stars icon and the time to the next prayer appear in the menu
+   bar; click them for the day's schedule.
+2. Open Settings (the gear in the dropdown, or ⌘,). In **Location**, use your current
+   location or search for a city. **Calculation** picks a method from your country; you
+   can change it.
+3. In **Notifications**, choose each prayer's alert and reminders. macOS asks for
+   permission the first time Salah has an alert to schedule.
+4. To add a widget, right-click the desktop, choose **Edit Widgets**, and search for
+   Salah.
 
-Prefer your own look? The **custom theme** lets you pick an accent and primary color over a curated background base (Midnight, Sand, or Graphite) and pin the appearance to System, Always Dark, or Always Light. A **live preview** renders the real widget as you tweak, and built-in **contrast and hue guardrails** keep your countdown readable and your colors distinct from the functional reds and greens.
+## Documentation
 
-### Calculation & accuracy
+This README and [CONTRIBUTING.md](CONTRIBUTING.md) cover using and building the app. The
+visual baselines' [index](SalahTests/Baselines/README.md) lists every widget and menu
+state the tests render. The packages Salah builds on document their APIs in their own
+repos: [SalahKit](https://github.com/salah-kit/SalahKit) and
+[SalahTimes](https://github.com/salah-kit/SalahTimes).
 
-Prayer times are computed locally with the open-source [Adhan](https://github.com/batoulapps/Adhan) library.
+## Supported platforms
 
-- **Eleven calculation methods** plus Custom: Egyptian, Karachi, North America, Muslim World League, Umm al-Qura, Gulf, Moonsighting Committee, Kuwait, Qatar, Singapore, and Tehran. Custom lets you set your own Fajr and Isha twilight angles.
-- **Auto-detection.** Guidance can pick a sensible method from your country and choose a high-latitude rule based on your latitude - or you can set both by hand.
-- **Madhab.** Shafi or Hanafi for the Asr calculation.
-- **High-latitude rules.** Middle of the Night, Seventh of the Night, or Twilight Angle, with a graceful fallback at extreme latitudes.
-- **Fine tuning.** Per-prayer minute adjustments, a Hijri date offset (±3 days), and an optional delayed Isha during Ramadan.
+macOS 14 Sonoma or later, on Apple silicon and Intel Macs.
 
-### Location
+## Status and versioning
 
-- **Automatic or manual.** Use Core Location for an automatic, reverse-geocoded city, or search for any place by name.
-- **Time zone control.** Pick a time zone manually when you want prayer times for a place other than where you are.
-- **Resilient offline.** Prayer times never need the network - they come from stored coordinates. If a city label can't be resolved while you're offline, Guidance quietly re-resolves it the moment you reconnect.
+Salah is preparing its first release, 1.0.0, which will be released as source. Releases
+use a marketing version (1.0.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records
+every change.
 
-### Languages & localization
+Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
+of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)).
 
-Nine fully localized languages: **English, Arabic, French, Urdu, Indonesian, Turkish, Persian, Bengali, and Malay.**
+## Contributing
 
-- **Switch in-app**, with the entire interface - including the Settings window title - updating live.
-- **Right-to-left** layouts for Arabic, Urdu, and Persian.
-- **Localized digits** (Arabic-Indic, Persian, Bengali) across every countdown, clock, and widget.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for building, testing and formatting. The org-wide
+code of conduct and security policy live in
+[salah-kit/.github](https://github.com/salah-kit/.github).
 
----
+## License
 
-## Requirements
-
-- **macOS 14.0 (Sonoma)** or later
-- An Apple Silicon or Intel Mac
-
-## Getting started
-
-Guidance is a Batoul Apps product, available on the
-**[Mac App Store](https://apps.apple.com/eg/app/guidance/id412759995)**. Learn more
-and find help at **[batoulapps.com/software/guidance](https://batoulapps.com/software/guidance/)**.
-
-Launch it once and grant location and notification permission, and the menu bar, widgets, and adhan are ready - no account, no setup wizard.
-
----
-
-## Privacy
-
-Guidance is built to keep your worship private.
-
-- **Your location stays on your Mac.** It is used only to compute prayer times and to label your city. It is never uploaded or shared.
-- **Prayer times are computed locally** and work fully offline. The network is touched only to translate coordinates into a city name and for manual location search.
-- **No tracking, no analytics, no data collection.** Guidance declares no collected data types and no tracking.
-- **Fully sandboxed.** The app runs in the macOS App Sandbox, and custom adhan files are accessed through scoped, read-only bookmarks you explicitly grant.
-
----
-
-## Credits
-
-- **Development** - [Batoul Apps](https://batoulapps.com/)
-- **Design** - [@Bandar](https://twitter.com/bandar)
-- **Prayer time calculation** - [Adhan](https://github.com/batoulapps/Adhan)
-- With special thanks to Hamza & Yasir.
-
-<div align="center">
-
-_Guidance 3.0 - a complete, modern SwiftUI rebuild for macOS._
-
-</div>
+MIT. See [LICENSE](LICENSE). The bundled audio recordings aren't covered by it: see
+[NOTICE](NOTICE).

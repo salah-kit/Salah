@@ -1,0 +1,39 @@
+Salah
+Copyright (c) 2026 The Salah Kit Authors
+
+Salah's source code is released under the MIT License (see LICENSE). This file lists
+the third-party media and code that Salah contains or links, where each came from, and
+its license as far as it is known.
+
+
+BUNDLED RECORDINGS (Salah/Resources/Audio/)
+
+The app plays these recordings for adhan alerts and the optional du'a after the adhan.
+All seven came into this code base with the app it was rebuilt from, Guidance for Mac
+by Batoul Apps, where they were added in that repository's first commit (4de9e46,
+24 October 2019). That repository has no license file, and nothing in it names the
+recordings' original sources, performers' permissions or distribution terms.
+
+  File                 Shown in the app as   Source                          License
+  Adhan-Alafasy.m4a    Mishary Alafasy       Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Aqsa.mp3       Al-Aqsa               Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Fajr.mp3       Fajr Adhan            Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Istanbul.mp3   Istanbul              Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Makkah.mp3     Makkah                Guidance for Mac (Batoul Apps)  Unknown
+  Adhan-Yusuf.mp3      Yusuf Islam           Guidance for Mac (Batoul Apps)  Unknown
+  Dua.m4a              (du'a after adhan)    Guidance for Mac (Batoul Apps)  Unknown
+
+Adhan-Alafasy.m4a is a recording of the adhan by Mishary Rashid Alafasy, a third-party
+recording. Adhan-Yusuf.mp3 is presented as Yusuf Islam's adhan.
+
+Open question: the right to redistribute these recordings, Adhan-Alafasy.m4a in
+particular, has not been confirmed. Confirm it with the rights holders, or replace the
+recordings with ones whose terms are clear, before any App Store or other binary
+release. The MIT License of this repository does not cover them.
+
+
+LINKED CODE
+
+Adhan (adhan-swift) 1.4.0, https://github.com/batoulapps/adhan-swift
+  Prayer-time calculation, fetched by Swift Package Manager and linked into the app.
+  The MIT License (MIT). Copyright (c) 2016 Batoul Apps.

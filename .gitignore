@@ -1,5 +1,17 @@
-# macOS
+# From the salah-kit template (templates/gitignore)
 .DS_Store
+/.build
+/Packages
+.derived/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+Local.xcconfig
+
+# macOS
 **/.DS_Store
 .AppleDouble
 .LSOverride
@@ -15,18 +27,12 @@
 /.idea
 
 # Xcode - per-developer state (never shared)
-xcuserdata/
-*.xcuserstate
 *.xcscmblueprint
 *.xccheckout
 *.moved-aside
 
 # Xcode - build output
 build/
-DerivedData/
-.derived/
-# Renders that failed a baseline comparison (SalahTests)
-.baseline-failures/
 .derivedData*/
 *.xcresult
 *.xcarchive
@@ -34,6 +40,9 @@ DerivedData/
 *.ipa
 *.dSYM
 *.dSYM.zip
+
+# Renders that failed a baseline comparison (SalahTests)
+.baseline-failures/
 
 # Xcode - legacy project user files
 *.pbxuser
@@ -45,10 +54,8 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 
-# Swift Package Manager
-.build/
+# Swift Package Manager (Package.resolved is tracked to pin dependency versions)
 .swiftpm/
-# Package.resolved is intentionally tracked to pin dependency versions.
 
 # AI assistants / agent tooling
 .claude/
@@ -67,6 +74,3 @@ DerivedData/
 .agent/
 .agents/
 .code/
-
-# Per-developer signing (Config/Local.xcconfig.example)
-Local.xcconfig
