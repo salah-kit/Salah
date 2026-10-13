@@ -1,5 +1,5 @@
-import AppKit
 import Adhan
+import AppKit
 import SwiftUI
 
 /// The menu-bar dropdown: a themed "Living Schedule" - header → vertical prayer
@@ -46,7 +46,8 @@ struct MenuBarDropdownView: View {
   private var noData: some View {
     let theme = Preferences.shared.resolvedWidgetTheme
     let colors = theme.colors(for: scheme)
-    let message = FailureReporter.shared.currentNotice?.message
+    let message =
+      FailureReporter.shared.currentNotice?.message
       ?? localizedString("settings.location.error.unavailable")
     return ZStack {
       SalahWidgetBackground(tone: .normal, colors: colors)
@@ -66,7 +67,9 @@ struct MenuBarDropdownView: View {
   /// Jumu'ah config, matching the row's displayed name/state. (Sunrise never
   /// reaches here - `MenuDropdownContent` gives it no toggle.)
   private func toggleAlert(_ prayer: SalahWidgetPrayer) {
-    guard let resolved = Prayer.allCases.first(where: { $0.settingsKey == prayer.id }) else { return }
+    guard let resolved = Prayer.allCases.first(where: { $0.settingsKey == prayer.id }) else {
+      return
+    }
     let prefs = prayerManager.preferences
     var config = prefs.config(for: resolved, on: prayer.time)
     config.alertEnabled.toggle()

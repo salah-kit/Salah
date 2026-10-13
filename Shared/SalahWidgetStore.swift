@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(WidgetKit)
-import WidgetKit
+  import WidgetKit
 #endif
 
 /// App Group transport. Two jobs:
@@ -30,7 +31,7 @@ nonisolated enum SalahWidgetStore {
       return true
     } catch {
       #if DEBUG
-      print("SalahWidgetStore failed to encode snapshot: \(error)")
+        print("SalahWidgetStore failed to encode snapshot: \(error)")
       #endif
       return false
     }
@@ -79,7 +80,7 @@ nonisolated enum SalahWidgetStore {
 
   static func reloadPrayerTimesWidgetTimelines() {
     #if canImport(WidgetKit)
-    WidgetCenter.shared.reloadTimelines(ofKind: SalahWidgetConstants.prayerTimesWidgetKind)
+      WidgetCenter.shared.reloadTimelines(ofKind: SalahWidgetConstants.prayerTimesWidgetKind)
     #endif
   }
 
@@ -99,16 +100,16 @@ nonisolated enum SalahWidgetStore {
   }
 }
 
-private extension JSONEncoder {
-  nonisolated static var salahWidget: JSONEncoder {
+extension JSONEncoder {
+  fileprivate nonisolated static var salahWidget: JSONEncoder {
     let encoder = JSONEncoder()
     encoder.dateEncodingStrategy = .iso8601
     return encoder
   }
 }
 
-private extension JSONDecoder {
-  nonisolated static var salahWidget: JSONDecoder {
+extension JSONDecoder {
+  fileprivate nonisolated static var salahWidget: JSONDecoder {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
     return decoder

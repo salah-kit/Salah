@@ -38,7 +38,8 @@ struct WidgetPreviewContainer: View {
   @ViewBuilder
   private func content(_ colors: SalahWidgetColors) -> some View {
     if let activeAlert = snapshot.activeAlert {
-      WidgetStopContent(activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
+      WidgetStopContent(
+        activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
     } else {
       WidgetContentView(snapshot: snapshot, size: size, date: date)
     }
@@ -78,9 +79,19 @@ enum PreviewLang {
   case en, ar, fr
 
   var labels: SalahWidgetLabels {
-    switch self { case .en: .english; case .ar: .arabic; case .fr: .french }
+    switch self {
+    case .en: .english
+    case .ar: .arabic
+    case .fr: .french
+    }
   }
-  var id: String { switch self { case .en: "en"; case .ar: "ar"; case .fr: "fr" } }
+  var id: String {
+    switch self {
+    case .en: "en"
+    case .ar: "ar"
+    case .fr: "fr"
+    }
+  }
   var rtl: Bool { self == .ar }
   var location: String { self == .ar ? "مكة" : "Makkah" }
   var hijri: (day: String, month: String, year: String) {
@@ -91,18 +102,33 @@ enum PreviewLang {
     switch self {
     case .ar:
       switch id {
-      case "fajr": "الفجر"; case "sunrise": "الشروق"; case "dhuhr": "الظهر"
-      case "asr": "العصر"; case "maghrib": "المغرب"; case "isha": "العشاء"; default: id
+      case "fajr": "الفجر"
+      case "sunrise": "الشروق"
+      case "dhuhr": "الظهر"
+      case "asr": "العصر"
+      case "maghrib": "المغرب"
+      case "isha": "العشاء"
+      default: id
       }
     case .fr:
       switch id {
-      case "fajr": "Fajr"; case "sunrise": "Lever"; case "dhuhr": "Dhuhr"
-      case "asr": "Asr"; case "maghrib": "Maghreb"; case "isha": "Isha"; default: id
+      case "fajr": "Fajr"
+      case "sunrise": "Lever"
+      case "dhuhr": "Dhuhr"
+      case "asr": "Asr"
+      case "maghrib": "Maghreb"
+      case "isha": "Isha"
+      default: id
       }
     case .en:
       switch id {
-      case "fajr": "Fajr"; case "sunrise": "Sunrise"; case "dhuhr": "Dhuhr"
-      case "asr": "Asr"; case "maghrib": "Maghrib"; case "isha": "Isha"; default: id
+      case "fajr": "Fajr"
+      case "sunrise": "Sunrise"
+      case "dhuhr": "Dhuhr"
+      case "asr": "Asr"
+      case "maghrib": "Maghrib"
+      case "isha": "Isha"
+      default: id
       }
     }
   }
@@ -130,7 +156,13 @@ enum PreviewLang {
 
   /// Reminder detail line, localized with correct word order (mirrors the app).
   func detail(pre: Int?, post: Int?) -> String? {
-    func unit() -> String { switch self { case .ar: " د"; case .fr: " min"; case .en: "m" } }
+    func unit() -> String {
+      switch self {
+      case .ar: " د"
+      case .fr: " min"
+      case .en: "m"
+      }
+    }
     func phrase(_ m: Int, _ word: String) -> String {
       let v = "\(digits(m))\(unit())"
       return self == .ar ? "\(word) \(v)" : "\(v) \(word)"
@@ -149,7 +181,7 @@ enum PreviewLang {
 enum WidgetPreviewData {
   struct Spec {
     var id: String
-    var offset: Int          // minutes from now (negative = already passed)
+    var offset: Int  // minutes from now (negative = already passed)
     var alert = true
     var pre: Int? = nil
     var post: Int? = nil
@@ -165,7 +197,8 @@ enum WidgetPreviewData {
   ) -> SalahWidgetSnapshot {
     let cal = Calendar.current
     let todayStart = cal.startOfDay(for: now)
-    let nextDay = cal.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart.addingTimeInterval(86_400)
+    let nextDay =
+      cal.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart.addingTimeInterval(86_400)
     let tf = DateFormatter()
     tf.locale = lang.locale
     tf.timeStyle = .short
@@ -237,26 +270,28 @@ enum WidgetPreviewData {
 
   /// 10 min before Maghrib → imminent red.
   static func imminent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
-    make(prayers: [
-      Spec(id: "fajr", offset: -13 * 60),
-      Spec(id: "sunrise", offset: -11 * 60, alert: false),
-      Spec(id: "dhuhr", offset: -7 * 60),
-      Spec(id: "asr", offset: -3 * 60),
-      Spec(id: "maghrib", offset: 10, pre: 10, post: 5),
-      Spec(id: "isha", offset: 80),
-    ], lang: lang, now: now)
+    make(
+      prayers: [
+        Spec(id: "fajr", offset: -13 * 60),
+        Spec(id: "sunrise", offset: -11 * 60, alert: false),
+        Spec(id: "dhuhr", offset: -7 * 60),
+        Spec(id: "asr", offset: -3 * 60),
+        Spec(id: "maghrib", offset: 10, pre: 10, post: 5),
+        Spec(id: "isha", offset: 80),
+      ], lang: lang, now: now)
   }
 
   /// 4 min after Dhuhr fired → green count-up leads; Asr is the secondary next.
   static func countUp(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
-    make(prayers: [
-      Spec(id: "fajr", offset: -7 * 60, pre: 30),
-      Spec(id: "sunrise", offset: -5 * 60, alert: false),
-      Spec(id: "dhuhr", offset: -4),
-      Spec(id: "asr", offset: 3 * 60 + 20),
-      Spec(id: "maghrib", offset: 6 * 60, pre: 10, post: 5),
-      Spec(id: "isha", offset: 8 * 60),
-    ], lang: lang, now: now)
+    make(
+      prayers: [
+        Spec(id: "fajr", offset: -7 * 60, pre: 30),
+        Spec(id: "sunrise", offset: -5 * 60, alert: false),
+        Spec(id: "dhuhr", offset: -4),
+        Spec(id: "asr", offset: 3 * 60 + 20),
+        Spec(id: "maghrib", offset: 6 * 60, pre: 10, post: 5),
+        Spec(id: "isha", offset: 8 * 60),
+      ], lang: lang, now: now)
   }
 
   /// 16 min after Dhuhr fired → the 15-min count-up window has closed, so the
@@ -266,14 +301,15 @@ enum WidgetPreviewData {
   static func countUpEnded(
     _ lang: PreviewLang = .en, now: Date = Date()
   ) -> SalahWidgetSnapshot {
-    make(prayers: [
-      Spec(id: "fajr", offset: -7 * 60, pre: 30),
-      Spec(id: "sunrise", offset: -5 * 60, alert: false),
-      Spec(id: "dhuhr", offset: -16),
-      Spec(id: "asr", offset: 44, pre: 10),
-      Spec(id: "maghrib", offset: 3 * 60, pre: 10, post: 5),
-      Spec(id: "isha", offset: 5 * 60),
-    ], lang: lang, now: now)
+    make(
+      prayers: [
+        Spec(id: "fajr", offset: -7 * 60, pre: 30),
+        Spec(id: "sunrise", offset: -5 * 60, alert: false),
+        Spec(id: "dhuhr", offset: -16),
+        Spec(id: "asr", offset: 44, pre: 10),
+        Spec(id: "maghrib", offset: 3 * 60, pre: 10, post: 5),
+        Spec(id: "isha", offset: 5 * 60),
+      ], lang: lang, now: now)
   }
 
   /// 90 min after Dhuhr fired (the green window long closed) → resting countdown
@@ -281,14 +317,15 @@ enum WidgetPreviewData {
   /// "Dhuhr since: 1:30"; Medium/Large show the un-dimmed Dhuhr row carrying
   /// "+1:30". Mirrors the user's example and exercises the h:mm since tier.
   static func since(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
-    make(prayers: [
-      Spec(id: "fajr", offset: -10 * 60, pre: 30),
-      Spec(id: "sunrise", offset: -8 * 60, alert: false),
-      Spec(id: "dhuhr", offset: -90),
-      Spec(id: "asr", offset: 100, pre: 10),
-      Spec(id: "maghrib", offset: 5 * 60, pre: 10, post: 5),
-      Spec(id: "isha", offset: 7 * 60),
-    ], lang: lang, now: now)
+    make(
+      prayers: [
+        Spec(id: "fajr", offset: -10 * 60, pre: 30),
+        Spec(id: "sunrise", offset: -8 * 60, alert: false),
+        Spec(id: "dhuhr", offset: -90),
+        Spec(id: "asr", offset: 100, pre: 10),
+        Spec(id: "maghrib", offset: 5 * 60, pre: 10, post: 5),
+        Spec(id: "isha", offset: 7 * 60),
+      ], lang: lang, now: now)
   }
 
   /// After Isha → all today prayers passed, focus is tomorrow's Fajr (after midnight).
@@ -315,16 +352,20 @@ enum WidgetPreviewData {
 }
 
 #Preview("Imminent · dark") {
-  WidgetSizeGallery(title: "Imminent", snapshot: WidgetPreviewData.imminent()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Imminent", snapshot: WidgetPreviewData.imminent()).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Count-up · dark") {
-  WidgetSizeGallery(title: "Count-up", snapshot: WidgetPreviewData.countUp()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Count-up", snapshot: WidgetPreviewData.countUp()).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Count-up ended · dark") {
-  WidgetSizeGallery(title: "Count-up ended → next prayer", snapshot: WidgetPreviewData.countUpEnded())
-    .preferredColorScheme(.dark)
+  WidgetSizeGallery(
+    title: "Count-up ended → next prayer", snapshot: WidgetPreviewData.countUpEnded()
+  )
+  .preferredColorScheme(.dark)
 }
 
 #Preview("Since previous · dark") {
@@ -338,27 +379,33 @@ enum WidgetPreviewData {
 }
 
 #Preview("Tomorrow · dark") {
-  WidgetSizeGallery(title: "Tomorrow", snapshot: WidgetPreviewData.tomorrow()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Tomorrow", snapshot: WidgetPreviewData.tomorrow()).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Silent · dark") {
-  WidgetSizeGallery(title: "Silent", snapshot: WidgetPreviewData.silent()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Silent", snapshot: WidgetPreviewData.silent()).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Stop · dark") {
-  WidgetSizeGallery(title: "Stop", snapshot: WidgetPreviewData.playing()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Stop", snapshot: WidgetPreviewData.playing()).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Arabic · dark") {
-  WidgetSizeGallery(title: "Arabic", snapshot: WidgetPreviewData.idle(.ar)).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Arabic", snapshot: WidgetPreviewData.idle(.ar)).preferredColorScheme(
+    .dark)
 }
 
 #Preview("Arabic count-up · dark") {
-  WidgetSizeGallery(title: "Arabic count-up", snapshot: WidgetPreviewData.countUp(.ar)).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Arabic count-up", snapshot: WidgetPreviewData.countUp(.ar))
+    .preferredColorScheme(.dark)
 }
 
 #Preview("French · dark") {
-  WidgetSizeGallery(title: "French", snapshot: WidgetPreviewData.idle(.fr)).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "French", snapshot: WidgetPreviewData.idle(.fr)).preferredColorScheme(
+    .dark)
 }
 
 // Magnified single small widget, to judge vertical spacing closely.

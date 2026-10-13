@@ -24,10 +24,13 @@ struct SalahWidgetSnapshotBuilder {
     let formatter = PrayerDisplayFormatter(timeZone: timeZone, hijriOffset: preferences.hijriOffset)
     let calendar = prayerCalendar(timeZone: timeZone)
     let todayStart = calendar.startOfDay(for: now)
-    let nextDayStart = calendar.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart.addingTimeInterval(86_400)
+    let nextDayStart =
+      calendar.date(byAdding: .day, value: 1, to: todayStart)
+      ?? todayStart.addingTimeInterval(86_400)
 
     let prayers = Prayer.allCases.map {
-      makeWidgetPrayer($0, time: prayerTimes.time(for: $0), formatter: formatter, locale: locale, labels: labels)
+      makeWidgetPrayer(
+        $0, time: prayerTimes.time(for: $0), formatter: formatter, locale: locale, labels: labels)
     }
 
     let tomorrowFajr = tomorrowPrayerTimes.map {
@@ -35,7 +38,8 @@ struct SalahWidgetSnapshotBuilder {
     }
 
     let activeAlert = activeAlertSnapshot(
-      from: audioState, prayerTimes: prayerTimes, formatter: formatter, locale: locale, labels: labels)
+      from: audioState, prayerTimes: prayerTimes, formatter: formatter, locale: locale,
+      labels: labels)
 
     return SalahWidgetSnapshot(
       generatedAt: now,
@@ -79,11 +83,17 @@ struct SalahWidgetSnapshotBuilder {
       alertEnabled: config.alertEnabled,
       preReminderMinutes: config.preReminderEnabled ? config.preReminderOffset : nil,
       postReminderMinutes: config.postReminderEnabled ? config.postReminderOffset : nil,
-      reminderSummaryText: reminderSummary(for: config, locale: locale, languageCode: locale.language.languageCode?.identifier, labels: labels),
+      reminderSummaryText: reminderSummary(
+        for: config, locale: locale, languageCode: locale.language.languageCode?.identifier,
+        labels: labels),
       preReminderShortText: config.preReminderEnabled
-        ? minutesText(config.preReminderOffset, locale: locale, languageCode: locale.language.languageCode?.identifier)
+        ? minutesText(
+          config.preReminderOffset, locale: locale,
+          languageCode: locale.language.languageCode?.identifier)
         : nil,
-      reminderDetailText: reminderDetail(for: config, locale: locale, languageCode: locale.language.languageCode?.identifier, labels: labels)
+      reminderDetailText: reminderDetail(
+        for: config, locale: locale, languageCode: locale.language.languageCode?.identifier,
+        labels: labels)
     )
   }
 
@@ -98,10 +108,16 @@ struct SalahWidgetSnapshotBuilder {
   ) -> String? {
     var parts: [String] = []
     if config.preReminderEnabled {
-      parts.append(offsetPhrase(config.preReminderOffset, word: labels.before, locale: locale, languageCode: languageCode))
+      parts.append(
+        offsetPhrase(
+          config.preReminderOffset, word: labels.before, locale: locale, languageCode: languageCode)
+      )
     }
     if config.postReminderEnabled {
-      parts.append(offsetPhrase(config.postReminderOffset, word: labels.after, locale: locale, languageCode: languageCode))
+      parts.append(
+        offsetPhrase(
+          config.postReminderOffset, word: labels.after, locale: locale, languageCode: languageCode)
+      )
     }
     return parts.isEmpty ? nil : parts.joined(separator: " · ")
   }
@@ -117,26 +133,35 @@ struct SalahWidgetSnapshotBuilder {
   ) -> String {
     // Global silent mode overrides every per-prayer alert toggle, so lead with
     // "Silent" rather than a misleading "Alert on" when nothing will sound.
-    let head = preferences.silentMode
+    let head =
+      preferences.silentMode
       ? labels.silent
       : (config.alertEnabled ? labels.alertOn : labels.alertOff)
     var parts: [String] = [head]
 
     if config.preReminderEnabled {
-      parts.append(offsetPhrase(config.preReminderOffset, word: labels.before, locale: locale, languageCode: languageCode))
+      parts.append(
+        offsetPhrase(
+          config.preReminderOffset, word: labels.before, locale: locale, languageCode: languageCode)
+      )
     }
     if config.postReminderEnabled {
-      parts.append(offsetPhrase(config.postReminderOffset, word: labels.after, locale: locale, languageCode: languageCode))
+      parts.append(
+        offsetPhrase(
+          config.postReminderOffset, word: labels.after, locale: locale, languageCode: languageCode)
+      )
     }
     return parts.joined(separator: " · ")
   }
 
-  private func offsetPhrase(_ minutes: Int, word: String, locale: Locale, languageCode: String?) -> String {
+  private func offsetPhrase(_ minutes: Int, word: String, locale: Locale, languageCode: String?)
+    -> String
+  {
     let value = minutesText(minutes, locale: locale, languageCode: languageCode)
     switch languageCode {
-    case "ar": return "\(word) \(value)"          // قبل ١٠ د
-    case "fr": return "\(value) \(word)"          // 10 min avant
-    default: return "\(value) \(word)"            // 10m before
+    case "ar": return "\(word) \(value)"  // قبل ١٠ د
+    case "fr": return "\(value) \(word)"  // 10 min avant
+    default: return "\(value) \(word)"  // 10m before
     }
   }
 
@@ -155,7 +180,7 @@ struct SalahWidgetSnapshotBuilder {
     locale: Locale,
     labels: SalahWidgetLabels
   ) -> SalahWidgetActiveAlert? {
-    guard case let .playing(context) = state else { return nil }
+    guard case .playing(let context) = state else { return nil }
     guard context.source == .prayerAlert || context.source == .dua else { return nil }
     guard let prayer = context.prayer, let slot = context.slot else { return nil }
 
@@ -176,7 +201,9 @@ struct SalahWidgetSnapshotBuilder {
     )
   }
 
-  private func title(for source: AudioPlaybackSource, slot: PrayerNotificationSoundSlot, labels: SalahWidgetLabels) -> String {
+  private func title(
+    for source: AudioPlaybackSource, slot: PrayerNotificationSoundSlot, labels: SalahWidgetLabels
+  ) -> String {
     if source == .dua { return labels.playingDua }
     switch slot {
     case .alert: return labels.playingAdhan
@@ -227,8 +254,8 @@ struct SalahWidgetSnapshotBuilder {
   }
 }
 
-private extension SalahWidgetAlertSlot {
-  init(_ slot: PrayerNotificationSoundSlot) {
+extension SalahWidgetAlertSlot {
+  fileprivate init(_ slot: PrayerNotificationSoundSlot) {
     switch slot {
     case .alert: self = .alert
     case .preReminder: self = .preReminder

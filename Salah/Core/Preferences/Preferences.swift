@@ -396,7 +396,8 @@ final class Preferences {
   private func storeColorSpec(_ spec: SalahColorSpec, forKey key: String) {
     if let data = try? JSONEncoder().encode(spec) { defaults.set(data, forKey: key) }
   }
-  private func loadColorSpec(forKey key: String, default fallback: SalahColorSpec) -> SalahColorSpec {
+  private func loadColorSpec(forKey key: String, default fallback: SalahColorSpec) -> SalahColorSpec
+  {
     guard let data = defaults.data(forKey: key),
       let spec = try? JSONDecoder().decode(SalahColorSpec.self, from: data)
     else { return fallback }

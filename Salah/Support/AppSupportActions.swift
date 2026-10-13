@@ -58,7 +58,8 @@ enum AppSupportActions {
       "\(localizedString("about.credits.calculationSource", locale: .app))\n",
       attributes: regular
     )
-    credits.append(linked("github.com/batoulapps/Adhan", url: "https://github.com/batoulapps/Adhan"))
+    credits.append(
+      linked("github.com/batoulapps/Adhan", url: "https://github.com/batoulapps/Adhan"))
     return credits
   }
 }

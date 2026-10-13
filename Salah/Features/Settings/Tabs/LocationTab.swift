@@ -35,7 +35,9 @@ struct LocationContent: View {
         NotificationCenter.default.post(name: .stopLocationUpdate, object: nil)
       }
     }
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)) { _ in
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)
+    ) { _ in
       if prefs.useCurrentLocation {
         NotificationCenter.default.post(name: .startLocationUpdate, object: nil)
       }

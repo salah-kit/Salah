@@ -1,6 +1,6 @@
 import Foundation
-import Observation
 import OSLog
+import Observation
 
 /// A failure worth surfacing to the user once. UI reads
 /// `FailureReporter.shared.currentNotice`.

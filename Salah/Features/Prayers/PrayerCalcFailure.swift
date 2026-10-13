@@ -13,7 +13,7 @@ enum PrayerCalcFailure: AppFailure {
 
   var logMessage: String {
     switch self {
-    case let .timesUnavailable(lat, lng):
+    case .timesUnavailable(let lat, let lng):
       "PrayerTimes init returned nil for (\(lat), \(lng))"
     }
   }

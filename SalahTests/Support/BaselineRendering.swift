@@ -113,8 +113,7 @@ enum BaselinePipeline {
 
   /// The snapshot the app publishes for a spec state: its real builder over the
   /// fixture's preferences and Adhan's times, as `PrayerManager` wires it.
-  static func snapshot(for state: SpecState, language: Baseline.Language) -> SalahWidgetSnapshot
-  {
+  static func snapshot(for state: SpecState, language: Baseline.Language) -> SalahWidgetSnapshot {
     let scratch = ScratchDefaults()
     let preferences = Preferences(defaults: scratch.defaults)
     configure(preferences, for: state, language: language)

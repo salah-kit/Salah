@@ -77,7 +77,8 @@ final class LocationSearchService: NSObject, MKLocalSearchCompleterDelegate {
       searchText = ""
       completions = []
     } catch {
-      errorMessage = localizedString("settings.location.searchError.resolveTryAnother", locale: .app)
+      errorMessage = localizedString(
+        "settings.location.searchError.resolveTryAnother", locale: .app)
     }
   }
 
@@ -106,7 +107,8 @@ final class LocationSearchService: NSObject, MKLocalSearchCompleterDelegate {
       self.completions = []
       self.isSearching = false
       if !self.searchText.isEmpty {
-        self.errorMessage = localizedString("settings.location.searchError.connection", locale: .app)
+        self.errorMessage = localizedString(
+          "settings.location.searchError.connection", locale: .app)
       }
     }
   }

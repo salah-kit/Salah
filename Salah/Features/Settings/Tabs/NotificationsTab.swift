@@ -97,7 +97,9 @@ struct NotificationsContent: View {
     .task {
       await requestAuthorizationIfNeeded()
     }
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)) { _ in
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)
+    ) { _ in
       Task {
         await refreshAuthorizationStatus(rescheduleOnGrant: true)
       }
@@ -277,7 +279,7 @@ struct NotificationsContent: View {
   }
 
   private func isPreviewing(slot: PrayerNotificationSoundSlot) -> Bool {
-    guard case let .playing(context) = previewController.state else { return false }
+    guard case .playing(let context) = previewController.state else { return false }
     return context.source == .preview && context.prayer == selectedPrayer && context.slot == slot
   }
 
@@ -357,7 +359,8 @@ struct NotificationsContent: View {
     let settings = await UNUserNotificationCenter.current().notificationSettings()
     applyNotificationSettings(settings)
 
-    if rescheduleOnGrant && !wasDelivering && notificationsCanDeliver(settings.authorizationStatus) {
+    if rescheduleOnGrant && !wasDelivering && notificationsCanDeliver(settings.authorizationStatus)
+    {
       notifyChange()
     }
   }

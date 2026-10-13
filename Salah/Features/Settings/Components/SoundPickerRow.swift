@@ -31,7 +31,7 @@ struct SoundPickerRow: View {
             }
           }
 
-          if case let .custom(file) = sound {
+          if case .custom(let file) = sound {
             Section("settings.notif.sound.custom") {
               Text(file.fileName).tag(sound)
             }

@@ -14,8 +14,10 @@ struct MenuDropdownFooter: View {
     HStack(spacing: 12) {
       silentToggle
       Spacer(minLength: 8)
-      iconButton(system: "gearshape", help: localizedString("menu.settings"), action: onOpenSettings)
-        .keyboardShortcut(",", modifiers: .command)
+      iconButton(
+        system: "gearshape", help: localizedString("menu.settings"), action: onOpenSettings
+      )
+      .keyboardShortcut(",", modifiers: .command)
       iconButton(system: "power", help: localizedString("menu.quit"), action: onQuit)
     }
   }

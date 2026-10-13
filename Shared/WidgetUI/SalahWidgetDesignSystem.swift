@@ -83,13 +83,13 @@ nonisolated extension SalahWidgetTone {
   // dark and a light variant so they keep contrast on every background base. The
   // dark variants are the bright night-backdrop values; the light variants are
   // deepened to stay legible on cream / sand / white.
-  static let imminentDark = Color(.sRGB, red: 1.00, green: 0.27, blue: 0.23) // red
+  static let imminentDark = Color(.sRGB, red: 1.00, green: 0.27, blue: 0.23)  // red
   static let imminentLight = Color(.sRGB, red: 0.80, green: 0.12, blue: 0.10)
-  static let preReminderDark = Color(.sRGB, red: 1.00, green: 0.62, blue: 0.04) // orange
+  static let preReminderDark = Color(.sRGB, red: 1.00, green: 0.62, blue: 0.04)  // orange
   static let preReminderLight = Color(.sRGB, red: 0.78, green: 0.42, blue: 0.00)
-  static let prayerDark = Color(.sRGB, red: 0.20, green: 0.84, blue: 0.29) // green
+  static let prayerDark = Color(.sRGB, red: 0.20, green: 0.84, blue: 0.29)  // green
   static let prayerLight = Color(.sRGB, red: 0.10, green: 0.52, blue: 0.22)
-  static let postReminderDark = Color(.sRGB, red: 0.75, green: 0.35, blue: 0.95) // purple
+  static let postReminderDark = Color(.sRGB, red: 0.75, green: 0.35, blue: 0.95)  // purple
   static let postReminderLight = Color(.sRGB, red: 0.54, green: 0.20, blue: 0.74)
 
   /// The adhan / count-up "now" green for the given appearance - used directly
@@ -104,9 +104,11 @@ nonisolated extension SalahWidgetTone {
     switch self {
     case .normal: return colors.primary
     case .imminent: return colors.isDark ? Self.imminentDark : Self.imminentLight
-    case .playingPreReminderAudio: return colors.isDark ? Self.preReminderDark : Self.preReminderLight
+    case .playingPreReminderAudio:
+      return colors.isDark ? Self.preReminderDark : Self.preReminderLight
     case .playingPrayerAudio: return colors.isDark ? Self.prayerDark : Self.prayerLight
-    case .playingPostReminderAudio: return colors.isDark ? Self.postReminderDark : Self.postReminderLight
+    case .playingPostReminderAudio:
+      return colors.isDark ? Self.postReminderDark : Self.postReminderLight
     case .silent: return .secondary
     }
   }

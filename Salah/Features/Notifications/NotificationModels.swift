@@ -267,14 +267,14 @@ enum AdhanSound: Codable, Equatable, Hashable {
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
-    case let .builtIn(sound):
+    case .builtIn(let sound):
       try container.encode(Kind.builtIn, forKey: .kind)
       try container.encode(sound, forKey: .builtIn)
     case .system:
       try container.encode(Kind.system, forKey: .kind)
     case .none:
       try container.encode(Kind.none, forKey: .kind)
-    case let .custom(file):
+    case .custom(let file):
       try container.encode(Kind.custom, forKey: .kind)
       try container.encode(file, forKey: .custom)
     }
@@ -282,15 +282,15 @@ enum AdhanSound: Codable, Equatable, Hashable {
 
   var displayName: String {
     switch self {
-    case let .builtIn(sound): sound.displayName
+    case .builtIn(let sound): sound.displayName
     case .system: localizedString("sound.system", locale: .app)
     case .none: localizedString("sound.none", locale: .app)
-    case let .custom(file): file.fileName
+    case .custom(let file): file.fileName
     }
   }
 
   var bundledURL: URL? {
-    guard case let .builtIn(sound) = self else { return nil }
+    guard case .builtIn(let sound) = self else { return nil }
     return sound.bundledURL
   }
 
@@ -302,7 +302,7 @@ enum AdhanSound: Codable, Equatable, Hashable {
       return false
     case .builtIn:
       return bundledURL != nil
-    case let .custom(file):
+    case .custom(let file):
       guard let resolved = file.resolvedURL() else { return false }
       let didStartAccessing = resolved.url.startAccessingSecurityScopedResource()
       defer {
@@ -336,12 +336,12 @@ enum AdhanSound: Codable, Equatable, Hashable {
     -> AudioPlaybackResource?
   {
     switch self {
-    case let .builtIn(sound):
+    case .builtIn(let sound):
       guard let url = sound.bundledURL else { return nil }
       return .url(url)
     case .system, .none:
       return nil
-    case let .custom(file):
+    case .custom(let file):
       guard let resolved = file.resolvedURL() else { return nil }
       let didStartAccessing = resolved.url.startAccessingSecurityScopedResource()
       defer {

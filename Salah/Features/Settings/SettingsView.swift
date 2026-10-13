@@ -17,7 +17,8 @@ struct SettingsView: View {
       // builds the default title from `CFBundleDisplayName` + the OS-localized
       // "Settings" word at window-creation time and never refreshes when our
       // `AppleLanguages` override changes mid-session, so we override it here.
-      WindowTitleSetter(title: localizedString("settings.window.title", locale: prefs.appLanguage.locale))
+      WindowTitleSetter(
+        title: localizedString("settings.window.title", locale: prefs.appLanguage.locale))
     )
   }
 

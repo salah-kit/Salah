@@ -236,7 +236,7 @@ final class PrayerManager {
     if !preferences.duaEnabled {
       audioPlaybackController.cancelFollowUp()
 
-      if case let .playing(context) = audioPlaybackController.state,
+      if case .playing(let context) = audioPlaybackController.state,
         context.source == .dua
       {
         audioPlaybackController.stop()
@@ -512,7 +512,7 @@ enum MenuBarStatusTone {
 
 extension PrayerManager {
   var menuBarStatusTone: MenuBarStatusTone {
-    if case let .playing(context) = audioPlaybackController.state {
+    if case .playing(let context) = audioPlaybackController.state {
       switch context.slot {
       case .preReminder:
         return .playingPreReminderAudio

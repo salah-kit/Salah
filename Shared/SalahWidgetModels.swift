@@ -149,7 +149,7 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
 
     var prayer: SalahWidgetPrayer {
       switch self {
-      case let .countUp(p), let .countdown(p), let .tomorrow(p): return p
+      case .countUp(let p), .countdown(let p), .tomorrow(let p): return p
       }
     }
   }
@@ -161,7 +161,8 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
     // still read count-up and the live `.relative` text would keep climbing for
     // hours until the next (far-off) entry.
     if let current = currentPrayer(at: date),
-      date.timeIntervalSince(current.time) < SalahWidgetSnapshot.nowWindow {
+      date.timeIntervalSince(current.time) < SalahWidgetSnapshot.nowWindow
+    {
       return .countUp(current)
     }
     guard let next = nextPrayer(at: date) else { return nil }
@@ -196,7 +197,8 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
     // a prayer's time, then clears. Without the window the most-recent prayer
     // would read "Now" for hours (e.g. Sunrise lingering until Dhuhr).
     if let current = currentPrayer(at: date), current.id == prayer.id,
-      date.timeIntervalSince(current.time) < SalahWidgetSnapshot.nowWindow {
+      date.timeIntervalSince(current.time) < SalahWidgetSnapshot.nowWindow
+    {
       return .current
     }
     return prayer.time <= date ? .passed : .upcoming
@@ -220,7 +222,9 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
     // most 4 h, never past the daily rollover.
     let nextTime = nextPrayer(at: now)?.time ?? nextDayStart
     let horizon = min(
-      max(now.addingTimeInterval(2 * 3600), nextTime.addingTimeInterval(SalahWidgetSnapshot.nowWindow)),
+      max(
+        now.addingTimeInterval(2 * 3600), nextTime.addingTimeInterval(SalahWidgetSnapshot.nowWindow)
+      ),
       min(now.addingTimeInterval(4 * 3600), nextDayStart))
 
     // A minute is "fine" when it sits in some alerted prayer's [-15 min, +15 min]
@@ -259,7 +263,8 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
   static func sample(now: Date = Date()) -> SalahWidgetSnapshot {
     let calendar = Calendar.current
     let start = calendar.startOfDay(for: now)
-    let nextDay = calendar.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86_400)
+    let nextDay =
+      calendar.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86_400)
 
     func date(hour: Int, minute: Int, in day: Date = start) -> Date {
       calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day) ?? now
@@ -281,7 +286,8 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
       return SalahWidgetPrayer(
         id: id, name: name, abbreviation: abbr, time: time,
         timeText: clock,
-        compactTimeText: clock.replacingOccurrences(of: " AM", with: "").replacingOccurrences(of: " PM", with: ""),
+        compactTimeText: clock.replacingOccurrences(of: " AM", with: "").replacingOccurrences(
+          of: " PM", with: ""),
         alertEnabled: alert,
         preReminderMinutes: pre,
         postReminderMinutes: post,
@@ -292,11 +298,16 @@ nonisolated struct SalahWidgetSnapshot: Codable, Equatable, Sendable {
     }
 
     let prayers = [
-      prayer("fajr", "Fajr", "Fjr", hour: 4, minute: 18, summary: "Alert on · 30m before", preShort: "30m", detail: "30m before", pre: 30),
+      prayer(
+        "fajr", "Fajr", "Fjr", hour: 4, minute: 18, summary: "Alert on · 30m before",
+        preShort: "30m", detail: "30m before", pre: 30),
       prayer("sunrise", "Sunrise", "Sun", hour: 5, minute: 41, summary: "Alert off", alert: false),
       prayer("dhuhr", "Dhuhr", "Dhu", hour: 12, minute: 6, summary: "Alert on"),
       prayer("asr", "Asr", "Asr", hour: 15, minute: 31, summary: "Alert on"),
-      prayer("maghrib", "Maghrib", "Mag", hour: 18, minute: 42, summary: "Alert on · 10m before · 5m after", preShort: "10m", detail: "10m before · 5m after", pre: 10, post: 5),
+      prayer(
+        "maghrib", "Maghrib", "Mag", hour: 18, minute: 42,
+        summary: "Alert on · 10m before · 5m after", preShort: "10m",
+        detail: "10m before · 5m after", pre: 10, post: 5),
       prayer("isha", "Isha", "Ish", hour: 20, minute: 0, summary: "Alert on"),
     ]
 

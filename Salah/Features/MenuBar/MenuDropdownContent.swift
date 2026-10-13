@@ -79,7 +79,8 @@ struct MenuDropdownContent: View {
       }
       // End of day: tomorrow's Fajr is not a today row, so it floats beneath.
       if playing == nil, case .tomorrow(let fajr)? = focus {
-        MenuHeroCard(focus: .tomorrow(fajr), snapshot: snapshot, colors: colors, date: now, onToggleAlert: nil)
+        MenuHeroCard(
+          focus: .tomorrow(fajr), snapshot: snapshot, colors: colors, date: now, onToggleAlert: nil)
       }
     }
     .animation(.smooth(duration: 0.3), value: focus?.prayer.id)
@@ -90,7 +91,7 @@ struct MenuDropdownContent: View {
   private func isFocusRow(_ prayer: SalahWidgetPrayer, focus: SalahWidgetSnapshot.Focus?) -> Bool {
     guard let focus else { return false }
     switch focus {
-    case let .countUp(p), let .countdown(p):
+    case .countUp(let p), .countdown(let p):
       return prayer.id == p.id && prayer.time == p.time
     case .tomorrow:
       return false

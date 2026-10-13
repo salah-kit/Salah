@@ -153,7 +153,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
       // Couldn't even acquire a fix. If we never had one, mark a first-run
       // failure so a reconnect re-requests location rather than only re-geocoding.
       if !self.hasRealFix { self.pendingFirstRunFix = true }
-      NotificationCenter.default.post(name: .locationDidFail, object: Self.locationFailure(for: error))
+      NotificationCenter.default.post(
+        name: .locationDidFail, object: Self.locationFailure(for: error))
     }
   }
 

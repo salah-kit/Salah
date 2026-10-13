@@ -38,7 +38,9 @@ nonisolated extension SalahColorSpec {
   /// Hue-preserving luminance nudge: lighten (on a dark surface) or darken (on a
   /// light one) until this color clears `ratio` against `surface`, or it bottoms
   /// out. Used by "Fix contrast".
-  func adjustedForContrast(against surface: SalahColorSpec, ratio target: Double = 4.5) -> SalahColorSpec {
+  func adjustedForContrast(against surface: SalahColorSpec, ratio target: Double = 4.5)
+    -> SalahColorSpec
+  {
     if Self.contrastRatio(self, surface) >= target { return self }
     let towardLight = surface.relativeLuminance < 0.5
     var best = self
@@ -57,7 +59,9 @@ nonisolated extension SalahColorSpec {
 
   /// Rough perceptual distance (0…~1.4) for the functional-hue separation check.
   func distance(to other: SalahColorSpec) -> Double {
-    let dr = red - other.red, dg = green - other.green, db = blue - other.blue
+    let dr = red - other.red
+    let dg = green - other.green
+    let db = blue - other.blue
     return (dr * dr + dg * dg + db * db).squareRoot()
   }
 }
@@ -101,15 +105,15 @@ nonisolated struct SalahWidgetTheme: Codable, Equatable, Sendable {
     id: "nocturne",
     appearance: .system,
     dark: SalahWidgetPalette(
-      accent: SalahColorSpec(0.88, 0.69, 0.29),          // brass
-      primary: SalahColorSpec(0.04, 0.52, 1.00),         // blue
+      accent: SalahColorSpec(0.88, 0.69, 0.29),  // brass
+      primary: SalahColorSpec(0.04, 0.52, 1.00),  // blue
       backgroundTop: SalahColorSpec(0.075, 0.094, 0.180),
       backgroundBottom: SalahColorSpec(0.027, 0.035, 0.078),
-      glow: SalahColorSpec(0.88, 0.69, 0.29)             // brass glow
+      glow: SalahColorSpec(0.88, 0.69, 0.29)  // brass glow
     ),
     light: SalahWidgetPalette(
-      accent: SalahColorSpec(0.62, 0.45, 0.12),          // deeper brass for contrast
-      primary: SalahColorSpec(0.00, 0.40, 0.85),         // deeper blue, readable on cream
+      accent: SalahColorSpec(0.62, 0.45, 0.12),  // deeper brass for contrast
+      primary: SalahColorSpec(0.00, 0.40, 0.85),  // deeper blue, readable on cream
       backgroundTop: SalahColorSpec(0.992, 0.976, 0.945),
       backgroundBottom: SalahColorSpec(0.953, 0.925, 0.875),
       glow: SalahColorSpec(0.88, 0.69, 0.29)

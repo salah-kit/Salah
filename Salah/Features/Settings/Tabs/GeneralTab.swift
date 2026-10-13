@@ -53,10 +53,11 @@ struct LaunchAtLoginControl: View {
         set: { newValue in
           setEnabled(newValue)
         }
-      ))
-      // Stale `errorMessage` is frozen in the language it was built in - drop
-      // it when the user switches languages so the next attempt rebuilds fresh.
-      .onChange(of: prefs.appLanguage) { errorMessage = nil }
+      )
+    )
+    // Stale `errorMessage` is frozen in the language it was built in - drop
+    // it when the user switches languages so the next attempt rebuilds fresh.
+    .onChange(of: prefs.appLanguage) { errorMessage = nil }
 
     if requiresApproval {
       Button("settings.general.openLoginItems") {

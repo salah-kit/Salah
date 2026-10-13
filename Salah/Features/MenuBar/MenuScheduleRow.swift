@@ -119,7 +119,7 @@ struct MenuScheduleRow: View {
 
   private var emphasisColor: Color? {
     switch state {
-    case let .next(tone), let .active(tone): return tone.color(colors)
+    case .next(let tone), .active(let tone): return tone.color(colors)
     case .current: return SalahWidgetTone.prayerColor(colors)
     default: return nil
     }
@@ -127,7 +127,7 @@ struct MenuScheduleRow: View {
 
   private var timeColor: Color {
     switch state {
-    case let .next(tone): return tone.color(colors)
+    case .next(let tone): return tone.color(colors)
     case .current: return SalahWidgetTone.prayerColor(colors)
     default: return .primary
     }
@@ -143,14 +143,17 @@ struct MenuScheduleRow: View {
   @ViewBuilder
   private var rowBackground: some View {
     switch state {
-    case let .next(tone):
+    case .next(let tone):
       let c = tone.color(colors)
       RoundedRectangle(cornerRadius: 9, style: .continuous)
-        .fill(LinearGradient(colors: [c.opacity(0.22), c.opacity(0.08)], startPoint: .leading, endPoint: .trailing))
+        .fill(
+          LinearGradient(
+            colors: [c.opacity(0.22), c.opacity(0.08)], startPoint: .leading, endPoint: .trailing)
+        )
         .overlay(
           RoundedRectangle(cornerRadius: 9, style: .continuous)
             .strokeBorder(c.opacity(0.45), lineWidth: 1))
-    case let .active(tone):
+    case .active(let tone):
       RoundedRectangle(cornerRadius: 9, style: .continuous).fill(tone.color(colors).opacity(0.20))
     case .current:
       RoundedRectangle(cornerRadius: 9, style: .continuous)

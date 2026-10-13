@@ -41,8 +41,9 @@ struct MenuLiveCountdown: View {
         }
       } else {
         // A minute or more out: the calm, static, timeline-advanced string.
-        Text(verbatim: RelativeDurationFormatter.string(
-          seconds: magnitude, direction: countingUp ? .up : .down, locale: locale))
+        Text(
+          verbatim: RelativeDurationFormatter.string(
+            seconds: magnitude, direction: countingUp ? .up : .down, locale: locale))
       }
     }
     .font(bold ? font.weight(.bold) : font)

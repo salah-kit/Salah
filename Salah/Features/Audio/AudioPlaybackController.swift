@@ -120,9 +120,9 @@ final class AudioPlaybackController: NSObject, AVAudioPlayerDelegate {
     do {
       let player =
         switch request.resource {
-        case let .url(url):
+        case .url(let url):
           try AVAudioPlayer(contentsOf: url)
-        case let .data(data):
+        case .data(let data):
           try AVAudioPlayer(data: data)
         }
       player.volume = max(0, min(request.volume, 1))

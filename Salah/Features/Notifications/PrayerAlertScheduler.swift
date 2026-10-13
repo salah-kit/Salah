@@ -545,7 +545,8 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
 
   private func playBestAudioEventIfNeeded(from events: [PrayerAlertEvent]) {
     guard
-      let event = events
+      let event =
+        events
         .filter(usesAppAudio)
         .max(by: audioEventHasLowerPrecedence)
     else { return }

@@ -17,7 +17,9 @@ struct SalahPrayerWidgetProvider: TimelineProvider {
     SalahPrayerWidgetEntry(date: Date(), snapshot: .sample())
   }
 
-  func getSnapshot(in context: Context, completion: @escaping @Sendable (SalahPrayerWidgetEntry) -> Void) {
+  func getSnapshot(
+    in context: Context, completion: @escaping @Sendable (SalahPrayerWidgetEntry) -> Void
+  ) {
     // The gallery (preview) always gets sample data; a real install with no
     // published snapshot yet gets an explicit setup prompt, never fake times.
     if context.isPreview {
@@ -29,12 +31,15 @@ struct SalahPrayerWidgetProvider: TimelineProvider {
     }
   }
 
-  func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<SalahPrayerWidgetEntry>) -> Void) {
+  func getTimeline(
+    in context: Context, completion: @escaping @Sendable (Timeline<SalahPrayerWidgetEntry>) -> Void
+  ) {
     let now = Date()
     guard let snapshot = SalahWidgetStore.loadSnapshot() else {
       // No snapshot has ever been written (app not run). Show a setup prompt and
       // retry within the hour; launching the app publishes data and reloads us.
-      let entry = SalahPrayerWidgetEntry(date: now, snapshot: .sample(now: now), isSetupNeeded: true)
+      let entry = SalahPrayerWidgetEntry(
+        date: now, snapshot: .sample(now: now), isSetupNeeded: true)
       completion(Timeline(entries: [entry], policy: .after(now.addingTimeInterval(60 * 60))))
       return
     }
@@ -92,8 +97,10 @@ struct SalahPrayerWidgetEntryView: View {
     let colors = snapshot.resolvedTheme.colors(for: scheme)
     Group {
       if entry.isSetupNeeded {
-        WidgetMessageContent(systemImage: "moon.stars", message: Text("widget.openToSetUp"), accent: colors.accent)
-          .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
+        WidgetMessageContent(
+          systemImage: "moon.stars", message: Text("widget.openToSetUp"), accent: colors.accent
+        )
+        .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
       } else if snapshot.isStale(at: entry.date) {
         // Stored times are from a day that has already passed (app quit). Prompt
         // to reopen the app rather than render yesterday's schedule as if live.
@@ -107,7 +114,8 @@ struct SalahPrayerWidgetEntryView: View {
         // While audio plays, the entire widget is the Stop control: tapping
         // anywhere runs the stop intent. No dedicated button, no Settings link.
         Button(intent: StopSalahAudioIntent()) {
-          WidgetStopContent(activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
+          WidgetStopContent(
+            activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
         }
         .buttonStyle(.plain)
         .invalidatableContent()
@@ -127,9 +135,9 @@ struct SalahPrayerWidgetEntryView: View {
   }
 }
 
-private extension WidgetFamily {
+extension WidgetFamily {
   /// Maps the WidgetKit family to the app-defined size the shared content uses.
-  var salahSize: SalahWidgetSize {
+  fileprivate var salahSize: SalahWidgetSize {
     switch self {
     case .systemSmall: .small
     case .systemMedium: .medium

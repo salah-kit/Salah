@@ -47,7 +47,8 @@ extension Prayer {
       switch self {
       case .fajr: "prayer.fajr.abbr"
       case .sunrise: "prayer.sunrise.abbr"
-      case .dhuhr: isFridayInStoredTimeZone(on: date) ? "prayer.dhuhr.jumuah.abbr" : "prayer.dhuhr.abbr"
+      case .dhuhr:
+        isFridayInStoredTimeZone(on: date) ? "prayer.dhuhr.jumuah.abbr" : "prayer.dhuhr.abbr"
       case .asr: "prayer.asr.abbr"
       case .maghrib: "prayer.maghrib.abbr"
       case .isha: "prayer.isha.abbr"

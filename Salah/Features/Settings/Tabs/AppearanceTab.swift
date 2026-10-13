@@ -146,13 +146,17 @@ struct AppearanceContent: View {
   /// The background the custom primary sits on, for the contrast check (the card
   /// tint is a thin wash over this, so it's a fair approximation of the surface).
   private var previewSurface: SalahColorSpec {
-    effectivePreviewScheme == .dark ? prefs.widgetCustomBase.darkTop : prefs.widgetCustomBase.lightTop
+    effectivePreviewScheme == .dark
+      ? prefs.widgetCustomBase.darkTop : prefs.widgetCustomBase.lightTop
   }
   private var primaryContrast: Double {
     SalahColorSpec.contrastRatio(prefs.widgetCustomPrimary, previewSurface)
   }
   private func fixPrimaryContrast() {
-    setCustom { prefs.widgetCustomPrimary = prefs.widgetCustomPrimary.adjustedForContrast(against: previewSurface) }
+    setCustom {
+      prefs.widgetCustomPrimary = prefs.widgetCustomPrimary.adjustedForContrast(
+        against: previewSurface)
+    }
   }
 
   private var accentBinding: Binding<Color> {
@@ -163,7 +167,8 @@ struct AppearanceContent: View {
   private var primaryBinding: Binding<Color> {
     Binding(
       get: { prefs.widgetCustomPrimary.color },
-      set: { newValue in setCustom { prefs.widgetCustomPrimary = SalahColorSpec(color: newValue) } })
+      set: { newValue in setCustom { prefs.widgetCustomPrimary = SalahColorSpec(color: newValue) } }
+    )
   }
   private var baseBinding: Binding<SalahWidgetBackgroundBase> {
     Binding(
@@ -253,8 +258,8 @@ private struct PresetSwatch: View {
 
 // MARK: - Color bridge (app-side; uses AppKit)
 
-private extension SalahColorSpec {
-  init(color: Color) {
+extension SalahColorSpec {
+  fileprivate init(color: Color) {
     let ns = NSColor(color).usingColorSpace(.sRGB) ?? NSColor.white.usingColorSpace(.sRGB)!
     self.init(
       Double(ns.redComponent), Double(ns.greenComponent),

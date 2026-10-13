@@ -141,8 +141,9 @@ private struct RelativeTime: View {
         }
       } else {
         // A minute or more: the calm, static, timeline-advanced tier string.
-        Text(verbatim: RelativeDurationFormatter.string(
-          seconds: remaining, direction: countingUp ? .up : .down, locale: locale))
+        Text(
+          verbatim: RelativeDurationFormatter.string(
+            seconds: remaining, direction: countingUp ? .up : .down, locale: locale))
       }
     }
     .font(bold ? font.weight(.bold) : font)
@@ -226,7 +227,7 @@ private struct ScheduleRowView: View {
   /// current→green; nil means use the default text color.
   private var emphasisColor: Color? {
     switch state {
-    case let .next(tone), let .active(tone): return tone.color(colors)
+    case .next(let tone), .active(let tone): return tone.color(colors)
     case .current: return SalahWidgetTone.prayerColor(colors)
     default: return nil
     }
@@ -234,7 +235,7 @@ private struct ScheduleRowView: View {
 
   private var timeColor: Color {
     switch state {
-    case let .next(tone): return tone.color(colors)
+    case .next(let tone): return tone.color(colors)
     case .current: return SalahWidgetTone.prayerColor(colors)
     default: return compact ? .secondary : .primary
     }
@@ -261,15 +262,18 @@ private struct ScheduleRowView: View {
   @ViewBuilder
   private var rowBackground: some View {
     switch state {
-    case let .next(tone):
+    case .next(let tone):
       let c = tone.color(colors)
       RoundedRectangle(cornerRadius: 9, style: .continuous)
-        .fill(LinearGradient(colors: [c.opacity(0.22), c.opacity(0.08)], startPoint: .leading, endPoint: .trailing))
+        .fill(
+          LinearGradient(
+            colors: [c.opacity(0.22), c.opacity(0.08)], startPoint: .leading, endPoint: .trailing)
+        )
         .overlay(
           RoundedRectangle(cornerRadius: 9, style: .continuous)
             .strokeBorder(c.opacity(0.45), lineWidth: 1)
         )
-    case let .active(tone):
+    case .active(let tone):
       RoundedRectangle(cornerRadius: 9, style: .continuous)
         .fill(tone.color(colors).opacity(0.20))
     case .current:
@@ -302,8 +306,8 @@ private struct ActiveCardView: View {
 
   private var tone: SalahWidgetTone {
     switch focus {
-    case .countUp: return .playingPrayerAudio       // green
-    case .countdown: return snapshot.tone(at: date) // normal / imminent
+    case .countUp: return .playingPrayerAudio  // green
+    case .countdown: return snapshot.tone(at: date)  // normal / imminent
     case .tomorrow: return .normal
     }
   }
@@ -487,7 +491,9 @@ private struct SmallContent: View {
       WidgetHeader(snapshot: snapshot, colors: colors, compact: true, showLocation: false)
       if let focus = snapshot.focus(at: date) {
         // Distributed: eyebrow up, name+countdown centered, reminder down.
-        ActiveCardView(focus: focus, snapshot: snapshot, colors: colors, size: .small, date: date, distribute: true)
+        ActiveCardView(
+          focus: focus, snapshot: snapshot, colors: colors, size: .small, date: date,
+          distribute: true)
       } else {
         Spacer(minLength: 0)
       }
@@ -512,8 +518,11 @@ private struct MediumContent: View {
       HStack(alignment: .top, spacing: 12) {
         if let focus = snapshot.focus(at: date) {
           // Distribute to fill the pane height, matching the schedule beside it.
-          ActiveCardView(focus: focus, snapshot: snapshot, colors: colors, size: .medium, date: date, distribute: true)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+          ActiveCardView(
+            focus: focus, snapshot: snapshot, colors: colors, size: .medium, date: date,
+            distribute: true
+          )
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
         SalahHairline(accent: colors.accent)
         schedule
@@ -561,8 +570,10 @@ private struct LargeContent: View {
       VStack(spacing: 6) {
         ForEach(snapshot.prayers) { prayer in
           if isFocusRow(prayer), let focus {
-            ActiveCardView(focus: focus, snapshot: snapshot, colors: colors, size: .large, date: date)
-              .layoutPriority(1)
+            ActiveCardView(
+              focus: focus, snapshot: snapshot, colors: colors, size: .large, date: date
+            )
+            .layoutPriority(1)
           } else {
             ScheduleRowView(
               prayer: prayer,
@@ -585,8 +596,9 @@ private struct LargeContent: View {
         // passed rows absorb the deficit (instead of the hero compressing).
         if case .tomorrow(let fajr)? = focus {
           ActiveCardView(
-            focus: .tomorrow(fajr), snapshot: snapshot, colors: colors, size: .large, date: date)
-            .layoutPriority(1)
+            focus: .tomorrow(fajr), snapshot: snapshot, colors: colors, size: .large, date: date
+          )
+          .layoutPriority(1)
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -22,8 +22,8 @@ struct MenuHeroCard: View {
 
   private var tone: SalahWidgetTone {
     switch focus {
-    case .countUp: return .playingPrayerAudio       // green
-    case .countdown: return snapshot.tone(at: date) // normal / imminent
+    case .countUp: return .playingPrayerAudio  // green
+    case .countdown: return snapshot.tone(at: date)  // normal / imminent
     case .tomorrow: return .normal
     }
   }
