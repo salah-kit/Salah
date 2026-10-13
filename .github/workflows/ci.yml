@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build and test
+    # Xcode 27.0 on macOS 27, the toolchain the visual baselines were recorded with,
+    # so they're compared pixel for pixel here too. `xcode-27` is GitHub's image for it.
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      # The app embeds the widget extension, so building the app builds both.
+      - name: Build the app and the widget extension, unsigned
+        run: |
+          for configuration in Debug Release; do
+            xcodebuild build -project Guidance.xcodeproj -scheme Guidance \
+              -configuration "$configuration" -destination 'platform=macOS' \
+              -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
+            test -d ".derived/Build/Products/$configuration/Guidance.app/Contents/PlugIns/GuidanceWidgetsExtension.appex"
+          done
+
+      # GuidanceTests is a non-hosted bundle: it compiles the app's sources and never
+      # launches the app, so it needs no App Group or signing team.
+      - name: Test
+        run: |
+          xcodebuild test -project Guidance.xcodeproj -scheme Guidance \
+            -destination 'platform=macOS' -derivedDataPath .derived \
+            CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+
+      - name: Upload renders that differ from the baselines
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: baseline-failures
+          path: .baseline-failures
+          if-no-files-found: ignore
+
+  lint:
+    name: Lint
+    # Non-blocking for now: the imported code isn't formatted yet. B2 formats it with
+    # the shared .swift-format and makes this job blocking.
+    continue-on-error: true
+    runs-on: xcode-27
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: swift format lint
+        run: swift format lint --strict --recursive Guidance GuidanceWidgetsExtension Shared GuidanceTests

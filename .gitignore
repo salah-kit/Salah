@@ -24,6 +24,9 @@ xcuserdata/
 # Xcode - build output
 build/
 DerivedData/
+.derived/
+# Renders that failed a baseline comparison (GuidanceTests)
+.baseline-failures/
 .derivedData*/
 *.xcresult
 *.xcarchive

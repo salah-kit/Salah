@@ -1,0 +1,6 @@
+# STANDARD.md (CI): official actions are pinned to a major version.
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        "actions/*": ref-pin
