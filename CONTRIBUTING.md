@@ -93,9 +93,10 @@ automatic location, every alert off, English, the default menu-bar format. Two t
 follow on the Mac you run them on:
 
 - They quit a running Salah, and leave it quit.
-- Salah saves the settings it was launched with, so afterwards your own Salah has
-  automatic location and every alert off. Run them on a Mac where you don't rely on
-  Salah, or check its settings afterwards.
+- Salah saves the settings it was launched with. Afterwards your own Salah has
+  automatic location off, every alert off with its sound and reminders reset, English
+  as its language, and the default menu-bar format. Run them on a Mac where you don't
+  rely on Salah, or set it up again afterwards.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing, where it can't be clicked.
