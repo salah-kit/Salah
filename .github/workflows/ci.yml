@@ -58,6 +58,16 @@ jobs:
             -only-testing:SalahTests/VisualBaselineTests -testLanguage ar \
             CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
 
+      # Build-only: the UI tests launch the app, which opens its App Group container,
+      # and only a build signed with a team's provisioning profile can do that without
+      # macOS asking for permission. Hosted runners have no team. Run them locally with
+      # the SalahUITests scheme (CONTRIBUTING.md).
+      - name: Build the UI tests
+        if: ${{ !cancelled() }}
+        run: |
+          xcodebuild build-for-testing -project Salah.xcodeproj -scheme SalahUITests \
+            -destination 'platform=macOS' -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO
+
       # The directory's name starts with a dot, so its files only upload with
       # include-hidden-files. It's absent when no baseline failed.
       - name: Upload renders that differ from the baselines
@@ -71,9 +81,6 @@ jobs:
 
   lint:
     name: Lint
-    # Non-blocking for now: the imported code isn't formatted yet. B2 formats it with
-    # the shared .swift-format and makes this job blocking.
-    continue-on-error: true
     runs-on: xcode-27
     timeout-minutes: 15
     steps:
@@ -82,4 +89,26 @@ jobs:
           persist-credentials: false
 
       - name: swift format lint
-        run: swift format lint --strict --recursive Salah SalahWidgetsExtension Shared SalahTests
+        run: |
+          swift format lint --strict --recursive \
+            Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
+
+      # Salah.xcodeproj is generated from project.yml; this fails when they differ. The
+      # XcodeGen release is pinned by version and checksum, so its output can't drift.
+      - name: Check the generated project
+        env:
+          XCODEGEN_VERSION: 2.46.0
+          XCODEGEN_SHA256: 4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/xcodegen.zip" \
+            "https://github.com/yonaskolb/XcodeGen/releases/download/$XCODEGEN_VERSION/xcodegen.zip"
+          echo "$XCODEGEN_SHA256  $RUNNER_TEMP/xcodegen.zip" | shasum -a 256 -c -
+          unzip -q "$RUNNER_TEMP/xcodegen.zip" -d "$RUNNER_TEMP"
+          "$RUNNER_TEMP/xcodegen/bin/xcodegen" --quiet
+          changes="$(git status --porcelain -- Salah.xcodeproj)"
+          if [[ -n "$changes" ]]; then
+            echo "$changes"
+            git diff -- Salah.xcodeproj
+            echo "::error::Salah.xcodeproj differs from what project.yml generates. Run xcodegen and commit both."
+            exit 1
+          fi
