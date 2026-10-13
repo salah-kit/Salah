@@ -11,9 +11,12 @@ struct VisualBaselineTests {
 
   static let mode = BaselineMode.current
 
+  /// Each run renders its own share (`Baseline.processLanguages`): the main run
+  /// everything but the Arabic menu dropdown, the `-testLanguage ar` run only that.
   @Test(
     .enabled(if: BaselineMode.current.renders, BaselineMode.current.skipReason),
-    arguments: BaselineCatalog.all)
+    .enabled(if: !BaselineCatalog.forThisProcess.isEmpty, BaselineCatalog.processSkipReason),
+    arguments: BaselineCatalog.forThisProcess)
   func baseline(_ baseline: Baseline) throws {
     // Rendering settles on one image: no live clock, animation or timer leaks into
     // it (`stablePNG` throws if four renders in a row never agree).
@@ -32,22 +35,23 @@ struct VisualBaselineTests {
       }
       try BaselineStore.write(png, to: url)
     case .compare:
-      let recorded = try Data(contentsOf: url)
       let failure = BaselineStore.failuresDirectory.appending(path: baseline.path)
-      let checked = try PixelComparison.check(png, against: recorded, failure: failure)
-      let result = try #require(checked)
+      let checked = try PixelComparison.check(
+        png, against: try? Data(contentsOf: url), failure: failure)
+      let result = try #require(checked, "\(baseline.path): no recorded PNG to compare with")
       #expect(result.matches, "\(baseline.path): \(result)")
     case .skip:
       break
     }
   }
 
-  /// `README.md` and `index.json` match the catalog; record mode rewrites them and
-  /// `environment.json`.
+  /// `README.md` and `index.json` match the catalog; the main run's record mode
+  /// rewrites them and `environment.json`.
   @Test func indexMatchesTheCatalog() throws {
     let readme = BaselineStore.directory.appending(path: "README.md")
     let index = BaselineStore.directory.appending(path: "index.json")
     if Self.mode == .record {
+      guard Locale.preferredLanguages == Baseline.mainProcessLanguages else { return }
       try BaselineStore.write(Data(BaselineIndex.readme().utf8), to: readme)
       try BaselineStore.write(BaselineIndex.json(), to: index)
       let encoder = JSONEncoder()
@@ -122,8 +126,9 @@ struct VisualBaselineTests {
     }
   }
 
-  /// A failed comparison leaves the render in the failures folder; once the face
-  /// matches again, a render left by an earlier run is removed.
+  /// A failed comparison leaves the render in the failures folder, and so does a
+  /// missing baseline; once the face matches again, a render left by an earlier run
+  /// is removed.
   @Test func failedRendersStayOnlyWhileTheyDiffer() throws {
     let folder = FileManager.default.temporaryDirectory.appending(
       path: "GuidanceTests-failures-\(UUID().uuidString)")
@@ -138,6 +143,9 @@ struct VisualBaselineTests {
     let matching = try PixelComparison.check(plain, against: plain, failure: failure)
     #expect(matching?.matches == true)
     #expect(!FileManager.default.fileExists(atPath: failure.path))
+    let missing = try PixelComparison.check(plain, against: nil, failure: failure)
+    #expect(missing == nil)
+    #expect(FileManager.default.fileExists(atPath: failure.path))
   }
 
   @Test func catalogCoversEveryStateFamilyLanguageAndAppearance() {
@@ -149,6 +157,12 @@ struct VisualBaselineTests {
     #expect(
       all.filter { $0.surface == .preview }.count == PreviewScenario.allCases.count * 3 * 3 * 2)
     #expect(all.filter { $0.surface == .theme }.count == ThemePreset.allCases.count * 3 * 2)
+    // Only the Arabic menu dropdown renders in the Arabic run.
+    #expect(
+      all.filter { $0.processLanguages == ["ar"] }
+        == all.filter { $0.surface == .menu && $0.language == .ar })
+    #expect(
+      Set(all.map(\.processLanguages)) == [Baseline.mainProcessLanguages, ["ar"]])
   }
 
   /// The fixture moments land in the states they name.

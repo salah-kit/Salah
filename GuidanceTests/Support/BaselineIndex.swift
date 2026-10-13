@@ -12,23 +12,28 @@ enum BaselineIndex {
     var family: String?
     var language: String
     var appearance: String
+    /// The preferred languages of the process that renders it.
+    var processLanguages: [String]
     /// The rendered moment, in the fixture's zone.
     var moment: String
     var setup: String
   }
 
   struct Document: Codable, Equatable {
-    var schemaVersion = 1
+    var schemaVersion = 2
     var renderer = "SwiftUI ImageRenderer, scale \(BaselineRenderer.scale), PNG"
     var timeZone = "Asia/Riyadh"
     var fixture =
       "Makkah (21.4167, 39.8167), Umm al-Qura, Shafi, middle of the night; Fajr 30-min before-reminder; Maghrib 10-min before and 5-min after reminders"
-    var rerender = BaselineIndex.rerenderCommand
+    var rerender = BaselineIndex.rerenderCommands
     var baselines: [Entry]
   }
 
-  static let rerenderCommand =
-    "TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1 xcodebuild test -project Guidance.xcodeproj -scheme Guidance -destination 'platform=macOS' -only-testing:GuidanceTests/VisualBaselineTests CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM="
+  /// The main run, then the Arabic menu's run in an Arabic process.
+  static let rerenderCommands = [
+    "TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1 xcodebuild test -project Guidance.xcodeproj -scheme Guidance -destination 'platform=macOS' -only-testing:GuidanceTests/VisualBaselineTests CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=",
+    "TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1 xcodebuild test -project Guidance.xcodeproj -scheme Guidance -destination 'platform=macOS' -only-testing:GuidanceTests/VisualBaselineTests -testLanguage ar CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=",
+  ]
 
   static func timestamp(_ date: Date) -> String {
     let formatter = ISO8601DateFormatter()
@@ -62,7 +67,8 @@ enum BaselineIndex {
     return Entry(
       path: baseline.path, surface: baseline.surface.rawValue, state: baseline.state,
       family: baseline.family?.rawValue, language: baseline.language.rawValue,
-      appearance: baseline.appearance.rawValue, moment: timestamp(moment), setup: setup)
+      appearance: baseline.appearance.rawValue, processLanguages: baseline.processLanguages,
+      moment: timestamp(moment), setup: setup)
   }
 
   static func json() throws -> Data {
@@ -99,14 +105,14 @@ enum BaselineIndex {
     add()
     add("## Re-render or check")
     add()
-    add("From the repository root:")
+    add("From the repository root, both commands:")
     add()
     add("```sh")
-    add(rerenderCommand)
+    for command in rerenderCommands { add(command) }
     add("```")
     add()
     add(
-      "In the salah-kit workspace, run it through `orchestration/heavy.sh` and add `-derivedDataPath .derived`. Without the `TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1` prefix the same command compares every render with its PNG, fails on any difference and leaves the new render in `.baseline-failures/`. After a re-render, `git status GuidanceTests/Baselines` lists what changed."
+      "The first renders every image but the Arabic menu dropdown; the second, whose `-testLanguage ar` replaces the scheme's language pin, renders only the Arabic dropdown (below). In the salah-kit workspace, run them through `orchestration/heavy.sh` and add `-derivedDataPath .derived`. Without the `TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1` prefix the same commands compare every render with its PNG, fail on any difference and leave the new render in `.baseline-failures/`. After a re-render, `git status GuidanceTests/Baselines` lists what changed."
     )
     add()
     add("## How they're rendered")
@@ -118,7 +124,7 @@ enum BaselineIndex {
       "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language."
     )
     add(
-      "- The test process prefers US English only: the scheme's test arguments pass `-AppleLanguages (en-US)`, and `environment.json` records the list. With a tall script such as Arabic among the preferred languages, macOS gives system-font text taller lines in every language, so a machine's own list would change every image."
+      "- Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages."
     )
     add(
       "- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it."
@@ -184,7 +190,9 @@ enum BaselineIndex {
     for surface in Baseline.Surface.allCases {
       add("- `\(surface.rawValue)/`: \(all.filter { $0.surface == surface }.count) images")
     }
-    add("- total: \(all.count) images; `index.json` lists each with its inputs.")
+    add(
+      "- total: \(all.count) images, \(all.filter { $0.processLanguages != Baseline.mainProcessLanguages }.count) of them from the Arabic run; `index.json` lists each with its inputs."
+    )
     return lines.joined(separator: "\n") + "\n"
   }
 }

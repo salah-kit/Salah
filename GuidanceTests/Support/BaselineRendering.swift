@@ -347,10 +347,13 @@ enum PixelComparison {
   }
 
   /// Compares a render with its recorded PNG and keeps `failure` in step: the render
-  /// is left there when it differs, and one left by an earlier run is removed once
-  /// the render matches again.
-  static func check(_ rendered: Data, against recorded: Data, failure: URL) throws -> Result? {
-    guard let result = compare(rendered, to: recorded) else { return nil }
+  /// is left there when it differs or there's no readable PNG to compare with (nil),
+  /// and one left by an earlier run is removed once the render matches again.
+  static func check(_ rendered: Data, against recorded: Data?, failure: URL) throws -> Result? {
+    guard let recorded, let result = compare(rendered, to: recorded) else {
+      try BaselineStore.write(rendered, to: failure)
+      return nil
+    }
     if !result.matches {
       try BaselineStore.write(rendered, to: failure)
     } else if FileManager.default.fileExists(atPath: failure.path) {

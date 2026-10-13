@@ -32,6 +32,21 @@ nonisolated struct Baseline: Sendable, Hashable, Codable, CustomTestStringConver
   }
 
   var testDescription: String { path }
+
+  /// The preferred languages of the test run that renders most images: the scheme's
+  /// test arguments pin them.
+  static let mainProcessLanguages = ["en-US"]
+
+  /// The preferred languages of the process that renders this image. The menu-bar
+  /// dropdown runs in the app's own process, which the app gives its chosen language
+  /// (`AppLanguage.appleLanguagesOverride`), and Arabic gives text taller lines, so
+  /// the Arabic dropdown renders in an Arabic process (`-testLanguage ar`). English
+  /// and French render the same in their own languages as under US English. The
+  /// widget extension runs in the system's languages and the previews in Xcode's, so
+  /// those render as on a Mac whose languages are US English.
+  var processLanguages: [String] {
+    surface == .menu && language == .ar ? ["ar"] : Self.mainProcessLanguages
+  }
 }
 
 /// The states the widget spec's verification plan lists
@@ -108,6 +123,20 @@ nonisolated enum ThemePreset: String, Sendable, CaseIterable {
 }
 
 nonisolated enum BaselineCatalog {
+  /// The images this test process renders: those whose process languages are its own.
+  static var forThisProcess: [Baseline] {
+    all.filter { $0.processLanguages == Locale.preferredLanguages }
+  }
+
+  /// Why this process renders none of them.
+  static var processSkipReason: Comment? {
+    guard forThisProcess.isEmpty else { return nil }
+    return Comment(
+      rawValue:
+        "this process prefers \(Locale.preferredLanguages); baselines render in a process preferring [\"en-US\"] (the scheme's test arguments) or [\"ar\"] (-testLanguage ar)"
+    )
+  }
+
   static let all: [Baseline] = {
     var baselines: [Baseline] = []
     for language in Baseline.Language.allCases {

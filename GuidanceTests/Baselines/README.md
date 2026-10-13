@@ -4,19 +4,20 @@ PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBase
 
 ## Re-render or check
 
-From the repository root:
+From the repository root, both commands:
 
 ```sh
 TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1 xcodebuild test -project Guidance.xcodeproj -scheme Guidance -destination 'platform=macOS' -only-testing:GuidanceTests/VisualBaselineTests CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1 xcodebuild test -project Guidance.xcodeproj -scheme Guidance -destination 'platform=macOS' -only-testing:GuidanceTests/VisualBaselineTests -testLanguage ar CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
 ```
 
-In the salah-kit workspace, run it through `orchestration/heavy.sh` and add `-derivedDataPath .derived`. Without the `TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1` prefix the same command compares every render with its PNG, fails on any difference and leaves the new render in `.baseline-failures/`. After a re-render, `git status GuidanceTests/Baselines` lists what changed.
+The first renders every image but the Arabic menu dropdown; the second, whose `-testLanguage ar` replaces the scheme's language pin, renders only the Arabic dropdown (below). In the salah-kit workspace, run them through `orchestration/heavy.sh` and add `-derivedDataPath .derived`. Without the `TEST_RUNNER_GUIDANCE_RECORD_BASELINES=1` prefix the same commands compare every render with its PNG, fail on any difference and leave the new render in `.baseline-failures/`. After a re-render, `git status GuidanceTests/Baselines` lists what changed.
 
 ## How they're rendered
 
 - SwiftUI `ImageRenderer` at scale 1 (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized.
 - Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language.
-- The test process prefers US English only: the scheme's test arguments pass `-AppleLanguages (en-US)`, and `environment.json` records the list. With a tall script such as Arabic among the preferred languages, macOS gives system-font text taller lines in every language, so a machine's own list would change every image.
+- Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages.
 - Light and dark through the `colorScheme` environment; the default Nocturne theme follows it.
 - Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `GuidanceWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off.
 - Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
@@ -74,4 +75,4 @@ Theme presets: `nocturne`, `dawn`, `oasis`, `ink`, `highContrast`.
 - `menu/`: 60 images
 - `preview/`: 144 images
 - `theme/`: 30 images
-- total: 450 images; `index.json` lists each with its inputs.
+- total: 450 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.

@@ -420,14 +420,31 @@ struct PrayerAlertSchedulerCharacterizationTests {
     #expect(harness.center.delivered.map(\.identifier) == [fajr, foreign])
   }
 
-  /// Defect (§7.5 "Identity and updates", A-30): pending requests that are no longer
-  /// wanted are removed before any new request is added (`:330-349`). With timestamp
-  /// identifiers a moved alert is one of them, so its old request goes before the new
-  /// one exists. SalahAlerts replaces a changed request by adding it under its stable
-  /// identifier, without removing it first; it promises no atomic or gap-free batch,
-  /// and obsolete cleanup is reconciled. Requests still wanted aren't removed first,
-  /// and other apps' requests are left alone.
-  @Test func characterizesStaleRequestsAreRemovedBeforeAnyAdd() async throws {
+  /// Defect (§7.5 "Identity and updates", A-30): a moved alert's old request is
+  /// removed before its replacement is added (`:330-349`, with the timestamp
+  /// identifiers above), so for a moment the alert has no request. SalahAlerts
+  /// replaces a changed request by adding it under its stable identifier, without
+  /// removing it first; it promises no atomic or gap-free batch.
+  @Test func characterizesAMovedAlertIsRemovedBeforeItsReplacementIsAdded() async throws {
+    let harness = Harness(now: Fixture.date(6, 0), settings: [.dhuhr: .alert(false, before: 10)])
+    await harness.schedule([Self.today])
+    let preTen = Self.identifier("dhuhr", "preReminder", Self.today.dhuhr.adding(minutes: -10))
+    #expect(harness.center.pending.map(\.identifier) == [preTen])
+
+    harness.preferences.setConfig(.alert(false, before: 15), for: .dhuhr)
+    await harness.schedule([Self.today])
+    let preFifteen = Self.identifier("dhuhr", "preReminder", Self.today.dhuhr.adding(minutes: -15))
+    let calls = harness.center.calls
+    let removal = try #require(calls.firstIndex(of: .removePending([preTen])))
+    let addition = try #require(calls.firstIndex(of: .add(preFifteen)))
+    #expect(removal < addition)
+    #expect(harness.center.pending.map(\.identifier) == [preFifteen])
+  }
+
+  /// Own pending requests that are no longer wanted are removed; ones still wanted
+  /// stay, and other apps' requests are left alone (§7.5 keeps reconciling obsolete
+  /// requests and sets no order for it, so this test pins none).
+  @Test func obsoleteOwnRequestsAreRemovedAndOthersKept() async throws {
     let stale = "guidance.prayer.asr.prayerTime.1"
     let wanted = Self.identifier("maghrib", "prayerTime", Self.today.maghrib)
     let foreign = "com.example.other"
@@ -443,10 +460,10 @@ struct PrayerAlertSchedulerCharacterizationTests {
     }
     await harness.schedule([Self.today])
 
-    let calls = harness.center.calls
-    let removal = try #require(calls.firstIndex(of: .removePending([stale])))
-    let firstAdd = try #require(calls.firstIndex { if case .add = $0 { true } else { false } })
-    #expect(removal < firstAdd)
+    let removals = harness.center.calls.compactMap {
+      if case .removePending(let ids) = $0 { ids } else { nil }
+    }
+    #expect(removals == [[stale]])
     #expect(
       Set(harness.center.pending.map(\.identifier)) == [
         wanted, foreign, Self.identifier("isha", "prayerTime", Self.today.isha),
@@ -539,19 +556,28 @@ struct PrayerAlertSchedulerCharacterizationTests {
       ])
   }
 
-  @Test func adhanBeatsABeforeReminderAtTheSameInstant() async {
-    // Isha (20:30) minus 90 minutes is Maghrib (19:00).
-    #expect(Self.today.isha.adding(minutes: -90) == Self.today.maghrib)
+  /// The before-reminder must be generated first, or the adhan would win on order
+  /// alone: events are built day by day in prayer order, sorted stably by time, and
+  /// the first of equals is kept. So tomorrow is passed before today, and an Isha
+  /// adjustment moves today's Isha onto tomorrow's two-hour Fajr reminder (an
+  /// instant no real day gives; only the tie matters here).
+  @Test func adhanBeatsABeforeReminderAtTheSameInstant() async throws {
+    let reminder = Self.tomorrow.fajr.adding(minutes: -120)
+    let adjustment = Int(reminder.timeIntervalSince(Self.today.isha) / 60)
+    let today = Fixture.prayerTimes(ishaAdjustment: adjustment)
+    #expect(today.isha == reminder)
     let harness = Harness(
-      now: Self.today.maghrib.adding(seconds: 0.5),
+      now: reminder.adding(seconds: 0.5),
       settings: [
-        .maghrib: .alert(sound: .makkah),
-        .isha: .alert(false, before: 90, beforeSound: .istanbul),
+        .isha: .alert(sound: .makkah),
+        .fajr: .alert(false, before: 120, beforeSound: .istanbul),
       ])
-    await harness.schedule()
+    await harness.schedule([Self.tomorrow, today])
+    // Both are due and delivered; only the adhan plays.
+    #expect(harness.center.immediate.count == 2)
     #expect(harness.audio.plays.count == 1)
     #expect(Self.soundFile(harness.audio.plays.first) == "Adhan-Makkah.mp3")
-    #expect(harness.audio.plays.first?.request.context.prayer == .maghrib)
+    #expect(harness.audio.plays.first?.request.context.prayer == .isha)
   }
 
   @Test func beforeReminderBeatsAnAfterReminderAtTheSameInstant() async {
