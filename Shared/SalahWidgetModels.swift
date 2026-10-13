@@ -412,7 +412,7 @@ nonisolated enum SalahWidgetRowState: Equatable {
 /// layer) and shipped inside the snapshot so the widget needs zero catalog access.
 nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   // Rendered by the widget:
-  var guidance: String
+  var appName: String
   var nextPrayer: String
   var today: String
   var tomorrow: String
@@ -442,7 +442,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   var after: String
 
   static let english = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "Next Prayer",
     today: "Today",
     tomorrow: "Tomorrow",
@@ -455,7 +455,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "Stop",
     stopAudio: "Stop Audio",
     tapToStop: "Tap to stop",
-    openToUpdate: "Open Guidance to update",
+    openToUpdate: "Open Salah to update",
     playingAdhan: "Playing Adhan",
     playingDua: "Playing Du’ā’",
     playingPreReminder: "Pre-reminder",
@@ -467,7 +467,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let arabic = SalahWidgetLabels(
-    guidance: "هداية",
+    appName: "صلاة",
     nextPrayer: "الصلاة القادمة",
     today: "اليوم",
     tomorrow: "غدًا",
@@ -480,7 +480,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "إيقاف",
     stopAudio: "إيقاف الصوت",
     tapToStop: "اضغط للإيقاف",
-    openToUpdate: "افتح هداية للتحديث",
+    openToUpdate: "افتح صلاة للتحديث",
     playingAdhan: "جارٍ تشغيل الأذان",
     playingDua: "جارٍ تشغيل الدعاء",
     playingPreReminder: "تذكير قبل الصلاة",
@@ -492,7 +492,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let french = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "Prochaine prière",
     today: "Aujourd’hui",
     tomorrow: "Demain",
@@ -505,7 +505,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "Arrêter",
     stopAudio: "Arrêter le son",
     tapToStop: "Appuyer pour arrêter",
-    openToUpdate: "Ouvrir Guidance pour actualiser",
+    openToUpdate: "Ouvrir Salah pour actualiser",
     playingAdhan: "Adhan en cours",
     playingDua: "Du’ā’ en cours",
     playingPreReminder: "Rappel avant",
@@ -517,7 +517,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let urdu = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "اگلی نماز",
     today: "آج",
     tomorrow: "کل",
@@ -530,7 +530,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "روکیں",
     stopAudio: "آواز روکیں",
     tapToStop: "روکنے کے لیے ٹیپ کریں",
-    openToUpdate: "اپ ڈیٹ کے لیے Guidance کھولیں",
+    openToUpdate: "اپ ڈیٹ کے لیے Salah کھولیں",
     playingAdhan: "اذان چل رہی ہے",
     playingDua: "دعا چل رہی ہے",
     playingPreReminder: "نماز سے پہلے یاددہانی",
@@ -542,7 +542,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let indonesian = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "Salat Berikutnya",
     today: "Hari Ini",
     tomorrow: "Besok",
@@ -555,7 +555,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "Hentikan",
     stopAudio: "Hentikan Audio",
     tapToStop: "Ketuk untuk menghentikan",
-    openToUpdate: "Buka Guidance untuk memperbarui",
+    openToUpdate: "Buka Salah untuk memperbarui",
     playingAdhan: "Memutar Azan",
     playingDua: "Memutar Doa",
     playingPreReminder: "Pengingat sebelum",
@@ -567,7 +567,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let turkish = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "Sonraki Namaz",
     today: "Bugün",
     tomorrow: "Yarın",
@@ -580,7 +580,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "Durdur",
     stopAudio: "Sesi Durdur",
     tapToStop: "Durdurmak için dokun",
-    openToUpdate: "Güncellemek için Guidance'ı aç",
+    openToUpdate: "Güncellemek için Salah'ı aç",
     playingAdhan: "Ezan Çalıyor",
     playingDua: "Dua Çalıyor",
     playingPreReminder: "Namaz öncesi hatırlatma",
@@ -592,7 +592,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let persian = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "نماز بعدی",
     today: "امروز",
     tomorrow: "فردا",
@@ -605,7 +605,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "توقف",
     stopAudio: "توقف صدا",
     tapToStop: "برای توقف ضربه بزنید",
-    openToUpdate: "برای به‌روزرسانی Guidance را باز کنید",
+    openToUpdate: "برای به‌روزرسانی Salah را باز کنید",
     playingAdhan: "در حال پخش اذان",
     playingDua: "در حال پخش دعا",
     playingPreReminder: "یادآور پیش از نماز",
@@ -617,7 +617,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let bengali = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "পরবর্তী নামাজ",
     today: "আজ",
     tomorrow: "আগামীকাল",
@@ -630,7 +630,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "বন্ধ",
     stopAudio: "অডিও বন্ধ করুন",
     tapToStop: "বন্ধ করতে ট্যাপ করুন",
-    openToUpdate: "আপডেট করতে Guidance খুলুন",
+    openToUpdate: "আপডেট করতে Salah খুলুন",
     playingAdhan: "আজান বাজছে",
     playingDua: "দোয়া বাজছে",
     playingPreReminder: "নামাজের আগে অনুস্মারক",
@@ -642,7 +642,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
   )
 
   static let malay = SalahWidgetLabels(
-    guidance: "Guidance",
+    appName: "Salah",
     nextPrayer: "Solat Seterusnya",
     today: "Hari Ini",
     tomorrow: "Esok",
@@ -655,7 +655,7 @@ nonisolated struct SalahWidgetLabels: Codable, Equatable, Sendable {
     stopShort: "Henti",
     stopAudio: "Hentikan Audio",
     tapToStop: "Ketik untuk hentikan",
-    openToUpdate: "Buka Guidance untuk kemas kini",
+    openToUpdate: "Buka Salah untuk kemas kini",
     playingAdhan: "Memainkan Azan",
     playingDua: "Memainkan Du’ā’",
     playingPreReminder: "Peringatan sebelum",

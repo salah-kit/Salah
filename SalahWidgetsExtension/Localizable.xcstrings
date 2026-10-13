@@ -65,56 +65,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "افتح هداية لإعداد أوقات الصلاة"
+            "state": "needs_review",
+            "value": "افتح صلاة لإعداد أوقات الصلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Guidance to set up prayer times"
+            "value": "Open Salah to set up prayer times"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrez Guidance pour configurer les heures de prière"
+            "value": "Ouvrez Salah pour configurer les heures de prière"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "اوقاتِ نماز ترتیب دینے کے لیے Guidance کھولیں"
+            "value": "اوقاتِ نماز ترتیب دینے کے لیے Salah کھولیں"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buka Guidance untuk menyiapkan jadwal salat"
+            "value": "Buka Salah untuk menyiapkan jadwal salat"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Namaz vakitlerini ayarlamak için Guidance'ı açın"
+            "value": "Namaz vakitlerini ayarlamak için Salah'ı açın"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "برای تنظیم اوقات نماز Guidance را باز کنید"
+            "value": "برای تنظیم اوقات نماز Salah را باز کنید"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "নামাজের সময় সেট আপ করতে Guidance খুলুন"
+            "value": "নামাজের সময় সেট আপ করতে Salah খুলুন"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buka Guidance untuk menetapkan waktu solat"
+            "value": "Buka Salah untuk menetapkan waktu solat"
           }
         }
       }
@@ -183,56 +183,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "هداية - أوقات الصلاة"
+            "state": "needs_review",
+            "value": "صلاة - أوقات الصلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Prayer Times"
+            "value": "Salah Prayer Times"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - Heures de prière"
+            "value": "Salah - Heures de prière"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - اوقاتِ نماز"
+            "value": "Salah - اوقاتِ نماز"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - Jadwal Salat"
+            "value": "Salah - Jadwal Salat"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - Namaz Vakitleri"
+            "value": "Salah - Namaz Vakitleri"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - اوقات نماز"
+            "value": "Salah - اوقات نماز"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - নামাজের সময়"
+            "value": "Salah - নামাজের সময়"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance - Waktu Solat"
+            "value": "Salah - Waktu Solat"
           }
         }
       }

@@ -122,56 +122,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "هداية 3.0"
+            "state": "needs_review",
+            "value": "صلاة 1.0"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance 3.0"
+            "value": "Salah 1.0"
           }
         }
       }
@@ -238,56 +238,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "حول هداية"
+            "state": "needs_review",
+            "value": "حول صلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "About Guidance"
+            "value": "About Salah"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "À propos de Guidance"
+            "value": "À propos de Salah"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance کے بارے میں"
+            "value": "Salah کے بارے میں"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tentang Guidance"
+            "value": "Tentang Salah"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Hakkında"
+            "value": "Salah Hakkında"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "درباره Guidance"
+            "value": "درباره Salah"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance সম্পর্কে"
+            "value": "Salah সম্পর্কে"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Perihal Guidance"
+            "value": "Perihal Salah"
           }
         }
       }
@@ -296,56 +296,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "مساعدة هداية"
+            "state": "needs_review",
+            "value": "مساعدة صلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Help"
+            "value": "Salah Help"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aide Guidance"
+            "value": "Aide Salah"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance کی مدد"
+            "value": "Salah کی مدد"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bantuan Guidance"
+            "value": "Bantuan Salah"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Yardımı"
+            "value": "Salah Yardımı"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "راهنمای Guidance"
+            "value": "راهنمای Salah"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance সহায়তা"
+            "value": "Salah সহায়তা"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bantuan Guidance"
+            "value": "Bantuan Salah"
           }
         }
       }
@@ -414,56 +414,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "إنهاء هداية"
+            "state": "needs_review",
+            "value": "إنهاء صلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quit Guidance"
+            "value": "Quit Salah"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quitter Guidance"
+            "value": "Quitter Salah"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance بند کریں"
+            "value": "Salah بند کریں"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Keluar dari Guidance"
+            "value": "Keluar dari Salah"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance'tan Çık"
+            "value": "Salah'tan Çık"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "خروج از Guidance"
+            "value": "خروج از Salah"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance বন্ধ করুন"
+            "value": "Salah বন্ধ করুন"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Keluar dari Guidance"
+            "value": "Keluar dari Salah"
           }
         }
       }
@@ -5986,56 +5986,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "تشغيل هداية عند تسجيل الدخول"
+            "state": "needs_review",
+            "value": "تشغيل صلاة عند تسجيل الدخول"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start Guidance at login"
+            "value": "Start Salah at login"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lancer Guidance à la connexion"
+            "value": "Lancer Salah à la connexion"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "لاگ اِن پر Guidance شروع کریں"
+            "value": "لاگ اِن پر Salah شروع کریں"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Jalankan Guidance saat masuk"
+            "value": "Jalankan Salah saat masuk"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance'ı oturum açılışında başlat"
+            "value": "Salah'ı oturum açılışında başlat"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "اجرای Guidance هنگام ورود"
+            "value": "اجرای Salah هنگام ورود"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "লগইনে Guidance চালু করুন"
+            "value": "লগইনে Salah চালু করুন"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mulakan Guidance semasa log masuk"
+            "value": "Mulakan Salah semasa log masuk"
           }
         }
       }
@@ -7088,56 +7088,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "خدمات الموقع لتطبيق هداية غير مفعلة."
+            "state": "needs_review",
+            "value": "خدمات الموقع لتطبيق صلاة غير مفعلة."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Location services for Guidance are not enabled."
+            "value": "Location services for Salah are not enabled."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les services de localisation ne sont pas activés pour Guidance."
+            "value": "Les services de localisation ne sont pas activés pour Salah."
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance کے لیے مقام کی خدمات فعال نہیں ہیں۔"
+            "value": "Salah کے لیے مقام کی خدمات فعال نہیں ہیں۔"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Layanan lokasi untuk Guidance tidak diaktifkan."
+            "value": "Layanan lokasi untuk Salah tidak diaktifkan."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance için konum servisleri etkin değil."
+            "value": "Salah için konum servisleri etkin değil."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "خدمات موقعیت مکانی برای Guidance فعال نیست."
+            "value": "خدمات موقعیت مکانی برای Salah فعال نیست."
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance-এর জন্য অবস্থান সেবা সক্রিয় নেই।"
+            "value": "Salah-এর জন্য অবস্থান সেবা সক্রিয় নেই।"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Perkhidmatan lokasi untuk Guidance tidak diaktifkan."
+            "value": "Perkhidmatan lokasi untuk Salah tidak diaktifkan."
           }
         }
       }
@@ -8422,56 +8422,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "تنبيهات هداية متوقفة في إعدادات النظام. فعّلها من إعدادات النظام."
+            "state": "needs_review",
+            "value": "تنبيهات صلاة متوقفة في إعدادات النظام. فعّلها من إعدادات النظام."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance notifications are off in System Settings. Enable them in System Settings."
+            "value": "Salah notifications are off in System Settings. Enable them in System Settings."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les notifications de Guidance sont désactivées dans Réglages Système. Activez-les dans Réglages Système."
+            "value": "Les notifications de Salah sont désactivées dans Réglages Système. Activez-les dans Réglages Système."
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance کے نوٹیفکیشنز سسٹم کی ترتیبات میں بند ہیں۔ انہیں سسٹم کی ترتیبات میں فعال کریں۔"
+            "value": "Salah کے نوٹیفکیشنز سسٹم کی ترتیبات میں بند ہیں۔ انہیں سسٹم کی ترتیبات میں فعال کریں۔"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notifikasi Guidance nonaktif di Pengaturan Sistem. Aktifkan di Pengaturan Sistem."
+            "value": "Notifikasi Salah nonaktif di Pengaturan Sistem. Aktifkan di Pengaturan Sistem."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance bildirimleri Sistem Ayarları'nda kapalı. Sistem Ayarları'ndan etkinleştirin."
+            "value": "Salah bildirimleri Sistem Ayarları'nda kapalı. Sistem Ayarları'ndan etkinleştirin."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "اعلان‌های Guidance در تنظیمات سیستم خاموش است. آن‌ها را در تنظیمات سیستم فعال کنید."
+            "value": "اعلان‌های Salah در تنظیمات سیستم خاموش است. آن‌ها را در تنظیمات سیستم فعال کنید."
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "সিস্টেম সেটিংসে Guidance-এর বিজ্ঞপ্তি বন্ধ আছে। সিস্টেম সেটিংস থেকে এগুলো সক্রিয় করুন।"
+            "value": "সিস্টেম সেটিংসে Salah-এর বিজ্ঞপ্তি বন্ধ আছে। সিস্টেম সেটিংস থেকে এগুলো সক্রিয় করুন।"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pemberitahuan Guidance dimatikan dalam Tetapan Sistem. Aktifkannya dalam Tetapan Sistem."
+            "value": "Pemberitahuan Salah dimatikan dalam Tetapan Sistem. Aktifkannya dalam Tetapan Sistem."
           }
         }
       }
@@ -8487,7 +8487,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance could not request notification permission. Check System Settings."
+            "value": "Salah could not request notification permission. Check System Settings."
           }
         },
         "fr": {
@@ -8499,37 +8499,37 @@
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance نوٹیفکیشن کی اجازت طلب نہیں کر سکا۔ سسٹم کی ترتیبات چیک کریں۔"
+            "value": "Salah نوٹیفکیشن کی اجازت طلب نہیں کر سکا۔ سسٹم کی ترتیبات چیک کریں۔"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance tidak dapat meminta izin notifikasi. Periksa Pengaturan Sistem."
+            "value": "Salah tidak dapat meminta izin notifikasi. Periksa Pengaturan Sistem."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance bildirim izni isteyemedi. Sistem Ayarları'nı kontrol edin."
+            "value": "Salah bildirim izni isteyemedi. Sistem Ayarları'nı kontrol edin."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance نتوانست اجازه اعلان را درخواست کند. تنظیمات سیستم را بررسی کنید."
+            "value": "Salah نتوانست اجازه اعلان را درخواست کند. تنظیمات سیستم را بررسی کنید."
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance বিজ্ঞপ্তির অনুমতি চাইতে পারেনি। সিস্টেম সেটিংস পরীক্ষা করুন।"
+            "value": "Salah বিজ্ঞপ্তির অনুমতি চাইতে পারেনি। সিস্টেম সেটিংস পরীক্ষা করুন।"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance tidak dapat meminta kebenaran pemberitahuan. Semak Tetapan Sistem."
+            "value": "Salah tidak dapat meminta kebenaran pemberitahuan. Semak Tetapan Sistem."
           }
         }
       }
@@ -9930,56 +9930,56 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "إعدادات هداية"
+            "state": "needs_review",
+            "value": "إعدادات صلاة"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Settings"
+            "value": "Salah Settings"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Réglages de Guidance"
+            "value": "Réglages de Salah"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance کی ترتیبات"
+            "value": "Salah کی ترتیبات"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pengaturan Guidance"
+            "value": "Pengaturan Salah"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance Ayarları"
+            "value": "Salah Ayarları"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "تنظیمات Guidance"
+            "value": "تنظیمات Salah"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guidance সেটিংস"
+            "value": "Salah সেটিংস"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tetapan Guidance"
+            "value": "Tetapan Salah"
           }
         }
       }

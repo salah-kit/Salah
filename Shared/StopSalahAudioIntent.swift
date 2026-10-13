@@ -22,7 +22,7 @@ import Foundation
 nonisolated struct StopSalahAudioIntent: AppIntent {
   static var title: LocalizedStringResource { "Stop Adhan" }
   static var description: IntentDescription {
-    IntentDescription("Stops the currently playing Guidance adhan or reminder.")
+    IntentDescription("Stops the currently playing Salah adhan or reminder.")
   }
 
   func perform() async throws -> some IntentResult {

@@ -1,6 +1,6 @@
 # Visual baselines
 
-PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. A2 first recorded them from the imported Guidance app (`4bc00e9` plus test seams), before the rebrand; the folder's `git log` shows every later re-record. B2 re-renders them after the rebrand and D1 after the move onto SalahKit; each diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand.
+PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. A2 first recorded them from the imported Guidance app (`4bc00e9` plus test seams), before the rebrand; the folder's `git log` shows every later re-record. B2 re-recorded them after the rebrand: only the 36 setup and stale widget faces changed, the two whose message names the app. D1 re-renders them after the move onto SalahKit and diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand.
 
 ## Re-render or check
 
