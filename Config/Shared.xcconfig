@@ -1,0 +1,7 @@
+// Settings shared by every target. Signing is per developer: copy
+// Local.xcconfig.example to Local.xcconfig (gitignored) and set your team there.
+
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM =
+
+#include? "Local.xcconfig"

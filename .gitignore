@@ -67,3 +67,6 @@ DerivedData/
 .agent/
 .agents/
 .code/
+
+# Per-developer signing (Config/Local.xcconfig.example)
+Local.xcconfig
