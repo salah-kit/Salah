@@ -208,7 +208,7 @@ enum BuiltInAdhanSound: String, Codable, CaseIterable, Hashable {
   }
 
   var bundledURL: URL? {
-    Bundle.main.url(forResource: rawValue, withExtension: fileExtension)
+    AppResources.bundle.url(forResource: rawValue, withExtension: fileExtension)
   }
 
   private var localizationKey: String.LocalizationValue {

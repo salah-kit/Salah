@@ -13,17 +13,29 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   private static let handledEventIdentifierRetention: TimeInterval = 3 * 60 * 60
   private static let deliveredNotificationRetention: TimeInterval = 2 * 24 * 60 * 60
 
-  private let preferences = Preferences.shared
-  private let center = UNUserNotificationCenter.current()
-  private let audioPlaybackController: AudioPlaybackController
+  private let preferences: Preferences
+  private let center: any PrayerAlertNotificationCenter
+  private let clock: PrayerAlertClock
+  private let audioPlaybackController: any PrayerAlertAudioPlaying
   private var pendingEvents: [PrayerAlertEvent] = []
   private var handledEventIdentifiers: [String: Date] = [:]
   nonisolated(unsafe) private var nextAlertTimer: Timer?
-  private var notificationUpdateTask: Task<Void, Never>?
+  /// The latest pending-request update. Readable so tests can await it.
+  private(set) var notificationUpdateTask: Task<Void, Never>?
   private var authorizationRequestTask: Task<UNAuthorizationStatus, Never>?
 
-  init(audioPlaybackController: AudioPlaybackController = AudioPlaybackController()) {
+  /// The defaults are the app's wiring; tests inject the preferences, a fake
+  /// notification center, a recording audio player and a fixed clock.
+  init(
+    audioPlaybackController: any PrayerAlertAudioPlaying = AudioPlaybackController(),
+    preferences: Preferences = .shared,
+    center: any PrayerAlertNotificationCenter = UNUserNotificationCenter.current(),
+    clock: PrayerAlertClock = .system
+  ) {
     self.audioPlaybackController = audioPlaybackController
+    self.preferences = preferences
+    self.center = center
+    self.clock = clock
     super.init()
 
     center.delegate = self
@@ -56,7 +68,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
       }
       .sorted { $0.time < $1.time }
 
-    let now = Date()
+    let now = clock.now()
     pruneHandledEventIdentifiers(now: now)
 
     pendingEvents = events.filter { event in
@@ -80,7 +92,8 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
     checkPendingAlerts(now: now)
   }
 
-  func checkPendingAlerts(now: Date = Date()) {
+  func checkPendingAlerts(now: Date? = nil) {
+    let now = now ?? clock.now()
     pruneHandledEventIdentifiers(now: now)
 
     guard !pendingEvents.isEmpty else {
@@ -268,7 +281,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
     guard let nextEvent = pendingEvents.first else { return }
 
     let fireDate = max(
-      Date().addingTimeInterval(0.25),
+      clock.now().addingTimeInterval(0.25),
       nextEvent.time.addingTimeInterval(0.15)
     )
 
@@ -279,7 +292,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
     }
 
     timer.tolerance = 0.75
-    RunLoop.main.add(timer, forMode: .common)
+    clock.scheduleTimer(timer)
     nextAlertTimer = timer
   }
 
@@ -378,13 +391,13 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   private func removeStaleDeliveredGuidanceNotifications(
     validNotifications: [String: DeliveredNotificationSnapshot]?
   ) async {
-    let cutoffDate = Date().addingTimeInterval(-Self.deliveredNotificationRetention)
-    let delivered = await center.deliveredNotifications()
+    let cutoffDate = clock.now().addingTimeInterval(-Self.deliveredNotificationRetention)
+    let delivered = await center.deliveredNotificationSummaries()
     guard !Task.isCancelled else { return }
 
     let staleDeliveredGuidanceIDs =
       delivered
-      .filter { $0.request.identifier.hasPrefix(PrayerAlertEvent.identifierPrefix) }
+      .filter { $0.identifier.hasPrefix(PrayerAlertEvent.identifierPrefix) }
       .filter {
         shouldRemoveDeliveredNotification(
           $0,
@@ -392,7 +405,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
           validNotifications: validNotifications
         )
       }
-      .map(\.request.identifier)
+      .map(\.identifier)
 
     if !staleDeliveredGuidanceIDs.isEmpty {
       center.removeDeliveredNotifications(withIdentifiers: staleDeliveredGuidanceIDs)
@@ -400,7 +413,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func shouldRemoveDeliveredNotification(
-    _ notification: UNNotification,
+    _ notification: PrayerAlertDeliveredNotification,
     cutoffDate: Date,
     validNotifications: [String: DeliveredNotificationSnapshot]?
   ) -> Bool {
@@ -408,11 +421,10 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
 
     guard let validNotifications else { return false }
 
-    let identifier = notification.request.identifier
+    let identifier = notification.identifier
     guard let expected = validNotifications[identifier] else { return true }
 
-    let content = notification.request.content
-    return content.title != expected.title || content.body != expected.body
+    return notification.title != expected.title || notification.body != expected.body
   }
 
   private func deliverImmediateNotificationsIfNeeded(
@@ -433,7 +445,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
 
     let pendingIdentifiers = Set((await center.pendingNotificationRequests()).map(\.identifier))
     let deliveredIdentifiers = Set(
-      (await center.deliveredNotifications()).map { $0.request.identifier })
+      (await center.deliveredNotificationSummaries()).map(\.identifier))
 
     for event in events
     where !pendingIdentifiers.contains(event.identifier)
@@ -450,9 +462,9 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func notificationAuthorizationAllowsScheduling(shouldRequest: Bool) async -> Bool {
-    let settings = await center.notificationSettings()
-    guard shouldRequest, settings.authorizationStatus == .notDetermined else {
-      return notificationsCanDeliver(settings.authorizationStatus)
+    let authorizationStatus = await center.authorizationStatus()
+    guard shouldRequest, authorizationStatus == .notDetermined else {
+      return notificationsCanDeliver(authorizationStatus)
     }
 
     if let authorizationRequestTask {
@@ -469,7 +481,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
         )
       }
 
-      return await self.center.notificationSettings().authorizationStatus
+      return await self.center.authorizationStatus()
     }
 
     authorizationRequestTask = task
@@ -490,7 +502,7 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func notificationRequest(for event: PrayerAlertEvent) -> UNNotificationRequest? {
-    guard event.time > Date().addingTimeInterval(Self.dueAudioLeeway) else { return nil }
+    guard event.time > clock.now().addingTimeInterval(Self.dueAudioLeeway) else { return nil }
 
     let content = notificationContent(for: event)
     var calendar = Calendar(identifier: .gregorian)
@@ -591,7 +603,9 @@ final class PrayerAlertScheduler: NSObject, UNUserNotificationCenterDelegate {
   private func duaRequest(for event: PrayerAlertEvent) -> AudioPlaybackRequest? {
     guard event.kind == .prayerTime else { return nil }
     guard !preferences.silentMode, preferences.duaEnabled else { return nil }
-    guard let duaURL = Bundle.main.url(forResource: "Dua", withExtension: "m4a") else { return nil }
+    guard let duaURL = AppResources.bundle.url(forResource: "Dua", withExtension: "m4a") else {
+      return nil
+    }
 
     return AudioPlaybackRequest(
       url: duaURL,
@@ -675,5 +689,69 @@ private struct DeliveredNotificationSnapshot: Equatable {
   init(event: PrayerAlertEvent) {
     title = event.title
     body = event.message
+  }
+}
+
+// MARK: - Test seams
+
+/// The part of `UNUserNotificationCenter` the scheduler uses. Test seam: tests pass
+/// a fake that records requests and serves pending and delivered notifications.
+protocol PrayerAlertNotificationCenter: AnyObject {
+  var delegate: (any UNUserNotificationCenterDelegate)? { get set }
+  func authorizationStatus() async -> UNAuthorizationStatus
+  func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
+  func pendingNotificationRequests() async -> [UNNotificationRequest]
+  func removePendingNotificationRequests(withIdentifiers identifiers: [String])
+  func deliveredNotificationSummaries() async -> [PrayerAlertDeliveredNotification]
+  func removeDeliveredNotifications(withIdentifiers identifiers: [String])
+  func add(_ request: UNNotificationRequest) async throws
+}
+
+/// What delivered-notification housekeeping reads from a `UNNotification`, which
+/// tests can't construct.
+struct PrayerAlertDeliveredNotification {
+  var identifier: String
+  var date: Date
+  var title: String
+  var body: String
+}
+
+extension UNUserNotificationCenter: PrayerAlertNotificationCenter {
+  func authorizationStatus() async -> UNAuthorizationStatus {
+    await notificationSettings().authorizationStatus
+  }
+
+  func deliveredNotificationSummaries() async -> [PrayerAlertDeliveredNotification] {
+    await deliveredNotifications().map { notification in
+      PrayerAlertDeliveredNotification(
+        identifier: notification.request.identifier,
+        date: notification.date,
+        title: notification.request.content.title,
+        body: notification.request.content.body
+      )
+    }
+  }
+}
+
+/// The part of `AudioPlaybackController` the scheduler uses. Test seam: tests record
+/// the requests instead of playing them.
+protocol PrayerAlertAudioPlaying: AnyObject {
+  func play(_ request: AudioPlaybackRequest, followUp: AudioPlaybackRequest?)
+  func stop()
+}
+
+extension AudioPlaybackController: PrayerAlertAudioPlaying {}
+
+/// The scheduler's clock and run loop. Test seam: tests pass a fixed `now` and keep
+/// the alert timer off the run loop, so it fires only when a test fires it.
+struct PrayerAlertClock {
+  var now: () -> Date
+  var scheduleTimer: (Timer) -> Void
+
+  static var system: PrayerAlertClock {
+    PrayerAlertClock(
+      now: { Date() },
+      scheduleTimer: { RunLoop.main.add($0, forMode: .common) }
+    )
   }
 }

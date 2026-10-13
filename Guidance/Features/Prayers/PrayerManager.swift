@@ -250,17 +250,12 @@ final class PrayerManager {
     let coords = Coordinates(latitude: preferences.latitude, longitude: preferences.longitude)
     let cal = prayerCalendar
     let now = Date()
-    let todayComponents = cal.dateComponents([.year, .month, .day], from: now)
-    currentDay = todayComponents
+    currentDay = cal.dateComponents([.year, .month, .day], from: now)
 
-    guard
-      let today = cal.date(from: todayComponents),
-      let yesterday = cal.date(byAdding: .day, value: -1, to: today),
-      let tomorrow = cal.date(byAdding: .day, value: 1, to: today)
-    else { return }
-
-    let yesterdayComponents = cal.dateComponents([.year, .month, .day], from: yesterday)
-    let tomorrowComponents = cal.dateComponents([.year, .month, .day], from: tomorrow)
+    guard let window = Self.alertWindowDays(around: now, calendar: cal) else { return }
+    let (yesterday, yesterdayComponents) = window.yesterday
+    let (today, todayComponents) = window.today
+    let (tomorrow, tomorrowComponents) = window.tomorrow
 
     let yesterdayParameters = calculationParameters(for: yesterday)
     let todayParameters = calculationParameters(for: today)
@@ -310,6 +305,28 @@ final class PrayerManager {
 
     updateCurrentPrayer()
     publishWidgetSnapshot(reload: true)
+  }
+
+  /// The days `calculatePrayerTimes` computes and hands to the alert scheduler:
+  /// yesterday, today and tomorrow in the prayer calendar, each as the start of
+  /// the day and the components Adhan takes. Static so tests can pin the window.
+  static func alertWindowDays(around now: Date, calendar cal: Calendar) -> (
+    yesterday: (Date, DateComponents), today: (Date, DateComponents),
+    tomorrow: (Date, DateComponents)
+  )? {
+    let todayComponents = cal.dateComponents([.year, .month, .day], from: now)
+
+    guard
+      let today = cal.date(from: todayComponents),
+      let yesterday = cal.date(byAdding: .day, value: -1, to: today),
+      let tomorrow = cal.date(byAdding: .day, value: 1, to: today)
+    else { return nil }
+
+    let yesterdayComponents = cal.dateComponents([.year, .month, .day], from: yesterday)
+    let tomorrowComponents = cal.dateComponents([.year, .month, .day], from: tomorrow)
+    return (
+      (yesterday, yesterdayComponents), (today, todayComponents), (tomorrow, tomorrowComponents)
+    )
   }
 
   private func calculationParameters(for date: Date) -> CalculationParameters {

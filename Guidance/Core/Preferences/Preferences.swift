@@ -4,9 +4,14 @@ import OSLog
 
 @Observable
 final class Preferences {
-  static let shared = Preferences()
+  /// The store `shared` reads and writes: `.standard` in the app. Test seam: the
+  /// GuidanceTests bundle points it at a throwaway suite before anything touches
+  /// `shared`, so tests never read or write the real preferences.
+  static var sharedDefaults: UserDefaults = .standard
 
-  let defaults = UserDefaults.standard
+  static let shared = Preferences(defaults: sharedDefaults)
+
+  let defaults: UserDefaults
 
   // MARK: - Change propagation
 
@@ -400,7 +405,10 @@ final class Preferences {
 
   // MARK: - Init
 
-  private init() {
+  /// Loads every preference from `defaults`. The app uses `shared`; tests build
+  /// their own instances over throwaway suites.
+  init(defaults: UserDefaults) {
+    self.defaults = defaults
     registerDefaults()
     migrateLegacyPreferencesIfNeeded()
 

@@ -73,7 +73,8 @@ private struct WidgetSizeGallery: View {
 
 /// Preview language: supplies the localized chrome + prayer names + digit shaping
 /// so RTL and Arabic-Indic digits can be verified, mirroring the real snapshot.
-private enum PreviewLang {
+/// Internal (with `WidgetPreviewData`) so GuidanceTests renders these scenarios.
+enum PreviewLang {
   case en, ar, fr
 
   var labels: GuidanceWidgetLabels {
@@ -143,8 +144,9 @@ private enum PreviewLang {
 
 /// Builds preview snapshots with prayer times anchored to the real `now` (in
 /// minute offsets), so both the state logic and the live relative timer render
-/// truthfully, in the chosen language.
-private enum WidgetPreviewData {
+/// truthfully, in the chosen language. Every scenario takes `now` (the real clock
+/// by default) so GuidanceTests can render them at a fixed moment.
+enum WidgetPreviewData {
   struct Spec {
     var id: String
     var offset: Int          // minutes from now (negative = already passed)
@@ -158,9 +160,9 @@ private enum WidgetPreviewData {
     tomorrowFajrOffset: Int? = nil,
     silent: Bool = false,
     playingID: String? = nil,
-    lang: PreviewLang = .en
+    lang: PreviewLang = .en,
+    now: Date = Date()
   ) -> GuidanceWidgetSnapshot {
-    let now = Date()
     let cal = Calendar.current
     let todayStart = cal.startOfDay(for: now)
     let nextDay = cal.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart.addingTimeInterval(86_400)
@@ -208,7 +210,9 @@ private enum WidgetPreviewData {
   }
 
   /// A normal day with the next prayer (Maghrib, +2h42m) carrying pre+post reminders.
-  static func standard(silent: Bool = false, playingID: String? = nil, lang: PreviewLang = .en) -> GuidanceWidgetSnapshot {
+  static func standard(
+    silent: Bool = false, playingID: String? = nil, lang: PreviewLang = .en, now: Date = Date()
+  ) -> GuidanceWidgetSnapshot {
     make(
       prayers: [
         Spec(id: "fajr", offset: -8 * 60, pre: 30),
@@ -218,15 +222,21 @@ private enum WidgetPreviewData {
         Spec(id: "maghrib", offset: 162, pre: 10, post: 5),
         Spec(id: "isha", offset: 4 * 60),
       ],
-      silent: silent, playingID: playingID, lang: lang)
+      silent: silent, playingID: playingID, lang: lang, now: now)
   }
 
-  static func idle(_ lang: PreviewLang = .en) -> GuidanceWidgetSnapshot { standard(lang: lang) }
-  static var silent: GuidanceWidgetSnapshot { standard(silent: true) }
-  static var playing: GuidanceWidgetSnapshot { standard(playingID: "maghrib") }
+  static func idle(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
+    standard(lang: lang, now: now)
+  }
+  static func silent(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
+    standard(silent: true, lang: lang, now: now)
+  }
+  static func playing(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
+    standard(playingID: "maghrib", lang: lang, now: now)
+  }
 
   /// 10 min before Maghrib → imminent red.
-  static func imminent(_ lang: PreviewLang = .en) -> GuidanceWidgetSnapshot {
+  static func imminent(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
     make(prayers: [
       Spec(id: "fajr", offset: -13 * 60),
       Spec(id: "sunrise", offset: -11 * 60, alert: false),
@@ -234,11 +244,11 @@ private enum WidgetPreviewData {
       Spec(id: "asr", offset: -3 * 60),
       Spec(id: "maghrib", offset: 10, pre: 10, post: 5),
       Spec(id: "isha", offset: 80),
-    ], lang: lang)
+    ], lang: lang, now: now)
   }
 
   /// 4 min after Dhuhr fired → green count-up leads; Asr is the secondary next.
-  static func countUp(_ lang: PreviewLang = .en) -> GuidanceWidgetSnapshot {
+  static func countUp(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
     make(prayers: [
       Spec(id: "fajr", offset: -7 * 60, pre: 30),
       Spec(id: "sunrise", offset: -5 * 60, alert: false),
@@ -246,14 +256,16 @@ private enum WidgetPreviewData {
       Spec(id: "asr", offset: 3 * 60 + 20),
       Spec(id: "maghrib", offset: 6 * 60, pre: 10, post: 5),
       Spec(id: "isha", offset: 8 * 60),
-    ], lang: lang)
+    ], lang: lang, now: now)
   }
 
   /// 16 min after Dhuhr fired → the 15-min count-up window has closed, so the
   /// focus must be back to the next prayer's countdown (Asr), with no green.
   /// Guards the `focus(at:)` boundary: the count-up must not linger past 15 min
   /// (the bug where the widget stayed green and kept counting up for hours).
-  static func countUpEnded(_ lang: PreviewLang = .en) -> GuidanceWidgetSnapshot {
+  static func countUpEnded(
+    _ lang: PreviewLang = .en, now: Date = Date()
+  ) -> GuidanceWidgetSnapshot {
     make(prayers: [
       Spec(id: "fajr", offset: -7 * 60, pre: 30),
       Spec(id: "sunrise", offset: -5 * 60, alert: false),
@@ -261,14 +273,14 @@ private enum WidgetPreviewData {
       Spec(id: "asr", offset: 44, pre: 10),
       Spec(id: "maghrib", offset: 3 * 60, pre: 10, post: 5),
       Spec(id: "isha", offset: 5 * 60),
-    ], lang: lang)
+    ], lang: lang, now: now)
   }
 
   /// 90 min after Dhuhr fired (the green window long closed) → resting countdown
   /// to Asr, with the always-on "since previous prayer" treatment: Small shows
   /// "Dhuhr since: 1:30"; Medium/Large show the un-dimmed Dhuhr row carrying
   /// "+1:30". Mirrors the user's example and exercises the h:mm since tier.
-  static func since(_ lang: PreviewLang = .en) -> GuidanceWidgetSnapshot {
+  static func since(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
     make(prayers: [
       Spec(id: "fajr", offset: -10 * 60, pre: 30),
       Spec(id: "sunrise", offset: -8 * 60, alert: false),
@@ -276,11 +288,11 @@ private enum WidgetPreviewData {
       Spec(id: "asr", offset: 100, pre: 10),
       Spec(id: "maghrib", offset: 5 * 60, pre: 10, post: 5),
       Spec(id: "isha", offset: 7 * 60),
-    ], lang: lang)
+    ], lang: lang, now: now)
   }
 
   /// After Isha → all today prayers passed, focus is tomorrow's Fajr (after midnight).
-  static var tomorrow: GuidanceWidgetSnapshot {
+  static func tomorrow(_ lang: PreviewLang = .en, now: Date = Date()) -> GuidanceWidgetSnapshot {
     make(
       prayers: [
         Spec(id: "fajr", offset: -16 * 60),
@@ -290,7 +302,7 @@ private enum WidgetPreviewData {
         Spec(id: "maghrib", offset: -2 * 60),
         Spec(id: "isha", offset: -30),
       ],
-      tomorrowFajrOffset: 18 * 60)
+      tomorrowFajrOffset: 18 * 60, lang: lang, now: now)
   }
 }
 
@@ -326,15 +338,15 @@ private enum WidgetPreviewData {
 }
 
 #Preview("Tomorrow · dark") {
-  WidgetSizeGallery(title: "Tomorrow", snapshot: WidgetPreviewData.tomorrow).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Tomorrow", snapshot: WidgetPreviewData.tomorrow()).preferredColorScheme(.dark)
 }
 
 #Preview("Silent · dark") {
-  WidgetSizeGallery(title: "Silent", snapshot: WidgetPreviewData.silent).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Silent", snapshot: WidgetPreviewData.silent()).preferredColorScheme(.dark)
 }
 
 #Preview("Stop · dark") {
-  WidgetSizeGallery(title: "Stop", snapshot: WidgetPreviewData.playing).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Stop", snapshot: WidgetPreviewData.playing()).preferredColorScheme(.dark)
 }
 
 #Preview("Arabic · dark") {
