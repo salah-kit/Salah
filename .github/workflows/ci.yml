@@ -33,17 +33,17 @@ jobs:
       - name: Build the app and the widget extension, unsigned
         run: |
           for configuration in Debug Release; do
-            xcodebuild build -project Guidance.xcodeproj -scheme Guidance \
+            xcodebuild build -project Salah.xcodeproj -scheme Salah \
               -configuration "$configuration" -destination 'platform=macOS' \
               -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
-            test -d ".derived/Build/Products/$configuration/Guidance.app/Contents/PlugIns/GuidanceWidgetsExtension.appex"
+            test -d ".derived/Build/Products/$configuration/Salah.app/Contents/PlugIns/SalahWidgetsExtension.appex"
           done
 
-      # GuidanceTests is a non-hosted bundle: it compiles the app's sources and never
+      # SalahTests is a non-hosted bundle: it compiles the app's sources and never
       # launches the app, so it needs no App Group or signing team.
       - name: Test
         run: |
-          xcodebuild test -project Guidance.xcodeproj -scheme Guidance \
+          xcodebuild test -project Salah.xcodeproj -scheme Salah \
             -destination 'platform=macOS' -derivedDataPath .derived \
             CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
 
@@ -53,9 +53,9 @@ jobs:
       - name: Test the Arabic menu baselines
         if: ${{ !cancelled() }}
         run: |
-          xcodebuild test -project Guidance.xcodeproj -scheme Guidance \
+          xcodebuild test -project Salah.xcodeproj -scheme Salah \
             -destination 'platform=macOS' -derivedDataPath .derived \
-            -only-testing:GuidanceTests/VisualBaselineTests -testLanguage ar \
+            -only-testing:SalahTests/VisualBaselineTests -testLanguage ar \
             CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
 
       # The directory's name starts with a dot, so its files only upload with
@@ -82,4 +82,4 @@ jobs:
           persist-credentials: false
 
       - name: swift format lint
-        run: swift format lint --strict --recursive Guidance GuidanceWidgetsExtension Shared GuidanceTests
+        run: swift format lint --strict --recursive Salah SalahWidgetsExtension Shared SalahTests

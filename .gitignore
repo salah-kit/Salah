@@ -25,7 +25,7 @@ xcuserdata/
 build/
 DerivedData/
 .derived/
-# Renders that failed a baseline comparison (GuidanceTests)
+# Renders that failed a baseline comparison (SalahTests)
 .baseline-failures/
 .derivedData*/
 *.xcresult

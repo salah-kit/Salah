@@ -1,9 +1,9 @@
-# Generates Guidance.xcodeproj. Run `xcodegen` in this folder after changing it or adding,
+# Generates Salah.xcodeproj. Run `xcodegen` in this folder after changing it or adding,
 # moving or removing a source file, and commit both (STANDARD.md, Apps).
 #
 # Every setting is written out here (no XcodeGen presets), so this file is the whole build
 # configuration. Signing comes from Config/Shared.xcconfig and your own Config/Local.xcconfig.
-name: Guidance
+name: Salah
 options:
   settingPresets: none
   developmentLanguage: en
@@ -82,14 +82,14 @@ settings:
       MTL_ENABLE_DEBUG_INFO: NO
       SWIFT_COMPILATION_MODE: wholemodule
 targets:
-  Guidance:
+  Salah:
     type: application
     platform: macOS
     sources:
-      - path: Guidance
+      - path: Salah
       - path: Shared
     dependencies:
-      - target: GuidanceWidgetsExtension
+      - target: SalahWidgetsExtension
         codeSign: false
       - package: adhan-swift
         product: Adhan
@@ -97,7 +97,7 @@ targets:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        CODE_SIGN_ENTITLEMENTS: Guidance/Guidance.entitlements
+        CODE_SIGN_ENTITLEMENTS: Salah/Salah.entitlements
         COMBINE_HIDPI_IMAGES: YES
         CURRENT_PROJECT_VERSION: "300"
         ENABLE_APP_SANDBOX: YES
@@ -126,11 +126,11 @@ targets:
         Release:
           CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
           ENABLE_HARDENED_RUNTIME: YES
-  GuidanceWidgetsExtension:
+  SalahWidgetsExtension:
     type: app-extension
     platform: macOS
     sources:
-      - path: GuidanceWidgetsExtension
+      - path: SalahWidgetsExtension
         excludes:
           - Info.plist
       - path: Shared
@@ -141,12 +141,12 @@ targets:
       base:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
-        CODE_SIGN_ENTITLEMENTS: GuidanceWidgetsExtension/GuidanceWidgetsExtension.entitlements
+        CODE_SIGN_ENTITLEMENTS: SalahWidgetsExtension/SalahWidgetsExtension.entitlements
         CURRENT_PROJECT_VERSION: "300"
         ENABLE_APP_SANDBOX: YES
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_FILE: GuidanceWidgetsExtension/Info.plist
-        INFOPLIST_KEY_CFBundleDisplayName: GuidanceWidgetsExtension
+        INFOPLIST_FILE: SalahWidgetsExtension/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: SalahWidgetsExtension
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@executable_path/../../../../Frameworks"]
@@ -165,18 +165,18 @@ targets:
   # Not hosted: the bundle compiles the app's sources itself and never launches the app,
   # so tests need no App Group, signing team or permissions. Baselines/ holds the PNGs the
   # visual tests compare against; they're read from the source tree, not bundled.
-  GuidanceTests:
+  SalahTests:
     type: bundle.unit-test
     platform: macOS
     sources:
-      - path: Guidance
+      - path: Salah
         excludes:
           - Assets.xcassets
-          - Guidance.entitlements
+          - Salah.entitlements
           - PrivacyInfo.xcprivacy
           - Resources/InfoPlist.xcstrings
       - path: Shared
-      - path: GuidanceTests
+      - path: SalahTests
         excludes:
           - Baselines
     dependencies:
@@ -187,8 +187,8 @@ targets:
         CODE_SIGN_IDENTITY: "-"
         CURRENT_PROJECT_VERSION: "300"
         GENERATE_INFOPLIST_FILE: YES
-        # The @objc name of the class in GuidanceTests/Support/TestEnvironment.swift.
-        INFOPLIST_KEY_NSPrincipalClass: GuidanceTestEnvironment
+        # The @objc name of the class in SalahTests/Support/TestEnvironment.swift.
+        INFOPLIST_KEY_NSPrincipalClass: SalahTestEnvironment
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
@@ -203,18 +203,18 @@ targets:
         SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
         SWIFT_VERSION: "6.0"
 schemes:
-  Guidance:
+  Salah:
     build:
       # The test action builds only the test bundle: building the app registers it, and
       # its widget extension, with LaunchServices and PlugInKit.
       targets:
-        Guidance: [running, profiling, archiving, analyzing]
+        Salah: [running, profiling, archiving, analyzing]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - GuidanceTests
+        - SalahTests
       # Pins the test process's languages, so the visual baselines don't depend on the
       # machine's language list (TestEnvironmentTests.processLanguagesArePinned).
       commandLineArguments:
