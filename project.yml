@@ -110,7 +110,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: Salah/Salah.entitlements
         COMBINE_HIDPI_IMAGES: YES
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         ENABLE_APP_SANDBOX: YES
         ENABLE_PREVIEWS: YES
         ENABLE_USER_SELECTED_FILES: readonly
@@ -118,7 +118,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: Salah/Info.plist
         LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/../Frameworks"]
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah
         PRODUCT_NAME: $(TARGET_NAME)
         REGISTER_APP_GROUPS: YES
@@ -156,7 +156,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         CODE_SIGN_ENTITLEMENTS: SalahWidgetsExtension/SalahWidgetsExtension.entitlements
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         ENABLE_APP_SANDBOX: YES
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: SalahWidgetsExtension/Info.plist
@@ -165,7 +165,7 @@ targets:
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@executable_path/../../../../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.Widgets
         PRODUCT_NAME: $(TARGET_NAME)
         SDKROOT: macosx
@@ -208,14 +208,14 @@ targets:
     settings:
       base:
         CODE_SIGN_IDENTITY: "-"
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         GENERATE_INFOPLIST_FILE: YES
         # The @objc name of the class in SalahTests/Support/TestEnvironment.swift.
         INFOPLIST_KEY_NSPrincipalClass: SalahTestEnvironment
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.SalahTests
         PRODUCT_NAME: $(TARGET_NAME)
         SDKROOT: macosx
@@ -247,12 +247,12 @@ targets:
     settings:
       base:
         CODE_SIGN_ENTITLEMENTS: SalahUITests/SalahUITests.entitlements
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         GENERATE_INFOPLIST_FILE: YES
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.SalahUITests
         PRODUCT_NAME: $(TARGET_NAME)
         SDKROOT: macosx
@@ -281,13 +281,13 @@ targets:
     settings:
       base:
         CODE_SIGN_ENTITLEMENTS: SalahStopHarness/SalahStopHarness.entitlements
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         ENABLE_APP_SANDBOX: YES
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSBackgroundOnly: YES
         LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.StopHarness
         PRODUCT_NAME: $(TARGET_NAME)
         SDKROOT: macosx
@@ -319,12 +319,12 @@ targets:
       base:
         BUNDLE_LOADER: ""
         CODE_SIGN_IDENTITY: "-"
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         GENERATE_INFOPLIST_FILE: YES
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        MARKETING_VERSION: 1.1.0
+        MARKETING_VERSION: 1.1.1
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.SalahRoundTripTests
         PRODUCT_NAME: $(TARGET_NAME)
         SDKROOT: macosx

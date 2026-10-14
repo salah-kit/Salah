@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-14
+
+### Fixed
+
+- Keep the widget's Stop action available while a known prayer's audio plays during a
+  schedule gap, including polar days with missing later prayer times.
+- Give the notification volume slider a localized accessibility name.
+
 ## [1.1.0] - 2026-10-14
 
 ### Changed

@@ -158,6 +158,7 @@
 		96686B684C8329F3F63B3DFB /* CalculationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342EF69EF4FAFC0D7C1EC82E /* CalculationTests.swift */; };
 		97116296A1B0075842255D13 /* AdjustmentsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08079F85278A2CDDF25F399 /* AdjustmentsTab.swift */; };
 		974F2C43024D34A3537F6EDB /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C4D45ACF670852D66F36C6 /* Preferences.swift */; };
+		97A4C921D7151D75E078F9F4 /* WidgetPlaybackGapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */; };
 		99092703BE5E394146D061B2 /* SettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9213152201FE010BF167CD /* SettingsTab.swift */; };
 		99D4FBE2E966BBDBA6FAE696 /* PrayerDisplayFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4277E55F1E41EE26B5D8D1 /* PrayerDisplayFormatter.swift */; };
 		9AC56DD8075D437A87556322 /* Preferences+Mirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */; };
@@ -201,6 +202,7 @@
 		BDB78EA135CE4A4E021B6DDC /* MenuDropdownContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C36420A7912C369BD8BEF4 /* MenuDropdownContent.swift */; };
 		BDB9D83992FC73E1687F3954 /* MenuLiveCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C91D0346BB9B137F6DBA2C /* MenuLiveCountdown.swift */; };
 		BFFDE30E808523DCA24AE8B3 /* SalahAlerts in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4E3FA73D56FDAFF01543 /* SalahAlerts */; };
+		C096B51AFBAC7FB1D3792615 /* SettingsAccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */; };
 		C2BD271FDDD10E6C77BC5487 /* MenuDropdownContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C36420A7912C369BD8BEF4 /* MenuDropdownContent.swift */; };
 		C3522FF6169D602A80486C78 /* StopSalahAudioIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AA1DBFB3EE76CC59F8FE77 /* StopSalahAudioIntent.swift */; };
 		C4ACACB4A2D49BEEBE555074 /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = 40120B4CE9F73DC784EE81CA /* SalahCore */; };
@@ -329,6 +331,7 @@
 		2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualBaselineTests.swift; sourceTree = "<group>"; };
 		342EF69EF4FAFC0D7C1EC82E /* CalculationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationTests.swift; sourceTree = "<group>"; };
 		34963BC2BCF87B5CD9AF6DA4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPlaybackGapTests.swift; sourceTree = "<group>"; };
 		3CFE2197A0A0548742324EA8 /* Numbers+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numbers+Localized.swift"; sourceTree = "<group>"; };
 		3FD6738C76E5D3804685D784 /* DebugOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOptions.swift; sourceTree = "<group>"; };
 		44AFAAA3EE69676FBDF48432 /* PrayerKind+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrayerKind+Settings.swift"; sourceTree = "<group>"; };
@@ -369,6 +372,7 @@
 		A183980407A89E299C89A68B /* LegacyTimeAssertionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyTimeAssertionAdapter.swift; sourceTree = "<group>"; };
 		A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
 		A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownView.swift; sourceTree = "<group>"; };
+		A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityUITests.swift; sourceTree = "<group>"; };
 		AB09C03A424F943C26D488DE /* PrayerAlertCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertCoordinator.swift; sourceTree = "<group>"; };
 		ABA58A6BEAC64F188DCC199F /* BaselineIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineIndex.swift; sourceTree = "<group>"; };
 		AD80627E90B010963831E2FF /* LocationNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotifications.swift; sourceTree = "<group>"; };
@@ -536,6 +540,7 @@
 				03A90D479C9856A52E43C67D /* SettingsMirrorTests.swift */,
 				646444C8D7F539850A7433B7 /* TestEnvironmentTests.swift */,
 				2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */,
+				3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */,
 				7113CEB3E1FD05C888D9142A /* WidgetTimelineTests.swift */,
 				752322D6EA6B1EFD43229337 /* Support */,
 			);
@@ -788,6 +793,7 @@
 			children = (
 				2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */,
 				85502C7E155811EF17729F5A /* SalahUITests.swift */,
+				A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */,
 			);
 			path = SalahUITests;
 			sourceTree = "<group>";
@@ -1124,6 +1130,7 @@
 				2FB00A193A448BC0993FC6A2 /* AlertSettingsUITests.swift in Sources */,
 				D879E5C5B19564BF57C65B03 /* LaunchArguments.swift in Sources */,
 				3C17A1F0E9B5E1DCB09B0163 /* SalahUITests.swift in Sources */,
+				C096B51AFBAC7FB1D3792615 /* SettingsAccessibilityUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1239,6 +1246,7 @@
 				77927B216CA942CF0F875B28 /* TestEnvironmentTests.swift in Sources */,
 				A3E9254042D4DC662FE2AAA0 /* VisualBaselineTests.swift in Sources */,
 				29F34932700B35016BA0D47C /* WidgetMirror.swift in Sources */,
+				97A4C921D7151D75E078F9F4 /* WidgetPlaybackGapTests.swift in Sources */,
 				390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */,
 				7CA5E2F449BD638FD2AC06AC /* WidgetTimelineTests.swift in Sources */,
 			);
@@ -1385,7 +1393,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -1395,7 +1403,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1412,7 +1420,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Salah/Info.plist;
 				INFOPLIST_KEY_NSPrincipalClass = SalahTestEnvironment;
@@ -1422,7 +1430,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1439,7 +1447,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SalahUITests/SalahUITests.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1447,7 +1455,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1460,7 +1468,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Salah/Info.plist;
 				INFOPLIST_KEY_NSPrincipalClass = SalahTestEnvironment;
@@ -1470,7 +1478,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1488,7 +1496,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1496,7 +1504,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahRoundTripTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1514,7 +1522,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = SalahWidgetsExtension/SalahWidgetsExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWidgetsExtension/Info.plist;
@@ -1526,7 +1534,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1610,7 +1618,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = SalahWidgetsExtension/SalahWidgetsExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWidgetsExtension/Info.plist;
@@ -1622,7 +1630,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1640,7 +1648,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SalahStopHarness/SalahStopHarness.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
@@ -1649,7 +1657,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.StopHarness";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1665,7 +1673,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "-";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1673,7 +1681,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahRoundTripTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1689,7 +1697,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SalahStopHarness/SalahStopHarness.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
@@ -1698,7 +1706,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.StopHarness";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1717,7 +1725,7 @@
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -1728,7 +1736,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1745,7 +1753,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SalahUITests/SalahUITests.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1753,7 +1761,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

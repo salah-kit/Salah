@@ -74,6 +74,20 @@ nonisolated struct SalahDisplay: Sendable {
   /// The known state, or `nil` when the schedule can't establish one.
   var prayerState: PrayerState? { state.prayerState }
 
+  /// The face shared by the extension, its rendered preview and the Stop harness.
+  enum WidgetFace: Equatable, Sendable {
+    case stop
+    case unavailable
+    case schedule
+  }
+
+  /// A known alert can play during a schedule gap. Its Stop action takes precedence
+  /// over the missing countdown; the timeline already bounds stale playback.
+  var widgetFace: WidgetFace {
+    if playback != nil { return .stop }
+    return prayerState == nil ? .unavailable : .schedule
+  }
+
   /// The listed day, when it's available.
   var listedDay: PrayerDay? { day.day }
 

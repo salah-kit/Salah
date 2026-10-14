@@ -115,20 +115,23 @@ struct SalahPrayerWidgetEntryView: View {
       }
     case .schedule(let display):
       SalahWidgetShell(display: display) { colors in
-        if display.prayerState == nil {
+        switch display.widgetFace {
+        case .stop:
+          // While audio plays, the entire widget is the Stop control, even when
+          // the surrounding schedule is incomplete. It has no Settings link.
+          if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
+            Button(intent: StopSalahAudioIntent()) { stop }
+              .buttonStyle(.plain)
+              .invalidatableContent()
+          }
+        case .unavailable:
           // The schedule knows nothing usable at this moment.
           WidgetMessageContent(
             systemImage: "exclamationmark.triangle",
             message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent
           )
           .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
-        } else if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
-          // While audio plays, the entire widget is the Stop control: tapping
-          // anywhere runs the stop intent. No dedicated button, no Settings link.
-          Button(intent: StopSalahAudioIntent()) { stop }
-            .buttonStyle(.plain)
-            .invalidatableContent()
-        } else {
+        case .schedule:
           WidgetContentView(display: display, size: size)
             .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
         }

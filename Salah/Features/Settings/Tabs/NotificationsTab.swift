@@ -58,6 +58,9 @@ struct NotificationsContent: View {
 
       HStack {
         Slider(value: volume, in: 0...100, step: 1)
+          .accessibilityLabel(
+            Text(verbatim: localizedString("settings.notif.volume", locale: .app))
+          )
           .disabled(prefs.silentMode)
         Text(
           String(

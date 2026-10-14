@@ -109,12 +109,18 @@ macOS 14 Sonoma or later, on Apple silicon and Intel Macs.
 
 ## Status and versioning
 
-Salah 1.1.0 is a source release on SalahKit 0.4.0. Releases use a
-marketing version (1.1.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
+Salah 1.1.1 is a source release on SalahKit 0.4.0. Releases use a
+marketing version (1.1.1) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
 change.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
-of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)).
+of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language
+review includes the new volume accessibility label.
+
+Custom-theme guardrails use SalahUI's default 3:1 contrast floor against an opaque base
+surface, intended for the large countdown. This does not certify every small label against
+the composed gradients and glows. Some preset accent/base combinations are below 4.5:1;
+small-text contrast and secondary opacity remain a visual policy review item.
 
 ## Contributing
 

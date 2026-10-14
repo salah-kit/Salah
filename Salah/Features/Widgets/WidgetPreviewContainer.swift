@@ -38,13 +38,14 @@ struct WidgetPreviewContainer: View {
   /// The extension shell's branches that don't need a widget host.
   @ViewBuilder
   private func content(_ colors: SalahWidgetColors) -> some View {
-    if display.prayerState == nil {
+    switch display.widgetFace {
+    case .stop:
+      WidgetStopContent(display: display, size: size, colors: colors)
+    case .unavailable:
       WidgetMessageContent(
         systemImage: "exclamationmark.triangle",
         message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent)
-    } else if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
-      stop
-    } else {
+    case .schedule:
       WidgetContentView(display: display, size: size)
     }
   }

@@ -55,10 +55,10 @@ if let entry = timeline.entries.first {
   case .expired:
     report.widget = Report.Widget(firstEntry: "expired", showsStop: false)
   case .schedule(let display):
-    // The extension shell's order: the unavailable face, then the Stop control.
+    // Use the extension and preview's face decision, including playback in a gap.
     report.widget = Report.Widget(
-      firstEntry: display.prayerState == nil ? "unavailable" : "schedule",
-      showsStop: display.prayerState != nil && display.playback != nil)
+      firstEntry: display.widgetFace == .unavailable ? "unavailable" : "schedule",
+      showsStop: display.widgetFace == .stop)
   }
 }
 let encoder = JSONEncoder()
