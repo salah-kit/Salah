@@ -51,7 +51,9 @@ final class SalahUITests: XCTestCase {
   }
 
   /// On a Mac with a camera housing, the menu bar shows status items only beside it; an
-  /// item that doesn't fit sits behind it, where a click reaches nothing.
+  /// item that doesn't fit sits behind it, where a click reaches nothing. (`isHittable`
+  /// covers the other way a full menu bar hides an item: in macOS's overflow, where the
+  /// item's place is the overflow's control.)
   @MainActor
   static func canClick(_ frame: CGRect) -> Bool {
     guard let screen = NSScreen.screens.first,
@@ -80,6 +82,9 @@ final class SalahUITests: XCTestCase {
     try XCTSkipUnless(
       Self.canClick(statusItem.frame),
       "The menu bar is full: macOS put Salah's status item behind the camera housing.")
+    try XCTSkipUnless(
+      statusItem.isHittable,
+      "The menu bar is full: macOS put Salah's status item in its overflow.")
     statusItem.click()
 
     for prayer in Self.prayerNames {
