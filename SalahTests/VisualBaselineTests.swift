@@ -1,5 +1,6 @@
 import Foundation
 import SalahCore
+import SalahUI
 import SwiftUI
 import Testing
 
