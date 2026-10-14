@@ -18,6 +18,11 @@ All notable changes to this project are documented here. The format follows
   includes the locale's leading zero. App-owned notification and compact status text use
   the same Foundation short-time style.
 
+### Fixed
+
+- A clock rollback into the engine's early-report window no longer requests an already
+  handled alert again. Ordinary wake and activation replans keep early requests pending.
+
 ## [1.0.0] - 2026-10-14
 
 Salah's first release, as source.

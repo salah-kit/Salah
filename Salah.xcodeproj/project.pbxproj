@@ -114,6 +114,7 @@
 		6DA0C3D81DCF73161B130B1A /* SalahText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BAFE950109CD5DEE9FEF68 /* SalahText.swift */; };
 		6DAAB838DF4AB11CB53E143C /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
 		7029526FA2A3CC63A6E4FED4 /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2AB3D3A952F0D39E3351C2A4 /* SalahCore */; };
+		7098B8EAD59022F59FF6A2C1 /* ClockRollbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10C397A2110185F0814FD6 /* ClockRollbackTests.swift */; };
 		715043B34D726F08D8DF01B5 /* BaselineCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04491B0F3DB5901260D89E4E /* BaselineCatalog.swift */; };
 		71ABF1054298832254822B0D /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA11F64BF81CEE6893022623 /* AppResources.swift */; };
 		71CC05A849CC24970EBC1CA9 /* SalahDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EFE7DDA9A724FDF705576 /* SalahDisplay.swift */; };
@@ -321,6 +322,7 @@
 		28CD928BAA1A94A472FF97BB /* SalahPlayback+Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SalahPlayback+Audio.swift"; sourceTree = "<group>"; };
 		297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preferences+Mirror.swift"; sourceTree = "<group>"; };
 		2A739B3A33C1689F5860C1F5 /* BaselineRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineRendering.swift; sourceTree = "<group>"; };
+		2C10C397A2110185F0814FD6 /* ClockRollbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockRollbackTests.swift; sourceTree = "<group>"; };
 		2E16295CA7B8B26483F8F9AF /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertSettingsUITests.swift; sourceTree = "<group>"; };
 		2F4277E55F1E41EE26B5D8D1 /* PrayerDisplayFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerDisplayFormatter.swift; sourceTree = "<group>"; };
@@ -523,6 +525,7 @@
 			isa = PBXGroup;
 			children = (
 				342EF69EF4FAFC0D7C1EC82E /* CalculationTests.swift */,
+				2C10C397A2110185F0814FD6 /* ClockRollbackTests.swift */,
 				FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */,
 				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
 				D3A61B56AAC43F94A7A72972 /* PrayerAlertCoordinatorTests.swift */,
@@ -1165,6 +1168,7 @@
 				F688AF0A79AC7D4CAB2802C1 /* CalculationChoices.swift in Sources */,
 				BD7BF9969824348963A02AF2 /* CalculationTab.swift in Sources */,
 				96686B684C8329F3F63B3DFB /* CalculationTests.swift in Sources */,
+				7098B8EAD59022F59FF6A2C1 /* ClockRollbackTests.swift in Sources */,
 				7AA654E04E0E7085136450CF /* DebugOptions.swift in Sources */,
 				EAC2A6B5A328E846263FE157 /* FailureCategoryTests.swift in Sources */,
 				A54591D0ABE75D4FFA2CBE1C /* FailureReporter.swift in Sources */,

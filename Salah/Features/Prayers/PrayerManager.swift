@@ -225,7 +225,8 @@ final class PrayerManager {
       notificationObservers.append(
         nc.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
           Task { @MainActor in
-            self?.refreshAfterPossibleMissedAlert()
+            self?.refreshAfterPossibleMissedAlert(
+              afterClockChange: name == .NSSystemClockDidChange)
           }
         })
     }
@@ -252,9 +253,9 @@ final class PrayerManager {
   /// Replans from the new time, then catches up on alerts a clock change or sleep
   /// skipped, and gives the widget a new timeline: one that ran out while the Mac slept
   /// shows "Open Salah to update", and opening Salah lands here.
-  func refreshAfterPossibleMissedAlert() {
+  func refreshAfterPossibleMissedAlert(afterClockChange: Bool = false) {
     rebuildSchedule()
-    alerts.catchUp(schedule: schedule)
+    alerts.catchUp(schedule: schedule, afterClockChange: afterClockChange)
     mirror.reloadWidgets()
   }
 
