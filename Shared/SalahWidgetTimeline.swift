@@ -55,7 +55,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   /// timeline over the default 48-hour horizon: an entry wherever the state changes,
   /// the steps between them, the expired entry at its end, and a reload halfway there.
   /// It adds an entry at each midnight in the location's zone, with the state then, so
-  /// the listed day turns over with the date.
+  /// the listed day turns over with the date (salah-kit/SalahKit#14).
   static func make(settings: SalahSettings?, playback: SalahPlayback?, now: Date)
     -> SalahWidgetTimeline
   {

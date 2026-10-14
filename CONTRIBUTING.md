@@ -23,12 +23,18 @@ match `project.yml`.
 |---|---|
 | `Salah` | The menu-bar app (`io.github.salah-kit.Salah`) |
 | `SalahWidgetsExtension` | The WidgetKit extension (`io.github.salah-kit.Salah.Widgets`) |
-| `SalahTests` | Unit, characterization and visual-baseline tests (the `Salah` scheme) |
+| `SalahTests` | Unit and visual-baseline tests (the `Salah` scheme) |
 | `SalahUITests` | UI tests that drive the real app (their own `SalahUITests` scheme) |
+| `SalahRoundTripTests` | Tests that run the real app and the stop harness as processes (their own scheme) |
+| `SalahStopHarness` | A stand-in for the widget extension in those tests (`io.github.salah-kit.Salah.StopHarness`) |
 
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
-compile (the widget's snapshot model, store, theme and views). The two share the App Group
-`group.io.github.salah-kit.Salah`.
+compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
+(`SalahPlayback`), Salah's prayer source, the display model the widget and the menu bar
+draw from (`SalahDisplay`), the widget's timeline, and the theme and views. The two share
+the App Group `group.io.github.salah-kit.Salah`. Prayer times, the schedule, widget
+timelines, alerts and the UI components come from
+[SalahKit](https://github.com/salah-kit/SalahKit), through its public API only.
 
 ## Signing
 
@@ -101,6 +107,29 @@ follow on the Mac you run them on:
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing, where it can't be clicked.
 
+### Real-app tests
+
+`SalahRoundTripTests` runs the real, signed app and `SalahStopHarness` as separate
+processes. The harness stands in for the widget extension: sandboxed in the same App
+Group, it runs the Stop intent's own code and reads back what the app stored. The tests
+move a prayer a minute or two ahead with Salah's own adjustments, so a real alert comes
+due, then check the widget's stop round trip, the stop signal alone, an alert missed
+while the app was frozen as during sleep (caught up once) and a reminder missed past its
+grace (dropped), and that a changed alert setting replans. They read the app's log with
+`log stream`, so they run without a host app, outside any sandbox. They take about 15
+minutes:
+
+```sh
+xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
+  -destination 'platform=macOS' -allowProvisioningUpdates
+```
+
+They need your team, like the UI tests, and CI only builds them. The app runs muted and
+with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never asks for
+notification permission or sends Music an Apple Event. Afterwards Salah keeps the
+settings the last test launched it with (Makkah, every alert but one off, English), and
+the App Group holds what the app last published.
+
 ### Visual baselines
 
 `SalahTests/Baselines/` holds PNG renders of every widget face and the menu-bar dropdown,
@@ -128,10 +157,10 @@ Code is formatted with `swift format` and the shared `.swift-format` (2-space in
 100 columns). CI's lint job fails on any finding.
 
 ```sh
-swift format format --in-place --recursive \
-  Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
-swift format lint --strict --recursive \
-  Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
+swift format format --in-place --recursive Salah SalahWidgetsExtension Shared \
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
+swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
 ```
 
 ## Strings and languages
@@ -139,7 +168,8 @@ swift format lint --strict --recursive \
 User-facing text lives in String Catalogs: `Salah/Resources/Localizable.xcstrings`,
 `Salah/Resources/InfoPlist.xcstrings` and `SalahWidgetsExtension/Localizable.xcstrings`.
 The widget's own labels are in `SalahWidgetLabels` (`Shared/SalahWidgetModels.swift`),
-because the extension reads them from the app's snapshot. Every change needs all nine
+because the extension can't read the app's String Catalog; prayer names come from
+SalahCore's `PrayerNames`. Every change needs all nine
 languages and right-to-left layouts for Arabic, Urdu and Persian. Mark machine-drafted
 translations `needs_review` in the catalog, and ask for a native speaker's review in your
 pull request.

@@ -91,6 +91,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       return
     }
     alertSchedule = alerts
+    AppLog.notifications.notice(
+      "planned alerts=\(alerts.alerts.count, privacy: .public) gaps=\(alerts.gaps.count, privacy: .public)"
+    )
     engine.update(alerts)
     install(planner.notificationPlan(alerts, from: now))
   }
@@ -133,6 +136,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       }
       do {
         let report = try await scheduler.apply(plan, content: content.make)
+        AppLog.notifications.notice(
+          "installed requests=\(plan.alerts.count, privacy: .public) confirmed=\(report.confirmed.count, privacy: .public) superseded=\(report.superseded, privacy: .public)"
+        )
         for (identity, failure) in report.failures {
           if case .addFailed(let reason) = failure {
             AppLog.notifications.error(
@@ -152,6 +158,10 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Asks once for permission when there is something to schedule and the user hasn't
   /// answered yet. Salah asks; SalahAlerts never does.
   private func requestAuthorizationIfUndetermined() async {
+    #if DEBUG
+      // The real-app tests must never bring up a consent prompt.
+      if preferences.defaults.bool(forKey: DebugOptions.withoutSystemPromptsKey) { return }
+    #endif
     guard await center.authorizationStatus() == .notDetermined else { return }
     if let authorizationRequest {
       _ = await authorizationRequest.value
@@ -177,6 +187,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Posts the due alerts the system won't deliver itself, and plays the preferred
   /// app-played sound among them.
   private func handleDue(_ due: [PlannedAlert]) {
+    for alert in due {
+      AppLog.notifications.notice(
+        "due \(alert.id.requestIdentifier(prefix: ""), privacy: .public) late=\(Int(self.clock.now.timeIntervalSince(alert.fireDate)), privacy: .public)s"
+      )
+    }
     let content = PrayerAlertContent(preferences: preferences)
     let previous = delivery
     delivery = Task { [scheduler] in

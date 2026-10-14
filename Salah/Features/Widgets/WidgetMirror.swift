@@ -86,7 +86,11 @@ final class WidgetMirror {
 
   private func save<Value>(_ value: Value?, in store: SharedValue<Value>) -> Bool {
     do {
-      return try store.save(value, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+      let changed = try store.save(value, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+      AppLog.widgets.notice(
+        "published \(store.key, privacy: .public) value=\(value == nil ? "none" : "set", privacy: .public) changed=\(changed, privacy: .public)"
+      )
+      return changed
     } catch {
       AppLog.widgets.error(
         "Couldn't save \(store.key, privacy: .public): \(String(describing: error), privacy: .public)"

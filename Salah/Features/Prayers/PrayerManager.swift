@@ -261,6 +261,8 @@ final class PrayerManager {
   /// The widget's Stop button: stop, then confirm the stopped state in the App Group,
   /// whatever the widget's own optimistic write left there.
   private func stopFromWidget() {
+    let wasPlaying = audioPlaybackController.state != .idle
+    AppLog.widgets.notice("stop signal received wasPlaying=\(wasPlaying, privacy: .public)")
     audioPlaybackController.stop()
     mirror.publish(playback: currentPlayback)
   }

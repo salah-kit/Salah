@@ -196,7 +196,9 @@ private struct MenuBarLabel: View {
     nsImage?.isTemplate = false
     return Group {
       if let nsImage {
+        // The image carries the text as pixels only; VoiceOver reads it from here.
         Image(nsImage: nsImage).renderingMode(.original)
+          .accessibilityLabel(Text(verbatim: text))
       } else {
         content(font: nil, color: tint)
       }

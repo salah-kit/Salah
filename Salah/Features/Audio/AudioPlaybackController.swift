@@ -68,9 +68,17 @@ final class AudioPlaybackController: NSObject, AVAudioPlayerDelegate {
   var state: AudioPlaybackState = .idle {
     didSet {
       guard oldValue != state else { return }
+      switch state {
+      case .playing(let context):
+        AppLog.audio.notice(
+          "playback started source=\(String(describing: context.source), privacy: .public) slot=\(context.slot?.rawValue ?? "-", privacy: .public) event=\(context.event?.id ?? "-", privacy: .public)"
+        )
+      case .idle:
+        AppLog.audio.notice("playback stopped")
+      }
       // Post `self` as the object so observers can scope to a specific
       // controller. The Settings sound-preview uses a separate controller; the
-      // widget snapshot must only react to the prayer-alert controller's state.
+      // widget mirror must only react to the prayer-alert controller's state.
       NotificationCenter.default.post(name: .salahAudioPlaybackStateDidChange, object: self)
     }
   }
@@ -196,6 +204,11 @@ private enum ExternalAudioPauser {
 
   static func pauseIfNeeded(for context: AudioPlaybackContext) {
     guard context.source == .prayerAlert else { return }
+    #if DEBUG
+      // The real-app tests must never bring up a consent prompt, as the first Apple
+      // Event to Music does.
+      if UserDefaults.standard.bool(forKey: DebugOptions.withoutSystemPromptsKey) { return }
+    #endif
 
     for bundleIdentifier in playbackBundleIdentifiers
     where !NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier).isEmpty

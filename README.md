@@ -25,6 +25,7 @@ checked on every change, so they show what the app draws today.
   15 minutes and green for a 15-minute count-up after the adhan. The dropdown shows the
   Hijri date, the six times, per-prayer alert toggles, silent mode and a stop button.
 - **Widgets** in small, medium and large sizes, with a stop button while audio plays.
+  The widget calculates its own times, so it stays right on days Salah isn't running.
 - **Alerts.** Per-prayer adhan alerts with before and after reminders, a Jumu'ah
   override, six built-in recordings or your own audio, a du'a after the adhan, and a
   catch-up when the Mac wakes from sleep.
@@ -43,15 +44,19 @@ What it deliberately isn't:
   show a mosque's published iqama times.
 - It isn't on the Mac App Store, and there is no signed download yet. Salah is released
   as source; you build it yourself.
-- It's macOS only. The prayer-time code it is moving onto,
+- It's macOS only. The prayer-time code it is built on,
   [SalahKit](https://github.com/salah-kit/SalahKit) and
   [SalahTimes](https://github.com/salah-kit/SalahTimes), is how other apps on other
   platforms share it.
 
 Salah is the [salah-kit](https://github.com/salah-kit) ecosystem's own app and a working
-sample of the packages. Today it calculates with
-[adhan-swift](https://github.com/batoulapps/adhan-swift); its 1.0 release moves it onto
-SalahKit and SalahTimes.
+sample of the packages, used through their public API only. SalahTimes calculates the
+times (SalahCalculation); SalahCore decides which prayer is next, which just started and
+what a day can't give; the widget extension builds its own timelines from settings the
+app mirrors into their shared App Group (SalahWidgets); the rows and the focus are
+SalahUI's components in Salah's own styles; and SalahAlerts plans the alerts, installs
+the ones macOS can keep and follows every one while the app runs. Salah's look, settings,
+sounds and wording stay in the app.
 
 ## Installation
 
@@ -104,9 +109,9 @@ macOS 14 Sonoma or later, on Apple silicon and Intel Macs.
 
 ## Status and versioning
 
-Salah is preparing its first release, 1.0.0, which will be released as source. Releases
-use a marketing version (1.0.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records
-every change.
+Salah 1.0.0 is its first release, as source, on SalahKit 0.2.0. Releases use a
+marketing version (1.0.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
+change.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)).

@@ -249,6 +249,81 @@ targets:
         SDKROOT: macosx
         SWIFT_VERSION: "6.0"
         TEST_TARGET_NAME: Salah
+  # A stand-in for the widget extension in SalahRoundTripTests: a background-only app
+  # signed like the extension, in the same App Group, that runs the Stop intent's own
+  # code. It's never embedded in Salah.app.
+  SalahStopHarness:
+    type: application
+    platform: macOS
+    sources:
+      - path: SalahStopHarness
+        excludes:
+          - SalahStopHarness.entitlements
+      - path: Shared
+    dependencies:
+      - package: SalahKit
+        product: SalahCore
+      - package: SalahKit
+        product: SalahCalculation
+      - package: SalahKit
+        product: SalahWidgets
+      - package: SalahKit
+        product: SalahUI
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: SalahStopHarness/SalahStopHarness.entitlements
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_APP_SANDBOX: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSBackgroundOnly: YES
+        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/../Frameworks"]
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MARKETING_VERSION: 1.0.0
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.StopHarness
+        PRODUCT_NAME: $(TARGET_NAME)
+        SDKROOT: macosx
+        SKIP_INSTALL: YES
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+        SWIFT_VERSION: "6.0"
+  # Runs the real, signed app and the stop harness as separate processes: the widget's
+  # Stop code, a simulated sleep and a settings change. No host app, so it runs in
+  # xctest outside any sandbox and can start, suspend and read them. It needs a signing
+  # team (Config/Local.xcconfig) and has its own scheme; CI only builds it.
+  SalahRoundTripTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: SalahRoundTripTests
+    dependencies:
+      - target: Salah
+        embed: false
+        link: false
+      - target: SalahStopHarness
+        embed: false
+        link: false
+      - package: SalahKit
+        product: SalahCore
+      - package: SalahKit
+        product: SalahCalculation
+    settings:
+      base:
+        BUNDLE_LOADER: ""
+        CODE_SIGN_IDENTITY: "-"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MARKETING_VERSION: 1.0.0
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.SalahRoundTripTests
+        PRODUCT_NAME: $(TARGET_NAME)
+        SDKROOT: macosx
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+        SWIFT_VERSION: "6.0"
+        TEST_HOST: ""
 schemes:
   Salah:
     build:
@@ -280,3 +355,11 @@ schemes:
       config: Debug
       targets:
         - SalahUITests
+  SalahRoundTripTests:
+    build:
+      targets:
+        SalahRoundTripTests: [test]
+    test:
+      config: Debug
+      targets:
+        - SalahRoundTripTests

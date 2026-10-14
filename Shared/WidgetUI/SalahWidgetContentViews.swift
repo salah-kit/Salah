@@ -180,6 +180,8 @@ private struct SalahRowStyle: PrayerRowStyle {
     if !compact, display.focus?.event.id == event.id, let state = display.prayerState {
       FocusView(state: state, display: display, colors: colors, size: .large)
     } else {
+      // Salah's own time text: SalahUI's drops the hour's leading zero in 24-hour
+      // locales (salah-kit/SalahKit#11).
       ScheduleRowView(
         name: configuration.name, time: display.timeText(of: event),
         state: display.rowState(for: event, status: configuration.status),
@@ -192,7 +194,8 @@ private struct SalahRowStyle: PrayerRowStyle {
 
 /// The listed day, one row per expected kind in canonical order. A known event is a
 /// one-row `PrayerTimesList` in Salah's row style; a kind the calculation can't give
-/// today is Salah's own row with a dash, since SalahUI's list shows known events only.
+/// today is Salah's own row with a dash, since SalahUI's list shows known events only
+/// (salah-kit/SalahKit#12).
 /// One list per row keeps every row a direct child of this stack, so rows share the
 /// height evenly and the focus row keeps its priority.
 private struct ScheduleRows: View {
@@ -408,7 +411,7 @@ private struct FocusView: View {
 /// `NextPrayerView` names the next *prayer*; Salah's focus leads with the prayer that
 /// just started and counts down to sunrise too, so the style draws the focus from the
 /// configuration's state (through `SalahDisplay.focus`), with Salah's own clock and
-/// timer text.
+/// timer text (salah-kit/SalahKit#13).
 private struct SalahFocusStyle: NextPrayerStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors

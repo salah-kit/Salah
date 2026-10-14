@@ -68,6 +68,14 @@ jobs:
           xcodebuild build-for-testing -project Salah.xcodeproj -scheme SalahUITests \
             -destination 'platform=macOS' -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO
 
+      # Build-only for the same reason: the real-app tests run the signed app and the
+      # stop harness, whose App Group needs a team's provisioning profile.
+      - name: Build the real-app tests
+        if: ${{ !cancelled() }}
+        run: |
+          xcodebuild build-for-testing -project Salah.xcodeproj -scheme SalahRoundTripTests \
+            -destination 'platform=macOS' -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO
+
       # The directory's name starts with a dot, so its files only upload with
       # include-hidden-files. It's absent when no baseline failed.
       - name: Upload renders that differ from the baselines
@@ -90,8 +98,8 @@ jobs:
 
       - name: swift format lint
         run: |
-          swift format lint --strict --recursive \
-            Salah SalahWidgetsExtension Shared SalahTests SalahUITests Scripts
+          swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
+            SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
 
       # Salah.xcodeproj is generated from project.yml; this fails when they differ. The
       # XcodeGen release is pinned by version and checksum, so its output can't drift.

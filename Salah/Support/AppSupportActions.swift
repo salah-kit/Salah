@@ -59,7 +59,7 @@ enum AppSupportActions {
       attributes: regular
     )
     credits.append(
-      linked("github.com/batoulapps/Adhan", url: "https://github.com/batoulapps/Adhan"))
+      linked("github.com/salah-kit/SalahTimes", url: "https://github.com/salah-kit/SalahTimes"))
     return credits
   }
 }

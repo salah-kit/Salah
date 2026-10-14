@@ -28,9 +28,42 @@ Salah's first release, 1.0.0, is in preparation.
   dropdown, in English, Arabic and French, light and dark.
 - UI tests that drive the real app: its status item, menu-bar dropdown, Settings link
   and About panel.
+- Real-app tests (`SalahRoundTripTests`, with `SalahStopHarness` standing in for the
+  widget extension): the widget's stop round trip, the stop signal alone, an alert
+  missed while the app was frozen as during sleep, and a changed alert setting.
 
 ### Changed
 
+- Built on [SalahKit](https://github.com/salah-kit/SalahKit) 0.2.0 and
+  [SalahTimes](https://github.com/salah-kit/SalahTimes) 0.1.0, through their public API
+  only:
+  - Prayer times come from SalahCalculation. At Salah's default settings they're the
+    same to the minute; with the Muslim World League, Egyptian, Karachi and North
+    America methods Dhuhr is a minute earlier (adhan-swift added a minute it doesn't
+    document); from about 55° of latitude Asr can differ by a few minutes, and the days
+    adhan-swift couldn't calculate near the poles are now partial days that name what's
+    missing. SalahKit's `docs/calculation-parity.md` explains every difference.
+  - The widget builds its own timelines in the extension, from settings the app mirrors
+    into the App Group, so it stays right when Salah isn't running and crosses midnight;
+    a timeline that runs out before WidgetKit asks for another shows "Open Salah to
+    update" instead of an old countdown.
+  - The state comes from SalahCore: before Fajr the small widget shows the time since
+    the previous night's Isha, and where the next prayer's time can't be calculated the
+    menu bar shows "–" and the widget and dropdown say so, without a countdown. A prayer
+    the calculation can't give today keeps its row, with a dash; while today's times
+    aren't available at all, the dropdown shows the last known day, marked as such.
+  - Alerts are planned by SalahAlerts: requests keep one identifier per prayer and alert,
+    so a changed time replaces its request; the next two days' alerts and reminders come
+    first, then prayer-time alerts up to two weeks ahead; and every alert, reminders the
+    system plan leaves out included, still plays while Salah runs, caught up after sleep.
+  - Rows and the focus are SalahUI's `PrayerTimesList` and `NextPrayerView` in Salah's
+    own styles; the custom theme's guardrails are SalahUI's `ContrastCheck`.
+  - Countdowns use SalahCore's durations: the same in English, Arabic and French;
+    Turkish, Indonesian, Malay, Bengali and Urdu now use their languages' standard short
+    units.
+- The setup face of a widget placed before Salah first runs follows the device's
+  language.
+- VoiceOver reads the dropdown's countdown in words.
 - Rebranded from Guidance: bundle identifiers `io.github.salah-kit.Salah` and
   `io.github.salah-kit.Salah.Widgets`, App Group `group.io.github.salah-kit.Salah`,
   the `salah://` deep link, Salah's notification identifiers, logging subsystem and
@@ -40,6 +73,9 @@ Salah's first release, 1.0.0, is in preparation.
 
 ### Removed
 
+- adhan-swift, the widget snapshot (`SalahWidgetSnapshot.v1`) and its store, and the
+  app's own alert scheduler, state logic, duration formatter and theme contrast math,
+  which SalahKit replaces.
 - Guidance compatibility: the migration of Guidance's `kBA*` preferences and v2
   settings, the older stored sound and bookmark formats, and the widget snapshot
   Guidance wrote. Salah starts from its own defaults.

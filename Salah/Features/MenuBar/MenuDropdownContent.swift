@@ -133,7 +133,8 @@ struct MenuDropdownContent: View {
 }
 
 /// Salah's look for one dropdown row of SalahUI's `PrayerTimesList`: the collapsed
-/// row, or, for the focus, the hero card expanded in place.
+/// row, or, for the focus, the hero card expanded in place. Times are Salah's own text
+/// (salah-kit/SalahKit#11); missing kinds are Salah's own rows (salah-kit/SalahKit#12).
 private struct MenuRowStyle: PrayerRowStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors
@@ -185,7 +186,8 @@ struct MenuFocusView: View {
 }
 
 /// Salah's hero card for `NextPrayerView`, drawn from the configuration's state through
-/// `SalahDisplay.focus`: the count-up leads, and sunrise counts as next.
+/// `SalahDisplay.focus`: the count-up leads, and sunrise counts as next
+/// (salah-kit/SalahKit#13).
 private struct MenuFocusStyle: NextPrayerStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors
