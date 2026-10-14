@@ -176,28 +176,32 @@ private struct SalahRowStyle: PrayerRowStyle {
   var compact: Bool = false
 
   func makeBody(configuration: Configuration) -> some View {
-    let event = configuration.event
-    if !compact, display.focus?.event.id == event.id, let state = display.prayerState {
-      FocusView(state: state, display: display, colors: colors, size: .large)
+    if let event = configuration.event {
+      if !compact, display.focus?.event.id == event.id, let state = display.prayerState {
+        FocusView(state: state, display: display, colors: colors, size: .large)
+          .layoutPriority(1)
+      } else {
+        ScheduleRowView(
+          name: configuration.name, time: configuration.time ?? Text(verbatim: "–"),
+          state: display.rowState(for: event, status: configuration.status),
+          icon: .event(isSunrise: event.kind == .sunrise, alert: display.alerts(for: event).alert),
+          colors: colors, nowLabel: display.labels.now, compact: compact,
+          sinceText: display.sinceText(for: event, status: configuration.status)
+        )
+        .frame(maxHeight: .infinity)
+      }
     } else {
-      // Salah's own time text: SalahUI's drops the hour's leading zero in 24-hour
-      // locales (salah-kit/SalahKit#11).
       ScheduleRowView(
-        name: configuration.name, time: display.timeText(of: event),
-        state: display.rowState(for: event, status: configuration.status),
-        icon: .event(isSunrise: event.kind == .sunrise, alert: display.alerts(for: event).alert),
-        colors: colors, nowLabel: display.labels.now, compact: compact,
-        sinceText: display.sinceText(for: event, status: configuration.status))
+        name: configuration.name, time: Text(verbatim: "–"), state: .upcoming,
+        icon: .missing, colors: colors, nowLabel: display.labels.now, compact: compact,
+        timeAccessibilityLabel: display.labels.notAvailable
+      )
+      .frame(maxHeight: .infinity)
     }
   }
 }
 
-/// The listed day, one row per expected kind in canonical order. A known event is a
-/// one-row `PrayerTimesList` in Salah's row style; a kind the calculation can't give
-/// today is Salah's own row with a dash, since SalahUI's list shows known events only
-/// (salah-kit/SalahKit#12).
-/// One list per row keeps every row a direct child of this stack, so rows share the
-/// height evenly and the focus row keeps its priority.
+/// The package supplies known and missing rows as direct children of Salah's stack.
 private struct ScheduleRows: View {
   let display: SalahDisplay
   let colors: SalahWidgetColors
@@ -206,27 +210,15 @@ private struct ScheduleRows: View {
 
   var body: some View {
     VStack(spacing: spacing) {
-      ForEach(display.slots) { slot in
-        switch slot {
-        case .event(let event):
-          let row = PrayerTimesList(
-            day: PrayerDay(
-              day: event.scheduleDay, timeZone: display.settings.location.timeZone,
-              events: [event]),
-            state: display.prayerState, names: display.names, countdown: .staticText)
-          if !compact, display.focus?.event.id == event.id, display.prayerState != nil {
-            row.layoutPriority(1)
-          } else {
-            row.frame(maxHeight: .infinity)
-          }
-        case .missing(let kind):
-          ScheduleRowView(
-            name: Text(verbatim: display.name(of: kind)), time: "–", state: .upcoming,
-            icon: .missing, colors: colors, nowLabel: display.labels.now, compact: compact,
-            timeAccessibilityLabel: display.labels.notAvailable
-          )
-          .frame(maxHeight: .infinity)
-        }
+      if case .available(let day, let coverage) = display.day {
+        let missing: [PrayerKind: ScheduleGapReason] = {
+          if case .partial(let missing) = coverage { return missing }
+          return [:]
+        }()
+        PrayerTimesList(
+          day: day, state: display.prayerState, names: display.names,
+          countdown: .staticText, missing: missing
+        ).rows
       }
     }
     .prayerRowStyle(SalahRowStyle(display: display, colors: colors, compact: compact))
@@ -243,7 +235,7 @@ private struct ScheduleRowView: View {
   }
 
   let name: Text
-  let time: String
+  let time: Text
   let state: SalahWidgetRowState
   let icon: Icon
   let colors: SalahWidgetColors
@@ -292,13 +284,13 @@ private struct ScheduleRowView: View {
         Spacer(minLength: 6)
       }
 
-      Text(verbatim: time)
+      time
         .font((compact ? Font.subheadline : Font.body).monospacedDigit())
         .foregroundStyle(timeColor)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: compact ? nil : 82, alignment: .trailing)
-        .accessibilityLabel(Text(verbatim: timeAccessibilityLabel ?? time))
+        .accessibilityLabel(timeAccessibilityLabel.map { Text(verbatim: $0) } ?? time)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, compact ? 0 : 10)
@@ -396,7 +388,7 @@ private struct FocusView: View {
   var body: some View {
     NextPrayerView(
       state: state, names: display.names, timeZone: display.settings.location.timeZone,
-      countdown: .staticText
+      countdown: .staticText, selection: .justStartedOrNextEvent
     )
     .nextPrayerStyle(
       SalahFocusStyle(display: display, colors: colors, size: size, distribute: distribute))
@@ -408,10 +400,7 @@ private struct FocusView: View {
 /// (end-of-day Fajr). Reuses the hero-card surface so the focus reads as inlaid into
 /// the backdrop.
 ///
-/// `NextPrayerView` names the next *prayer*; Salah's focus leads with the prayer that
-/// just started and counts down to sunrise too, so the style draws the focus from the
-/// configuration's state (through `SalahDisplay.focus`), with Salah's own clock and
-/// timer text (salah-kit/SalahKit#13).
+/// `NextPrayerView` supplies the selected focus and its localized name and short time.
 private struct SalahFocusStyle: NextPrayerStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors
@@ -422,9 +411,10 @@ private struct SalahFocusStyle: NextPrayerStyle {
   var distribute: Bool = false
 
   func makeBody(configuration: Configuration) -> some View {
-    if let focus = display.focus {
+    if let focus = configuration.focus {
       ActiveCardView(
-        focus: focus, display: display, colors: colors, size: size, distribute: distribute)
+        focus: focus, name: configuration.name, time: configuration.time,
+        display: display, colors: colors, size: size, distribute: distribute)
     } else {
       NextUnknownView(display: display, colors: colors, size: size)
     }
@@ -433,6 +423,8 @@ private struct SalahFocusStyle: NextPrayerStyle {
 
 private struct ActiveCardView: View {
   let focus: SalahDisplay.Focus
+  let name: Text?
+  let time: Text?
   let display: SalahDisplay
   let colors: SalahWidgetColors
   let size: SalahWidgetSize
@@ -529,14 +521,14 @@ private struct ActiveCardView: View {
   /// sizes and the menu bar.
   private var nameRow: some View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
-      Text(verbatim: display.name(of: event))
+      (name ?? Text(verbatim: "–"))
         .font(nameFont)
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       if size != .small {
         Spacer(minLength: 6)
         Label {
-          Text(verbatim: display.timeText(of: event))
+          (time ?? Text(verbatim: "–"))
             .lineLimit(1)
             .minimumScaleFactor(0.8)
         } icon: {

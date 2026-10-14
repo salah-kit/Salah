@@ -9,6 +9,8 @@ import SwiftUI
 /// (gated on Reduce Motion).
 struct MenuHeroCard: View {
   let focus: SalahDisplay.Focus
+  let name: Text?
+  let time: Text?
   let display: SalahDisplay
   let colors: SalahWidgetColors
   /// Toggles the focused prayer's alert; nil for the Tomorrow card and sunrise.
@@ -89,13 +91,13 @@ struct MenuHeroCard: View {
 
   private var nameRow: some View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
-      Text(verbatim: display.name(of: event))
+      (name ?? Text(verbatim: "–"))
         .font(.system(.title2, design: .serif, weight: .bold))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       Spacer(minLength: 6)
       Label {
-        Text(verbatim: display.timeText(of: event)).lineLimit(1).minimumScaleFactor(0.8)
+        (time ?? Text(verbatim: "–")).lineLimit(1).minimumScaleFactor(0.8)
       } icon: {
         Image(systemName: "clock")
       }

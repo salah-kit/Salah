@@ -1,5 +1,6 @@
 import Foundation
 import SalahCore
+import SalahUI
 
 /// What one Salah surface shows at one moment: a widget entry, the menu-bar dropdown, a
 /// preview.
@@ -78,7 +79,9 @@ nonisolated struct SalahDisplay: Sendable {
 
   func name(of event: PrayerEvent) -> String { names.name(of: event) }
   func name(of kind: PrayerKind) -> String { names.name(of: kind) }
-  func timeText(of event: PrayerEvent) -> String { text.time(event.time) }
+  func timeText(of event: PrayerEvent) -> String {
+    text.timeFormatter().string(from: event.time).bidiIsolated
+  }
   func alerts(for event: PrayerEvent) -> PrayerAlerts { settings.alerts(for: event) }
   func reminderDetail(for event: PrayerEvent) -> String? {
     text.reminderDetail(alerts(for: event))
@@ -122,28 +125,11 @@ nonisolated struct SalahDisplay: Sendable {
 
   /// The one element that leads every surface: the green count-up of a prayer that just
   /// started, or the countdown to the next event, sunrise included.
-  enum Focus: Equatable, Sendable {
-    case countUp(PrayerEvent)
-    case countdown(PrayerEvent)
+  typealias Focus = PrayerFocus
 
-    var event: PrayerEvent {
-      switch self {
-      case .countUp(let event), .countdown(let event): event
-      }
-    }
-
-    var isCountUp: Bool {
-      if case .countUp = self { return true }
-      return false
-    }
-  }
-
-  /// The focus, or `nil` when the schedule knows neither a prayer that just started nor
-  /// the next event.
+  /// The package selects the just-started prayer or the next event, sunrise included.
   var focus: Focus? {
-    guard let state = prayerState else { return nil }
-    if let started = state.justStarted { return .countUp(started) }
-    return state.next.map(Focus.countdown)
+    prayerState.flatMap { PrayerFocus(state: $0, selection: .justStartedOrNextEvent) }
   }
 
   /// Whether the focus belongs to a later day than the listed one, such as tomorrow's

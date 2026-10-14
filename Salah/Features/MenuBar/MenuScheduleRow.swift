@@ -8,7 +8,7 @@ import SwiftUI
 /// un-dimmed.
 struct MenuScheduleRow: View {
   let name: Text
-  let time: String
+  let time: Text
   let state: SalahWidgetRowState
   let isSunrise: Bool
   let alertEnabled: Bool
@@ -49,7 +49,7 @@ struct MenuScheduleRow: View {
         Spacer(minLength: 6)
       }
 
-      Text(verbatim: time)
+      time
         .font(Font.subheadline.monospacedDigit())
         .foregroundStyle(timeColor)
         .lineLimit(1)

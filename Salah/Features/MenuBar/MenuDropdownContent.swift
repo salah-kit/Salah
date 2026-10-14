@@ -90,17 +90,15 @@ struct MenuDropdownContent: View {
       if let lastKnown {
         MenuLastKnownCaption(day: lastKnown, display: display)
       }
-      ForEach(rows.slots) { slot in
-        switch slot {
-        case .event(let event):
-          PrayerTimesList(
-            day: PrayerDay(
-              day: event.scheduleDay, timeZone: display.settings.location.timeZone,
-              events: [event]),
-            state: rows.prayerState, names: display.names, countdown: .staticText)
-        case .missing(let kind):
-          MenuMissingRow(name: display.name(of: kind), labels: display.labels)
-        }
+      if case .available(let day, let coverage) = rows.day {
+        let missing: [PrayerKind: ScheduleGapReason] = {
+          if case .partial(let missing) = coverage { return missing }
+          return [:]
+        }()
+        PrayerTimesList(
+          day: day, state: rows.prayerState, names: display.names,
+          countdown: .staticText, missing: missing
+        ).rows
       }
       if !playing, lastKnown == nil, display.listedDay != nil,
         display.floatingFocus != nil
@@ -133,8 +131,7 @@ struct MenuDropdownContent: View {
 }
 
 /// Salah's look for one dropdown row of SalahUI's `PrayerTimesList`: the collapsed
-/// row, or, for the focus, the hero card expanded in place. Times are Salah's own text
-/// (salah-kit/SalahKit#11); missing kinds are Salah's own rows (salah-kit/SalahKit#12).
+/// row, or the focus hero card. The package supplies times and missing-kind configurations.
 private struct MenuRowStyle: PrayerRowStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors
@@ -144,17 +141,20 @@ private struct MenuRowStyle: PrayerRowStyle {
   let onToggleAlert: (PrayerEvent) -> Void
 
   func makeBody(configuration: Configuration) -> some View {
-    let event = configuration.event
-    if showsFocus, display.focus?.event.id == event.id {
-      MenuFocusView(display: display, colors: colors, onToggleAlert: toggle(event))
+    if let event = configuration.event {
+      if showsFocus, display.focus?.event.id == event.id {
+        MenuFocusView(display: display, colors: colors, onToggleAlert: toggle(event))
+      } else {
+        MenuScheduleRow(
+          name: configuration.name, time: configuration.time ?? Text(verbatim: "–"),
+          state: display.rowState(for: event, status: configuration.status),
+          isSunrise: event.kind == .sunrise, alertEnabled: display.alerts(for: event).alert,
+          colors: colors, labels: display.labels,
+          sinceText: display.sinceText(for: event, status: configuration.status),
+          onToggleAlert: toggle(event))
+      }
     } else {
-      MenuScheduleRow(
-        name: configuration.name, time: display.timeText(of: event),
-        state: display.rowState(for: event, status: configuration.status),
-        isSunrise: event.kind == .sunrise, alertEnabled: display.alerts(for: event).alert,
-        colors: colors, labels: display.labels,
-        sinceText: display.sinceText(for: event, status: configuration.status),
-        onToggleAlert: toggle(event))
+      MenuMissingRow(name: configuration.name, labels: display.labels)
     }
   }
 
@@ -175,7 +175,7 @@ struct MenuFocusView: View {
     if let state = display.prayerState {
       NextPrayerView(
         state: state, names: display.names, timeZone: display.settings.location.timeZone,
-        countdown: .staticText
+        countdown: .staticText, selection: .justStartedOrNextEvent
       )
       .nextPrayerStyle(
         MenuFocusStyle(display: display, colors: colors, onToggleAlert: onToggleAlert))
@@ -185,18 +185,17 @@ struct MenuFocusView: View {
   }
 }
 
-/// Salah's hero card for `NextPrayerView`, drawn from the configuration's state through
-/// `SalahDisplay.focus`: the count-up leads, and sunrise counts as next
-/// (salah-kit/SalahKit#13).
+/// Salah's hero card for the package-selected focus.
 private struct MenuFocusStyle: NextPrayerStyle {
   let display: SalahDisplay
   let colors: SalahWidgetColors
   let onToggleAlert: (() -> Void)?
 
   func makeBody(configuration: Configuration) -> some View {
-    if let focus = display.focus {
+    if let focus = configuration.focus {
       MenuHeroCard(
-        focus: focus, display: display, colors: colors,
+        focus: focus, name: configuration.name, time: configuration.time,
+        display: display, colors: colors,
         onToggleAlert: display.focusIsTomorrow ? nil : onToggleAlert)
     } else {
       MenuNoticeCard(text: display.labels.nextUnknown, colors: colors)
@@ -206,7 +205,7 @@ private struct MenuFocusStyle: NextPrayerStyle {
 
 /// A row for a prayer the calculation can't give today: its name and a dash.
 private struct MenuMissingRow: View {
-  let name: String
+  let name: Text
   let labels: SalahWidgetLabels
 
   var body: some View {
@@ -216,7 +215,7 @@ private struct MenuMissingRow: View {
         .foregroundStyle(.secondary)
         .frame(width: 18)
         .accessibilityHidden(true)
-      Text(verbatim: name)
+      name
         .font(Font.system(.subheadline, design: .serif))
         .lineLimit(1)
         .minimumScaleFactor(0.7)

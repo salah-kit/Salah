@@ -109,8 +109,8 @@ macOS 14 Sonoma or later, on Apple silicon and Intel Macs.
 
 ## Status and versioning
 
-Salah 1.0.0 is its first release, as source, on SalahKit 0.2.0. Releases use a
-marketing version (1.0.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
+Salah 1.1.0 is a source release on SalahKit 0.4.0. Releases use a
+marketing version (1.1.0) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
 change.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation

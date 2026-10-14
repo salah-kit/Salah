@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-14
+
+### Changed
+
+- Use SalahKit 0.4.0 for missing-kind rows, sunrise-aware focus and just-started count-up,
+  midnight widget entries and the handled-alert record after a clock reversal. The app no
+  longer carries those workarounds; method detection, reminder wording, widget labels and
+  the live last-minute timer keep their existing behavior.
+- Rows and focus cards use SalahUI's localized short time text. In 24-hour locales this
+  includes the locale's leading zero. App-owned notification and compact status text use
+  the same Foundation short-time style.
+
 ## [1.0.0] - 2026-10-14
 
 Salah's first release, as source.
@@ -88,5 +100,6 @@ Salah's first release, as source.
   settings, the older stored sound and bookmark formats, and the widget snapshot
   Guidance wrote. Salah starts from its own defaults.
 
-[Unreleased]: https://github.com/salah-kit/Salah/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/salah-kit/Salah/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/salah-kit/Salah/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/salah-kit/Salah/releases/tag/1.0.0

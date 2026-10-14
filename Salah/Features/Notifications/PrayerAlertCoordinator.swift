@@ -30,8 +30,6 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// How far back the engine's schedule starts, so an alert due just before a replan
   /// is still caught up.
   static let catchUpWindow: TimeInterval = 5 * 60
-  /// How long the coordinator remembers an alert it saw come due.
-  static let handledRetention: TimeInterval = 86_400
 
   private let preferences: Preferences
   private let center: any PrayerNotificationCenter
@@ -43,10 +41,6 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   private let planner = AlertPlanner()
   private var engine: InProcessAlertEngine!
   private var authorizationRequest: Task<UNAuthorizationStatus, Never>?
-  /// The alerts reported due, with the clock's time then. A clock set back past one
-  /// puts it in the future again; the plan leaves it out, so the system doesn't deliver
-  /// it twice (SalahKit#16).
-  private var handled: [AlertOccurrenceID: Date] = [:]
 
   /// The latest plan's installation. Readable so tests can await it.
   private(set) var installation: Task<NotificationApplyReport?, Never>?
@@ -108,11 +102,8 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     AppLog.notifications.notice(
       "planned alerts=\(alerts.alerts.count, privacy: .public) gaps=\(alerts.gaps.count, privacy: .public)"
     )
-    handled = handled.filter { $0.value > now.addingTimeInterval(-Self.handledRetention) }
-    var requested = alerts
-    requested.alerts.removeAll { alert in handled[alert.occurrenceID].map { now < $0 } ?? false }
     // The installation first: alerts the engine reports due at once are posted after it.
-    install(planner.notificationPlan(requested, from: now))
+    install(planner.notificationPlan(alerts, from: now, excluding: engine.handledOccurrences))
     engine.update(alerts)
   }
 
@@ -213,7 +204,6 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// app-played sound among them.
   private func handleDue(_ due: [PlannedAlert]) {
     for alert in due {
-      handled[alert.occurrenceID] = clock.now
       AppLog.notifications.notice(
         "due \(alert.id.requestIdentifier(prefix: ""), privacy: .public) late=\(Int(self.clock.now.timeIntervalSince(alert.fireDate)), privacy: .public)s"
       )
@@ -384,7 +374,9 @@ nonisolated struct PrayerAlertContent: Sendable {
     content.title = name
     switch alert.kind {
     case .atTime:
-      content.body = String(format: atTimeFormat, locale: locale, name, text.time(alert.event.time))
+      content.body = String(
+        format: atTimeFormat, locale: locale, name,
+        text.timeFormatter().string(from: alert.event.time).bidiIsolated)
     case .before:
       content.body = String(
         format: beforeFormat, locale: locale, name, text.digits(offset).bidiIsolated)

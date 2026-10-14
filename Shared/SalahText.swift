@@ -5,8 +5,8 @@ import SalahCore
 /// location's time zone. The app's menu bar and the widget extension share it, so both
 /// draw the same text.
 ///
-/// Durations come from SalahCore's `PrayerDurationFormat`; clock times and reminder
-/// phrases are Salah's look (its "j:mm a" clock, its "10m before" word order).
+/// Durations come from SalahCore's `PrayerDurationFormat`; clock times use the locale's
+/// short format. Reminder phrases retain Salah's "10m before" word order.
 nonisolated struct SalahText: Sendable {
   /// The locale for words and digits: the user's language, with its native digits.
   var locale: Locale
@@ -21,12 +21,6 @@ nonisolated struct SalahText: Sendable {
   var labels: SalahWidgetLabels { SalahWidgetLabels.localized(forLanguageCode: languageCode) }
 
   // MARK: - Clock times
-
-  /// A clock time in the locale's short form, bidi-isolated: "4:11 AM", "04:11",
-  /// "٤:١١ ص".
-  func time(_ date: Date) -> String {
-    timeFormatter().string(from: date).bidiIsolated
-  }
 
   /// A clock time without its day period, bidi-isolated, for the menu bar: "4:11".
   func compactTime(_ date: Date) -> String {
@@ -44,10 +38,12 @@ nonisolated struct SalahText: Sendable {
       .bidiIsolated
   }
 
-  private func timeFormatter() -> DateFormatter {
+  /// The locale's short clock format for app-owned strings and compact status text.
+  func timeFormatter() -> DateFormatter {
     let formatter = DateFormatter()
-    formatter.dateFormat = DateFormatter.dateFormat(
-      fromTemplate: "j:mm a", options: 0, locale: locale)
+    formatter.dateStyle = .none
+    formatter.timeStyle = .short
+    formatter.calendar = locale.calendar
     formatter.locale = locale
     formatter.timeZone = timeZone
     return formatter

@@ -55,8 +55,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   /// timeline over the default 48-hour horizon: an entry wherever the state changes,
   /// the steps between them, the expired entry at its end, and a reload halfway there.
   /// What's playing shows in the entries while it can still be playing.
-  /// It adds an entry at each midnight in the location's zone, with the state then, so
-  /// the listed day turns over with the date (salah-kit/SalahKit#14).
+  /// The builder includes civil-day boundaries so the listed day turns over with the date.
   static func make(settings: SalahSettings?, playback: SalahPlayback?, now: Date)
     -> SalahWidgetTimeline
   {
@@ -80,7 +79,8 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     let planned: PrayerTimeline
     do {
       planned = try PrayerTimelineBuilder(
-        schedule: schedule, policy: SalahDisplay.policy, strategy: strategy
+        schedule: schedule, policy: SalahDisplay.policy, strategy: strategy,
+        includeDayBoundaries: true
       ).timeline(from: now)
     } catch {
       // Only an invalid horizon or strategy fails; show that the times need refreshing
@@ -91,7 +91,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     }
 
     var entries: [SalahWidgetEntry] = []
-    for (index, entry) in planned.entries.enumerated() {
+    for entry in planned.entries {
       switch entry.state {
       case .expired:
         entries.append(SalahWidgetEntry(date: entry.date, content: .expired(settings)))
@@ -99,19 +99,6 @@ nonisolated struct SalahWidgetTimeline: Sendable {
         entries.append(
           SalahWidgetEntry(
             date: entry.date, content: .schedule(display(at: entry.date, state: state))))
-        // Midnights before the next entry: the state holds, the listed day changes.
-        guard index + 1 < planned.entries.count else { continue }
-        let end = planned.entries[index + 1].date
-        var midnight = CivilDay(containing: entry.date, in: zone).adding(days: 1).start(in: zone)
-        while midnight < end {
-          let state = schedule.state(
-            at: midnight, through: midnight.addingTimeInterval(SalahDisplay.lookahead),
-            policy: SalahDisplay.policy)
-          entries.append(
-            SalahWidgetEntry(
-              date: midnight, content: .schedule(display(at: midnight, state: state))))
-          midnight = CivilDay(containing: midnight, in: zone).adding(days: 1).start(in: zone)
-        }
       }
     }
     return SalahWidgetTimeline(
