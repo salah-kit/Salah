@@ -488,6 +488,22 @@ struct PrayerAlertCoordinatorTests {
     #expect(dua.context == AudioPlaybackContext(source: .dua, slot: .alert, event: Self.asr))
   }
 
+  /// An alert that comes due as a fresh plan lands, inside the engine's early leeway, is
+  /// installed and not posted as well: the posting waits for the installation, which
+  /// leaves the request pending.
+  ///
+  /// Regression: the posting ran first, found nothing pending and posted the alert, then
+  /// the installation added its request too, so the banner showed twice.
+  @Test func anAlertDueAsThePlanLandsIsNotPostedTwice() async throws {
+    let harness = Harness(
+      now: Self.asr.time.addingTimeInterval(-1), settings: [.asr: .alert(sound: .makkah)],
+      othersOff: true)
+    await harness.update()
+    #expect(harness.pendingIdentifiers.contains(Self.identifier(.asr, .atTime)))
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
   /// With the du'a off, an adhan plays alone.
   @Test func playsNoDuaWhenItIsOff() async throws {
     let harness = Harness(

@@ -102,8 +102,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     AppLog.notifications.notice(
       "planned alerts=\(alerts.alerts.count, privacy: .public) gaps=\(alerts.gaps.count, privacy: .public)"
     )
-    engine.update(alerts)
+    // The installation first: alerts the engine reports due at once are posted after it.
     install(planner.notificationPlan(alerts, from: now))
+    engine.update(alerts)
   }
 
   /// Reports what's due now and re-arms the engine's wake-up. Call it on wake, after a
@@ -202,7 +203,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     }
     let content = PrayerAlertContent(preferences: preferences)
     let previous = delivery
+    let installing = installation
     delivery = Task { [scheduler] in
+      // After the installation in progress: an alert due a moment early is then pending,
+      // or delivered, and the scheduler skips it rather than post it twice.
+      _ = await installing?.value
       _ = await previous?.value
       _ = try? await scheduler.deliver(due, content: content.make)
     }
