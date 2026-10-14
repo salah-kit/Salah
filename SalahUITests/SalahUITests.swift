@@ -21,12 +21,13 @@ final class SalahUITests: XCTestCase {
   /// A launch that asks for nothing: no automatic location (no location prompt) and every
   /// alert off (no notification prompt), in English, with the default menu-bar format
   /// (icon, full prayer name, time until it) whatever this Mac's Salah is set to, in a
-  /// scratch preferences suite (Debug builds), so none of it reaches this Mac's own Salah
-  /// preferences.
+  /// scratch preferences suite and with a notification center of the app's own (Debug
+  /// builds), so none of it reaches this Mac's own Salah preferences or notifications.
   static var quietLaunch: [String] {
     [
       "-salah.autoLocation", "NO",
       "-salah.debug.scratchPreferences", "YES",
+      "-salah.debug.withoutSystemNotifications", "YES",
       "-salah.notificationSettings", alertsOff,
       "-salah.appLanguage", "english",
       "-AppleLanguages", "(en)",

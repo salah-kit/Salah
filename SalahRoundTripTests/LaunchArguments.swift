@@ -66,8 +66,9 @@ nonisolated struct PlacedPrayer: Sendable {
 
 /// Launch arguments: Makkah with Salah's default calculation and no adjustment but the
 /// given one, no automatic location, no consent prompt of any kind, English, muted, and
-/// every alert off but the given ones, in a scratch preferences suite (Debug builds),
-/// so none of it reaches this Mac's own Salah preferences.
+/// every alert off but the given ones, in a scratch preferences suite and with a
+/// notification center of the app's own (Debug builds), so none of it reaches this Mac's
+/// own Salah preferences or notifications.
 ///
 /// Every launch sets each preference the tests depend on, rather than inherit an earlier
 /// launch's.
@@ -94,6 +95,7 @@ enum Launch {
       "-salah.autoLocation", "NO",
       "-salah.debug.withoutSystemPrompts", "YES",
       "-salah.debug.scratchPreferences", "YES",
+      "-salah.debug.withoutSystemNotifications", "YES",
       "-salah.notificationSettings", hex,
       "-salah.appLanguage", "english",
       "-AppleLanguages", "(en)",

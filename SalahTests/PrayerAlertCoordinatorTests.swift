@@ -503,6 +503,29 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
   }
 
+  /// A test launch's detached center (`-salah.debug.withoutSystemNotifications`) takes
+  /// nothing and reports notifications denied: the plan confirms nothing, nothing is
+  /// pending, and the alert still comes due and plays in the app.
+  @Test func theDetachedCenterKeepsAlertsInTheApp() async throws {
+    let scratch = ScratchDefaults()
+    let preferences = Preferences.scratch(scratch, settings: [.asr: .alert(sound: .makkah)])
+    let clock = ManualAlertClock(Fixture.date(15, 0))
+    let audio = RecordingAudioPlayer()
+    let center = DetachedNotificationCenter()
+    let coordinator = PrayerAlertCoordinator(
+      preferences: preferences, center: center, audio: audio, clock: clock)
+    coordinator.update(schedule: Fixture.schedule())
+    let report = try #require(await coordinator.installation?.value)
+    #expect(report.confirmed.isEmpty)
+    #expect(try await center.pendingNotificationRequests().isEmpty)
+    #expect(center.delegate === coordinator)
+
+    clock.fire()
+    await coordinator.delivery?.value
+    #expect(audio.plays.first?.request.resource.url == Self.makkah)
+    #expect(await center.deliveredNotificationRecords().isEmpty)
+  }
+
   /// With the du'a off, an adhan plays alone.
   @Test func playsNoDuaWhenItIsOff() async throws {
     let harness = Harness(

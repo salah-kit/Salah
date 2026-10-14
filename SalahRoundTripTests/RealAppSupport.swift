@@ -141,7 +141,11 @@ final class RunningApp {
     let running = NSRunningApplication.runningApplications(
       withBundleIdentifier: "io.github.salah-kit.Salah"
     ).map(\.processIdentifier)
-    for pid in running { kill(pid, SIGTERM) }
+    // A Salah an earlier run left frozen (SIGSTOP) must run again to take the signal.
+    for pid in running {
+      kill(pid, SIGCONT)
+      kill(pid, SIGTERM)
+    }
     let deadline = Date().addingTimeInterval(10)
     while Date() < deadline, running.contains(where: { kill($0, 0) == 0 }) {
       Thread.sleep(forTimeInterval: 0.1)

@@ -3,6 +3,7 @@ import Foundation
 import OSLog
 import SalahCore
 import SalahWidgets
+import UserNotifications
 
 /// The running app's prayer state: the schedule the preferences describe, its state now,
 /// the menu-bar text, the alerts, and the App Group mirror the widget builds from.
@@ -45,7 +46,12 @@ final class PrayerManager {
 
   init(audioPlaybackController: AudioPlaybackController = AudioPlaybackController()) {
     self.audioPlaybackController = audioPlaybackController
-    alerts = PrayerAlertCoordinator(audio: audioPlaybackController)
+    #if DEBUG
+      let center = DebugOptions.notificationCenter() ?? UNUserNotificationCenter.current()
+    #else
+      let center = UNUserNotificationCenter.current()
+    #endif
+    alerts = PrayerAlertCoordinator(center: center, audio: audioPlaybackController)
     mirror = WidgetMirror()
 
     let settings = Preferences.shared.mirroredSettings
@@ -311,13 +317,11 @@ final class PrayerManager {
     case .unavailable(let reason):
       // Not a time-out to wait on: the same coordinates give the same answer, so it's
       // surfaced once, non-modally, until the place changes. The minute's tick lands
-      // here too: report only a new cause, or the same one again once another notice
-      // has taken its place.
+      // here too: report only a new cause, or the same one again once no notice shows
+      // (another one took its place and then cleared), never over another notice.
       let location = settings.location
       let cause = UnavailableCause(location: location, reason: reason)
-      guard
-        cause != reportedUnavailable
-          || FailureReporter.shared.currentNotice?.domain != .prayerCalc
+      guard cause != reportedUnavailable || FailureReporter.shared.currentNotice == nil
       else { break }
       reportedUnavailable = cause
       AppLog.prayer.error(

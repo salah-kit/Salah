@@ -108,10 +108,13 @@ Two things follow on the Mac you run them on:
 
 - They quit a running Salah, and leave it quit.
 - With `-salah.debug.scratchPreferences` (Debug builds only), the app keeps the
-  preferences it was launched with in a scratch suite, so this Mac's own Salah
-  preferences are untouched. What remains is the App Group's mirrored settings from the
-  last test launch (Makkah, a prayer moved by the test's adjustment, that test's
-  alerts), which a placed widget shows until Salah runs again and publishes its own.
+  preferences it was launched with in a scratch suite, and with
+  `-salah.debug.withoutSystemNotifications` its alerts go to a notification center of
+  its own that holds nothing, so this Mac's own Salah preferences and notifications are
+  untouched. What remains is the App Group's mirrored settings from the last test launch,
+  which a placed widget shows until Salah runs again and publishes its own: Makkah with
+  every alert off after a full run, or, after one alert test alone, a prayer moved by
+  its adjustment and that test's alert.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.
@@ -136,7 +139,8 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
 They need your team, like the UI tests, and CI only builds them. The app runs muted and
 with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never asks for
 notification permission or sends Music an Apple Event, and with
-`-salah.debug.scratchPreferences`, so this Mac's own Salah preferences are untouched.
+`-salah.debug.scratchPreferences` and `-salah.debug.withoutSystemNotifications`, so this
+Mac's own Salah preferences and notifications are untouched.
 Like the UI tests, they quit a Salah you have running, and leave it quit, so only the
 app under test alerts and publishes. Afterwards the App Group holds what the app last
 published (Makkah, a prayer moved by the last test's adjustment, its alerts), which a

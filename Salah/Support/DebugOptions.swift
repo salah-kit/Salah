@@ -1,4 +1,6 @@
 import Foundation
+import SalahAlerts
+import UserNotifications
 
 #if DEBUG
   /// Launch options of Debug builds, for the tests that run the real app.
@@ -15,7 +17,8 @@ import Foundation
     ///
     /// Nothing else changes: the app still installs the plan, posts due alerts and plays
     /// their sounds. Without permission, macOS just doesn't schedule or show those
-    /// notifications.
+    /// notifications; `withoutSystemNotificationsKey` keeps them from the system's center
+    /// altogether.
     static let withoutSystemPromptsKey = "salah.debug.withoutSystemPrompts"
 
     /// `-salah.debug.scratchPreferences YES`: keep the preferences in a store of their own,
@@ -27,6 +30,18 @@ import Foundation
     /// The scratch store's suite.
     static let scratchSuiteName = "io.github.salah-kit.Salah.debug.scratch"
 
+    /// `-salah.debug.withoutSystemNotifications YES`: the alerts go to a notification center
+    /// of their own that holds nothing and reports notifications denied, so a test launch
+    /// never adds, removes or shows a notification of this Mac's Salah. Alerts still come
+    /// due and play in the app.
+    static let withoutSystemNotificationsKey = "salah.debug.withoutSystemNotifications"
+
+    /// The detached center when the launch asks for it; `nil` for the system's.
+    static func notificationCenter() -> (any PrayerNotificationCenter)? {
+      UserDefaults.standard.bool(forKey: withoutSystemNotificationsKey)
+        ? DetachedNotificationCenter() : nil
+    }
+
     /// The scratch store, emptied, when the launch asks for it. Launch arguments still
     /// read through it: the argument domain comes first in every store.
     static func scratchPreferences() -> UserDefaults? {
@@ -36,5 +51,29 @@ import Foundation
       suite.removePersistentDomain(forName: scratchSuiteName)
       return suite
     }
+  }
+
+  /// A notification center that holds nothing: notifications are denied, and adding or
+  /// removing one does nothing.
+  nonisolated final class DetachedNotificationCenter: PrayerNotificationCenter,
+    @unchecked Sendable
+  {
+    // @unchecked: the delegate, its one stored property, is read and written only while
+    // holding `lock`.
+    private let lock = NSLock()
+    private weak var storedDelegate: (any UNUserNotificationCenterDelegate)?
+
+    var delegate: (any UNUserNotificationCenterDelegate)? {
+      get { lock.withLock { storedDelegate } }
+      set { lock.withLock { storedDelegate = newValue } }
+    }
+
+    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool { false }
+    func authorizationStatus() async -> UNAuthorizationStatus { .denied }
+    func pendingNotificationRequests() async throws -> [UNNotificationRequest] { [] }
+    func add(_ request: UNNotificationRequest) async throws {}
+    func removePendingNotificationRequests(withIdentifiers identifiers: [String]) async {}
+    func deliveredNotificationRecords() async -> [DeliveredNotificationRecord] { [] }
+    func removeDeliveredNotifications(withIdentifiers identifiers: [String]) async {}
   }
 #endif
