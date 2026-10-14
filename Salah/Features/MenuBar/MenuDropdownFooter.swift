@@ -43,7 +43,7 @@ struct MenuDropdownFooter: View {
           Capsule().strokeBorder(colors.accent.opacity(0.45), lineWidth: 0.75)
         }
       }
-      .foregroundStyle(silentMode ? colors.accent : Color.secondary)
+      .foregroundStyle(silentMode ? colors.accentText : Color.secondary)
       .contentShape(Capsule())
     }
     .buttonStyle(.plain)

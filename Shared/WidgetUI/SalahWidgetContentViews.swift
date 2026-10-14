@@ -511,7 +511,7 @@ private struct ActiveCardView: View {
     } else {
       EyebrowLabel(
         text: display.focusIsTomorrow ? labels.tomorrow : labels.nextPrayer,
-        accent: colors.accent)
+        accent: colors.accentText)
     }
   }
 
@@ -596,7 +596,7 @@ private struct NextUnknownView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 5) {
-      EyebrowLabel(text: display.labels.nextPrayer, accent: colors.accent)
+      EyebrowLabel(text: display.labels.nextPrayer, accent: colors.accentText)
       Label {
         Text(verbatim: display.labels.nextUnknown)
           .lineLimit(2)

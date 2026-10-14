@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-14
+
+### Fixed
+
+- Keep small widget/menu headings and the silent-mode label legible with separate
+  text ink while preserving the selected theme's decorative accents.
+
 ## [1.1.1] - 2026-10-14
 
 ### Fixed
@@ -116,7 +123,8 @@ Salah's first release, as source.
   settings, the older stored sound and bookmark formats, and the widget snapshot
   Guidance wrote. Salah starts from its own defaults.
 
-[Unreleased]: https://github.com/salah-kit/Salah/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/salah-kit/Salah/compare/1.1.2...HEAD
+[1.1.2]: https://github.com/salah-kit/Salah/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/salah-kit/Salah/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/salah-kit/Salah/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/salah-kit/Salah/releases/tag/1.0.0

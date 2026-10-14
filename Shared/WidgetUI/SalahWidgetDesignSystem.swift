@@ -15,6 +15,9 @@ nonisolated enum SalahWidgetSize: Sendable, Hashable {
 /// A theme palette resolved to concrete SwiftUI `Color`s for one appearance.
 nonisolated struct SalahWidgetColors: Sendable {
   var accent: Color
+  /// Caption labels use semantic ink rather than the decorative accent, whose
+  /// 3:1 editor floor is meant for large text. System ink also honors Increase Contrast.
+  var accentText: Color { .primary }
   var primary: Color
   var backgroundTop: Color
   var backgroundBottom: Color

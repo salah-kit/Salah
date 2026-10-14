@@ -70,7 +70,8 @@ struct MenuHeroCard: View {
       if isCountUp {
         InlineBadge(text: labels.now, tint: SalahWidgetTone.prayerColor(colors))
       } else {
-        EyebrowLabel(text: isTomorrow ? labels.tomorrow : labels.nextPrayer, accent: colors.accent)
+        EyebrowLabel(
+          text: isTomorrow ? labels.tomorrow : labels.nextPrayer, accent: colors.accentText)
       }
       Spacer(minLength: 8)
       if let onToggleAlert, !isTomorrow {
