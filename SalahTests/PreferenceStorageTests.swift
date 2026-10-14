@@ -1,4 +1,6 @@
 import Foundation
+import SalahCalculation
+import SalahCore
 import Testing
 
 /// Where preferences live and what a fresh install starts with. Salah has no installed
@@ -28,6 +30,45 @@ struct PreferenceStorageTests {
         "dhuhr": adhan, "asr": adhan, "maghrib": adhan, "isha": adhan,
       ])
     #expect(!preferences.jumuahOverrideEnabled)
+  }
+
+  /// Calculation input SalahTimes can't calculate with never reaches it: a custom angle
+  /// outside 1...30 degrees snaps back to the previous one, and an adjustment beyond a
+  /// day either way stops at a day, so the schedule keeps its days.
+  ///
+  /// Regression: the settings accepted any positive angle and any adjustment, and
+  /// SalahTimes rejected them, leaving every day unavailable and no alerts.
+  @Test func calculationInputStaysWhereSalahTimesCalculates() {
+    let scratch = ScratchDefaults()
+    let preferences = Preferences(defaults: scratch.defaults)
+    preferences.customFajrAngle = 35
+    #expect(preferences.customFajrAngle == 18)
+    preferences.customFajrAngle = 15.5
+    preferences.customFajrAngle = 0.5
+    #expect(preferences.customFajrAngle == 15.5)
+    preferences.customIshaAngle = 185
+    #expect(preferences.customIshaAngle == 17.5)
+    preferences.customIshaAngle = 30
+    #expect(preferences.customIshaAngle == 30)
+    preferences.methodPreference = .custom
+    let schedule = PrayerSchedule(
+      source: SalahPrayerSource(preferences.calculationChoices.calculationSettings),
+      location: Fixture.location)
+    #expect(schedule.day(Fixture.civilDay()).coverage == .complete)
+
+    preferences.fajrAdjustment = 5_000
+    #expect(preferences.fajrAdjustment == 1_440)
+    preferences.ishaAdjustment = -2_000
+    #expect(preferences.ishaAdjustment == -1_440)
+    #expect(scratch.defaults.integer(forKey: Preferences.Key.adjustmentIsha) == -1_440)
+
+    // Stored values out of range load as the defaults or the bounds.
+    let stored = ScratchDefaults()
+    stored.defaults.set(40.0, forKey: Preferences.Key.customFajrAngle)
+    stored.defaults.set(9_999, forKey: Preferences.Key.adjustmentDhuhr)
+    let loaded = Preferences(defaults: stored.defaults)
+    #expect(loaded.customFajrAngle == 18)
+    #expect(loaded.dhuhrAdjustment == 1_440)
   }
 
   /// Every key the preferences write is in Salah's namespace, apart from the system's

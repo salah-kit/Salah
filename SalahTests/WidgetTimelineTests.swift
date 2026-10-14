@@ -121,13 +121,42 @@ struct WidgetTimelineTests {
     #expect(timelines > 7)
   }
 
-  /// What's playing reaches every entry, so the widget shows the Stop control until the
-  /// app publishes that it stopped.
-  @Test func whatsPlayingReachesEveryEntry() {
+  /// What's playing reaches every entry while it can still be playing, so the widget
+  /// shows the Stop control until the app publishes that it stopped, and drops it after
+  /// that even if the app never does (it crashed): 30 minutes after the alert's time.
+  ///
+  /// Regression: every entry of the 48-hour timeline, and every timeline after it, showed
+  /// the Stop control when the app quit while the adhan played.
+  @Test func whatsPlayingReachesTheEntriesWhileItCanPlay() throws {
     let playback = SalahPlayback(event: Fixture.event(.maghrib), slot: .alert)
     let timeline = SalahWidgetTimeline.make(
       settings: Self.settings, playback: playback, now: Fixture.time(.maghrib).adding(minutes: 1))
-    #expect(Self.displays(timeline).allSatisfy { $0.1.playback == playback })
+    let end = Fixture.time(.maghrib).adding(minutes: 30)
+    let playing = Self.displays(timeline).filter { $0.0 < end }
+    let after = Self.displays(timeline).filter { $0.0 >= end }
+    #expect(!playing.isEmpty)
+    #expect(playing.allSatisfy { $0.1.playback == playback })
+    #expect(!after.isEmpty)
+    #expect(after.allSatisfy { $0.1.playback == nil })
+    // Within five minutes of the bound, the widget shows the schedule again.
+    let first = try #require(after.first?.0)
+    #expect(first.timeIntervalSince(end) <= 5 * 60)
+
+    // A reminder's sound is bounded from the reminder's time.
+    let reminder = SalahPlayback(
+      event: Fixture.event(.maghrib), slot: .preReminder, offsetMinutes: 10)
+    #expect(reminder.alertDate == Fixture.time(.maghrib).adding(minutes: -10))
+    #expect(reminder.mayBePlaying(at: Fixture.time(.maghrib).adding(minutes: 19)))
+    #expect(!reminder.mayBePlaying(at: Fixture.time(.maghrib).adding(minutes: 20)))
+  }
+
+  /// A timeline built long after the alert, from a value a crashed app left, shows no
+  /// Stop control at all.
+  @Test func aLeftoverPlaybackShowsNoStop() {
+    let playback = SalahPlayback(event: Fixture.event(.maghrib), slot: .alert, isDua: true)
+    let timeline = SalahWidgetTimeline.make(
+      settings: Self.settings, playback: playback, now: Fixture.time(.maghrib).adding(minutes: 180))
+    #expect(Self.displays(timeline).allSatisfy { $0.1.playback == nil })
   }
 
   // MARK: - Missing schedule data

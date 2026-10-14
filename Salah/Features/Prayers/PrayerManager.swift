@@ -40,6 +40,8 @@ final class PrayerManager {
   private var secondTimer: Timer?
   private var notificationObservers: [NSObjectProtocol] = []
   private var currentDay: CivilDay
+  /// Why today's times aren't available, as last logged.
+  private var reportedUnavailable: UnavailableCause?
 
   init(audioPlaybackController: AudioPlaybackController = AudioPlaybackController()) {
     self.audioPlaybackController = audioPlaybackController
@@ -209,7 +211,7 @@ final class PrayerManager {
         }
       })
     // A clock or time-zone change, becoming active and waking from sleep can each
-    // skip past an alert: the engine catches up first, then everything is replanned.
+    // skip past an alert: everything is replanned, then the engine catches up.
     for name in [
       NSNotification.Name.NSSystemClockDidChange, .NSSystemTimeZoneDidChange,
       NSApplication.willBecomeActiveNotification,
@@ -229,13 +231,25 @@ final class PrayerManager {
           self?.refreshAfterPossibleMissedAlert()
         }
       })
+    // Quitting stops the sound: tell the widget at once, before the process ends, or it
+    // keeps showing the Stop control. Synchronous, since a task wouldn't run in time.
+    notificationObservers.append(
+      nc.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) {
+        [weak self] _ in
+        MainActor.assumeIsolated {
+          self?.audioPlaybackController.stop()
+          self?.mirror.publish(playback: nil)
+        }
+      })
   }
 
-  /// Catches up on alerts a clock change or sleep skipped, then replans from the new
-  /// time.
+  /// Replans from the new time, then catches up on alerts a clock change or sleep
+  /// skipped, and gives the widget a new timeline: one that ran out while the Mac slept
+  /// shows "Open Salah to update", and opening Salah lands here.
   func refreshAfterPossibleMissedAlert() {
-    alerts.resync()
     calculatePrayerTimes()
+    alerts.resync()
+    mirror.reloadWidgets()
   }
 
   private func applyNotificationRuntimePreferences() {
@@ -287,13 +301,18 @@ final class PrayerManager {
     switch day {
     case .available:
       lastKnownDay = day
+      reportedUnavailable = nil
       FailureReporter.shared.clearNotice(.prayerCalc)
     case .unavailable(let reason):
       // Not a time-out to wait on: the same coordinates give the same answer, so it's
-      // surfaced once, non-modally, until the place changes.
+      // surfaced once, non-modally, until the place changes. The minute's tick lands
+      // here too: log only a new cause.
       let location = settings.location
+      let cause = UnavailableCause(location: location, reason: reason)
+      guard cause != reportedUnavailable else { break }
+      reportedUnavailable = cause
       AppLog.prayer.error(
-        "No prayer times for (\(location.latitude, privacy: .public), \(location.longitude, privacy: .public)): \(reason.rawValue, privacy: .public)"
+        "No prayer times for (\(location.latitude, privacy: .private), \(location.longitude, privacy: .private)): \(reason.rawValue, privacy: .public)"
       )
       FailureReporter.shared.report(
         PrayerCalcFailure.timesUnavailable(
@@ -465,4 +484,10 @@ extension PrayerManager {
     guard preferences.nextPrayerDisplayType == .timeUntil else { return nil }
     return state.prayerState?.justStarted
   }
+}
+
+/// Where and why the schedule couldn't give today: one log line and notice per cause.
+private struct UnavailableCause: Equatable {
+  var location: PrayerLocation
+  var reason: ScheduleGapReason
 }

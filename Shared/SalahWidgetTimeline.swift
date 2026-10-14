@@ -54,6 +54,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   /// With settings, the extension builds its own schedule and SalahWidgets' steps
   /// timeline over the default 48-hour horizon: an entry wherever the state changes,
   /// the steps between them, the expired entry at its end, and a reload halfway there.
+  /// What's playing shows in the entries while it can still be playing.
   /// It adds an entry at each midnight in the location's zone, with the state then, so
   /// the listed day turns over with the date (salah-kit/SalahKit#14).
   static func make(settings: SalahSettings?, playback: SalahPlayback?, now: Date)
@@ -72,7 +73,8 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       let day = days[civilDay] ?? schedule.day(civilDay)
       days[civilDay] = day
       return SalahDisplay(
-        date: date, settings: settings, day: day, state: state, playback: playback)
+        date: date, settings: settings, day: day, state: state,
+        playback: playback.flatMap { $0.mayBePlaying(at: date) ? $0 : nil })
     }
 
     let planned: PrayerTimeline

@@ -6,10 +6,11 @@ import SalahWidgets
 /// as the Stop control; the menu bar as the stop card and the playing prayer's row.
 ///
 /// The app saves it with `SharedValue.playback` when playback starts and saves `nil`
-/// when it stops. The widget's Stop button clears it and posts
+/// when it stops or quits. The widget's Stop button clears it and posts
 /// `DarwinSignal.stopAudio`; the running app stops on the signal, not on the stored
 /// value, which can reach it later than the signal does, and then saves what's playing
-/// again to confirm.
+/// again to confirm. An app that crashes saves nothing, so the widget shows the Stop
+/// control only while the sound can still be playing (`mayBePlaying(at:)`).
 nonisolated struct SalahPlayback: Codable, Equatable, Sendable {
   /// Which alert the sound belongs to.
   enum Slot: String, Codable, Equatable, Sendable {
@@ -32,6 +33,25 @@ nonisolated struct SalahPlayback: Codable, Equatable, Sendable {
     self.slot = slot
     self.isDua = isDua
     self.offsetMinutes = offsetMinutes
+  }
+
+  /// How long after its alert's time a sound is taken to play at most: an adhan caught up
+  /// a few minutes late, then the du'a.
+  static let longestPlay: TimeInterval = 30 * 60
+
+  /// When the alert sounded: the prayer's time, moved by a reminder's offset.
+  var alertDate: Date {
+    let offset = TimeInterval((offsetMinutes ?? 0) * 60)
+    switch slot {
+    case .alert: return event.time
+    case .preReminder: return event.time.addingTimeInterval(-offset)
+    case .postReminder: return event.time.addingTimeInterval(offset)
+    }
+  }
+
+  /// Whether the sound can still be playing at `date`.
+  func mayBePlaying(at date: Date) -> Bool {
+    date < alertDate.addingTimeInterval(Self.longestPlay)
   }
 
   /// The tone the playing state draws in.

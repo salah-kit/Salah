@@ -11,10 +11,10 @@ enum PrayerCalcFailure: AppFailure {
 
   var messageKey: String.LocalizationValue { "prayer.error.timesUnavailable" }
 
+  /// Logged publicly, so without the coordinates: they're the user's location.
   var logMessage: String {
     switch self {
-    case .timesUnavailable(let lat, let lng):
-      "No prayer times for (\(lat), \(lng))"
+    case .timesUnavailable: "No prayer times for the current location"
     }
   }
 }

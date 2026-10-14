@@ -78,8 +78,9 @@ final class WidgetMirror {
     save(value, in: playback)
   }
 
-  /// Asks WidgetKit for new timelines, whatever changed: at launch, so a widget whose
-  /// timeline ran out ("Open Salah to update") gets a new one.
+  /// Asks WidgetKit for new timelines, whatever changed: at launch, on wake, after a clock
+  /// change and when the app becomes active, so a widget whose timeline ran out ("Open
+  /// Salah to update") gets a new one.
   func reloadWidgets() {
     reloadWidgetTimelines()
   }

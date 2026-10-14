@@ -77,12 +77,12 @@ struct PrayerAlertCoordinatorTests {
     }
 
     /// Moves the clock without firing the wake-up (a sleep or a clock change), then does
-    /// what the app does on wake: `resync()`, then `update`.
+    /// what the app does on wake: `update`, then `resync()`.
     func wake(at date: Date) async {
       clock.now = date
+      await update()
       coordinator.resync()
       await settle()
-      await update()
     }
 
     /// The request identifiers pending in the fake center.
@@ -603,10 +603,14 @@ struct PrayerAlertCoordinatorTests {
     var testDescription: String { name }
   }
 
-  /// After a wake (or a clock change), the app's `resync()` then `update` catch up an
+  /// After a wake (or a clock change), the app's `update` then `resync()` catch up an
   /// alert within its grace, once: five minutes for an at-time alert, two for a reminder,
   /// and a before-reminder never once its prayer has begun. Only Asr's alert under test
-  /// is on.
+  /// is on. The system hasn't delivered the overdue request yet: the replan removes it,
+  /// and the coordinator posts the alert it catches up, once.
+  ///
+  /// Regression: with `resync()` first, the posting skipped the alert as still pending,
+  /// then the replan removed the request, so no banner showed at all.
   @Test(arguments: [
     WakeCase(name: "adhan 3 min late", kind: .atTime, lateness: 180, played: true),
     WakeCase(name: "adhan 5 min late", kind: .atTime, lateness: 300, played: true),
@@ -640,11 +644,39 @@ struct PrayerAlertCoordinatorTests {
     await harness.update()
     #expect(harness.coordinator.alertSchedule?.alerts.first?.fireDate == fireDate)
 
+    let identifier = Self.identifier(.asr, testCase.kind)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+
     await harness.wake(at: fireDate.adding(seconds: testCase.lateness))
     #expect(harness.audio.plays.count == (testCase.played ? 1 : 0))
-    // A second wake at once plays nothing more.
+    #expect(harness.center.posted.map(\.identifier) == (testCase.played ? [identifier] : []))
+    #expect(!harness.pendingIdentifiers.contains(identifier))
+    // A second wake at once plays and posts nothing more.
     await harness.wake(at: fireDate.adding(seconds: testCase.lateness + 1))
     #expect(harness.audio.plays.count == (testCase.played ? 1 : 0))
+    #expect(harness.center.posted.count == (testCase.played ? 1 : 0))
+  }
+
+  /// A clock set back past an alert that already fired doesn't request it again, so the
+  /// system doesn't deliver it twice; the next day's alert stays planned.
+  ///
+  /// Regression: the plan came from the schedule alone, so the fired alert, in the future
+  /// again, was requested anew.
+  @Test func aClockSetBackDoesntRequestAFiredAlertAgain() async {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true)
+    await harness.update()
+    let today = Self.identifier(.asr, .atTime)
+    await harness.fire()
+    #expect(harness.audio.plays.count == 1)
+    // The system delivered it.
+    harness.center.dropPending(today)
+
+    await harness.wake(at: Self.asr.time.adding(minutes: -20))
+    #expect(!harness.pendingIdentifiers.contains(today))
+    #expect(harness.pendingIdentifiers.contains(Self.identifier(.asr, .atTime, dayOffset: 1)))
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.audio.plays.count == 1)
   }
 
   // MARK: - Reminders beyond the plan

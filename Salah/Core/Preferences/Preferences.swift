@@ -4,10 +4,18 @@ import SalahCore
 
 @Observable
 final class Preferences {
-  /// The store `shared` reads and writes: `.standard` in the app. Test seam: the
+  /// The store `shared` reads and writes: `.standard` in the app, or a scratch store for
+  /// the real-app tests (`DebugOptions.scratchPreferencesKey`). Test seam: the
   /// SalahTests bundle points it at a throwaway suite before anything touches
   /// `shared`, so tests never read or write the real preferences.
-  static var sharedDefaults: UserDefaults = .standard
+  static var sharedDefaults: UserDefaults = launchStore()
+
+  private static func launchStore() -> UserDefaults {
+    #if DEBUG
+      if let scratch = DebugOptions.scratchPreferences() { return scratch }
+    #endif
+    return .standard
+  }
 
   static let shared = Preferences(defaults: sharedDefaults)
 
@@ -177,12 +185,18 @@ final class Preferences {
     }
   }
 
+  /// The twilight angles SalahTimes calculates with; outside them every day would be
+  /// unavailable.
+  static let twilightAngles: ClosedRange<Double> = 1...30
+  /// The minute adjustments SalahTimes accepts, a day either way.
+  static let adjustmentMinutes: ClosedRange<Int> = -1_440...1_440
+
   var customFajrAngle: Double = 18.0 {
     didSet {
-      // Twilight angles must be positive - match v2's "save only when > 0"
-      // by snapping non-positive input back to the previous value.
-      guard customFajrAngle > 0 else {
-        customFajrAngle = oldValue > 0 ? oldValue : 18.0
+      // An angle SalahTimes can't calculate with snaps back to the previous value, as
+      // non-positive input always did.
+      guard Self.twilightAngles.contains(customFajrAngle) else {
+        customFajrAngle = Self.twilightAngles.contains(oldValue) ? oldValue : 18.0
         return
       }
       defaults.set(customFajrAngle, forKey: Key.customFajrAngle)
@@ -192,8 +206,8 @@ final class Preferences {
 
   var customIshaAngle: Double = 17.5 {
     didSet {
-      guard customIshaAngle > 0 else {
-        customIshaAngle = oldValue > 0 ? oldValue : 17.5
+      guard Self.twilightAngles.contains(customIshaAngle) else {
+        customIshaAngle = Self.twilightAngles.contains(oldValue) ? oldValue : 17.5
         return
       }
       defaults.set(customIshaAngle, forKey: Key.customIshaAngle)
@@ -205,6 +219,11 @@ final class Preferences {
 
   var fajrAdjustment: Int = 0 {
     didSet {
+      // Assigning re-enters the observed setter: clamp only what's out of range.
+      guard Self.adjustmentMinutes.contains(fajrAdjustment) else {
+        fajrAdjustment = fajrAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(fajrAdjustment, forKey: Key.adjustmentFajr)
       requestRefresh(.prayerTimes)
     }
@@ -212,6 +231,10 @@ final class Preferences {
 
   var shuruqAdjustment: Int = 0 {
     didSet {
+      guard Self.adjustmentMinutes.contains(shuruqAdjustment) else {
+        shuruqAdjustment = shuruqAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(shuruqAdjustment, forKey: Key.adjustmentShuruq)
       requestRefresh(.prayerTimes)
     }
@@ -219,6 +242,10 @@ final class Preferences {
 
   var dhuhrAdjustment: Int = 0 {
     didSet {
+      guard Self.adjustmentMinutes.contains(dhuhrAdjustment) else {
+        dhuhrAdjustment = dhuhrAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(dhuhrAdjustment, forKey: Key.adjustmentDhuhr)
       requestRefresh(.prayerTimes)
     }
@@ -226,6 +253,10 @@ final class Preferences {
 
   var asrAdjustment: Int = 0 {
     didSet {
+      guard Self.adjustmentMinutes.contains(asrAdjustment) else {
+        asrAdjustment = asrAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(asrAdjustment, forKey: Key.adjustmentAsr)
       requestRefresh(.prayerTimes)
     }
@@ -233,6 +264,10 @@ final class Preferences {
 
   var maghribAdjustment: Int = 0 {
     didSet {
+      guard Self.adjustmentMinutes.contains(maghribAdjustment) else {
+        maghribAdjustment = maghribAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(maghribAdjustment, forKey: Key.adjustmentMaghrib)
       requestRefresh(.prayerTimes)
     }
@@ -240,6 +275,10 @@ final class Preferences {
 
   var ishaAdjustment: Int = 0 {
     didSet {
+      guard Self.adjustmentMinutes.contains(ishaAdjustment) else {
+        ishaAdjustment = ishaAdjustment.clamped(to: Self.adjustmentMinutes)
+        return
+      }
       defaults.set(ishaAdjustment, forKey: Key.adjustmentIsha)
       requestRefresh(.prayerTimes)
     }
@@ -493,5 +532,12 @@ final class Preferences {
 
     // Stored values are loaded; from here, didSets emit refreshes.
     isLoading = false
+  }
+}
+
+extension Comparable {
+  /// The value, moved into `range` if it's outside.
+  fileprivate func clamped(to range: ClosedRange<Self>) -> Self {
+    min(max(self, range.lowerBound), range.upperBound)
   }
 }

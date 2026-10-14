@@ -82,7 +82,9 @@ struct VisualBaselineTests {
 
   /// The setup face has no settings to take a language from: the extension shows it in
   /// the device's language, so it's the same whatever language the app is set to,
-  /// although the extension's catalog has the message in Arabic and French.
+  /// although the extension's catalog has the message in Arabic and French. This renders
+  /// the tests' copy of the extension shell's setup branch (`WidgetShellMessage`), as the
+  /// baselines do: it pins the face and its text, not the extension's own branch.
   @Test func setupFaceFollowsTheDeviceNotTheApp() throws {
     let messages = try ["en", "ar", "fr"].map {
       try ExtensionCatalog.string("widget.openToSetUp", localeIdentifier: $0)

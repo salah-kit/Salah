@@ -10,11 +10,12 @@ struct SalahApp: App {
   // what makes the macOS Settings window title use the localized
   // CFBundleDisplayName (صلاة / Salah) instead of always English.
   init() {
-    if let raw = UserDefaults.standard.string(forKey: Preferences.Key.appLanguage),
+    let defaults = Preferences.sharedDefaults
+    if let raw = defaults.string(forKey: Preferences.Key.appLanguage),
       let lang = AppLanguage(rawValue: raw),
       let override = lang.appleLanguagesOverride
     {
-      UserDefaults.standard.set(override, forKey: "AppleLanguages")
+      defaults.set(override, forKey: "AppleLanguages")
     }
   }
 

@@ -3,8 +3,8 @@ import Foundation
 extension Notification.Name {
   /// One or more preferences changed. The `userInfo` carries the union of
   /// `PreferenceRefresh` effects (raw `Int` under `PreferenceRefresh.userInfoKey`).
-  /// `PrayerManager` is the sole consumer; it applies the minimum work each
-  /// effect requires. Emitted automatically from `Preferences` didSets.
+  /// `PrayerManager` applies the minimum work each effect requires, and `WidgetMirror`
+  /// republishes the widget's settings. Emitted automatically from `Preferences` didSets.
   static let salahPreferencesDidChange = Notification.Name("salahPreferencesDidChange")
 
   static let salahAudioPlaybackStateDidChange =

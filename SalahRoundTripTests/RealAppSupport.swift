@@ -19,13 +19,16 @@ enum Products {
 /// One line of the app's log: `log stream`'s JSON for a message of Salah's subsystem.
 nonisolated struct LogLine: Sendable, CustomStringConvertible {
   var date: Date
+  /// The process that logged it: the app under test, or another Salah running on this Mac.
+  var processID: Int32
   var category: String
   var message: String
-  var description: String { "[\(category)] \(message)" }
+  var description: String { "[\(processID) \(category)] \(message)" }
 }
 
 /// Records the app's log from `log stream`, which shows the messages of Salah's subsystem
-/// that the app logs at notice level or above.
+/// that the app logs at notice level or above. The tests read only the lines of the
+/// process they launched, so a Salah already running on this Mac can't answer for it.
 nonisolated final class LogRecorder: @unchecked Sendable {
   // Lock-protected: the pipe's handler appends on its own queue, the test reads.
   private let lock = NSLock()
@@ -75,23 +78,30 @@ nonisolated final class LogRecorder: @unchecked Sendable {
         else { continue }
         lines.append(
           LogLine(
-            date: Date(), category: object["category"] as? String ?? "", message: message))
+            date: Date(), processID: (object["processID"] as? NSNumber)?.int32Value ?? 0,
+            category: object["category"] as? String ?? "", message: message))
       }
     }
   }
 
   var all: [LogLine] { lock.withLock { lines } }
 
-  /// The lines whose message contains `fragment`.
-  func lines(containing fragment: String) -> [LogLine] {
-    all.filter { $0.message.contains(fragment) }
+  /// The lines of the process `processID`, from the `start`th line recorded on, whose
+  /// message contains `fragment`.
+  func lines(containing fragment: String, from processID: Int32, after start: Int = 0)
+    -> [LogLine]
+  {
+    all.dropFirst(start).filter { $0.processID == processID && $0.message.contains(fragment) }
   }
 
-  /// Waits until a line contains `fragment`, and returns it; `nil` after the timeout.
-  func wait(for fragment: String, after start: Int = 0, timeout: TimeInterval) async -> LogLine? {
+  /// Waits until a line of the process `processID` contains `fragment`, and returns it;
+  /// `nil` after the timeout.
+  func wait(
+    for fragment: String, from processID: Int32, after start: Int = 0, timeout: TimeInterval
+  ) async -> LogLine? {
     let deadline = Date().addingTimeInterval(timeout)
     while Date() < deadline {
-      if let line = all.dropFirst(start).first(where: { $0.message.contains(fragment) }) {
+      if let line = lines(containing: fragment, from: processID, after: start).first {
         return line
       }
       try? await Task.sleep(for: .milliseconds(200))
@@ -120,6 +130,9 @@ final class RunningApp {
   }
 
   var isRunning: Bool { process.isRunning }
+
+  /// The app's process, whose log lines the tests read.
+  var processID: Int32 { process.processIdentifier }
 
   /// Freezes the app, as the Mac's sleep does: no timer fires while time passes.
   func suspend() { kill(process.processIdentifier, SIGSTOP) }

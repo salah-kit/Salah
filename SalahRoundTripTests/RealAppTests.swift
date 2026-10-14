@@ -23,7 +23,7 @@ struct RealAppTests {
     let placed = try PlacedPrayer.soon(lead: lead)
     let app = try RunningApp(
       arguments: Launch.arguments(alerts: [placed.kind: alert(placed)], placed: placed))
-    let planned = await log.wait(for: "planned alerts=", timeout: 30)
+    let planned = await log.wait(for: "planned alerts=", from: app.processID, timeout: 30)
     #expect(planned != nil, "the app didn't plan: \(log.all)")
     return (app, placed)
   }
@@ -46,7 +46,7 @@ struct RealAppTests {
     defer { app.quit() }
 
     let started = await log.wait(
-      for: "playback started source=prayerAlert slot=alert", timeout: 150)
+      for: "playback started source=prayerAlert slot=alert", from: app.processID, timeout: 150)
     #expect(started != nil, "nothing played at \(placed.time): \(log.all)")
     try await Task.sleep(for: .seconds(2))
     let playing = try Harness.run("read")
@@ -56,11 +56,14 @@ struct RealAppTests {
     let mark = log.all.count
     let stop = try Harness.run("stop")
     #expect(stop.playback == nil, "the intent cleared what's playing")
+    let pid = app.processID
     #expect(
-      await log.wait(for: "stop signal received wasPlaying=true", after: mark, timeout: 10) != nil)
-    #expect(await log.wait(for: "playback stopped", after: mark, timeout: 10) != nil)
+      await log.wait(
+        for: "stop signal received wasPlaying=true", from: pid, after: mark, timeout: 10) != nil)
+    #expect(await log.wait(for: "playback stopped", from: pid, after: mark, timeout: 10) != nil)
     #expect(
-      await log.wait(for: "published SalahPlayback.v1 value=none", after: mark, timeout: 10) != nil)
+      await log.wait(
+        for: "published SalahPlayback.v1 value=none", from: pid, after: mark, timeout: 10) != nil)
     let after = try Harness.run("read")
     #expect(after.playback == nil)
     #expect(after.widget?.firstEntry == "schedule")
@@ -77,7 +80,7 @@ struct RealAppTests {
     let (app, placed) = try await Self.launch(log: log, lead: 70) { _ in Launch.adhan }
     defer { app.quit() }
     let started = await log.wait(
-      for: "playback started source=prayerAlert slot=alert", timeout: 150)
+      for: "playback started source=prayerAlert slot=alert", from: app.processID, timeout: 150)
     #expect(started != nil, "nothing played at \(placed.time): \(log.all)")
     try await Task.sleep(for: .seconds(2))
     #expect(try Harness.run("read").playback != nil)
@@ -86,11 +89,13 @@ struct RealAppTests {
     let signal = try Harness.run("signal")
     #expect(signal.signalAccepted == true)
     #expect(
-      await log.wait(for: "stop signal received wasPlaying=true", after: mark, timeout: 10) != nil)
+      await log.wait(
+        for: "stop signal received wasPlaying=true", from: app.processID, after: mark,
+        timeout: 10) != nil)
     #expect(
       await log.wait(
-        for: "published SalahPlayback.v1 value=none changed=true", after: mark, timeout: 10)
-        != nil)
+        for: "published SalahPlayback.v1 value=none changed=true", from: app.processID,
+        after: mark, timeout: 10) != nil)
     let after = try Harness.run("read")
     #expect(after.playback == nil)
     #expect(after.widget?.showsStop == false)
@@ -111,11 +116,13 @@ struct RealAppTests {
     let mark = log.all.count
     app.resume()
 
-    let due = await log.wait(for: "due prayers/", after: mark, timeout: 15)
+    let due = await log.wait(for: "due prayers/", from: app.processID, after: mark, timeout: 15)
     #expect(due != nil, "nothing came due after the wake: \(log.all)")
     #expect(due?.message.contains("/\(placed.kind.rawValue)/atTime") == true)
     #expect(
-      await log.wait(for: "playback started source=prayerAlert", after: mark, timeout: 10) != nil)
+      await log.wait(
+        for: "playback started source=prayerAlert", from: app.processID, after: mark,
+        timeout: 10) != nil)
 
     // A second sleep and wake doesn't play it again.
     try await Task.sleep(for: .seconds(2))
@@ -124,9 +131,7 @@ struct RealAppTests {
     try await Task.sleep(for: .seconds(5))
     app.resume()
     try await Task.sleep(for: .seconds(8))
-    #expect(
-      log.lines(containing: "due prayers/").count
-        == log.all.prefix(second).filter { $0.message.contains("due prayers/") }.count)
+    #expect(log.lines(containing: "due prayers/", from: app.processID, after: second).isEmpty)
   }
 
   /// A reminder missed by more than its two-minute grace isn't played after the wake.
@@ -149,31 +154,33 @@ struct RealAppTests {
     let mark = log.all.count
     app.resume()
     try await Task.sleep(for: .seconds(10))
-    #expect(log.all.dropFirst(mark).filter { $0.message.contains("due prayers/") }.isEmpty)
-    #expect(log.all.dropFirst(mark).filter { $0.message.contains("playback started") }.isEmpty)
+    #expect(log.lines(containing: "due prayers/", from: app.processID, after: mark).isEmpty)
+    #expect(log.lines(containing: "playback started", from: app.processID, after: mark).isEmpty)
+    // The app ran on after the wake: an empty log isn't a frozen or dead app.
+    #expect(app.isRunning)
   }
 
   // MARK: - Notification changes
 
-  /// A changed alert setting replans: with the placed prayer's adhan turned off at the
-  /// next launch, the minute passes without an alert, and the plan holds one alert fewer.
-  @Test func aChangedAlertSettingReplans() async throws {
+  /// A changed alert setting replans at the next launch: with the placed prayer's adhan
+  /// turned off, the minute passes without an alert, and the plan holds no alert. (The
+  /// UI tests change the setting in the running app's Settings.)
+  @Test func aChangedAlertSettingReplansAtTheNextLaunch() async throws {
     let log = try await LogRecorder.start()
     defer { log.stop() }
     let placed = try PlacedPrayer.soon(lead: 90)
     let on = try RunningApp(
       arguments: Launch.arguments(alerts: [placed.kind: Launch.adhan], placed: placed))
-    let first = await log.wait(for: "planned alerts=", timeout: 30)
+    let first = await log.wait(for: "planned alerts=", from: on.processID, timeout: 30)
     on.quit()
 
-    let mark = log.all.count
     let off = try RunningApp(
       arguments: Launch.arguments(alerts: [placed.kind: ["alertEnabled": false]], placed: placed))
     defer { off.quit() }
-    let second = await log.wait(for: "planned alerts=", after: mark, timeout: 30)
+    let second = await log.wait(for: "planned alerts=", from: off.processID, timeout: 30)
     #expect(first?.message.hasPrefix("planned alerts=0") == false, "\(String(describing: first))")
     #expect(second?.message.hasPrefix("planned alerts=0") == true, "\(String(describing: second))")
     try await Self.sleep(until: placed.time.addingTimeInterval(20))
-    #expect(log.all.dropFirst(mark).filter { $0.message.contains("playback started") }.isEmpty)
+    #expect(log.lines(containing: "playback started", from: off.processID).isEmpty)
   }
 }
