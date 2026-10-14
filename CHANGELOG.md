@@ -6,7 +6,9 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-Salah's first release, 1.0.0, is in preparation.
+## [1.0.0] - 2026-10-14
+
+Salah's first release, as source.
 
 ### Added
 
@@ -85,3 +87,6 @@ Salah's first release, 1.0.0, is in preparation.
 - Guidance compatibility: the migration of Guidance's `kBA*` preferences and v2
   settings, the older stored sound and bookmark formats, and the widget snapshot
   Guidance wrote. Salah starts from its own defaults.
+
+[Unreleased]: https://github.com/salah-kit/Salah/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/salah-kit/Salah/releases/tag/1.0.0
