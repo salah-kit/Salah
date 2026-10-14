@@ -35,6 +35,8 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   private let center: any PrayerNotificationCenter
   private let audio: any PrayerAlertAudioPlaying
   private let clock: any AlertClock
+  /// The clock's time for the scheduler, whose actor can't read the main-actor clock.
+  private let schedulerTime: SchedulerTime
   private let scheduler: NotificationScheduler
   private let planner = AlertPlanner()
   private var engine: InProcessAlertEngine!
@@ -59,9 +61,14 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     self.center = center
     self.audio = audio
     self.clock = clock
+    // The scheduler drops alerts that fired before its batch starts and dates its report by
+    // its own clock, so it follows the injected clock too, not the wall clock.
+    let schedulerTime = SchedulerTime()
+    self.schedulerTime = schedulerTime
     scheduler = NotificationScheduler(
       identifierPrefix: Self.identifierPrefix, namespace: Self.namespace,
-      threadIdentifier: Self.threadIdentifier, center: center, now: { Date() })
+      threadIdentifier: Self.threadIdentifier, center: center,
+      now: { schedulerTime.now })
     super.init()
     engine = InProcessAlertEngine(clock: clock) { [weak self] due in
       self?.handleDue(due)
@@ -77,6 +84,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// clock change.
   func update(schedule: PrayerSchedule) {
     let now = clock.now
+    schedulerTime.follow(now)
     let alerts: AlertSchedule
     do {
       alerts = try planner.schedule(
@@ -296,6 +304,28 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   nonisolated static func isPrayerAlert(_ identifier: String) -> Bool {
     NotificationIdentity(requestIdentifier: identifier, prefix: identifierPrefix)?.namespace
       == namespace
+  }
+}
+
+// MARK: - The scheduler's time
+
+/// The coordinator's clock as the scheduler's actor reads it: the system's time moved by
+/// the clock's offset from it, recorded at each plan. With the system clock the offset is
+/// about zero; with a test's manual clock, the scheduler sees the test's instant.
+nonisolated private final class SchedulerTime: @unchecked Sendable {
+  // @unchecked: `offset` is only read and written while holding `lock`.
+  private let lock = NSLock()
+  private var offset: TimeInterval = 0
+
+  /// Records the clock's current instant.
+  func follow(_ instant: Date) {
+    let offset = instant.timeIntervalSinceNow
+    lock.withLock { self.offset = offset }
+  }
+
+  /// The clock's time now.
+  var now: Date {
+    Date().addingTimeInterval(lock.withLock { offset })
   }
 }
 
