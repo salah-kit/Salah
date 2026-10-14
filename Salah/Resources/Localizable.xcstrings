@@ -350,6 +350,66 @@
         }
       }
     },
+    "menu.lastKnown": {
+      "comment": "Menu-bar dropdown: caption above the last day whose prayer times were available, while today's aren't. %@ is that day's date.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last known · %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخر الأوقات المعروفة · %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Derniers horaires connus · %@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخری معلوم اوقات · %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu terakhir yang diketahui · %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bilinen son vakitler · %@"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخرین اوقات معلوم · %@"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সর্বশেষ জানা সময় · %@"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu terakhir diketahui · %@"
+          }
+        }
+      }
+    },
     "menu.location": {
       "extractionState": "stale",
       "localizations": {

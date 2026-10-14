@@ -1,6 +1,6 @@
-import Adhan
 import Foundation
 import OSLog
+import SalahCore
 
 @Observable
 final class Preferences {
@@ -179,7 +179,7 @@ final class Preferences {
 
   var customFajrAngle: Double = 18.0 {
     didSet {
-      // Adhan twilight angles must be positive - match v2's "save only when > 0"
+      // Twilight angles must be positive - match v2's "save only when > 0"
       // by snapping non-positive input back to the previous value.
       guard customFajrAngle > 0 else {
         customFajrAngle = oldValue > 0 ? oldValue : 18.0
@@ -458,7 +458,7 @@ final class Preferences {
     {
       var resolved = decoded.mapValues { $0.sanitized() }
 
-      for prayer in Prayer.allCases where resolved[prayer.settingsKey] == nil {
+      for prayer in PrayerKind.allCases where resolved[prayer.settingsKey] == nil {
         resolved[prayer.settingsKey] = PrayerNotificationConfig.defaultConfig(for: prayer)
       }
 

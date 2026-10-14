@@ -4,7 +4,7 @@ import SwiftUI
 /// Location lives in the header (matching the widget), so the footer is controls
 /// only. Each control shows the pointer cursor and a tooltip.
 struct MenuDropdownFooter: View {
-  let snapshot: SalahWidgetSnapshot
+  let display: SalahDisplay
   let colors: SalahWidgetColors
   let onToggleSilent: () -> Void
   let onOpenSettings: () -> Void
@@ -22,33 +22,35 @@ struct MenuDropdownFooter: View {
     }
   }
 
+  private var silentMode: Bool { display.settings.silentMode }
+
   private var silentToggle: some View {
     Button(action: onToggleSilent) {
       HStack(spacing: 5) {
-        Image(systemName: snapshot.silentMode ? "bell.slash.fill" : "bell")
-        Text(verbatim: snapshot.labels.silent)
+        Image(systemName: silentMode ? "bell.slash.fill" : "bell")
+        Text(verbatim: display.labels.silent)
       }
       .font(.caption.weight(.medium))
       .padding(.horizontal, 8)
       .padding(.vertical, 4)
       .background {
-        if snapshot.silentMode {
+        if silentMode {
           Capsule().fill(colors.accent.opacity(0.18))
         }
       }
       .overlay {
-        if snapshot.silentMode {
+        if silentMode {
           Capsule().strokeBorder(colors.accent.opacity(0.45), lineWidth: 0.75)
         }
       }
-      .foregroundStyle(snapshot.silentMode ? colors.accent : Color.secondary)
+      .foregroundStyle(silentMode ? colors.accent : Color.secondary)
       .contentShape(Capsule())
     }
     .buttonStyle(.plain)
     .menuPointerCursor()
     .help(Text(verbatim: localizedString("settings.notif.silent")))
     .accessibilityLabel(Text(verbatim: localizedString("settings.notif.silent")))
-    .accessibilityAddTraits(snapshot.silentMode ? .isSelected : [])
+    .accessibilityAddTraits(silentMode ? .isSelected : [])
   }
 
   private func iconButton(system: String, help: String, action: @escaping () -> Void) -> some View {

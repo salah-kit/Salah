@@ -1,4 +1,5 @@
 import Foundation
+import SalahWidgets
 import Testing
 
 /// Salah's identity where two processes must agree on it: the App Group the app and the
@@ -26,12 +27,27 @@ struct IdentityTests {
   @Test func sharedNamesAreSalahs() {
     #expect(
       SalahWidgetConstants.prayerTimesWidgetKind == "io.github.salah-kit.Salah.widgets.prayerTimes")
-    #expect(
-      SalahWidgetConstants.stopAudioDarwinNotification
-        == "io.github.salah-kit.Salah.widget.stopAudio")
-    #expect(SalahWidgetConstants.snapshotDefaultsKey == "SalahWidgetSnapshot.v1")
-    #expect(SalahWidgetConstants.stopAudioCommandDefaultsKey == "SalahWidgetStopAudioCommand.v1")
+    #expect(SalahWidgetConstants.stopAudioSignal == "io.github.salah-kit.Salah.widget.stopAudio")
+    #expect(DarwinSignal.stopAudio.name == SalahWidgetConstants.stopAudioSignal)
+    #expect(SalahWidgetConstants.settingsKey == "SalahSettings.v1")
+    #expect(SalahWidgetConstants.playbackKey == "SalahPlayback.v1")
+    #expect(SharedValue.settings.appGroup == SalahWidgetConstants.appGroupID)
+    #expect(SharedValue.settings.key == SalahWidgetConstants.settingsKey)
+    #expect(SharedValue.playback.appGroup == SalahWidgetConstants.appGroupID)
+    #expect(SharedValue.playback.key == SalahWidgetConstants.playbackKey)
     #expect(SalahWidgetConstants.deepLinkScheme == "salah")
     #expect(SalahWidgetConstants.settingsDeepLinkURL.scheme == SalahWidgetConstants.deepLinkScheme)
+  }
+
+  /// Prayer alerts are requested under the app's bundle identifier, in one namespace and
+  /// one notification thread.
+  @Test func alertIdentifiersAreSalahs() {
+    #expect(PrayerAlertCoordinator.identifierPrefix == "io.github.salah-kit.Salah.")
+    #expect(PrayerAlertCoordinator.namespace == "prayers")
+    #expect(PrayerAlertCoordinator.threadIdentifier == "salah-prayers")
+    #expect(
+      PrayerAlertCoordinator.isPrayerAlert(
+        "io.github.salah-kit.Salah.prayers/2026-06-02/dhuhr/before"))
+    #expect(!PrayerAlertCoordinator.isPrayerAlert("salah.prayer.dhuhr.preReminder.1780391340"))
   }
 }

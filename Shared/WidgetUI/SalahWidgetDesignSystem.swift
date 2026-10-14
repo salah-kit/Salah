@@ -1,3 +1,4 @@
+import SalahUI
 import SwiftUI
 
 // MARK: - Size
@@ -9,15 +10,6 @@ nonisolated enum SalahWidgetSize: Sendable, Hashable {
   case small
   case medium
   case large
-}
-
-// MARK: - Color bridge
-
-nonisolated extension SalahColorSpec {
-  /// sRGB so the widget and the in-app preview render the identical shade.
-  var color: Color {
-    Color(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
-  }
 }
 
 /// A theme palette resolved to concrete SwiftUI `Color`s for one appearance.

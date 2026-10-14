@@ -1,14 +1,14 @@
-import Adhan
 import AppKit
 import Foundation
+import SalahCore
 import SwiftUI
 import Testing
 
-// MARK: - Pipeline: catalog entry → snapshot → view
+// MARK: - Pipeline: catalog entry → display → view
 
 /// Builds the view each baseline renders. The catalog says what to show; this is the
-/// part that changes when the app moves onto SalahKit (D1 swaps it and keeps the
-/// catalog, the moments and the PNGs).
+/// part that changed when the app moved onto SalahKit (D1 swapped the snapshot for
+/// SalahCore's schedule and kept the catalog, the moments and the PNGs).
 enum BaselinePipeline {
   /// The preview scenarios' clock: 16:00 on the fixture day. They place prayers at
   /// minute offsets from it, as the Xcode previews do from the real clock.
@@ -54,39 +54,32 @@ enum BaselinePipeline {
 
   /// The moment a spec state is shown at, on the fixture day.
   static func moment(for state: SpecState) -> Date {
-    let times = Fixture.prayerTimes(ishaAdjustment: state.ishaAdjustment)
+    func time(_ kind: PrayerKind) -> Date {
+      Fixture.time(kind, ishaAdjustment: state.ishaAdjustment)
+    }
     switch state {
-    case .idle, .silent, .setupNeeded: return times.dhuhr.adding(minutes: 60)
-    case .imminent: return times.asr.adding(minutes: -10)
-    case .countUp, .countUpSilent: return times.dhuhr.adding(minutes: 4)
-    case .countUpImminent: return times.maghrib.adding(minutes: 4)
-    case .endOfDay: return times.isha.adding(minutes: 60)
-    case .playingAdhan: return times.maghrib.adding(minutes: 2)
-    case .playingPreReminder: return times.maghrib.adding(minutes: -10)
-    case .playingPostReminder: return times.maghrib.adding(minutes: 5)
+    case .idle, .silent, .setupNeeded: return time(.dhuhr).adding(minutes: 60)
+    case .imminent: return time(.asr).adding(minutes: -10)
+    case .countUp, .countUpSilent: return time(.dhuhr).adding(minutes: 4)
+    case .countUpImminent: return time(.maghrib).adding(minutes: 4)
+    case .endOfDay: return time(.isha).adding(minutes: 60)
+    case .playingAdhan: return time(.maghrib).adding(minutes: 2)
+    case .playingPreReminder: return time(.maghrib).adding(minutes: -10)
+    case .playingPostReminder: return time(.maghrib).adding(minutes: 5)
     case .stale: return Fixture.date(0, 10, dayOffset: 1)
     }
   }
 
-  /// When the app built the snapshot; the stale face shows the idle moment's
-  /// snapshot after midnight.
-  static func buildMoment(for state: SpecState) -> Date {
-    state == .stale ? moment(for: .idle) : moment(for: state)
-  }
-
-  static func audio(for state: SpecState) -> AudioPlaybackState {
-    let maghrib = Fixture.prayerTimes().maghrib
-    func playing(_ slot: PrayerNotificationSoundSlot, _ offset: Int?) -> AudioPlaybackState {
-      .playing(
-        AudioPlaybackContext(
-          prayer: .maghrib, source: .prayerAlert, slot: slot, prayerTime: maghrib,
-          prayerAlertOffsetMinutes: offset))
-    }
+  /// What's playing in a spec state: Maghrib's adhan or one of its reminders.
+  static func playback(for state: SpecState) -> SalahPlayback? {
+    let maghrib = Fixture.event(.maghrib)
     switch state {
-    case .playingAdhan: return playing(.alert, nil)
-    case .playingPreReminder: return playing(.preReminder, 10)
-    case .playingPostReminder: return playing(.postReminder, 5)
-    default: return .idle
+    case .playingAdhan: return SalahPlayback(event: maghrib, slot: .alert)
+    case .playingPreReminder:
+      return SalahPlayback(event: maghrib, slot: .preReminder, offsetMinutes: 10)
+    case .playingPostReminder:
+      return SalahPlayback(event: maghrib, slot: .postReminder, offsetMinutes: 5)
+    default: return nil
     }
   }
 
@@ -111,26 +104,26 @@ enum BaselinePipeline {
     preferences.silentMode = state.silentMode
   }
 
-  /// The snapshot the app publishes for a spec state: its real builder over the
-  /// fixture's preferences and Adhan's times, as `PrayerManager` wires it.
-  static func snapshot(for state: SpecState, language: Baseline.Language) -> SalahWidgetSnapshot {
+  /// The settings the app mirrors for a spec state: its real mirror over the fixture's
+  /// preferences.
+  static func settings(for state: SpecState, language: Baseline.Language) -> SalahSettings {
     let scratch = ScratchDefaults()
     let preferences = Preferences(defaults: scratch.defaults)
     configure(preferences, for: state, language: language)
-    let now = buildMoment(for: state)
-    let today = Fixture.prayerTimes(ishaAdjustment: state.ishaAdjustment)
-    let tomorrow = Fixture.prayerTimes(dayOffset: 1, ishaAdjustment: state.ishaAdjustment)
-    return AppLanguageScope.with(preferences.appLanguage) {
-      SalahWidgetSnapshotBuilder(
-        preferences: preferences, prayerTimes: today, tomorrowPrayerTimes: tomorrow,
-        currentPrayer: today.currentPrayer(at: now), nextPrayer: today.nextPrayer(at: now),
-        audioState: audio(for: state), now: now
-      ).build()!
-    }
+    return preferences.mirroredSettings
   }
 
-  static func previewSnapshot(_ scenario: PreviewScenario, _ language: Baseline.Language)
-    -> SalahWidgetSnapshot
+  /// What the menu bar and the widget show for a spec state: the settings' schedule at
+  /// the state's moment, as the app and the extension build it.
+  static func display(for state: SpecState, language: Baseline.Language) -> SalahDisplay {
+    let settings = settings(for: state, language: language)
+    return SalahDisplay(
+      date: moment(for: state), settings: settings, schedule: settings.schedule,
+      playback: playback(for: state))
+  }
+
+  static func previewDisplay(_ scenario: PreviewScenario, _ language: Baseline.Language)
+    -> SalahDisplay
   {
     let lang = previewLanguage(language)
     switch scenario {
@@ -151,56 +144,59 @@ enum BaselinePipeline {
     case .widget:
       let state = SpecState(rawValue: baseline.state)!
       let size = size(baseline.family!)
-      let now = moment(for: state)
       switch state {
       case .setupNeeded:
-        // No snapshot was ever published: the provider's setup entry. The extension
-        // resolves the message under the sample snapshot's locale, English, so the
-        // face doesn't follow the app's language.
-        let sample = SalahWidgetSnapshot.sample(now: now)
+        // No settings were ever mirrored: the provider's setup entry. The extension
+        // has no language setting to follow, so the face is in the device's
+        // language: this process's, US English.
         let message = try ExtensionCatalog.string(
-          "widget.openToSetUp", localeIdentifier: sample.localeIdentifier)
+          "widget.openToSetUp",
+          localeIdentifier: Locale.preferredLanguages.first ?? "en")
         content = AnyView(
           WidgetShellMessage(
-            snapshot: sample, size: size, date: now, systemImage: "moon.stars", message: message))
+            theme: .nocturne, tone: .normal, size: size, systemImage: "moon.stars",
+            message: message))
       case .stale:
-        let snapshot = snapshot(for: state, language: baseline.language)
+        // The timeline ran out before WidgetKit asked for a new one: the expired
+        // entry, the morning after the fixture day.
+        let settings = settings(for: state, language: baseline.language)
         content = AnyView(
           WidgetShellMessage(
-            snapshot: snapshot, size: size, date: now, systemImage: "arrow.clockwise",
-            message: snapshot.labels.openToUpdate))
+            theme: settings.theme, tone: settings.silentMode ? .silent : .normal,
+            locale: settings.locale, size: size, systemImage: "arrow.clockwise",
+            message: settings.labels.openToUpdate))
       default:
         content = AnyView(
           WidgetPreviewContainer(
-            snapshot: snapshot(for: state, language: baseline.language), size: size, date: now))
+            display: display(for: state, language: baseline.language), size: size))
       }
     case .menu:
       let state = SpecState(rawValue: baseline.state)!
       content = AnyView(
-        MenuDropdownContent(
-          snapshot: snapshot(for: state, language: baseline.language), now: moment(for: state)))
+        MenuDropdownContent(display: display(for: state, language: baseline.language)))
     case .preview:
       let scenario = PreviewScenario(rawValue: baseline.state)!
       content = AnyView(
         WidgetPreviewContainer(
-          snapshot: previewSnapshot(scenario, baseline.language), size: size(baseline.family!),
-          date: previewNow))
+          display: previewDisplay(scenario, baseline.language), size: size(baseline.family!)))
     case .theme:
-      var snapshot = WidgetPreviewData.idle(previewLanguage(baseline.language), now: previewNow)
-      snapshot.theme = theme(ThemePreset(rawValue: baseline.state)!)
-      content = AnyView(WidgetPreviewContainer(snapshot: snapshot, size: .medium, date: previewNow))
+      var display = WidgetPreviewData.idle(previewLanguage(baseline.language), now: previewNow)
+      display.settings.theme = theme(ThemePreset(rawValue: baseline.state)!)
+      content = AnyView(WidgetPreviewContainer(display: display, size: .medium))
     }
     return AnyView(content.environment(\.colorScheme, colorScheme(baseline.appearance)))
   }
 }
 
-/// The extension shell's setup and stale faces (`SalahPrayerWidgetEntryView`'s
-/// first two branches) in the frame, backdrop and clip `WidgetPreviewContainer`
-/// gives the data faces. WidgetKit's own container only renders in a widget host.
+/// The extension shell's setup and expired faces (`SalahPrayerWidgetEntryView`'s
+/// message branches) in the frame, backdrop and clip `WidgetPreviewContainer` gives
+/// the data faces. WidgetKit's own container only renders in a widget host.
 struct WidgetShellMessage: View {
-  let snapshot: SalahWidgetSnapshot
+  let theme: SalahWidgetTheme
+  let tone: SalahWidgetTone
+  /// The settings' locale; `nil` for the setup face, which keeps the device's.
+  var locale: Locale? = nil
   let size: SalahWidgetSize
-  let date: Date
   let systemImage: String
   let message: String
 
@@ -216,25 +212,32 @@ struct WidgetShellMessage: View {
   }
 
   var body: some View {
-    let colors = snapshot.resolvedTheme.colors(for: scheme)
+    let colors = theme.colors(for: scheme)
     let point = Self.pointSize(size)
-    WidgetMessageContent(
+    let face = WidgetMessageContent(
       systemImage: systemImage, message: Text(verbatim: message), accent: colors.accent
     )
     .frame(width: point.width, height: point.height)
     .background {
-      SalahWidgetBackground(tone: snapshot.backgroundTone(at: date), colors: colors)
+      SalahWidgetBackground(tone: tone, colors: colors)
     }
     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-    .environment(\.locale, snapshot.resolvedLocale)
-    .environment(\.layoutDirection, snapshot.layoutDirectionIsRTL ? .rightToLeft : .leftToRight)
-    .salahColorScheme(snapshot.resolvedTheme.forcedColorScheme)
+    .salahColorScheme(theme.forcedColorScheme)
+    if let locale {
+      face
+        .environment(\.locale, locale)
+        .environment(
+          \.layoutDirection,
+          locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+    } else {
+      face
+    }
   }
 }
 
 /// Reads the widget extension's String Catalog from the source tree. The extension
 /// resolves `widget.openToSetUp` from its own bundle, which the test bundle doesn't
-/// contain, in the language of the locale its view has in the environment.
+/// contain, in the language of its process.
 enum ExtensionCatalog {
   struct MissingString: Error, CustomStringConvertible {
     var key: String

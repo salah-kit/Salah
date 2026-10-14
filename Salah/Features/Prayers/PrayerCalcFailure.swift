@@ -1,9 +1,9 @@
 import Foundation
 
-/// Prayer-time calculation failed for the current coordinates - Adhan's failable
-/// init returned nil (e.g. an extreme high latitude with no resolvable transit).
-/// Terminal: retrying with the same coordinates won't help; the user needs a
-/// different location. Surfaced once, never as a modal.
+/// The schedule has no prayer times today for the current coordinates: SalahCalculation
+/// can't give the day, as for coordinates SalahTimes rejects. Terminal: retrying with
+/// the same coordinates won't help; the user needs a different location. Surfaced once,
+/// never as a modal.
 enum PrayerCalcFailure: AppFailure {
   case timesUnavailable(latitude: Double, longitude: Double)
 
@@ -14,7 +14,7 @@ enum PrayerCalcFailure: AppFailure {
   var logMessage: String {
     switch self {
     case .timesUnavailable(let lat, let lng):
-      "PrayerTimes init returned nil for (\(lat), \(lng))"
+      "No prayer times for (\(lat), \(lng))"
     }
   }
 }

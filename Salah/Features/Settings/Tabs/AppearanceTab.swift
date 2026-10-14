@@ -1,4 +1,5 @@
 import AppKit
+import SalahUI
 import SwiftUI
 
 /// The Appearance tab: themes the calm look of the widgets (accent, primary,
@@ -37,7 +38,7 @@ struct AppearanceContent: View {
 
   private var preview: some View {
     VStack(spacing: 12) {
-      WidgetPreviewContainer(snapshot: previewSnapshot, size: previewSize)
+      WidgetPreviewContainer(display: previewDisplay, size: previewSize)
         .frame(maxWidth: .infinity)
       Picker("settings.appearance.size", selection: $previewSize) {
         Text("settings.appearance.size.small").tag(SalahWidgetSize.small)
@@ -50,14 +51,12 @@ struct AppearanceContent: View {
     .padding(.vertical, 6)
   }
 
-  /// The user's current published snapshot (real prayer times + language),
-  /// re-themed with the in-progress selection so the preview matches the
-  /// installed widget exactly. Falls back to sample data before the first
-  /// publish. The static-time flag keeps its countdown calm.
-  private var previewSnapshot: SalahWidgetSnapshot {
-    var snapshot = SalahWidgetStore.loadSnapshot() ?? .sample()
-    snapshot.theme = prefs.resolvedWidgetTheme
-    return snapshot
+  /// The widget as it is now: the user's real prayer times and language, in the
+  /// in-progress theme, built from the same settings the widget mirror holds, so the
+  /// preview matches the installed widget exactly.
+  private var previewDisplay: SalahDisplay {
+    let settings = prefs.mirroredSettings
+    return SalahDisplay(date: Date(), settings: settings, schedule: settings.schedule)
   }
 
   // MARK: Presets
@@ -88,7 +87,7 @@ struct AppearanceContent: View {
 
     ColorPicker("settings.appearance.primary", selection: primaryBinding, supportsOpacity: false)
     if primaryTooClose { warningRow("settings.appearance.hueWarning") }
-    if isCustom, primaryContrast < 3.0 {  // WCAG AA large-text floor for the big countdown
+    if isCustom, primaryHasLowContrast {  // WCAG AA large-text floor for the big countdown
       HStack(spacing: 8) {
         Label("settings.appearance.contrastWarning", systemImage: "exclamationmark.triangle.fill")
           .font(.caption)
@@ -129,8 +128,17 @@ struct AppearanceContent: View {
     SalahColorSpec(1.00, 0.62, 0.04),  // orange
     SalahColorSpec(0.75, 0.35, 0.95),  // purple
   ]
+  /// SalahUI's check, whose defaults are these guardrails: a 3:1 contrast floor for
+  /// the big countdown and a 0.28 distance from every functional hue.
+  private func problems(_ color: SalahColorSpec) -> [ContrastCheck.Problem] {
+    ContrastCheck().problems(
+      foreground: color, background: previewSurface, reserved: Self.functionalHues)
+  }
   private func tooClose(_ c: SalahColorSpec) -> Bool {
-    Self.functionalHues.contains { c.distance(to: $0) < 0.28 }
+    problems(c).contains {
+      if case .tooCloseToReserved = $0 { return true }
+      return false
+    }
   }
   private var accentTooClose: Bool { isCustom && tooClose(prefs.widgetCustomAccent) }
   private var primaryTooClose: Bool { isCustom && tooClose(prefs.widgetCustomPrimary) }
@@ -149,8 +157,11 @@ struct AppearanceContent: View {
     effectivePreviewScheme == .dark
       ? prefs.widgetCustomBase.darkTop : prefs.widgetCustomBase.lightTop
   }
-  private var primaryContrast: Double {
-    SalahColorSpec.contrastRatio(prefs.widgetCustomPrimary, previewSurface)
+  private var primaryHasLowContrast: Bool {
+    problems(prefs.widgetCustomPrimary).contains {
+      if case .lowContrast = $0 { return true }
+      return false
+    }
   }
   private func fixPrimaryContrast() {
     setCustom {

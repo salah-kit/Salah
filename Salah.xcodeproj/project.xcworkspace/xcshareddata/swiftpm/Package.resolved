@@ -1,13 +1,22 @@
 {
-  "originHash" : "cbca186aaa027ab89c327079b5c6e9ae3c5f1a6859cbe8677cb425070a8884da",
+  "originHash" : "b888982baf5076aa2cd7dd181f10e375c55cfaa581d39b4b5ec208e0ba39b990",
   "pins" : [
     {
-      "identity" : "adhan-swift",
+      "identity" : "salahkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/batoulapps/adhan-swift",
+      "location" : "https://github.com/salah-kit/SalahKit",
       "state" : {
-        "revision" : "6dc8309951fdaa0cd124c52b9a8de7e0da1ff2ce",
-        "version" : "1.4.0"
+        "revision" : "b4f98569abad3ab73fc367eaf093f1c8d6bf805e",
+        "version" : "0.2.0"
+      }
+    },
+    {
+      "identity" : "salahtimes",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/salah-kit/SalahTimes.git",
+      "state" : {
+        "revision" : "42a291cab2034a1b1ee35166697748ef348a620c",
+        "version" : "0.1.0"
       }
     }
   ],

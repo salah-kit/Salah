@@ -7,8 +7,11 @@ import SwiftUI
 /// hover. `sinceText` keeps the most-recent-passed row (the "you are here" anchor)
 /// un-dimmed.
 struct MenuScheduleRow: View {
-  let prayer: SalahWidgetPrayer
+  let name: Text
+  let time: String
   let state: SalahWidgetRowState
+  let isSunrise: Bool
+  let alertEnabled: Bool
   let colors: SalahWidgetColors
   let labels: SalahWidgetLabels
   var sinceText: String? = nil
@@ -21,7 +24,7 @@ struct MenuScheduleRow: View {
     HStack(spacing: 10) {
       leadingIcon
 
-      Text(verbatim: prayer.name)
+      name
         .font(Font.system(.subheadline, design: .serif).weight(weight))
         .foregroundStyle(emphasisColor ?? .primary)
         .lineLimit(1)
@@ -46,7 +49,7 @@ struct MenuScheduleRow: View {
         Spacer(minLength: 6)
       }
 
-      Text(verbatim: prayer.timeText)
+      Text(verbatim: time)
         .font(Font.subheadline.monospacedDigit())
         .foregroundStyle(timeColor)
         .lineLimit(1)
@@ -68,7 +71,7 @@ struct MenuScheduleRow: View {
   private var leadingIcon: some View {
     if isBellToggle, let onToggleAlert {
       Button(action: onToggleAlert) {
-        Image(systemName: prayer.alertEnabled ? "bell.fill" : "bell.slash")
+        Image(systemName: alertEnabled ? "bell.fill" : "bell.slash")
           .font(.footnote)
           .foregroundStyle(bellColor)
           .frame(width: 18, height: 18)
@@ -76,9 +79,9 @@ struct MenuScheduleRow: View {
       }
       .buttonStyle(.plain)
       .menuPointerCursor()
-      .help(Text(verbatim: alertToggleLabel))
-      .accessibilityLabel(Text(verbatim: alertToggleLabel))
-      .accessibilityValue(Text(verbatim: prayer.alertEnabled ? labels.alertOn : labels.alertOff))
+      .help(alertToggleLabel)
+      .accessibilityLabel(alertToggleLabel)
+      .accessibilityValue(Text(verbatim: alertEnabled ? labels.alertOn : labels.alertOff))
     } else {
       Image(systemName: stateIconName)
         .font(.footnote)
@@ -93,7 +96,7 @@ struct MenuScheduleRow: View {
   /// glyph instead - the hero already carries the focus, and these are rare
   /// secondary rows.
   private var isBellToggle: Bool {
-    guard onToggleAlert != nil, prayer.id != SalahWidgetSnapshot.sunriseID else { return false }
+    guard onToggleAlert != nil, !isSunrise else { return false }
     switch state {
     case .next, .active: return false
     default: return true
@@ -105,14 +108,14 @@ struct MenuScheduleRow: View {
     case .active: return "speaker.wave.2.fill"
     case .next: return "arrowtriangle.forward.fill"  // auto-mirrors under RTL
     default:
-      if prayer.id == SalahWidgetSnapshot.sunriseID { return "sunrise.fill" }
-      return prayer.alertEnabled ? "bell.fill" : "bell.slash"
+      if isSunrise { return "sunrise.fill" }
+      return alertEnabled ? "bell.fill" : "bell.slash"
     }
   }
 
   private var bellColor: Color {
     if hovering { return .primary }
-    return prayer.alertEnabled ? .secondary : Color.secondary.opacity(0.6)
+    return alertEnabled ? .secondary : Color.secondary.opacity(0.6)
   }
 
   // MARK: Tones (mirror ScheduleRowView)
@@ -167,7 +170,7 @@ struct MenuScheduleRow: View {
     }
   }
 
-  private var alertToggleLabel: String {
-    "\(prayer.name) · \(localizedString("settings.notif.alert.toggle"))"
+  private var alertToggleLabel: Text {
+    name + Text(verbatim: " · \(localizedString("settings.notif.alert.toggle"))")
   }
 }

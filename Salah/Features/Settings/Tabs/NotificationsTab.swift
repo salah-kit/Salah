@@ -1,5 +1,5 @@
-import Adhan
 import AppKit
+import SalahCore
 import SwiftUI
 import UserNotifications
 
@@ -10,7 +10,7 @@ private enum DhuhrNotificationScope: String, Hashable {
 
 struct NotificationsContent: View {
   @Bindable var prefs = Preferences.shared
-  @State private var selectedPrayer: Prayer = .fajr
+  @State private var selectedPrayer: PrayerKind = .fajr
   @State private var previewController = AudioPlaybackController()
   @State private var notificationSettings: UNNotificationSettings?
   @State private var dhuhrNotificationScope: DhuhrNotificationScope = .otherDays
@@ -107,7 +107,7 @@ struct NotificationsContent: View {
 
     Section {
       Picker("settings.notif.prayer", selection: $selectedPrayer) {
-        ForEach(Prayer.allCases, id: \.self) { prayer in
+        ForEach(PrayerKind.allCases, id: \.self) { prayer in
           Text(prayer.settingsLocalizedName).tag(prayer)
         }
       }
@@ -271,7 +271,7 @@ struct NotificationsContent: View {
   }
 
   private var notificationConfigsForPermission: [PrayerNotificationConfig] {
-    var configs = Prayer.allCases.map { prefs.config(for: $0) }
+    var configs = PrayerKind.allCases.map { prefs.config(for: $0) }
     if prefs.jumuahOverrideEnabled {
       configs.append(prefs.jumuahConfig)
     }

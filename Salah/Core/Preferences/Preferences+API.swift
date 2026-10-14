@@ -1,24 +1,24 @@
-import Adhan
 import Foundation
+import SalahCore
 
 extension Preferences {
-  func config(for prayer: Prayer) -> PrayerNotificationConfig {
+  func config(for prayer: PrayerKind) -> PrayerNotificationConfig {
     (notificationSettings[prayer.settingsKey] ?? PrayerNotificationConfig.defaultConfig(for: prayer))
       .sanitized()
   }
 
-  func config(for prayer: Prayer, on date: Date) -> PrayerNotificationConfig {
+  func config(for prayer: PrayerKind, on date: Date) -> PrayerNotificationConfig {
     if usesJumuahOverride(for: prayer, on: date) {
       return jumuahConfig
     }
     return config(for: prayer)
   }
 
-  func setConfig(_ config: PrayerNotificationConfig, for prayer: Prayer) {
+  func setConfig(_ config: PrayerNotificationConfig, for prayer: PrayerKind) {
     notificationSettings[prayer.settingsKey] = config.sanitized()
   }
 
-  func setConfig(_ config: PrayerNotificationConfig, for prayer: Prayer, on date: Date) {
+  func setConfig(_ config: PrayerNotificationConfig, for prayer: PrayerKind, on date: Date) {
     if usesJumuahOverride(for: prayer, on: date) {
       setJumuahConfig(config)
     } else {
@@ -27,19 +27,19 @@ extension Preferences {
   }
 
   var jumuahConfig: PrayerNotificationConfig {
-    (notificationSettings[Prayer.jumuahSettingsKey] ?? config(for: .dhuhr)).sanitized()
+    (notificationSettings[PrayerKind.jumuahSettingsKey] ?? config(for: .dhuhr)).sanitized()
   }
 
   func setJumuahConfig(_ config: PrayerNotificationConfig) {
-    notificationSettings[Prayer.jumuahSettingsKey] = config.sanitized()
+    notificationSettings[PrayerKind.jumuahSettingsKey] = config.sanitized()
   }
 
   func seedJumuahConfigIfNeeded() {
-    guard notificationSettings[Prayer.jumuahSettingsKey] == nil else { return }
-    notificationSettings[Prayer.jumuahSettingsKey] = config(for: .dhuhr)
+    guard notificationSettings[PrayerKind.jumuahSettingsKey] == nil else { return }
+    notificationSettings[PrayerKind.jumuahSettingsKey] = config(for: .dhuhr)
   }
 
-  private func usesJumuahOverride(for prayer: Prayer, on date: Date) -> Bool {
+  private func usesJumuahOverride(for prayer: PrayerKind, on date: Date) -> Bool {
     prayer == .dhuhr && jumuahOverrideEnabled && isFridayInStoredTimeZone(date)
   }
 

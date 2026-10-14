@@ -1,8 +1,8 @@
 import AVFoundation
-import Adhan
 import AppKit
 import Foundation
 import OSLog
+import SalahCore
 
 enum AudioPlaybackSource: Equatable {
   case prayerAlert
@@ -11,23 +11,24 @@ enum AudioPlaybackSource: Equatable {
 }
 
 struct AudioPlaybackContext: Equatable {
-  var prayer: Prayer?
+  var prayer: PrayerKind?
   var source: AudioPlaybackSource
   var slot: PrayerNotificationSoundSlot?
-  var prayerTime: Date?
+  /// The prayer occurrence an alert's sound belongs to; `nil` for a Settings preview.
+  var event: PrayerEvent?
   var prayerAlertOffsetMinutes: Int?
 
   init(
-    prayer: Prayer? = nil,
+    prayer: PrayerKind? = nil,
     source: AudioPlaybackSource,
     slot: PrayerNotificationSoundSlot? = nil,
-    prayerTime: Date? = nil,
+    event: PrayerEvent? = nil,
     prayerAlertOffsetMinutes: Int? = nil
   ) {
-    self.prayer = prayer
+    self.prayer = prayer ?? event?.kind
     self.source = source
     self.slot = slot
-    self.prayerTime = prayerTime
+    self.event = event
     self.prayerAlertOffsetMinutes = prayerAlertOffsetMinutes
   }
 }

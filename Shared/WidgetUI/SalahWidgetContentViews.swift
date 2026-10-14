@@ -1,3 +1,5 @@
+import SalahCore
+import SalahUI
 import SwiftUI
 
 // MARK: - Tight label style
@@ -23,22 +25,24 @@ nonisolated extension LabelStyle where Self == TightLabelStyle {
 // MARK: - Top-level idle content
 
 /// The idle "living schedule" - the same hierarchy at three densities. Renders
-/// purely from a snapshot + size + date, so both the widget extension (idle
-/// branch) and the in-app Appearance preview use it unchanged. Setup/stale and
-/// the playing/stop state are handled by the extension shell (they need
-/// `widgetURL` / `Button(intent:)`), with their content below.
+/// purely from a display, so both the widget extension (idle branch) and the in-app
+/// Appearance preview use it unchanged. Setup, expired, unavailable and the
+/// playing/stop state are handled by the extension shell (they need `widgetURL` /
+/// `Button(intent:)`), with their content below.
+///
+/// The day's rows are SalahUI's `PrayerTimesList` in Salah's row style, and the focus
+/// is SalahUI's `NextPrayerView` in Salah's focus style.
 nonisolated struct WidgetContentView: View {
-  let snapshot: SalahWidgetSnapshot
+  let display: SalahDisplay
   let size: SalahWidgetSize
-  let date: Date
   @Environment(\.colorScheme) private var scheme
 
   var body: some View {
-    let colors = snapshot.resolvedTheme.colors(for: scheme)
+    let colors = display.theme.colors(for: scheme)
     switch size {
-    case .small: SmallContent(snapshot: snapshot, date: date, colors: colors)
-    case .medium: MediumContent(snapshot: snapshot, date: date, colors: colors)
-    case .large: LargeContent(snapshot: snapshot, date: date, colors: colors)
+    case .small: SmallContent(display: display, colors: colors)
+    case .medium: MediumContent(display: display, colors: colors)
+    case .large: LargeContent(display: display, colors: colors)
     }
   }
 }
@@ -48,17 +52,20 @@ nonisolated struct WidgetContentView: View {
 /// Date + location, on top of every size. `full` shows Hijri day/month/year with
 /// the Gregorian date beneath; `compact` drops the year and Gregorian line.
 private struct WidgetHeader: View {
-  let snapshot: SalahWidgetSnapshot
+  let display: SalahDisplay
   let colors: SalahWidgetColors
   var compact: Bool = false
   var showLocation: Bool = true
 
+  private var header: SalahHeader { display.header }
+  private var silentMode: Bool { display.settings.silentMode }
+
   var body: some View {
     VStack(alignment: .leading, spacing: 2) {
       HStack(spacing: 6) {
-        Image(systemName: snapshot.silentMode ? "bell.slash.fill" : "moon.stars.fill")
+        Image(systemName: silentMode ? "bell.slash.fill" : "moon.stars.fill")
           .font(compact ? .caption : .subheadline)
-          .foregroundStyle(snapshot.silentMode ? Color.secondary : colors.accent)
+          .foregroundStyle(silentMode ? Color.secondary : colors.accent)
           // Optically pull the Hijri date toward the glyph: `moon.stars.fill`
           // carries empty side-bearing that otherwise reads as a stray gap.
           .padding(.trailing, -2)
@@ -70,7 +77,7 @@ private struct WidgetHeader: View {
         Spacer(minLength: 8)
         if showLocation {
           Label {
-            Text(verbatim: snapshot.locationName)
+            Text(verbatim: header.location)
               .lineLimit(1)
               .privacySensitive()
           } icon: {
@@ -82,7 +89,7 @@ private struct WidgetHeader: View {
         }
       }
       if !compact {
-        Text(verbatim: snapshot.gregorianDateText)
+        Text(verbatim: header.gregorianDate)
           .font(.caption2)
           .foregroundStyle(.secondary)
           .lineLimit(1)
@@ -94,20 +101,22 @@ private struct WidgetHeader: View {
 
   private var hijriText: String {
     compact
-      ? "\(snapshot.hijriDay) \(snapshot.hijriMonth)"
-      : "\(snapshot.hijriDay) \(snapshot.hijriMonth) \(snapshot.hijriYear)"
+      ? "\(header.hijriDay) \(header.hijriMonth)"
+      : "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear)"
   }
 }
 
 // MARK: - Relative countdown / count-up
 
 /// Relative time for the focus timer. At a minute or more it is a **static**,
-/// minute-resolution string (via `RelativeDurationFormatter`) advanced by the
-/// timeline - calm, never the per-second churn of `Text(_, style: .relative)`
-/// across a whole hour. Under a minute it switches to Apple's system timer text,
-/// the one widget primitive that ticks per-second on its own (no timeline cost);
-/// that renders "0:45", not the menu bar's custom "45s". Count-up is prefixed
-/// "+". Arabic-Indic digits come from the locale environment the shell installs.
+/// minute-resolution string (SalahCore's `PrayerDurationFormat`) advanced by the
+/// timeline - calm, never the per-second churn of `Text(_, style: .relative)` across
+/// a whole hour. In the final minute of a countdown, and the first minute of a
+/// count-up, it switches to Apple's system timer text, the one widget primitive that
+/// ticks per-second on its own (no timeline cost); that renders "0:45", not the menu
+/// bar's custom "45s". The timeline has an entry a minute before each prayer and at
+/// it, so both live minutes start on an entry. Count-up is prefixed "+".
+/// Arabic-Indic digits come from the locale environment the shell installs.
 private struct RelativeTime: View {
   /// The prayer time - in the future for a count-down, in the past for a count-up.
   let target: Date
@@ -121,10 +130,10 @@ private struct RelativeTime: View {
   @Environment(\.locale) private var locale
 
   var body: some View {
-    let remaining = abs(target.timeIntervalSince(reference))
+    let magnitude = abs(target.timeIntervalSince(reference))
     Group {
-      if remaining < 60 {
-        // Under a minute: the system timer text the host ticks per-second for
+      if countingUp ? magnitude < 60 : magnitude <= 60 {
+        // The live minute: the system timer text the host ticks per-second for
         // free. `countsDown` is set explicitly (not inferred from past/future)
         // so the direction is exact. Renders "0:45".
         if countingUp {
@@ -140,10 +149,10 @@ private struct RelativeTime: View {
             countsDown: true, showsHours: false)
         }
       } else {
-        // A minute or more: the calm, static, timeline-advanced tier string.
+        // Otherwise the calm, static, timeline-advanced tier string.
         Text(
-          verbatim: RelativeDurationFormatter.string(
-            seconds: remaining, direction: countingUp ? .up : .down, locale: locale))
+          verbatim: PrayerDurationFormat.string(
+            magnitude, direction: countingUp ? .elapsed : .remaining, locale: locale))
       }
     }
     .font(bold ? font.weight(.bold) : font)
@@ -154,14 +163,86 @@ private struct RelativeTime: View {
   }
 }
 
-// MARK: - Schedule row (collapsed)
+// MARK: - Schedule rows
+
+/// Salah's look for one row of SalahUI's `PrayerTimesList`: alert bell + name +
+/// time. `full` (large) carries an icon and a state background; `compact` (medium)
+/// is a light name+time line. The next prayer is toned, the current (count-up)
+/// prayer is green, passed prayers dim. On the large widget the focus row expands in
+/// place into the active card.
+private struct SalahRowStyle: PrayerRowStyle {
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  var compact: Bool = false
+
+  func makeBody(configuration: Configuration) -> some View {
+    let event = configuration.event
+    if !compact, display.focus?.event.id == event.id, let state = display.prayerState {
+      FocusView(state: state, display: display, colors: colors, size: .large)
+    } else {
+      ScheduleRowView(
+        name: configuration.name, time: display.timeText(of: event),
+        state: display.rowState(for: event, status: configuration.status),
+        icon: .event(isSunrise: event.kind == .sunrise, alert: display.alerts(for: event).alert),
+        colors: colors, nowLabel: display.labels.now, compact: compact,
+        sinceText: display.sinceText(for: event, status: configuration.status))
+    }
+  }
+}
+
+/// The listed day, one row per expected kind in canonical order. A known event is a
+/// one-row `PrayerTimesList` in Salah's row style; a kind the calculation can't give
+/// today is Salah's own row with a dash, since SalahUI's list shows known events only.
+/// One list per row keeps every row a direct child of this stack, so rows share the
+/// height evenly and the focus row keeps its priority.
+private struct ScheduleRows: View {
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  var compact: Bool = false
+  var spacing: CGFloat = 0
+
+  var body: some View {
+    VStack(spacing: spacing) {
+      ForEach(display.slots) { slot in
+        switch slot {
+        case .event(let event):
+          let row = PrayerTimesList(
+            day: PrayerDay(
+              day: event.scheduleDay, timeZone: display.settings.location.timeZone,
+              events: [event]),
+            state: display.prayerState, names: display.names, countdown: .staticText)
+          if !compact, display.focus?.event.id == event.id, display.prayerState != nil {
+            row.layoutPriority(1)
+          } else {
+            row.frame(maxHeight: .infinity)
+          }
+        case .missing(let kind):
+          ScheduleRowView(
+            name: Text(verbatim: display.name(of: kind)), time: "–", state: .upcoming,
+            icon: .missing, colors: colors, nowLabel: display.labels.now, compact: compact,
+            timeAccessibilityLabel: display.labels.notAvailable
+          )
+          .frame(maxHeight: .infinity)
+        }
+      }
+    }
+    .prayerRowStyle(SalahRowStyle(display: display, colors: colors, compact: compact))
+  }
+}
 
 /// One collapsed prayer: alert bell + name + time. `full` (large) carries an icon
-/// and a state background; `compact` (medium) is a light name+time line. The next
-/// prayer is toned, the current (count-up) prayer is green, passed prayers dim.
+/// and a state background; `compact` (medium) is a light name+time line.
 private struct ScheduleRowView: View {
-  let prayer: SalahWidgetPrayer
+  enum Icon {
+    case event(isSunrise: Bool, alert: Bool)
+    /// A prayer the calculation can't give today.
+    case missing
+  }
+
+  let name: Text
+  let time: String
   let state: SalahWidgetRowState
+  let icon: Icon
   let colors: SalahWidgetColors
   let nowLabel: String
   var compact: Bool = false
@@ -169,6 +250,8 @@ private struct ScheduleRowView: View {
   /// the trailing edge. Its presence also keeps this row un-dimmed - the "you are
   /// here" anchor between passed and upcoming.
   var sinceText: String? = nil
+  /// What VoiceOver reads for the time, when the visible time isn't words.
+  var timeAccessibilityLabel: String? = nil
 
   var body: some View {
     HStack(spacing: compact ? 6 : 10) {
@@ -180,7 +263,7 @@ private struct ScheduleRowView: View {
           .accessibilityHidden(true)
       }
 
-      Text(verbatim: prayer.name)
+      name
         .font(.system(compact ? .subheadline : .body, design: .serif).weight(weight))
         .foregroundStyle(emphasisColor ?? (compact ? .primary : .primary))
         .lineLimit(1)
@@ -206,22 +289,30 @@ private struct ScheduleRowView: View {
         Spacer(minLength: 6)
       }
 
-      Text(verbatim: prayer.timeText)
+      Text(verbatim: time)
         .font((compact ? Font.subheadline : Font.body).monospacedDigit())
         .foregroundStyle(timeColor)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: compact ? nil : 82, alignment: .trailing)
+        .accessibilityLabel(Text(verbatim: timeAccessibilityLabel ?? time))
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, compact ? 0 : 10)
     .padding(.vertical, compact ? 0 : 4)
     .background(compact ? AnyView(Color.clear) : AnyView(rowBackground))
-    .opacity(state == .passed && sinceText == nil ? (compact ? 0.5 : 0.55) : 1)
+    .opacity(isDimmed ? (compact ? 0.5 : 0.55) : 1)
     .accessibilityElement(children: .combine)
   }
 
   private var isCurrent: Bool { state == .current }
+
+  /// Passed rows dim, except the "you are here" row; so does a prayer the
+  /// calculation can't give.
+  private var isDimmed: Bool {
+    if case .missing = icon { return true }
+    return state == .passed && sinceText == nil
+  }
 
   /// Emphasis color for the name (and icon, full only): next→tone, active→tone,
   /// current→green; nil means use the default text color.
@@ -254,8 +345,12 @@ private struct ScheduleRowView: View {
     // `.forward` auto-mirrors under RTL, unlike `.right`.
     case .next: return "arrowtriangle.forward.fill"
     default:
-      if prayer.id == SalahWidgetSnapshot.sunriseID { return "sunrise.fill" }
-      return prayer.alertEnabled ? "bell.fill" : "bell.slash"
+      switch icon {
+      case .missing: return "questionmark.circle"
+      case .event(let isSunrise, let alert):
+        if isSunrise { return "sunrise.fill" }
+        return alert ? "bell.fill" : "bell.slash"
+      }
     }
   }
 
@@ -287,28 +382,67 @@ private struct ScheduleRowView: View {
 
 // MARK: - Active card (the focus)
 
-/// The expanded focus, in one of three modes: count-down (next prayer),
-/// count-up (green, 15 min after a prayer fires), or tomorrow (end-of-day Fajr).
-/// Reuses the hero-card surface so the focus reads as inlaid into the backdrop.
-private struct ActiveCardView: View {
-  let focus: SalahWidgetSnapshot.Focus
-  let snapshot: SalahWidgetSnapshot
+/// The focus, SalahUI's `NextPrayerView` in Salah's focus style.
+private struct FocusView: View {
+  let state: PrayerState
+  let display: SalahDisplay
   let colors: SalahWidgetColors
   let size: SalahWidgetSize
-  let date: Date
+  var distribute: Bool = false
+
+  var body: some View {
+    NextPrayerView(
+      state: state, names: display.names, timeZone: display.settings.location.timeZone,
+      countdown: .staticText
+    )
+    .nextPrayerStyle(
+      SalahFocusStyle(display: display, colors: colors, size: size, distribute: distribute))
+  }
+}
+
+/// Salah's look for the focus, in one of three modes: count-down (the next event,
+/// sunrise included), count-up (green, 15 min after a prayer starts), or tomorrow
+/// (end-of-day Fajr). Reuses the hero-card surface so the focus reads as inlaid into
+/// the backdrop.
+///
+/// `NextPrayerView` names the next *prayer*; Salah's focus leads with the prayer that
+/// just started and counts down to sunrise too, so the style draws the focus from the
+/// configuration's state (through `SalahDisplay.focus`), with Salah's own clock and
+/// timer text.
+private struct SalahFocusStyle: NextPrayerStyle {
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  let size: SalahWidgetSize
   /// When true (Small), the focus fills the height with the eyebrow pinned to the
   /// top, the name+countdown centered, and the reminder at the bottom - so the
   /// negative space is balanced above and below the focus rather than dumped low.
   var distribute: Bool = false
 
-  private var labels: SalahWidgetLabels { snapshot.labels }
-  private var prayer: SalahWidgetPrayer { focus.prayer }
+  func makeBody(configuration: Configuration) -> some View {
+    if let focus = display.focus {
+      ActiveCardView(
+        focus: focus, display: display, colors: colors, size: size, distribute: distribute)
+    } else {
+      NextUnknownView(display: display, colors: colors, size: size)
+    }
+  }
+}
+
+private struct ActiveCardView: View {
+  let focus: SalahDisplay.Focus
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  let size: SalahWidgetSize
+  var distribute: Bool = false
+
+  private var labels: SalahWidgetLabels { display.labels }
+  private var event: PrayerEvent { focus.event }
+  private var date: Date { display.date }
 
   private var tone: SalahWidgetTone {
     switch focus {
     case .countUp: return .playingPrayerAudio  // green
-    case .countdown: return snapshot.tone(at: date)  // normal / imminent
-    case .tomorrow: return .normal
+    case .countdown: return display.focusIsTomorrow ? .normal : display.tone
     }
   }
   private var toneColor: Color { tone.color(colors) }
@@ -316,10 +450,7 @@ private struct ActiveCardView: View {
     if case .countdown = focus { return tone == .imminent }
     return false
   }
-  private var isCountUp: Bool {
-    if case .countUp = focus { return true }
-    return false
-  }
+  private var isCountUp: Bool { focus.isCountUp }
 
   // Per-size type scale.
   private var nameFont: Font {
@@ -383,7 +514,9 @@ private struct ActiveCardView: View {
     if isCountUp {
       InlineBadge(text: labels.now, tint: SalahWidgetTone.prayerColor(colors))
     } else {
-      EyebrowLabel(text: eyebrowText, accent: colors.accent)
+      EyebrowLabel(
+        text: display.focusIsTomorrow ? labels.tomorrow : labels.nextPrayer,
+        accent: colors.accent)
     }
   }
 
@@ -393,14 +526,14 @@ private struct ActiveCardView: View {
   /// sizes and the menu bar.
   private var nameRow: some View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
-      Text(verbatim: prayer.name)
+      Text(verbatim: display.name(of: event))
         .font(nameFont)
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       if size != .small {
         Spacer(minLength: 6)
         Label {
-          Text(verbatim: prayer.timeText)
+          Text(verbatim: display.timeText(of: event))
             .lineLimit(1)
             .minimumScaleFactor(0.8)
         } icon: {
@@ -424,21 +557,9 @@ private struct ActiveCardView: View {
           .accessibilityHidden(true)
       }
       RelativeTime(
-        target: prayer.time, reference: date, color: toneColor,
+        target: event.time, reference: date, color: toneColor,
         font: timerFont, bold: isImminent, countingUp: isCountUp)
     }
-  }
-
-  /// The always-on "since previous prayer" line for Small ("Dhuhr since: 1:30"),
-  /// or nil during a count-up focus / before the day's first prayer. The value is
-  /// always >= 15 min (it only shows once the green window ends), so it never hits
-  /// the seconds tier and needs no live ticking.
-  private var sinceLineText: String? {
-    guard !isCountUp, let prev = snapshot.previousPrayer(at: date) else { return nil }
-    let elapsed = RelativeDurationFormatter.string(
-      seconds: date.timeIntervalSince(prev.time), direction: .up,
-      locale: snapshot.resolvedLocale, bidiIsolated: true)
-    return "\(prev.name) \(labels.since): \(elapsed)"
   }
 
   /// The card's subtitle. Small (no schedule) carries the "since previous prayer"
@@ -448,9 +569,9 @@ private struct ActiveCardView: View {
   @ViewBuilder
   private var reminderRow: some View {
     if size == .small {
-      if let sinceLineText {
+      if let sinceLine = display.sinceLine {
         Label {
-          Text(verbatim: sinceLineText).lineLimit(1).minimumScaleFactor(0.7)
+          Text(verbatim: sinceLine).lineLimit(1).minimumScaleFactor(0.7)
         } icon: {
           Image(systemName: "clock.arrow.circlepath")
         }
@@ -458,7 +579,7 @@ private struct ActiveCardView: View {
         .foregroundStyle(.secondary)
         .labelStyle(.tight)
       }
-    } else if !isCountUp, let detail = prayer.reminderDetailText {
+    } else if !isCountUp, let detail = display.reminderDetail(for: event) {
       Label {
         Text(verbatim: detail).lineLimit(1).minimumScaleFactor(0.7)
       } icon: {
@@ -469,12 +590,32 @@ private struct ActiveCardView: View {
       .labelStyle(.tight)
     }
   }
+}
 
-  private var eyebrowText: String {
-    switch focus {
-    case .tomorrow: return labels.tomorrow
-    default: return labels.nextPrayer
+/// The focus's place when the schedule doesn't know the next prayer: Salah's wording,
+/// never a time or a countdown of its own.
+private struct NextUnknownView: View {
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  let size: SalahWidgetSize
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 5) {
+      EyebrowLabel(text: display.labels.nextPrayer, accent: colors.accent)
+      Label {
+        Text(verbatim: display.labels.nextUnknown)
+          .lineLimit(2)
+          .minimumScaleFactor(0.7)
+      } icon: {
+        Image(systemName: "questionmark.circle")
+      }
+      .font(size == .small ? .footnote : .caption)
+      .foregroundStyle(.secondary)
+      .labelStyle(.tight)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(size == .large ? 12 : 0)
+    .accessibilityElement(children: .combine)
   }
 }
 
@@ -482,18 +623,15 @@ private struct ActiveCardView: View {
 
 /// The focus, alone, on a compact header (no room for a schedule).
 private struct SmallContent: View {
-  let snapshot: SalahWidgetSnapshot
-  let date: Date
+  let display: SalahDisplay
   let colors: SalahWidgetColors
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      WidgetHeader(snapshot: snapshot, colors: colors, compact: true, showLocation: false)
-      if let focus = snapshot.focus(at: date) {
+      WidgetHeader(display: display, colors: colors, compact: true, showLocation: false)
+      if let state = display.prayerState {
         // Distributed: eyebrow up, name+countdown centered, reminder down.
-        ActiveCardView(
-          focus: focus, snapshot: snapshot, colors: colors, size: .small, date: date,
-          distribute: true)
+        FocusView(state: state, display: display, colors: colors, size: .small, distribute: true)
       } else {
         Spacer(minLength: 0)
       }
@@ -508,47 +646,29 @@ private struct SmallContent: View {
 /// Focus beside the day: a full-width header on top, then the active card (left)
 /// next to the day's schedule (right), split by the accent hairline.
 private struct MediumContent: View {
-  let snapshot: SalahWidgetSnapshot
-  let date: Date
+  let display: SalahDisplay
   let colors: SalahWidgetColors
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      WidgetHeader(snapshot: snapshot, colors: colors, compact: true)
+      WidgetHeader(display: display, colors: colors, compact: true)
       HStack(alignment: .top, spacing: 12) {
-        if let focus = snapshot.focus(at: date) {
+        if let state = display.prayerState {
           // Distribute to fill the pane height, matching the schedule beside it.
-          ActiveCardView(
-            focus: focus, snapshot: snapshot, colors: colors, size: .medium, date: date,
-            distribute: true
+          FocusView(
+            state: state, display: display, colors: colors, size: .medium, distribute: true
           )
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
         SalahHairline(accent: colors.accent)
-        schedule
+        ScheduleRows(display: display, colors: colors, compact: true)
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .padding(14)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-  }
-
-  private var schedule: some View {
-    VStack(spacing: 0) {
-      ForEach(snapshot.prayers) { prayer in
-        ScheduleRowView(
-          prayer: prayer,
-          state: snapshot.rowState(for: prayer, at: date),
-          colors: colors,
-          nowLabel: snapshot.labels.now,
-          compact: true,
-          sinceText: snapshot.sinceText(for: prayer, at: date)
-        )
-        .frame(maxHeight: .infinity)
-      }
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 }
 
@@ -558,47 +678,27 @@ private struct MediumContent: View {
 /// next prayer's row expands in place into the active card. End-of-day floats the
 /// Tomorrow card beneath the (dimmed) day.
 private struct LargeContent: View {
-  let snapshot: SalahWidgetSnapshot
-  let date: Date
+  let display: SalahDisplay
   let colors: SalahWidgetColors
-
-  private var focus: SalahWidgetSnapshot.Focus? { snapshot.focus(at: date) }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      WidgetHeader(snapshot: snapshot, colors: colors)
+      WidgetHeader(display: display, colors: colors)
       VStack(spacing: 6) {
-        ForEach(snapshot.prayers) { prayer in
-          if isFocusRow(prayer), let focus {
-            ActiveCardView(
-              focus: focus, snapshot: snapshot, colors: colors, size: .large, date: date
-            )
-            .layoutPriority(1)
-          } else {
-            ScheduleRowView(
-              prayer: prayer,
-              state: snapshot.rowState(for: prayer, at: date),
-              colors: colors,
-              nowLabel: snapshot.labels.now,
-              sinceText: snapshot.sinceText(for: prayer, at: date)
-            )
-            // Collapsed rows share the leftover height evenly, so the slack is
-            // distributed as breathing room between every row instead of dumped
-            // beneath the day - which read as a lopsided bottom gap when the
-            // focus is the last prayer (Isha). Under the end-of-day overflow they
-            // still compress first (priority 0) beneath the priority-1 cards.
-            .frame(maxHeight: .infinity)
-          }
-        }
+        // Collapsed rows share the leftover height evenly, so the slack is
+        // distributed as breathing room between every row instead of dumped
+        // beneath the day - which read as a lopsided bottom gap when the
+        // focus is the last prayer (Isha). Under the end-of-day overflow they
+        // still compress first (priority 0) beneath the priority-1 cards.
+        ScheduleRows(display: display, colors: colors, spacing: 6)
         // End of day: the focus is tomorrow's Fajr, which is not a today row.
         // The full six-row day plus this card slightly overflows the fixed height;
         // the priority lets the hero keep its natural height while the dimmed,
-        // passed rows absorb the deficit (instead of the hero compressing).
-        if case .tomorrow(let fajr)? = focus {
-          ActiveCardView(
-            focus: .tomorrow(fajr), snapshot: snapshot, colors: colors, size: .large, date: date
-          )
-          .layoutPriority(1)
+        // passed rows absorb the deficit (instead of the hero compressing). When the
+        // next prayer isn't known, the same place says so.
+        if let state = display.prayerState, display.focus == nil || display.floatingFocus != nil {
+          FocusView(state: state, display: display, colors: colors, size: .large)
+            .layoutPriority(1)
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -606,24 +706,13 @@ private struct LargeContent: View {
     .padding(14)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
   }
-
-  /// A today row is the focus when it matches the focused prayer (count-up's
-  /// current, or count-down's next). Tomorrow never matches a today row.
-  private func isFocusRow(_ prayer: SalahWidgetPrayer) -> Bool {
-    guard let focus else { return false }
-    switch focus {
-    case .countUp(let p), .countdown(let p):
-      return prayer.id == p.id && prayer.time == p.time
-    case .tomorrow:
-      return false
-    }
-  }
 }
 
-// MARK: - Message (setup / stale) content
+// MARK: - Message (setup / expired / unavailable) content
 
-/// Centered icon + message used when there is no snapshot yet (setup) or the
-/// stored one is stale. The extension shell adds the `widgetURL` to Settings.
+/// Centered icon + message used when there is no settings mirror yet (setup), the
+/// timeline ran out (expired) or the schedule has nothing to show (unavailable). The
+/// extension shell adds the `widgetURL` to Settings.
 nonisolated struct WidgetMessageContent: View {
   let systemImage: String
   let message: Text
@@ -651,7 +740,9 @@ nonisolated struct WidgetMessageContent: View {
 /// intent button by the shell, so this presents the playing state as one large
 /// "tap to stop" control, sized for the family.
 nonisolated struct WidgetStopContent: View {
-  let activeAlert: SalahWidgetActiveAlert
+  let title: String
+  let subtitle: String
+  let tone: SalahWidgetTone
   let labels: SalahWidgetLabels
   let size: SalahWidgetSize
   let colors: SalahWidgetColors
@@ -659,7 +750,7 @@ nonisolated struct WidgetStopContent: View {
   private var isSmall: Bool { size == .small }
 
   var body: some View {
-    let tone = activeAlert.slot.tone.color(colors)
+    let tone = tone.color(colors)
     VStack(spacing: isSmall ? 6 : 10) {
       Spacer(minLength: 0)
       Image(systemName: "stop.circle.fill")
@@ -667,11 +758,11 @@ nonisolated struct WidgetStopContent: View {
         .foregroundStyle(tone)
         .accessibilityHidden(true)
       VStack(spacing: 3) {
-        Text(verbatim: activeAlert.title)
+        Text(verbatim: title)
           .font(.system(isSmall ? .subheadline : .title3, design: .serif, weight: .semibold))
           .lineLimit(1)
           .minimumScaleFactor(0.6)
-        Text(verbatim: activeAlert.subtitle)
+        Text(verbatim: subtitle)
           .font(.caption2)
           .foregroundStyle(.secondary)
           .lineLimit(1)
@@ -689,6 +780,18 @@ nonisolated struct WidgetStopContent: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .multilineTextAlignment(.center)
     .accessibilityElement(children: .combine)
-    .accessibilityLabel(Text(verbatim: "\(activeAlert.title). \(labels.tapToStop)"))
+    .accessibilityLabel(Text(verbatim: "\(title). \(labels.tapToStop)"))
+  }
+}
+
+extension WidgetStopContent {
+  /// The stop control for what a display is playing; `nil` when nothing plays.
+  init?(display: SalahDisplay, size: SalahWidgetSize, colors: SalahWidgetColors) {
+    guard let playback = display.playback, let title = display.playingTitle,
+      let subtitle = display.playingSubtitle
+    else { return nil }
+    self.init(
+      title: title, subtitle: subtitle, tone: playback.tone, labels: display.labels, size: size,
+      colors: colors)
   }
 }

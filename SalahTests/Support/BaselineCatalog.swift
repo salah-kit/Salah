@@ -49,10 +49,9 @@ nonisolated struct Baseline: Sendable, Hashable, Codable, CustomTestStringConver
   }
 }
 
-/// The states the widget spec's verification plan lists
-/// (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`),
-/// as moments on the fixture day. The playing state is split by slot, since its
-/// color follows the slot (spec section 6).
+/// The states the widget's design spec lists for verification, as moments on the
+/// fixture day. The playing state is split by slot, since its color follows the slot.
+/// `stale` is the face a timeline that ran out shows (`SalahWidgetEntry.Content.expired`).
 nonisolated enum SpecState: String, Sendable, CaseIterable {
   case idle
   case imminent
@@ -100,8 +99,8 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
     case .playingPostReminder: "Maghrib + 5 min, Maghrib's 5-min after-reminder playing"
     case .silent: "Dhuhr + 60 min, silent mode on"
     case .setupNeeded:
-      "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min"
-    case .stale: "the fixture day's snapshot shown at 00:10 the next day"
+      "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min"
+    case .stale: "the expired entry of a timeline that ran out, at 00:10 the next day"
     }
   }
 

@@ -90,3 +90,15 @@ nonisolated final class ScratchDefaults {
     defaults.removePersistentDomain(forName: suiteName)
   }
 }
+
+/// Runs `body` with `Preferences.shared`, and so `Locale.app`, in `language`, then
+/// restores the previous language. Synchronous, so no other test sees the change.
+enum AppLanguageScope {
+  static func with<T>(_ language: AppLanguage, _ body: () throws -> T) rethrows -> T {
+    let shared = Preferences.shared
+    let previous = shared.appLanguage
+    shared.appLanguage = language
+    defer { shared.appLanguage = previous }
+    return try body()
+  }
+}

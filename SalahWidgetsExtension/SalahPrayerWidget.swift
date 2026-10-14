@@ -1,53 +1,59 @@
 import AppIntents
+import SalahCore
+import SalahWidgets
 import SwiftUI
 import WidgetKit
 
 // MARK: - Timeline
 
-struct SalahPrayerWidgetEntry: TimelineEntry, Sendable {
-  let date: Date
-  let snapshot: SalahWidgetSnapshot
-  /// True when no snapshot has ever been published (app not yet run). The views
-  /// then show a setup prompt instead of sample data masquerading as real times.
-  var isSetupNeeded: Bool = false
-}
+extension SalahWidgetEntry: TimelineEntry {}
 
+/// Builds the widget's timelines in the extension, from the settings the app mirrors
+/// into the App Group (`SalahWidgetTimeline`). Nothing depends on the app having run
+/// since the last timeline: the extension computes the times itself.
 struct SalahPrayerWidgetProvider: TimelineProvider {
-  func placeholder(in context: Context) -> SalahPrayerWidgetEntry {
-    SalahPrayerWidgetEntry(date: Date(), snapshot: .sample())
+  func placeholder(in context: Context) -> SalahWidgetEntry {
+    Self.entry(settings: .sample, at: Date())
   }
 
   func getSnapshot(
-    in context: Context, completion: @escaping @Sendable (SalahPrayerWidgetEntry) -> Void
+    in context: Context, completion: @escaping @Sendable (SalahWidgetEntry) -> Void
   ) {
-    // The gallery (preview) always gets sample data; a real install with no
-    // published snapshot yet gets an explicit setup prompt, never fake times.
+    // The gallery shows the user's settings, or sample settings before the app has
+    // run; a placed widget with no settings yet gets the setup prompt, never sample
+    // times masquerading as real ones.
+    let settings = SharedValue.settings.load()
+    let now = Date()
     if context.isPreview {
-      completion(SalahPrayerWidgetEntry(date: Date(), snapshot: .sample()))
-    } else if let snapshot = SalahWidgetStore.loadSnapshot() {
-      completion(SalahPrayerWidgetEntry(date: Date(), snapshot: snapshot))
+      completion(Self.entry(settings: settings ?? .sample, at: now))
+    } else if let settings {
+      completion(Self.entry(settings: settings, playback: SharedValue.playback.load(), at: now))
     } else {
-      completion(SalahPrayerWidgetEntry(date: Date(), snapshot: .sample(), isSetupNeeded: true))
+      completion(SalahWidgetEntry(date: now, content: .setupNeeded))
     }
   }
 
   func getTimeline(
-    in context: Context, completion: @escaping @Sendable (Timeline<SalahPrayerWidgetEntry>) -> Void
+    in context: Context, completion: @escaping @Sendable (Timeline<SalahWidgetEntry>) -> Void
   ) {
-    let now = Date()
-    guard let snapshot = SalahWidgetStore.loadSnapshot() else {
-      // No snapshot has ever been written (app not run). Show a setup prompt and
-      // retry within the hour; launching the app publishes data and reloads us.
-      let entry = SalahPrayerWidgetEntry(
-        date: now, snapshot: .sample(now: now), isSetupNeeded: true)
-      completion(Timeline(entries: [entry], policy: .after(now.addingTimeInterval(60 * 60))))
-      return
+    let timeline = SalahWidgetTimeline.make(
+      settings: SharedValue.settings.load(), playback: SharedValue.playback.load(), now: Date())
+    switch timeline.reload {
+    case .never:
+      completion(Timeline(entries: timeline.entries, policy: .never))
+    case .after(let date):
+      completion(Timeline(entries: timeline.entries, policy: .after(date)))
     }
-    let timeline = snapshot.timeline(from: now)
-    let entries = timeline.dates.map { SalahPrayerWidgetEntry(date: $0, snapshot: snapshot) }
-    // Static per-entry strings, so the host won't auto-advance them - regenerate
-    // after the dense window to re-densify around the following prayer.
-    completion(Timeline(entries: entries, policy: .after(timeline.reload)))
+  }
+
+  private static func entry(
+    settings: SalahSettings, playback: SalahPlayback? = nil, at now: Date
+  ) -> SalahWidgetEntry {
+    SalahWidgetEntry(
+      date: now,
+      content: .schedule(
+        SalahDisplay(date: now, settings: settings, schedule: settings.schedule, playback: playback)
+      ))
   }
 }
 
@@ -81,56 +87,116 @@ struct SalahPrayerWidget: Widget {
 /// in-app Appearance preview reuses unchanged).
 struct SalahPrayerWidgetEntryView: View {
   @Environment(\.widgetFamily) private var family
-  @Environment(\.colorScheme) private var scheme
 
-  let entry: SalahPrayerWidgetEntry
-
-  private var snapshot: SalahWidgetSnapshot { entry.snapshot }
-  private var size: SalahWidgetSize { family.salahSize }
-
-  /// Resolved render locale, re-applying the numbering system that a bare
-  /// identifier round-trip drops (Arabic/Urdu/Persian/Bengali digits). See
-  /// `SalahWidgetSnapshot.resolvedLocale`.
-  private var locale: Locale { snapshot.resolvedLocale }
+  let entry: SalahWidgetEntry
 
   var body: some View {
-    let colors = snapshot.resolvedTheme.colors(for: scheme)
-    Group {
-      if entry.isSetupNeeded {
+    switch entry.content {
+    case .setupNeeded:
+      // No settings yet, so no language or theme: the device's language, Nocturne.
+      SalahWidgetShell(theme: .nocturne, tone: .normal) { colors in
         WidgetMessageContent(
           systemImage: "moon.stars", message: Text("widget.openToSetUp"), accent: colors.accent
         )
         .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
-      } else if snapshot.isStale(at: entry.date) {
-        // Stored times are from a day that has already passed (app quit). Prompt
-        // to reopen the app rather than render yesterday's schedule as if live.
+      }
+    case .expired(let settings):
+      // The timeline ran out before WidgetKit asked for another: no countdown that
+      // would be stale. Opening the app asks WidgetKit for a new timeline.
+      SalahWidgetShell(settings: settings) { colors in
         WidgetMessageContent(
           systemImage: "arrow.clockwise",
-          message: Text(verbatim: snapshot.labels.openToUpdate),
+          message: Text(verbatim: settings.labels.openToUpdate),
           accent: colors.accent
         )
         .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
-      } else if let activeAlert = snapshot.activeAlert {
-        // While audio plays, the entire widget is the Stop control: tapping
-        // anywhere runs the stop intent. No dedicated button, no Settings link.
-        Button(intent: StopSalahAudioIntent()) {
-          WidgetStopContent(
-            activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
-        }
-        .buttonStyle(.plain)
-        .invalidatableContent()
-      } else {
-        WidgetContentView(snapshot: snapshot, size: size, date: entry.date)
+      }
+    case .schedule(let display):
+      SalahWidgetShell(display: display) { colors in
+        if display.prayerState == nil {
+          // The schedule knows nothing usable at this moment.
+          WidgetMessageContent(
+            systemImage: "exclamationmark.triangle",
+            message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent
+          )
           .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
+        } else if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
+          // While audio plays, the entire widget is the Stop control: tapping
+          // anywhere runs the stop intent. No dedicated button, no Settings link.
+          Button(intent: StopSalahAudioIntent()) { stop }
+            .buttonStyle(.plain)
+            .invalidatableContent()
+        } else {
+          WidgetContentView(display: display, size: size)
+            .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
+        }
       }
     }
-    .environment(\.locale, locale)
-    .environment(\.layoutDirection, snapshot.layoutDirectionIsRTL ? .rightToLeft : .leftToRight)
-    // Honor a pinned theme appearance (Always Dark/Light) so the system colors
-    // match the themed background; .system passes through unchanged.
-    .salahColorScheme(snapshot.resolvedTheme.forcedColorScheme)
-    .containerBackground(for: .widget) {
-      SalahWidgetBackground(tone: snapshot.backgroundTone(at: entry.date), colors: colors)
+  }
+
+  private var size: SalahWidgetSize { family.salahSize }
+}
+
+/// The container around every face: the themed backdrop as the widget's container
+/// background, the locale and layout direction, and a pinned theme appearance.
+private struct SalahWidgetShell<Content: View>: View {
+  let theme: SalahWidgetTheme
+  let tone: SalahWidgetTone
+  var locale: Locale?
+  var isRightToLeft = false
+  @ViewBuilder let content: (SalahWidgetColors) -> Content
+  @Environment(\.colorScheme) private var scheme
+
+  init(
+    theme: SalahWidgetTheme, tone: SalahWidgetTone, locale: Locale? = nil,
+    isRightToLeft: Bool = false, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
+  ) {
+    self.theme = theme
+    self.tone = tone
+    self.locale = locale
+    self.isRightToLeft = isRightToLeft
+    self.content = content
+  }
+
+  init(
+    display: SalahDisplay, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
+  ) {
+    self.init(
+      theme: display.theme, tone: display.backgroundTone, locale: display.locale,
+      isRightToLeft: display.isRightToLeft, content: content)
+  }
+
+  init(
+    settings: SalahSettings, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
+  ) {
+    self.init(
+      theme: settings.theme, tone: settings.silentMode ? .silent : .normal,
+      locale: settings.locale,
+      isRightToLeft: settings.locale.language.characterDirection == .rightToLeft,
+      content: content)
+  }
+
+  var body: some View {
+    let colors = theme.colors(for: scheme)
+    localized(content(colors))
+      // Honor a pinned theme appearance (Always Dark/Light) so the system colors
+      // match the themed background; .system passes through unchanged.
+      .salahColorScheme(theme.forcedColorScheme)
+      .containerBackground(for: .widget) {
+        SalahWidgetBackground(tone: tone, colors: colors)
+      }
+  }
+
+  /// The face in the user's language and direction; the setup face keeps the
+  /// device's.
+  @ViewBuilder
+  private func localized(_ view: Content) -> some View {
+    if let locale {
+      view
+        .environment(\.locale, locale)
+        .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
+    } else {
+      view
     }
   }
 }
@@ -152,17 +218,24 @@ extension WidgetFamily {
 #Preview("Small", as: .systemSmall) {
   SalahPrayerWidget()
 } timeline: {
-  SalahPrayerWidgetEntry(date: .now, snapshot: .sample())
+  SalahPrayerWidgetProvider.previewEntry
 }
 
 #Preview("Medium", as: .systemMedium) {
   SalahPrayerWidget()
 } timeline: {
-  SalahPrayerWidgetEntry(date: .now, snapshot: .sample())
+  SalahPrayerWidgetProvider.previewEntry
 }
 
 #Preview("Large", as: .systemLarge) {
   SalahPrayerWidget()
 } timeline: {
-  SalahPrayerWidgetEntry(date: .now, snapshot: .sample())
+  SalahPrayerWidgetProvider.previewEntry
+}
+
+extension SalahPrayerWidgetProvider {
+  /// The sample settings now, for Xcode's previews.
+  fileprivate static var previewEntry: SalahWidgetEntry {
+    entry(settings: .sample, at: .now)
+  }
 }

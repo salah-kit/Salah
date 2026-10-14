@@ -31,7 +31,7 @@ struct PreferenceRefresh: OptionSet, Sendable {
   /// `display` (every widget/menu string is rebuilt from the new language).
   static let localization = PreferenceRefresh(rawValue: 1 << 3)
 
-  static let userInfoKey = "effects"
+  nonisolated static let userInfoKey = "effects"
 }
 
 /// Imperative full refresh, for non-preference triggers (e.g. a notification

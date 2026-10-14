@@ -1,3 +1,4 @@
+import SalahCore
 import SwiftUI
 
 /// Renders the real shared widget content at a faithful macOS point size,
@@ -5,11 +6,10 @@ import SwiftUI
 /// the extension installs via `.containerBackground`, clipped to a rounded
 /// rectangle. Because it reuses `WidgetContentView` + the shared background and
 /// resolves the theme the same way, the in-app preview and the installed widget
-/// cannot drift. Used by design verification now and the Appearance tab (Phase 2).
+/// cannot drift. Used by the Appearance tab, design verification and SalahTests.
 struct WidgetPreviewContainer: View {
-  let snapshot: SalahWidgetSnapshot
+  let display: SalahDisplay
   let size: SalahWidgetSize
-  var date: Date = Date()
 
   @Environment(\.colorScheme) private var scheme
 
@@ -23,164 +23,133 @@ struct WidgetPreviewContainer: View {
   }
 
   var body: some View {
-    let colors = snapshot.resolvedTheme.colors(for: scheme)
+    let colors = display.theme.colors(for: scheme)
     content(colors)
       .frame(width: pointSize.width, height: pointSize.height)
       .background {
-        SalahWidgetBackground(tone: snapshot.backgroundTone(at: date), colors: colors)
+        SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
       }
       .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-      .environment(\.locale, previewLocale)
-      .environment(\.layoutDirection, snapshot.layoutDirectionIsRTL ? .rightToLeft : .leftToRight)
-      .salahColorScheme(snapshot.resolvedTheme.forcedColorScheme)
+      .environment(\.locale, display.locale)
+      .environment(\.layoutDirection, display.isRightToLeft ? .rightToLeft : .leftToRight)
+      .salahColorScheme(display.theme.forcedColorScheme)
   }
 
+  /// The extension shell's branches that don't need a widget host.
   @ViewBuilder
   private func content(_ colors: SalahWidgetColors) -> some View {
-    if let activeAlert = snapshot.activeAlert {
-      WidgetStopContent(
-        activeAlert: activeAlert, labels: snapshot.labels, size: size, colors: colors)
+    if display.prayerState == nil {
+      WidgetMessageContent(
+        systemImage: "exclamationmark.triangle",
+        message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent)
+    } else if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
+      stop
     } else {
-      WidgetContentView(snapshot: snapshot, size: size, date: date)
+      WidgetContentView(display: display, size: size)
     }
   }
-
-  /// Mirror the extension's numbering-system rebuild so live digits match across
-  /// Arabic/Urdu/Persian/Bengali. See `SalahWidgetSnapshot.resolvedLocale`.
-  private var previewLocale: Locale { snapshot.resolvedLocale }
 }
 
 // MARK: - Verification gallery (previews only)
 
-/// All three sizes for one snapshot, for side-by-side design review. Renders at
+/// All three sizes for one display, for side-by-side design review. Renders at
 /// the real "now" so the live relative timer (which always counts from the system
 /// clock) agrees with the now-anchored preview prayer times.
 private struct WidgetSizeGallery: View {
   let title: String
-  let snapshot: SalahWidgetSnapshot
+  let display: SalahDisplay
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text(verbatim: title).font(.headline)
       HStack(alignment: .top, spacing: 20) {
-        WidgetPreviewContainer(snapshot: snapshot, size: .small)
-        WidgetPreviewContainer(snapshot: snapshot, size: .medium)
+        WidgetPreviewContainer(display: display, size: .small)
+        WidgetPreviewContainer(display: display, size: .medium)
       }
-      WidgetPreviewContainer(snapshot: snapshot, size: .large)
+      WidgetPreviewContainer(display: display, size: .large)
     }
     .padding(24)
   }
 }
 
-/// Preview language: supplies the localized chrome + prayer names + digit shaping
-/// so RTL and Arabic-Indic digits can be verified, mirroring the real snapshot.
-/// Internal (with `WidgetPreviewData`) so SalahTests renders these scenarios.
+/// Preview language: the hand-written prayer names, place and Hijri date the
+/// previews have always shown, in English, Arabic or French, so RTL and
+/// Arabic-Indic digits can be verified. Internal (with `WidgetPreviewData`) so
+/// SalahTests renders these scenarios.
 enum PreviewLang {
   case en, ar, fr
 
-  var labels: SalahWidgetLabels {
+  var language: AppLanguage {
     switch self {
     case .en: .english
     case .ar: .arabic
     case .fr: .french
     }
   }
-  var id: String {
-    switch self {
-    case .en: "en"
-    case .ar: "ar"
-    case .fr: "fr"
-    }
-  }
-  var rtl: Bool { self == .ar }
   var location: String { self == .ar ? "مكة" : "Makkah" }
   var hijri: (day: String, month: String, year: String) {
     self == .ar ? ("١٢", "رمضان", "١٤٤٧ هـ") : ("12", "Ramadan", "1447 AH")
   }
 
-  func name(_ id: String) -> String {
+  func name(_ kind: PrayerKind) -> String {
     switch self {
     case .ar:
-      switch id {
-      case "fajr": "الفجر"
-      case "sunrise": "الشروق"
-      case "dhuhr": "الظهر"
-      case "asr": "العصر"
-      case "maghrib": "المغرب"
-      case "isha": "العشاء"
-      default: id
+      switch kind {
+      case .fajr: "الفجر"
+      case .sunrise: "الشروق"
+      case .dhuhr: "الظهر"
+      case .asr: "العصر"
+      case .maghrib: "المغرب"
+      case .isha: "العشاء"
       }
     case .fr:
-      switch id {
-      case "fajr": "Fajr"
-      case "sunrise": "Lever"
-      case "dhuhr": "Dhuhr"
-      case "asr": "Asr"
-      case "maghrib": "Maghreb"
-      case "isha": "Isha"
-      default: id
+      switch kind {
+      case .fajr: "Fajr"
+      case .sunrise: "Lever"
+      case .dhuhr: "Dhuhr"
+      case .asr: "Asr"
+      case .maghrib: "Maghreb"
+      case .isha: "Isha"
       }
     case .en:
-      switch id {
-      case "fajr": "Fajr"
-      case "sunrise": "Sunrise"
-      case "dhuhr": "Dhuhr"
-      case "asr": "Asr"
-      case "maghrib": "Maghrib"
-      case "isha": "Isha"
-      default: id
+      switch kind {
+      case .fajr: "Fajr"
+      case .sunrise: "Sunrise"
+      case .dhuhr: "Dhuhr"
+      case .asr: "Asr"
+      case .maghrib: "Maghrib"
+      case .isha: "Isha"
       }
     }
   }
 
-  var locale: Locale {
-    switch self {
-    case .ar:
-      var c = Locale.Components(languageCode: .arabic)
-      c.numberingSystem = Locale.NumberingSystem("arab")
-      return Locale(components: c)
-    case .fr: return Locale(identifier: "fr")
-    case .en: return Locale(identifier: "en")
-    }
+  /// SalahCore's names with the previews' own spellings.
+  var names: PrayerNames {
+    PrayerNames(
+      locale: language.locale,
+      overrides: Dictionary(
+        uniqueKeysWithValues: PrayerKind.allCases.map { (PrayerNames.Entry.name($0), name($0)) }))
   }
 
-  func digits(_ n: Int) -> String {
-    let s = "\(n)"
-    guard self == .ar else { return s }
-    let map: [Character: Character] = [
-      "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
-      "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
-    ]
-    return String(s.map { map[$0] ?? $0 })
-  }
-
-  /// Reminder detail line, localized with correct word order (mirrors the app).
-  func detail(pre: Int?, post: Int?) -> String? {
-    func unit() -> String {
-      switch self {
-      case .ar: " د"
-      case .fr: " min"
-      case .en: "m"
-      }
-    }
-    func phrase(_ m: Int, _ word: String) -> String {
-      let v = "\(digits(m))\(unit())"
-      return self == .ar ? "\(word) \(v)" : "\(v) \(word)"
-    }
-    var parts: [String] = []
-    if let pre { parts.append(phrase(pre, labels.before)) }
-    if let post { parts.append(phrase(post, labels.after)) }
-    return parts.isEmpty ? nil : parts.joined(separator: " · ")
+  /// The previews' header: their Hijri date and place, and `now`'s Gregorian date.
+  func header(now: Date) -> SalahHeader {
+    let formatter = DateFormatter()
+    formatter.locale = language.locale
+    formatter.dateStyle = .full
+    formatter.timeStyle = .none
+    return SalahHeader(
+      hijriDay: hijri.day, hijriMonth: hijri.month, hijriYear: hijri.year,
+      gregorianDate: formatter.string(from: now), location: location)
   }
 }
 
-/// Builds preview snapshots with prayer times anchored to the real `now` (in
-/// minute offsets), so both the state logic and the live relative timer render
-/// truthfully, in the chosen language. Every scenario takes `now` (the real clock
-/// by default) so SalahTests can render them at a fixed moment.
+/// Builds preview displays with prayer times anchored to `now` (in minute offsets),
+/// in the device's time zone, so both SalahCore's state and the live relative timer
+/// render truthfully, in the chosen language. Every scenario takes `now` (the real
+/// clock by default) so SalahTests can render them at a fixed moment.
 enum WidgetPreviewData {
   struct Spec {
-    var id: String
+    var id: PrayerKind
     var offset: Int  // minutes from now (negative = already passed)
     var alert = true
     var pre: Int? = nil
@@ -191,242 +160,256 @@ enum WidgetPreviewData {
     prayers specs: [Spec],
     tomorrowFajrOffset: Int? = nil,
     silent: Bool = false,
-    playingID: String? = nil,
+    playing: PrayerKind? = nil,
     lang: PreviewLang = .en,
     now: Date = Date()
-  ) -> SalahWidgetSnapshot {
-    let cal = Calendar.current
-    let todayStart = cal.startOfDay(for: now)
-    let nextDay =
-      cal.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart.addingTimeInterval(86_400)
-    let tf = DateFormatter()
-    tf.locale = lang.locale
-    tf.timeStyle = .short
-    let ctf = DateFormatter()
-    ctf.locale = lang.locale
-    ctf.setLocalizedDateFormatFromTemplate("j:mm")  // period-less, locale digits
-    let gf = DateFormatter()
-    gf.locale = lang.locale
-    gf.dateStyle = .full
-    gf.timeStyle = .none
-
-    func mk(_ s: Spec) -> SalahWidgetPrayer {
-      let time = now.addingTimeInterval(TimeInterval(s.offset * 60))
-      let pre = s.pre.map { lang.digits($0) + (lang == .ar ? "د" : (lang == .fr ? "min" : "m")) }
-      return SalahWidgetPrayer(
-        id: s.id, name: lang.name(s.id), abbreviation: lang.name(s.id), time: time,
-        timeText: tf.string(from: time), compactTimeText: ctf.string(from: time),
-        alertEnabled: s.alert, preReminderMinutes: s.pre, postReminderMinutes: s.post,
-        reminderSummaryText: "", preReminderShortText: pre,
-        reminderDetailText: lang.detail(pre: s.pre, post: s.post))
+  ) -> SalahDisplay {
+    let zone = TimeZone.current
+    let today = CivilDay(containing: now, in: zone)
+    func event(_ kind: PrayerKind, _ offset: Int, on day: CivilDay) -> PrayerEvent {
+      PrayerEvent(
+        scheduleDay: day, kind: kind, time: now.addingTimeInterval(TimeInterval(offset * 60)))
     }
-
-    let prayers = specs.map(mk)
-    let tomorrow = tomorrowFajrOffset.map {
-      mk(Spec(id: "fajr", offset: $0, pre: 30))
+    let events = specs.map { event($0.id, $0.offset, on: today) }
+    var days = [today: events]
+    if let tomorrowFajrOffset {
+      days[today.adding(days: 1)] = [event(.fajr, tomorrowFajrOffset, on: today.adding(days: 1))]
     }
-    var alert: SalahWidgetActiveAlert?
-    if let playingID, let p = prayers.first(where: { $0.id == playingID }) {
-      alert = SalahWidgetActiveAlert(
-        prayerID: p.id, prayerName: p.name, slot: .alert, offsetMinutes: nil,
-        prayerTime: p.time, title: lang.labels.playingAdhan,
-        subtitle: "\(p.name) · \(p.timeText)")
-    }
+    let location = PrayerLocation(
+      latitude: 21.4167, longitude: 39.8167, timeZone: zone, name: lang.location)
+    let schedule = PrayerSchedule(source: PreviewSource(days: days), location: location)
 
-    return SalahWidgetSnapshot(
-      generatedAt: now, todayStart: todayStart, nextDayStart: nextDay,
-      localeIdentifier: lang.id, layoutDirectionIsRTL: lang.rtl, locationName: lang.location,
-      hijriDay: lang.hijri.day, hijriMonth: lang.hijri.month, hijriYear: lang.hijri.year,
-      gregorianDateText: gf.string(from: now),
-      prayers: prayers, tomorrowFajr: tomorrow, silentMode: silent,
-      activeAlert: alert, labels: lang.labels, theme: .nocturne)
+    var alerts: [PrayerKind: PrayerAlerts] = [:]
+    for spec in specs {
+      alerts[spec.id] = PrayerAlerts(
+        alert: spec.alert, beforeMinutes: spec.pre, afterMinutes: spec.post)
+    }
+    if tomorrowFajrOffset != nil {
+      // Tomorrow's Fajr has always carried a 30-minute reminder in the previews.
+      alerts[.fajr] = PrayerAlerts(alert: true, beforeMinutes: 30)
+    }
+    var settings = SalahSettings.sample
+    settings.location = location
+    settings.language = lang.language
+    settings.silentMode = silent
+    settings.alerts = alerts
+
+    let playback = playing.flatMap { kind in
+      events.first { $0.kind == kind }.map { SalahPlayback(event: $0, slot: .alert) }
+    }
+    return SalahDisplay(
+      date: now, settings: settings, day: schedule.day(today),
+      state: schedule.state(
+        at: now, through: now.addingTimeInterval(SalahDisplay.lookahead),
+        policy: SalahDisplay.policy),
+      playback: playback, names: lang.names, header: lang.header(now: now))
   }
 
   /// A normal day with the next prayer (Maghrib, +2h42m) carrying pre+post reminders.
   static func standard(
-    silent: Bool = false, playingID: String? = nil, lang: PreviewLang = .en, now: Date = Date()
-  ) -> SalahWidgetSnapshot {
+    silent: Bool = false, playing: PrayerKind? = nil, lang: PreviewLang = .en, now: Date = Date()
+  ) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -8 * 60, pre: 30),
-        Spec(id: "sunrise", offset: -6 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -3 * 60),
-        Spec(id: "asr", offset: -60),
-        Spec(id: "maghrib", offset: 162, pre: 10, post: 5),
-        Spec(id: "isha", offset: 4 * 60),
+        Spec(id: .fajr, offset: -8 * 60, pre: 30),
+        Spec(id: .sunrise, offset: -6 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -3 * 60),
+        Spec(id: .asr, offset: -60),
+        Spec(id: .maghrib, offset: 162, pre: 10, post: 5),
+        Spec(id: .isha, offset: 4 * 60),
       ],
-      silent: silent, playingID: playingID, lang: lang, now: now)
+      silent: silent, playing: playing, lang: lang, now: now)
   }
 
-  static func idle(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  static func idle(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     standard(lang: lang, now: now)
   }
-  static func silent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  static func silent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     standard(silent: true, lang: lang, now: now)
   }
-  static func playing(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
-    standard(playingID: "maghrib", lang: lang, now: now)
+  static func playing(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
+    standard(playing: .maghrib, lang: lang, now: now)
   }
 
   /// 10 min before Maghrib → imminent red.
-  static func imminent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  static func imminent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -13 * 60),
-        Spec(id: "sunrise", offset: -11 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -7 * 60),
-        Spec(id: "asr", offset: -3 * 60),
-        Spec(id: "maghrib", offset: 10, pre: 10, post: 5),
-        Spec(id: "isha", offset: 80),
+        Spec(id: .fajr, offset: -13 * 60),
+        Spec(id: .sunrise, offset: -11 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -7 * 60),
+        Spec(id: .asr, offset: -3 * 60),
+        Spec(id: .maghrib, offset: 10, pre: 10, post: 5),
+        Spec(id: .isha, offset: 80),
       ], lang: lang, now: now)
   }
 
-  /// 4 min after Dhuhr fired → green count-up leads; Asr is the secondary next.
-  static func countUp(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  /// 4 min after Dhuhr started → green count-up leads; Asr is the secondary next.
+  static func countUp(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -7 * 60, pre: 30),
-        Spec(id: "sunrise", offset: -5 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -4),
-        Spec(id: "asr", offset: 3 * 60 + 20),
-        Spec(id: "maghrib", offset: 6 * 60, pre: 10, post: 5),
-        Spec(id: "isha", offset: 8 * 60),
+        Spec(id: .fajr, offset: -7 * 60, pre: 30),
+        Spec(id: .sunrise, offset: -5 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -4),
+        Spec(id: .asr, offset: 3 * 60 + 20),
+        Spec(id: .maghrib, offset: 6 * 60, pre: 10, post: 5),
+        Spec(id: .isha, offset: 8 * 60),
       ], lang: lang, now: now)
   }
 
-  /// 16 min after Dhuhr fired → the 15-min count-up window has closed, so the
+  /// 16 min after Dhuhr started → the 15-min count-up window has closed, so the
   /// focus must be back to the next prayer's countdown (Asr), with no green.
-  /// Guards the `focus(at:)` boundary: the count-up must not linger past 15 min
+  /// Guards the focus boundary: the count-up must not linger past 15 min
   /// (the bug where the widget stayed green and kept counting up for hours).
   static func countUpEnded(
     _ lang: PreviewLang = .en, now: Date = Date()
-  ) -> SalahWidgetSnapshot {
+  ) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -7 * 60, pre: 30),
-        Spec(id: "sunrise", offset: -5 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -16),
-        Spec(id: "asr", offset: 44, pre: 10),
-        Spec(id: "maghrib", offset: 3 * 60, pre: 10, post: 5),
-        Spec(id: "isha", offset: 5 * 60),
+        Spec(id: .fajr, offset: -7 * 60, pre: 30),
+        Spec(id: .sunrise, offset: -5 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -16),
+        Spec(id: .asr, offset: 44, pre: 10),
+        Spec(id: .maghrib, offset: 3 * 60, pre: 10, post: 5),
+        Spec(id: .isha, offset: 5 * 60),
       ], lang: lang, now: now)
   }
 
-  /// 90 min after Dhuhr fired (the green window long closed) → resting countdown
+  /// 90 min after Dhuhr started (the green window long closed) → resting countdown
   /// to Asr, with the always-on "since previous prayer" treatment: Small shows
   /// "Dhuhr since: 1:30"; Medium/Large show the un-dimmed Dhuhr row carrying
   /// "+1:30". Mirrors the user's example and exercises the h:mm since tier.
-  static func since(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  static func since(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -10 * 60, pre: 30),
-        Spec(id: "sunrise", offset: -8 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -90),
-        Spec(id: "asr", offset: 100, pre: 10),
-        Spec(id: "maghrib", offset: 5 * 60, pre: 10, post: 5),
-        Spec(id: "isha", offset: 7 * 60),
+        Spec(id: .fajr, offset: -10 * 60, pre: 30),
+        Spec(id: .sunrise, offset: -8 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -90),
+        Spec(id: .asr, offset: 100, pre: 10),
+        Spec(id: .maghrib, offset: 5 * 60, pre: 10, post: 5),
+        Spec(id: .isha, offset: 7 * 60),
       ], lang: lang, now: now)
   }
 
   /// After Isha → all today prayers passed, focus is tomorrow's Fajr (after midnight).
-  static func tomorrow(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahWidgetSnapshot {
+  static func tomorrow(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
-        Spec(id: "fajr", offset: -16 * 60),
-        Spec(id: "sunrise", offset: -14 * 60, alert: false),
-        Spec(id: "dhuhr", offset: -9 * 60),
-        Spec(id: "asr", offset: -5 * 60),
-        Spec(id: "maghrib", offset: -2 * 60),
-        Spec(id: "isha", offset: -30),
+        Spec(id: .fajr, offset: -16 * 60),
+        Spec(id: .sunrise, offset: -14 * 60, alert: false),
+        Spec(id: .dhuhr, offset: -9 * 60),
+        Spec(id: .asr, offset: -5 * 60),
+        Spec(id: .maghrib, offset: -2 * 60),
+        Spec(id: .isha, offset: -30),
       ],
       tomorrowFajrOffset: 18 * 60, lang: lang, now: now)
   }
 }
 
+/// The previews' published days: the scenario's events, and nothing else. A day
+/// without all six kinds is partial, the rest missing as unpublished.
+nonisolated struct PreviewSource: PrayerSource {
+  let days: [CivilDay: [PrayerEvent]]
+
+  var expectedKinds: Set<PrayerKind> { Set(PrayerKind.allCases) }
+  var maximumLead: Duration { .zero }
+
+  func prayerDay(_ day: CivilDay, at location: PrayerLocation) -> PrayerDayAvailability {
+    guard let events = days[day], !events.isEmpty else { return .unavailable(.noPublishedData) }
+    let missing = expectedKinds.subtracting(events.map(\.kind))
+    return .available(
+      PrayerDay(day: day, timeZone: location.timeZone, events: events),
+      coverage: missing.isEmpty
+        ? .complete
+        : .partial(
+          missing: Dictionary(uniqueKeysWithValues: missing.map { ($0, .noPublishedData) })))
+  }
+}
+
 #Preview("Idle · dark") {
-  WidgetSizeGallery(title: "Idle", snapshot: WidgetPreviewData.idle()).preferredColorScheme(.dark)
+  WidgetSizeGallery(title: "Idle", display: WidgetPreviewData.idle()).preferredColorScheme(.dark)
 }
 
 #Preview("Idle · light") {
-  WidgetSizeGallery(title: "Idle", snapshot: WidgetPreviewData.idle()).preferredColorScheme(.light)
+  WidgetSizeGallery(title: "Idle", display: WidgetPreviewData.idle()).preferredColorScheme(.light)
 }
 
 #Preview("Imminent · dark") {
-  WidgetSizeGallery(title: "Imminent", snapshot: WidgetPreviewData.imminent()).preferredColorScheme(
+  WidgetSizeGallery(title: "Imminent", display: WidgetPreviewData.imminent()).preferredColorScheme(
     .dark)
 }
 
 #Preview("Count-up · dark") {
-  WidgetSizeGallery(title: "Count-up", snapshot: WidgetPreviewData.countUp()).preferredColorScheme(
+  WidgetSizeGallery(title: "Count-up", display: WidgetPreviewData.countUp()).preferredColorScheme(
     .dark)
 }
 
 #Preview("Count-up ended · dark") {
   WidgetSizeGallery(
-    title: "Count-up ended → next prayer", snapshot: WidgetPreviewData.countUpEnded()
+    title: "Count-up ended → next prayer", display: WidgetPreviewData.countUpEnded()
   )
   .preferredColorScheme(.dark)
 }
 
 #Preview("Since previous · dark") {
-  WidgetSizeGallery(title: "Since previous prayer (resting)", snapshot: WidgetPreviewData.since())
+  WidgetSizeGallery(title: "Since previous prayer (resting)", display: WidgetPreviewData.since())
     .preferredColorScheme(.dark)
 }
 
 #Preview("Arabic since previous · dark") {
-  WidgetSizeGallery(title: "Arabic since previous prayer", snapshot: WidgetPreviewData.since(.ar))
+  WidgetSizeGallery(title: "Arabic since previous prayer", display: WidgetPreviewData.since(.ar))
     .preferredColorScheme(.dark)
 }
 
 #Preview("Tomorrow · dark") {
-  WidgetSizeGallery(title: "Tomorrow", snapshot: WidgetPreviewData.tomorrow()).preferredColorScheme(
+  WidgetSizeGallery(title: "Tomorrow", display: WidgetPreviewData.tomorrow()).preferredColorScheme(
     .dark)
 }
 
 #Preview("Silent · dark") {
-  WidgetSizeGallery(title: "Silent", snapshot: WidgetPreviewData.silent()).preferredColorScheme(
+  WidgetSizeGallery(title: "Silent", display: WidgetPreviewData.silent()).preferredColorScheme(
     .dark)
 }
 
 #Preview("Stop · dark") {
-  WidgetSizeGallery(title: "Stop", snapshot: WidgetPreviewData.playing()).preferredColorScheme(
+  WidgetSizeGallery(title: "Stop", display: WidgetPreviewData.playing()).preferredColorScheme(
     .dark)
 }
 
 #Preview("Arabic · dark") {
-  WidgetSizeGallery(title: "Arabic", snapshot: WidgetPreviewData.idle(.ar)).preferredColorScheme(
+  WidgetSizeGallery(title: "Arabic", display: WidgetPreviewData.idle(.ar)).preferredColorScheme(
     .dark)
 }
 
 #Preview("Arabic count-up · dark") {
-  WidgetSizeGallery(title: "Arabic count-up", snapshot: WidgetPreviewData.countUp(.ar))
+  WidgetSizeGallery(title: "Arabic count-up", display: WidgetPreviewData.countUp(.ar))
     .preferredColorScheme(.dark)
 }
 
 #Preview("French · dark") {
-  WidgetSizeGallery(title: "French", snapshot: WidgetPreviewData.idle(.fr)).preferredColorScheme(
+  WidgetSizeGallery(title: "French", display: WidgetPreviewData.idle(.fr)).preferredColorScheme(
     .dark)
 }
 
 // Magnified single small widget, to judge vertical spacing closely.
 #Preview("Small ×2 · dark") {
-  WidgetPreviewContainer(snapshot: WidgetPreviewData.idle(), size: .small)
+  WidgetPreviewContainer(display: WidgetPreviewData.idle(), size: .small)
     .scaleEffect(2)
     .frame(width: 360, height: 360)
     .preferredColorScheme(.dark)
 }
 
-private func themedIdle(_ theme: SalahWidgetTheme) -> SalahWidgetSnapshot {
-  var s = WidgetPreviewData.idle()
-  s.theme = theme
-  return s
+private func themedIdle(_ theme: SalahWidgetTheme) -> SalahDisplay {
+  var display = WidgetPreviewData.idle()
+  display.settings.theme = theme
+  return display
 }
 
 // All presets at medium, to confirm each theme's calm palette reads well.
 #Preview("Presets · dark") {
   VStack(spacing: 14) {
     ForEach(SalahWidgetTheme.allPresets, id: \.id) { theme in
-      WidgetPreviewContainer(snapshot: themedIdle(theme), size: .medium)
+      WidgetPreviewContainer(display: themedIdle(theme), size: .medium)
     }
   }
   .padding(20)
@@ -436,7 +419,7 @@ private func themedIdle(_ theme: SalahWidgetTheme) -> SalahWidgetSnapshot {
 #Preview("Presets · light") {
   VStack(spacing: 14) {
     ForEach(SalahWidgetTheme.allPresets, id: \.id) { theme in
-      WidgetPreviewContainer(snapshot: themedIdle(theme), size: .medium)
+      WidgetPreviewContainer(display: themedIdle(theme), size: .medium)
     }
   }
   .padding(20)

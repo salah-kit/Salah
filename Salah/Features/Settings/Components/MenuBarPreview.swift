@@ -1,4 +1,4 @@
-import Adhan
+import SalahCore
 import SwiftUI
 
 struct MenuBarPreview: View {
@@ -61,9 +61,9 @@ struct MenuBarPreview: View {
   private var previewName: String {
     switch prefs.nextPrayerDisplayName {
     case .full:
-      return Prayer.isha.localizedName(on: Date(), locale: previewLocale)
+      return PrayerNames(locale: previewLocale).name(of: .isha)
     case .abbreviation:
-      return Prayer.isha.abbreviation(on: Date(), locale: previewLocale)
+      return PrayerNames(locale: previewLocale).abbreviation(of: .isha)
     case .none:
       return ""
     }

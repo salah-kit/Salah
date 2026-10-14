@@ -1,5 +1,5 @@
-import Adhan
 import Foundation
+import SalahCore
 
 /// Generates `Baselines/README.md` and `Baselines/index.json` from the catalog, so
 /// the index always matches the images. Record mode writes them; compare mode checks
@@ -100,7 +100,7 @@ enum BaselineIndex {
     add("# Visual baselines")
     add()
     add(
-      "PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. A2 first recorded them from the imported Guidance app (`4bc00e9` plus test seams), before the rebrand; the folder's `git log` shows every later re-record. B2 re-recorded them after the rebrand: only the 36 setup and stale widget faces changed, the two whose message names the app. D1 re-renders them after the move onto SalahKit and diffs its renders against these files. This index is generated with the images by the same test: don't edit it by hand."
+      "PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. They were first recorded from the app before it moved onto SalahKit, and kept through the move: the faces now draw from SalahKit's schedule, state and formatting, and every image still matches the earlier render within the comparison below. The folder's `git log` shows every re-record. This index is generated with the images by the same test: don't edit it by hand."
     )
     add()
     add("## Re-render or check")
@@ -112,7 +112,7 @@ enum BaselineIndex {
     add("```")
     add()
     add(
-      "The first renders every image but the Arabic menu dropdown; the second, whose `-testLanguage ar` replaces the scheme's language pin, renders only the Arabic dropdown (below). In the salah-kit workspace, run them through `orchestration/heavy.sh` and add `-derivedDataPath .derived`. Without the `TEST_RUNNER_SALAH_RECORD_BASELINES=1` prefix the same commands compare every render with its PNG, fail on any difference and leave the new render in `.baseline-failures/`. After a re-render, `git status SalahTests/Baselines` lists what changed."
+      "The first renders every image but the Arabic menu dropdown; the second, whose `-testLanguage ar` replaces the scheme's language pin, renders only the Arabic dropdown (below). Without the `TEST_RUNNER_SALAH_RECORD_BASELINES=1` prefix the same commands compare every render with its PNG, fail on any difference and leave the new render in `.baseline-failures/`. After a re-render, `git status SalahTests/Baselines` lists what changed."
     )
     add()
     add("## How they're rendered")
@@ -121,7 +121,7 @@ enum BaselineIndex {
       "- SwiftUI `ImageRenderer` at scale \(BaselineRenderer.scale) (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized."
     )
     add(
-      "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no snapshot to take a language from: the extension shows it in English whatever the language."
+      "- Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no settings to take a language from: the extension shows it in the device's language, here US English, whatever the language set in the app."
     )
     add(
       "- Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages."
@@ -133,7 +133,7 @@ enum BaselineIndex {
       "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `SalahWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off."
     )
     add(
-      "- Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale faces mirror the extension shell's first two branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
+      "- Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
     )
     add("- The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.")
     add(
@@ -143,22 +143,21 @@ enum BaselineIndex {
     add("## Fixture")
     add()
     add(
-      "The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the Nocturne theme. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). Adhan 1.4.0 gives:"
+      "The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the Nocturne theme. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):"
     )
     add()
     add("| Day | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |")
     add("|---|---|---|---|---|---|---|")
     for offset in 0...1 {
-      let times = Fixture.prayerTimes(dayOffset: offset)
-      let row = [times.fajr, times.sunrise, times.dhuhr, times.asr, times.maghrib, times.isha]
-        .map { String(clock($0).suffix(5)) }
-      add("| \(clock(times.dhuhr).prefix(10)) | \(row.joined(separator: " | ")) |")
+      let day = Fixture.day(dayOffset: offset)
+      let row = PrayerKind.allCases.map { String(clock(day[$0]!.time).suffix(5)) }
+      add("| \(day.day) | \(row.joined(separator: " | ")) |")
     }
     add()
     add("## Spec states: `widget/` and `menu/`")
     add()
     add(
-      "The states the widget spec's verification plan lists (`Guidance/docs/superpowers/specs/2026-06-02-prayer-widget-living-schedule-design.md:318`), built by the app's real snapshot builder from the fixture. The images show what the app renders; where that departs from the spec (silent count-up, setup face), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
+      "The states the widget's design spec lists for verification, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. The images show what the app renders; where that departs from the spec (silent count-up), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
     )
     add()
     add("| State | Spec | Moment (Riyadh) | Setup |")

@@ -1,15 +1,25 @@
-import Adhan
 import AppKit
 import Foundation
 import OSLog
+import SalahCore
+import SalahWidgets
 
+/// The running app's prayer state: the schedule the preferences describe, its state now,
+/// the menu-bar text, the alerts, and the App Group mirror the widget builds from.
 @Observable
 final class PrayerManager {
-  var yesterdayPrayerTimes: PrayerTimes?
-  var prayerTimes: PrayerTimes?
-  var tomorrowPrayerTimes: PrayerTimes?
-  var currentPrayer: Prayer?
-  var nextPrayer: Prayer?
+  /// The settings the widget mirror holds, rebuilt from the preferences.
+  private(set) var settings: SalahSettings
+  /// The schedule the settings describe.
+  private(set) var schedule: PrayerSchedule
+  /// The schedule's state at the last update.
+  private(set) var state: ScheduleState
+  /// The listed day at the last update: the owning day that is today's date in the
+  /// location's zone, or why the schedule can't give it.
+  private(set) var day: PrayerDayAvailability
+  /// The last listed day the schedule could give. While today's isn't available the
+  /// dropdown shows it marked as last known, never as today's.
+  private(set) var lastKnownDay: PrayerDayAvailability?
   var statusBarText: String = ""
 
   let preferences = Preferences.shared
@@ -17,35 +27,47 @@ final class PrayerManager {
   let reachability = ReachabilityMonitor()
   let audioPlaybackController: AudioPlaybackController
 
-  private let alertScheduler: PrayerAlertScheduler
+  private let alerts: PrayerAlertCoordinator
+  private let mirror: WidgetMirror
+  /// The widget's Stop button. Kept for the app's lifetime: releasing it stops delivery.
+  private var stopObservation: DarwinSignal.Observation?
   private var timer: Timer?
   /// A lightweight 1-second timer that refreshes ONLY the menu-bar text while it
   /// shows a sub-minute value (the last minute before a prayer, the first minute
-  /// of a count-up). It never touches alerts or the widget snapshot - those stay
-  /// on the aligned 60-second `timer` - and it stops itself once the value is no
-  /// longer sub-minute, so the per-second cadence lasts only the ~60s it matters.
+  /// of a count-up). It never touches alerts or the widget - those stay on the
+  /// aligned 60-second `timer` - and it stops itself once the value is no longer
+  /// sub-minute, so the per-second cadence lasts only the ~60s it matters.
   private var secondTimer: Timer?
   private var notificationObservers: [NSObjectProtocol] = []
-  private var currentDay: DateComponents
+  private var currentDay: CivilDay
 
   init(audioPlaybackController: AudioPlaybackController = AudioPlaybackController()) {
     self.audioPlaybackController = audioPlaybackController
-    alertScheduler = PrayerAlertScheduler(audioPlaybackController: audioPlaybackController)
+    alerts = PrayerAlertCoordinator(audio: audioPlaybackController)
+    mirror = WidgetMirror()
 
-    var cal = Calendar(identifier: .gregorian)
-    cal.timeZone = TimeZone(identifier: Preferences.shared.storedTimeZone) ?? .current
-    currentDay = cal.dateComponents([.year, .month, .day], from: Date())
+    let settings = Preferences.shared.mirroredSettings
+    let schedule = settings.schedule
+    let now = Date()
+    self.settings = settings
+    self.schedule = schedule
+    day = schedule.day(containing: now)
+    state = schedule.state(
+      at: now, through: now.addingTimeInterval(SalahDisplay.lookahead), policy: SalahDisplay.policy)
+    currentDay = CivilDay(containing: now, in: settings.location.timeZone)
+
     calculatePrayerTimes()
+    // The mirror holds the settings from launch on; nothing plays yet. The explicit
+    // reload gives a widget whose timeline ran out ("Open Salah to update") a new one.
+    mirror.start(preferences: preferences)
+    mirror.publish(playback: currentPlayback)
+    mirror.reloadWidgets()
     startTimer()
     observeNotifications()
 
-    SalahWidgetCommandObserver.shared.start(
-      stopAudio: { [weak self] in
-        self?.audioPlaybackController.stop()
-      },
-      publishWidgetSnapshot: { [weak self] in
-        self?.publishWidgetSnapshot(reload: true)
-      })
+    stopObservation = DarwinSignal.stopAudio.observe { [weak self] in
+      self?.stopFromWidget()
+    }
 
     // When the network returns, re-run any pending reverse-geocode so a stale
     // city label (from a failed geocode while offline) self-heals. Prayer times
@@ -74,16 +96,14 @@ final class PrayerManager {
   }
 
   private func handleTick() {
-    let cal = prayerCalendar
-    let today = cal.dateComponents([.year, .month, .day], from: Date())
-    if today.day != currentDay.day || today.month != currentDay.month
-      || today.year != currentDay.year
-    {
-      currentDay = today
+    if CivilDay(containing: Date(), in: settings.location.timeZone) != currentDay {
       calculatePrayerTimes()
+    } else {
+      updateCurrentPrayer()
     }
-    updateCurrentPrayer()
-    alertScheduler.checkPendingAlerts()
+    // A safety net under the engine's own wake-ups, as the old scheduler's minute
+    // check was; an alert already reported isn't reported again.
+    alerts.resync()
     alignTimerToNextMinute()
     refreshSecondTimer()
   }
@@ -104,8 +124,8 @@ final class PrayerManager {
     else { return false }
     let now = Date()
     if let countUp = menuBarCountUp, now.timeIntervalSince(countUp.time) < 60 { return true }
-    guard nextPrayer != .sunrise, let next = nextPrayerTime else { return false }
-    let delta = next.timeIntervalSince(now)
+    guard let next = state.prayerState?.next, next.kind != .sunrise else { return false }
+    let delta = next.time.timeIntervalSince(now)
     return delta > 0 && delta <= 60
   }
 
@@ -166,13 +186,14 @@ final class PrayerManager {
       })
     notificationObservers.append(
       // Scope to this manager's own audio controller so previewing a sound in
-      // Settings (a separate controller) can't trigger spurious widget reloads.
+      // Settings (a separate controller) never reaches the widget.
       nc.addObserver(
         forName: .salahAudioPlaybackStateDidChange, object: audioPlaybackController,
         queue: .main
       ) { [weak self] _ in
         Task { @MainActor in
-          self?.publishWidgetSnapshot(reload: true)
+          guard let self else { return }
+          self.mirror.publish(playback: self.currentPlayback)
         }
       })
     notificationObservers.append(
@@ -187,28 +208,19 @@ final class PrayerManager {
           self?.locationManager.stopUpdating()
         }
       })
-    notificationObservers.append(
-      nc.addObserver(forName: NSNotification.Name.NSSystemClockDidChange, object: nil, queue: .main)
-      { [weak self] _ in
-        Task { @MainActor in
-          self?.refreshAfterPossibleMissedAlert()
-        }
-      })
-    notificationObservers.append(
-      nc.addObserver(
-        forName: NSNotification.Name.NSSystemTimeZoneDidChange, object: nil, queue: .main
-      ) { [weak self] _ in
-        Task { @MainActor in
-          self?.refreshAfterPossibleMissedAlert()
-        }
-      })
-    notificationObservers.append(
-      nc.addObserver(forName: NSApplication.willBecomeActiveNotification, object: nil, queue: .main)
-      { [weak self] _ in
-        Task { @MainActor in
-          self?.refreshAfterPossibleMissedAlert()
-        }
-      })
+    // A clock or time-zone change, becoming active and waking from sleep can each
+    // skip past an alert: the engine catches up first, then everything is replanned.
+    for name in [
+      NSNotification.Name.NSSystemClockDidChange, .NSSystemTimeZoneDidChange,
+      NSApplication.willBecomeActiveNotification,
+    ] {
+      notificationObservers.append(
+        nc.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+          Task { @MainActor in
+            self?.refreshAfterPossibleMissedAlert()
+          }
+        })
+    }
     notificationObservers.append(
       NSWorkspace.shared.notificationCenter.addObserver(
         forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
@@ -219,8 +231,10 @@ final class PrayerManager {
       })
   }
 
-  private func refreshAfterPossibleMissedAlert() {
-    alertScheduler.checkPendingAlerts()
+  /// Catches up on alerts a clock change or sleep skipped, then replans from the new
+  /// time.
+  func refreshAfterPossibleMissedAlert() {
+    alerts.resync()
     calculatePrayerTimes()
   }
 
@@ -244,140 +258,67 @@ final class PrayerManager {
     }
   }
 
+  /// The widget's Stop button: stop, then confirm the stopped state in the App Group,
+  /// whatever the widget's own optimistic write left there.
+  private func stopFromWidget() {
+    audioPlaybackController.stop()
+    mirror.publish(playback: currentPlayback)
+  }
+
   // MARK: - Calculation
 
+  /// Rebuilds the schedule from the preferences, updates the state and the menu bar,
+  /// and replans every alert.
   func calculatePrayerTimes() {
-    let coords = Coordinates(latitude: preferences.latitude, longitude: preferences.longitude)
-    let cal = prayerCalendar
-    let now = Date()
-    currentDay = cal.dateComponents([.year, .month, .day], from: now)
-
-    guard let window = Self.alertWindowDays(around: now, calendar: cal) else { return }
-    let (yesterday, yesterdayComponents) = window.yesterday
-    let (today, todayComponents) = window.today
-    let (tomorrow, tomorrowComponents) = window.tomorrow
-
-    let yesterdayParameters = calculationParameters(for: yesterday)
-    let todayParameters = calculationParameters(for: today)
-    let tomorrowParameters = calculationParameters(for: tomorrow)
-
-    let yesterdayTimes = PrayerTimes(
-      coordinates: coords,
-      date: yesterdayComponents,
-      calculationParameters: yesterdayParameters
-    )
-    let todayTimes = PrayerTimes(
-      coordinates: coords,
-      date: todayComponents,
-      calculationParameters: todayParameters
-    )
-    let tomorrowTimes = PrayerTimes(
-      coordinates: coords,
-      date: tomorrowComponents,
-      calculationParameters: tomorrowParameters
-    )
-
-    // Adhan's PrayerTimes init is failable (e.g. an extreme high latitude with
-    // no resolvable transit). Keep the last good times rather than blanking the
-    // UI; surface a one-time notice only if there were never any times to show.
-    if let todayTimes {
-      prayerTimes = todayTimes
-      FailureReporter.shared.clearNotice(.prayerCalc)
-    } else {
-      let hadTimes = prayerTimes != nil
-      let lat = preferences.latitude
-      let lng = preferences.longitude
-      AppLog.prayer.error(
-        "PrayerTimes unavailable for (\(lat, privacy: .public), \(lng, privacy: .public))")
-      if !hadTimes {
-        FailureReporter.shared.report(
-          PrayerCalcFailure.timesUnavailable(latitude: lat, longitude: lng),
-          waiting: false, domain: .prayerCalc)
-      }
-    }
-    if let yesterdayTimes { yesterdayPrayerTimes = yesterdayTimes }
-    if let tomorrowTimes { tomorrowPrayerTimes = tomorrowTimes }
-
-    alertScheduler.scheduleNotifications(
-      for: [yesterdayPrayerTimes, prayerTimes, tomorrowPrayerTimes].compactMap(\.self),
-      formattedTime: formattedTime(for:)
-    )
-
+    settings = preferences.mirroredSettings
+    schedule = settings.schedule
+    currentDay = CivilDay(containing: Date(), in: settings.location.timeZone)
     updateCurrentPrayer()
-    publishWidgetSnapshot(reload: true)
-  }
-
-  /// The days `calculatePrayerTimes` computes and hands to the alert scheduler:
-  /// yesterday, today and tomorrow in the prayer calendar, each as the start of
-  /// the day and the components Adhan takes. Static so tests can pin the window.
-  static func alertWindowDays(around now: Date, calendar cal: Calendar) -> (
-    yesterday: (Date, DateComponents), today: (Date, DateComponents),
-    tomorrow: (Date, DateComponents)
-  )? {
-    let todayComponents = cal.dateComponents([.year, .month, .day], from: now)
-
-    guard
-      let today = cal.date(from: todayComponents),
-      let yesterday = cal.date(byAdding: .day, value: -1, to: today),
-      let tomorrow = cal.date(byAdding: .day, value: 1, to: today)
-    else { return nil }
-
-    let yesterdayComponents = cal.dateComponents([.year, .month, .day], from: yesterday)
-    let tomorrowComponents = cal.dateComponents([.year, .month, .day], from: tomorrow)
-    return (
-      (yesterday, yesterdayComponents), (today, todayComponents), (tomorrow, tomorrowComponents)
-    )
-  }
-
-  private func calculationParameters(for date: Date) -> CalculationParameters {
-    var params = preferences.calculationMethod.params
-    params.madhab = preferences.madhab
-    params.highLatitudeRule = preferences.highLatitudeRule
-
-    params.adjustments = PrayerAdjustments(
-      fajr: preferences.fajrAdjustment,
-      sunrise: preferences.shuruqAdjustment,
-      dhuhr: preferences.dhuhrAdjustment,
-      asr: preferences.asrAdjustment,
-      maghrib: preferences.maghribAdjustment,
-      isha: preferences.ishaAdjustment
-    )
-
-    if params.method == .other {
-      params.fajrAngle = preferences.customFajrAngle
-      params.ishaAngle = preferences.customIshaAngle
-    }
-
-    applyDelayedIshaIfNeeded(to: &params, on: date)
-    return params
-  }
-
-  private func applyDelayedIshaIfNeeded(to params: inout CalculationParameters, on date: Date) {
-    guard params.ishaInterval > 0, preferences.delayedIshaInRamadan else { return }
-
-    var hijriCal = Calendar(identifier: .islamicUmmAlQura)
-    hijriCal.timeZone = storedTimeZone
-    let adjustedDate = displayFormatter.adjustedHijriDate(for: date)
-    if hijriCal.component(.month, from: adjustedDate) == 9 {
-      params.ishaInterval = 120
-    }
+    alerts.update(schedule: schedule)
   }
 
   private func updateCurrentPrayer() {
     let now = Date()
-    currentPrayer = prayerTimes?.currentPrayer(at: now)
-    nextPrayer = prayerTimes?.nextPrayer(at: now)
+    day = schedule.day(containing: now)
+    state = schedule.state(
+      at: now, through: now.addingTimeInterval(SalahDisplay.lookahead), policy: SalahDisplay.policy)
+    switch day {
+    case .available:
+      lastKnownDay = day
+      FailureReporter.shared.clearNotice(.prayerCalc)
+    case .unavailable(let reason):
+      // Not a time-out to wait on: the same coordinates give the same answer, so it's
+      // surfaced once, non-modally, until the place changes.
+      let location = settings.location
+      AppLog.prayer.error(
+        "No prayer times for (\(location.latitude, privacy: .public), \(location.longitude, privacy: .public)): \(reason.rawValue, privacy: .public)"
+      )
+      FailureReporter.shared.report(
+        PrayerCalcFailure.timesUnavailable(
+          latitude: location.latitude, longitude: location.longitude),
+        waiting: false, domain: .prayerCalc)
+    }
     updateStatusBarText()
-    publishWidgetSnapshot(reload: false)
+  }
+
+  /// What a surface shows at `now`: the current settings, the schedule's state then
+  /// and what's playing.
+  func display(at now: Date) -> SalahDisplay {
+    SalahDisplay(date: now, settings: settings, schedule: schedule, playback: currentPlayback)
+  }
+
+  /// What the prayer-alert controller is playing, as the widget shows it.
+  var currentPlayback: SalahPlayback? {
+    SalahPlayback(audioPlaybackController.state)
   }
 
   // MARK: - Preference-driven refresh
 
-  /// The single consumer of `.salahPreferencesDidChange`. Each effect does
-  /// the minimum work it needs, and the cheap effects are never gated behind the
-  /// expensive ones - in particular the language re-geocode runs detached, so a
-  /// slow / throttled / offline reverse-geocode can't stall the visible widget +
-  /// menu-bar refresh (the bug where switching language left the widgets stale).
+  /// The single consumer of `.salahPreferencesDidChange` in the app (the widget
+  /// mirror listens on its own). Each effect does the minimum work it needs, and the
+  /// cheap effects are never gated behind the expensive ones - in particular the
+  /// language re-geocode runs detached, so a slow / throttled / offline
+  /// reverse-geocode can't stall the visible menu-bar refresh.
   private func applyPreferenceRefresh(_ effects: PreferenceRefresh) {
     if effects.contains(.audioRuntime) {
       applyNotificationRuntimePreferences()
@@ -393,16 +334,24 @@ final class PrayerManager {
     if effects.contains(.prayerTimes) {
       calculatePrayerTimes()
     } else if !effects.isDisjoint(with: [.display, .localization]) {
-      refreshDisplayOnly()
+      refreshDisplayOnly(languageChanged: effects.contains(.localization))
     }
   }
 
-  /// Rebuild the widget snapshot + menu-bar text from the current prayer times,
-  /// without recomputing them - for display-only changes (menu-bar format,
-  /// location label, hijri offset, widget theme, language strings).
-  private func refreshDisplayOnly() {
+  /// Refreshes the menu bar for a display-only change (menu-bar format, location
+  /// label, Hijri offset, widget theme, language). The Hijri offset also moves
+  /// Ramadan's delayed Isha, and the language the alerts' wording, so either replans.
+  private func refreshDisplayOnly(languageChanged: Bool) {
+    let updated = preferences.mirroredSettings
+    if updated.calculation != settings.calculation || updated.location != settings.location {
+      calculatePrayerTimes()
+      return
+    }
+    settings = updated
+    if languageChanged {
+      alerts.update(schedule: schedule)
+    }
     updateStatusBarText()
-    publishWidgetSnapshot(reload: true)
   }
 
   // MARK: - Status Bar
@@ -414,36 +363,33 @@ final class PrayerManager {
     }
 
     let now = Date()
+    let names = PrayerNames(locale: .app)
 
-    // Iqama count-up: for 15 minutes after an alerted prayer fires, lead with
-    // that prayer's elapsed time ("Dhuhr +12m") before handing back to the next
-    // prayer's countdown - matching the widgets. Countdown style only; Sunrise
-    // excluded (see `menuBarCountUp`).
+    // Iqama count-up: for 15 minutes after a prayer starts, lead with that prayer's
+    // elapsed time ("Dhuhr +12m") before handing back to the next prayer's
+    // countdown - matching the widgets. Countdown style only; Sunrise excluded (see
+    // `menuBarCountUp`).
     if let countUp = menuBarCountUp {
-      let name = nameComponent(for: countUp.prayer)
+      let name = nameComponent(for: countUp, names: names)
       let elapsed = displayFormatter.countUp(from: countUp.time, to: now)
       statusBarText = joinStatus(name, elapsed)
       return
     }
 
-    let prayer = nextPrayer
-    let time: Date? = {
-      if let p = prayer {
-        return prayerTimes?.time(for: p)
-      }
-      return tomorrowPrayerTimes?.fajr
-    }()
+    // The schedule doesn't know what comes next (a time the calculation can't give
+    // here today): say so rather than invent one.
+    guard let next = state.prayerState?.next else {
+      statusBarText = "–"
+      return
+    }
 
-    let displayPrayer = prayer ?? .fajr
-    let name = nameComponent(for: displayPrayer)
-
+    let name = nameComponent(for: next, names: names)
     let timeComponent: String = {
-      guard let time else { return "" }
       switch preferences.nextPrayerDisplayType {
       case .timeUntil:
-        return displayFormatter.countdown(from: now, to: time)
+        return displayFormatter.countdown(from: now, to: next.time)
       case .timeOfPrayer:
-        return displayFormatter.compactTime(for: time)
+        return displayFormatter.compactTime(for: next.time)
       case .none:
         return ""
       }
@@ -452,10 +398,10 @@ final class PrayerManager {
     statusBarText = joinStatus(name, timeComponent)
   }
 
-  private func nameComponent(for prayer: Prayer) -> String {
+  private func nameComponent(for event: PrayerEvent, names: PrayerNames) -> String {
     switch preferences.nextPrayerDisplayName {
-    case .full: return prayer.localizedName
-    case .abbreviation: return prayer.abbreviation
+    case .full: return names.name(of: event)
+    case .abbreviation: return names.abbreviation(of: event)
     case .none: return ""
     }
   }
@@ -473,32 +419,8 @@ final class PrayerManager {
     displayFormatter.fullTime(for: date)
   }
 
-  // MARK: - Hijri Date
-
-  var hijriDay: String {
-    displayFormatter.hijriDay()
-  }
-
-  var hijriMonth: String {
-    displayFormatter.hijriMonth()
-  }
-
-  var hijriYear: String {
-    displayFormatter.hijriYear()
-  }
-
-  private var prayerCalendar: Calendar {
-    var calendar = Calendar(identifier: .gregorian)
-    calendar.timeZone = storedTimeZone
-    return calendar
-  }
-
-  private var storedTimeZone: TimeZone {
-    TimeZone(identifier: preferences.storedTimeZone) ?? .current
-  }
-
   private var displayFormatter: PrayerDisplayFormatter {
-    PrayerDisplayFormatter(timeZone: storedTimeZone, hijriOffset: preferences.hijriOffset)
+    PrayerDisplayFormatter(timeZone: settings.location.timeZone)
   }
 }
 
@@ -529,35 +451,16 @@ extension PrayerManager {
     // bar matches the widget. Countdown style only (see `menuBarCountUp`).
     if menuBarCountUp != nil { return .playingPrayerAudio }
 
-    // Imminent red in the 15 min before the next prayer - but never before
-    // Sunrise, which is not an alerted prayer.
-    if nextPrayer == .sunrise { return .normal }
-    guard let nextPrayerTime else {
-      return .normal
-    }
-
-    let timeUntilPrayer = nextPrayerTime.timeIntervalSince(Date())
-    return timeUntilPrayer >= 0 && timeUntilPrayer <= 15 * 60.0 ? .imminent : .normal
+    // Imminent red in the 15 min before the next prayer - never before Sunrise,
+    // which is not one.
+    return state.prayerState?.isApproaching == true ? .imminent : .normal
   }
 
-  /// The just-fired alerted prayer leading the 15-minute count-up, with its time,
-  /// or nil. Countdown style only (clock-time style is unaffected); Sunrise
-  /// excluded since it is not an alerted prayer (no green count-up after it).
-  var menuBarCountUp: (prayer: Prayer, time: Date)? {
+  /// The prayer that just started, leading the 15-minute count-up, or nil. Countdown
+  /// style only (clock-time style is unaffected); Sunrise is never one, since it isn't
+  /// a prayer.
+  var menuBarCountUp: PrayerEvent? {
     guard preferences.nextPrayerDisplayType == .timeUntil else { return nil }
-    guard let current = currentPrayer, current != .sunrise,
-      let time = prayerTimes?.time(for: current)
-    else { return nil }
-    let elapsed = Date().timeIntervalSince(time)
-    // `< 15m` (not `<=`) so the count-up ends exactly at the 15-minute mark,
-    // matching the widget's `focus(at:)` boundary.
-    return (elapsed >= 0 && elapsed < 15 * 60) ? (current, time) : nil
-  }
-
-  private var nextPrayerTime: Date? {
-    if let nextPrayer {
-      return prayerTimes?.time(for: nextPrayer)
-    }
-    return tomorrowPrayerTimes?.fajr
+    return state.prayerState?.justStarted
   }
 }

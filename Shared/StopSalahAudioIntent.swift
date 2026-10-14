@@ -1,24 +1,23 @@
 import AppIntents
 import Foundation
+import SalahWidgets
 
 /// Backs the widget's "tap to stop" action. As a plain `AppIntent`, its
 /// `perform()` runs in the widget-extension process, which can't touch the app's
-/// audio directly - so it writes the App-Group command flag and posts a Darwin
-/// notification that the always-running app observes
-/// (`SalahWidgetCommandObserver`) to stop `AudioPlaybackController`.
-/// It also clears the stored active-alert snapshot before the reload request so
-/// WidgetKit never refreshes from stale "still playing" data.
+/// audio directly - so it clears what's playing in the App Group, which reloads the
+/// widget, and posts `DarwinSignal.stopAudio`, which the running app observes to stop
+/// `AudioPlaybackController` and confirm by saving what's playing again.
 ///
-/// (Was an `AudioPlaybackIntent`, chosen hoping the system would run it in-app;
-/// in practice it ran in the extension, so the in-process flag the observer
-/// gated on wasn't visible there and Stop silently no-op'd. A plain `AppIntent`
-/// plus acting on the cross-process Darwin notification is the reliable path.)
+/// The app acts on the signal, not on the cleared value: the value reaches the app's
+/// process through the preferences daemon, which can lag behind the signal.
+/// (The intent was once an `AudioPlaybackIntent`, chosen hoping the system would run
+/// it in-app; it ran in the extension, so an in-process flag the app gated on wasn't
+/// visible there and Stop silently no-op'd.)
 ///
-/// Marked `nonisolated` (along with the `SalahWidgetStore` /
-/// `SalahWidgetConstants` it touches) so it conforms cleanly under the app
-/// target's `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` - `AppIntent`'s
-/// requirements are nonisolated. It's an interactive button intent, so it
-/// coexists with the `StaticConfiguration` widget.
+/// Marked `nonisolated` so it conforms cleanly under the app target's
+/// `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` - `AppIntent`'s requirements are
+/// nonisolated. It's an interactive button intent, so it coexists with the
+/// `StaticConfiguration` widget.
 nonisolated struct StopSalahAudioIntent: AppIntent {
   static var title: LocalizedStringResource { "Stop Adhan" }
   static var description: IntentDescription {
@@ -26,7 +25,11 @@ nonisolated struct StopSalahAudioIntent: AppIntent {
   }
 
   func perform() async throws -> some IntentResult {
-    SalahWidgetStore.requestStopAudio()
+    // The widget redraws without the Stop control at once; the app's confirmation
+    // follows when it has stopped.
+    _ = try? SharedValue.playback.save(
+      nil, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+    DarwinSignal.stopAudio.post()
     return .result()
   }
 }

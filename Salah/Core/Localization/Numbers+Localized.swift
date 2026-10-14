@@ -10,8 +10,5 @@ extension Int {
   }
 }
 
-extension String {
-  var bidiIsolated: String {
-    "\u{2068}\(self)\u{2069}"
-  }
-}
+// `String.bidiIsolated` lives in Shared/SalahText.swift, which the widget extension
+// compiles too.

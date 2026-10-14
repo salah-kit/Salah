@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppLanguage: String, Codable, CaseIterable {
+nonisolated enum AppLanguage: String, Codable, CaseIterable, Sendable {
   case system
   case english
   case arabic
@@ -89,7 +89,7 @@ enum AppLanguage: String, Codable, CaseIterable {
 
 // MARK: - Display helpers
 
-extension AppLanguage {
+nonisolated extension AppLanguage {
   /// All concrete language cases (excludes `.system`). Source of truth the
   /// picker iterates over so adding a new language is a single enum case.
   static var concreteCases: [AppLanguage] {

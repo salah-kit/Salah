@@ -5,21 +5,23 @@ import SwiftUI
 /// menu bar keeps the schedule visible and offers a real Stop button beside the
 /// playing state, tinted by the slot tone.
 struct MenuStopCard: View {
-  let activeAlert: SalahWidgetActiveAlert
+  let title: String
+  let subtitle: String
+  let tone: SalahWidgetTone
   let labels: SalahWidgetLabels
   let colors: SalahWidgetColors
   let onStop: () -> Void
 
-  private var tone: Color { activeAlert.slot.tone.color(colors) }
+  private var toneColor: Color { tone.color(colors) }
 
   var body: some View {
     HStack(spacing: 12) {
       VStack(alignment: .leading, spacing: 3) {
-        Text(verbatim: activeAlert.title)
+        Text(verbatim: title)
           .font(.system(.subheadline, design: .serif, weight: .semibold))
           .lineLimit(1)
           .minimumScaleFactor(0.6)
-        Text(verbatim: activeAlert.subtitle)
+        Text(verbatim: subtitle)
           .font(.caption2)
           .foregroundStyle(.secondary)
           .lineLimit(1)
@@ -34,9 +36,9 @@ struct MenuStopCard: View {
         .font(.caption.weight(.semibold))
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
-        .background(Capsule().fill(tone.opacity(0.18)))
-        .overlay(Capsule().strokeBorder(tone.opacity(0.55), lineWidth: 1))
-        .foregroundStyle(tone)
+        .background(Capsule().fill(toneColor.opacity(0.18)))
+        .overlay(Capsule().strokeBorder(toneColor.opacity(0.55), lineWidth: 1))
+        .foregroundStyle(toneColor)
         .contentShape(Capsule())
       }
       .buttonStyle(.plain)
@@ -45,6 +47,6 @@ struct MenuStopCard: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(12)
-    .salahHeroCard(toneColor: tone, accent: colors.accent)
+    .salahHeroCard(toneColor: toneColor, accent: colors.accent)
   }
 }

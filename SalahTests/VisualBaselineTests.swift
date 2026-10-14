@@ -1,4 +1,5 @@
 import Foundation
+import SalahCore
 import SwiftUI
 import Testing
 
@@ -79,10 +80,10 @@ struct VisualBaselineTests {
     #expect(found == expected)
   }
 
-  /// The setup face has no snapshot to take a language from: the extension shows it
-  /// under the sample snapshot's locale, so it's English whatever the app's language,
+  /// The setup face has no settings to take a language from: the extension shows it in
+  /// the device's language, so it's the same whatever language the app is set to,
   /// although the extension's catalog has the message in Arabic and French.
-  @Test func setupFaceIsEnglishInEveryLanguage() throws {
+  @Test func setupFaceFollowsTheDeviceNotTheApp() throws {
     let messages = try ["en", "ar", "fr"].map {
       try ExtensionCatalog.string("widget.openToSetUp", localeIdentifier: $0)
     }
@@ -167,34 +168,34 @@ struct VisualBaselineTests {
 
   /// The fixture moments land in the states they name.
   @Test func specStateMomentsShowTheirStates() throws {
-    func snapshot(_ state: SpecState) -> SalahWidgetSnapshot {
-      BaselinePipeline.snapshot(for: state, language: .en)
+    func display(_ state: SpecState) -> SalahDisplay {
+      BaselinePipeline.display(for: state, language: .en)
     }
-    func focus(_ state: SpecState) -> SalahWidgetSnapshot.Focus? {
-      snapshot(state).focus(at: BaselinePipeline.moment(for: state))
-    }
-    #expect(focus(.idle).map { if case .countdown(let p) = $0 { p.id } else { "" } } == "asr")
-    #expect(snapshot(.imminent).tone(at: BaselinePipeline.moment(for: .imminent)) == .imminent)
-    #expect(focus(.countUp).map { if case .countUp(let p) = $0 { p.id } else { "" } } == "dhuhr")
+    func focus(_ state: SpecState) -> SalahDisplay.Focus? { display(state).focus }
+    #expect(focus(.idle) == .countdown(Fixture.event(.asr)))
+    #expect(display(.imminent).tone == .imminent)
+    #expect(focus(.countUp) == .countUp(Fixture.event(.dhuhr)))
+    #expect(display(.countUpSilent).backgroundTone == .silent)
+    let overlap = display(.countUpImminent)
+    #expect(overlap.focus == .countUp(Fixture.event(.maghrib, ishaAdjustment: -78)))
+    #expect(overlap.tone == .imminent)
+    #expect(focus(.endOfDay) == .countdown(Fixture.event(.fajr, dayOffset: 1)))
+    #expect(display(.endOfDay).focusIsTomorrow)
+    #expect(display(.playingAdhan).playback?.slot == .alert)
+    #expect(display(.playingPreReminder).playback?.slot == .preReminder)
+    #expect(display(.playingPostReminder).playback?.slot == .postReminder)
+    #expect(display(.silent).settings.silentMode)
+    // The stale face is the expired entry: the moment is past the fixture day.
     #expect(
-      snapshot(.countUpSilent).backgroundTone(at: BaselinePipeline.moment(for: .countUpSilent))
-        == .silent)
-    let overlap = snapshot(.countUpImminent)
-    #expect(
-      focus(.countUpImminent).map { if case .countUp(let p) = $0 { p.id } else { "" } } == "maghrib"
+      BaselinePipeline.moment(for: .stale) > Fixture.civilDay(offset: 1).start(in: Fixture.timeZone)
     )
-    #expect(overlap.tone(at: BaselinePipeline.moment(for: .countUpImminent)) == .imminent)
-    #expect(focus(.endOfDay).map { if case .tomorrow(let p) = $0 { p.id } else { "" } } == "fajr")
-    #expect(snapshot(.playingAdhan).activeAlert?.slot == .alert)
-    #expect(snapshot(.playingPreReminder).activeAlert?.slot == .preReminder)
-    #expect(snapshot(.playingPostReminder).activeAlert?.slot == .postReminder)
-    #expect(snapshot(.silent).silentMode)
-    #expect(snapshot(.stale).isStale(at: BaselinePipeline.moment(for: .stale)))
     // No state sits within a minute of a prayer, where the views switch to the
     // system's live timer text, which reads the real clock.
     for state in SpecState.allCases where state != .stale && state != .setupNeeded {
       let moment = BaselinePipeline.moment(for: state)
-      let times = snapshot(state).prayers.map(\.time) + [snapshot(state).tomorrowFajr!.time]
+      let times =
+        Fixture.day(ishaAdjustment: state.ishaAdjustment).events.map(\.time)
+        + [Fixture.time(.fajr, dayOffset: 1)]
       #expect(times.allSatisfy { abs($0.timeIntervalSince(moment)) > 60 }, "\(state)")
     }
   }

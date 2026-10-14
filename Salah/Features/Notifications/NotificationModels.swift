@@ -1,5 +1,5 @@
-import Adhan
 import Foundation
+import SalahCore
 
 // MARK: - Per-Prayer Notification Config
 
@@ -69,7 +69,7 @@ struct PrayerNotificationConfig: Codable, Equatable {
       try container.decodeIfPresent(AdhanSound.self, forKey: .postReminderSound) ?? .system
   }
 
-  static func defaultConfig(for prayer: Prayer) -> PrayerNotificationConfig {
+  static func defaultConfig(for prayer: PrayerKind) -> PrayerNotificationConfig {
     switch prayer {
     case .fajr:
       return PrayerNotificationConfig(
@@ -97,7 +97,7 @@ struct PrayerNotificationConfig: Codable, Equatable {
   /// to the Fajr adhan.
   static var initialSettings: [String: PrayerNotificationConfig] {
     Dictionary(
-      uniqueKeysWithValues: Prayer.allCases.map { prayer in
+      uniqueKeysWithValues: PrayerKind.allCases.map { prayer in
         var config = defaultConfig(for: prayer)
         if prayer == .sunrise {
           config.alertSound = .fajr
@@ -363,17 +363,10 @@ enum AdhanSound: Codable, Equatable, Hashable {
 
 // MARK: - Prayer Helpers
 
-extension Prayer {
+extension PrayerKind {
+  /// The key of Friday Dhuhr's own settings, used while the Jumu'ah override is on.
   static let jumuahSettingsKey = "jumuah"
 
-  var settingsKey: String {
-    switch self {
-    case .fajr: "fajr"
-    case .sunrise: "sunrise"
-    case .dhuhr: "dhuhr"
-    case .asr: "asr"
-    case .maghrib: "maghrib"
-    case .isha: "isha"
-    }
-  }
+  /// The key of the prayer's settings in `notificationSettings`: its raw value.
+  var settingsKey: String { rawValue }
 }

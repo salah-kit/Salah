@@ -1,12 +1,13 @@
+import SalahCore
 import SwiftUI
 
 /// The hero countdown / count-up, refined for the in-process menu bar. Like the
 /// widget's (private) `RelativeTime` it stays calm at minute resolution - a static
-/// `RelativeDurationFormatter` string advanced by the dropdown's minute timeline -
+/// `PrayerDurationFormat` string advanced by the dropdown's minute timeline -
 /// and drops to Apple's per-second system timer text inside the final minute (and
 /// a count-up's first minute), which ticks on its own off the system clock with no
 /// re-render of the schedule. Mirrors `RelativeTime` (which is file-private to the
-/// widget) using the public `RelativeDurationFormatter`, with one menu-bar tweak:
+/// widget) using SalahCore's `PrayerDurationFormat`, with one menu-bar tweak:
 /// the threshold is `<= 60`, so the minute-aligned timeline entry that lands one
 /// minute out already shows the live-ticking final minute instead of a static "1m".
 struct MenuLiveCountdown: View {
@@ -42,8 +43,8 @@ struct MenuLiveCountdown: View {
       } else {
         // A minute or more out: the calm, static, timeline-advanced string.
         Text(
-          verbatim: RelativeDurationFormatter.string(
-            seconds: magnitude, direction: countingUp ? .up : .down, locale: locale))
+          verbatim: PrayerDurationFormat.string(
+            magnitude, direction: countingUp ? .elapsed : .remaining, locale: locale))
       }
     }
     .font(bold ? font.weight(.bold) : font)

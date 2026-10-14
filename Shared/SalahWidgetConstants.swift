@@ -2,9 +2,10 @@ import Foundation
 
 /// Shared constants used by both the Salah app target and the WidgetKit extension.
 ///
-/// These three strings are the only "contract" the two targets need to agree on:
-/// the App Group they share, the kind the timeline reloads target, and the
-/// Darwin notification name the Stop button uses to reach the running app.
+/// These strings are the only "contract" the two targets need to agree on: the App
+/// Group they share, the keys of the values the app mirrors there, the kind the
+/// timeline reloads target, and the signal the Stop button uses to reach the running
+/// app.
 ///
 /// `nonisolated` so these constants stay reachable from the widget's
 /// `nonisolated` `AppIntent.perform()`; the app target's
@@ -17,9 +18,13 @@ nonisolated enum SalahWidgetConstants {
   static let appGroupID = "group.io.github.salah-kit.Salah"
 
   static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
-  static let snapshotDefaultsKey = "SalahWidgetSnapshot.v1"
-  static let stopAudioCommandDefaultsKey = "SalahWidgetStopAudioCommand.v1"
-  static let stopAudioDarwinNotification = "io.github.salah-kit.Salah.widget.stopAudio"
+  /// The settings mirror (`SalahSettings`). The version is in the key: a change to the
+  /// value's shape takes a new key.
+  static let settingsKey = "SalahSettings.v1"
+  /// What's playing (`SalahPlayback`), or nothing.
+  static let playbackKey = "SalahPlayback.v1"
+  /// The widget's Stop button posts this signal; the running app stops playback.
+  static let stopAudioSignal = "io.github.salah-kit.Salah.widget.stopAudio"
 
   /// Tap target for the widget. A menu-bar (`LSUIElement`) app can't open its
   /// `MenuBarExtra` popover via URL, so the widget routes taps to the Settings

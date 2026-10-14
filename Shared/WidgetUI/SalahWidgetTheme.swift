@@ -1,68 +1,16 @@
 import Foundation
+import SalahUI
 
-/// An sRGB color stored as plain components so it round-trips through `Codable`
-/// and renders the identical shade in the installed widget and the in-app live
-/// preview. The SwiftUI `Color` accessor lives in the design-system file; this
-/// type stays Foundation-only so `SalahWidgetSnapshot` can carry a theme
-/// without importing SwiftUI.
-nonisolated struct SalahColorSpec: Codable, Equatable, Sendable {
-  var red: Double
-  var green: Double
-  var blue: Double
-  var opacity: Double
+/// An sRGB color stored as plain components, so it round-trips through `Codable` and
+/// renders the identical shade in the installed widget and the in-app live preview.
+/// SalahUI's `ThemeColor` is the same value, with the contrast math of the custom-theme
+/// guardrails (`ContrastCheck`).
+typealias SalahColorSpec = ThemeColor
 
+nonisolated extension ThemeColor {
+  /// A color from sRGB components, as the theme tables write them.
   init(_ red: Double, _ green: Double, _ blue: Double, _ opacity: Double = 1) {
-    self.red = red
-    self.green = green
-    self.blue = blue
-    self.opacity = opacity
-  }
-}
-
-// MARK: - Contrast / separation math (pure, for the custom-theme guardrails)
-
-nonisolated extension SalahColorSpec {
-  /// WCAG relative luminance.
-  var relativeLuminance: Double {
-    func lin(_ v: Double) -> Double { v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
-    return 0.2126 * lin(red) + 0.7152 * lin(green) + 0.0722 * lin(blue)
-  }
-
-  /// WCAG contrast ratio between two colors (1…21).
-  static func contrastRatio(_ a: SalahColorSpec, _ b: SalahColorSpec) -> Double {
-    let la = a.relativeLuminance
-    let lb = b.relativeLuminance
-    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
-  }
-
-  /// Hue-preserving luminance nudge: lighten (on a dark surface) or darken (on a
-  /// light one) until this color clears `ratio` against `surface`, or it bottoms
-  /// out. Used by "Fix contrast".
-  func adjustedForContrast(against surface: SalahColorSpec, ratio target: Double = 4.5)
-    -> SalahColorSpec
-  {
-    if Self.contrastRatio(self, surface) >= target { return self }
-    let towardLight = surface.relativeLuminance < 0.5
-    var best = self
-    for step in 1...20 {
-      let t = Double(step) / 20.0
-      let candidate = SalahColorSpec(
-        red + (towardLight ? (1 - red) : -red) * t,
-        green + (towardLight ? (1 - green) : -green) * t,
-        blue + (towardLight ? (1 - blue) : -blue) * t,
-        opacity)
-      best = candidate
-      if Self.contrastRatio(candidate, surface) >= target { break }
-    }
-    return best
-  }
-
-  /// Rough perceptual distance (0…~1.4) for the functional-hue separation check.
-  func distance(to other: SalahColorSpec) -> Double {
-    let dr = red - other.red
-    let dg = green - other.green
-    let db = blue - other.blue
-    return (dr * dr + dg * dg + db * db).squareRoot()
+    self.init(red: red, green: green, blue: blue, opacity: opacity)
   }
 }
 

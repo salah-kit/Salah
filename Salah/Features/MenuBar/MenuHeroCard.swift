@@ -1,30 +1,31 @@
+import SalahCore
 import SwiftUI
 
-/// The inline expanded focus in the menu-bar living schedule - the next prayer's
-/// calm count-down, a just-fired prayer's green count-up, or the end-of-day
+/// The inline expanded focus in the menu-bar living schedule - the next event's
+/// calm count-down, a just-started prayer's green count-up, or the end-of-day
 /// Tomorrow card. Mirrors the widget's (private) `ActiveCardView` large layout on
 /// the shared `salahHeroCard` surface, refined for the menu bar: a live-ticking
 /// countdown, an alert toggle for the focused prayer, and a gentle imminent pulse
 /// (gated on Reduce Motion).
 struct MenuHeroCard: View {
-  let focus: SalahWidgetSnapshot.Focus
-  let snapshot: SalahWidgetSnapshot
+  let focus: SalahDisplay.Focus
+  let display: SalahDisplay
   let colors: SalahWidgetColors
-  let date: Date
-  /// Toggles the focused prayer's alert; nil for the Tomorrow card.
+  /// Toggles the focused prayer's alert; nil for the Tomorrow card and sunrise.
   var onToggleAlert: (() -> Void)? = nil
 
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var pulsing = false
 
-  private var labels: SalahWidgetLabels { snapshot.labels }
-  private var prayer: SalahWidgetPrayer { focus.prayer }
+  private var labels: SalahWidgetLabels { display.labels }
+  private var event: PrayerEvent { focus.event }
+  private var date: Date { display.date }
+  private var alertEnabled: Bool { display.alerts(for: event).alert }
 
   private var tone: SalahWidgetTone {
     switch focus {
     case .countUp: return .playingPrayerAudio  // green
-    case .countdown: return snapshot.tone(at: date)  // normal / imminent
-    case .tomorrow: return .normal
+    case .countdown: return isTomorrow ? .normal : display.tone  // normal / imminent
     }
   }
   private var toneColor: Color { tone.color(colors) }
@@ -32,14 +33,8 @@ struct MenuHeroCard: View {
     if case .countdown = focus { return tone == .imminent }
     return false
   }
-  private var isCountUp: Bool {
-    if case .countUp = focus { return true }
-    return false
-  }
-  private var isTomorrow: Bool {
-    if case .tomorrow = focus { return true }
-    return false
-  }
+  private var isCountUp: Bool { focus.isCountUp }
+  private var isTomorrow: Bool { display.focusIsTomorrow }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
@@ -77,9 +72,9 @@ struct MenuHeroCard: View {
       Spacer(minLength: 8)
       if let onToggleAlert, !isTomorrow {
         Button(action: onToggleAlert) {
-          Image(systemName: prayer.alertEnabled ? "bell.fill" : "bell.slash")
+          Image(systemName: alertEnabled ? "bell.fill" : "bell.slash")
             .font(.caption)
-            .foregroundStyle(prayer.alertEnabled ? colors.accent : Color.secondary)
+            .foregroundStyle(alertEnabled ? colors.accent : Color.secondary)
             .frame(width: 22, height: 22)
             .contentShape(Rectangle())
         }
@@ -87,20 +82,20 @@ struct MenuHeroCard: View {
         .menuPointerCursor()
         .help(Text(verbatim: alertToggleLabel))
         .accessibilityLabel(Text(verbatim: alertToggleLabel))
-        .accessibilityValue(Text(verbatim: prayer.alertEnabled ? labels.alertOn : labels.alertOff))
+        .accessibilityValue(Text(verbatim: alertEnabled ? labels.alertOn : labels.alertOff))
       }
     }
   }
 
   private var nameRow: some View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
-      Text(verbatim: prayer.name)
+      Text(verbatim: display.name(of: event))
         .font(.system(.title2, design: .serif, weight: .bold))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       Spacer(minLength: 6)
       Label {
-        Text(verbatim: prayer.timeText).lineLimit(1).minimumScaleFactor(0.8)
+        Text(verbatim: display.timeText(of: event)).lineLimit(1).minimumScaleFactor(0.8)
       } icon: {
         Image(systemName: "clock")
       }
@@ -120,7 +115,7 @@ struct MenuHeroCard: View {
           .accessibilityHidden(true)
       }
       MenuLiveCountdown(
-        target: prayer.time, reference: date, color: toneColor,
+        target: event.time, reference: date, color: toneColor,
         font: .system(size: 30, weight: .semibold), bold: isImminent, countingUp: isCountUp)
     }
     .accessibilityElement(children: .ignore)
@@ -129,7 +124,7 @@ struct MenuHeroCard: View {
 
   @ViewBuilder
   private var reminderRow: some View {
-    if !isCountUp, let detail = prayer.reminderDetailText {
+    if !isCountUp, let detail = display.reminderDetail(for: event) {
       Label {
         Text(verbatim: detail).lineLimit(1).minimumScaleFactor(0.7)
       } icon: {
@@ -144,18 +139,17 @@ struct MenuHeroCard: View {
   // MARK: Labels
 
   private var alertToggleLabel: String {
-    "\(prayer.name) · \(localizedString("settings.notif.alert.toggle"))"
+    "\(display.name(of: event)) · \(localizedString("settings.notif.alert.toggle"))"
   }
 
   /// A spelled-out duration for VoiceOver (the visible timer is the abbreviated
-  /// "1:24"), with localized digits via the snapshot locale.
+  /// "1:24"), in the display's locale.
   private var countdownAccessibilityLabel: String {
-    let duration = RelativeDurationFormatter.string(
-      seconds: abs(prayer.time.timeIntervalSince(date)),
-      direction: isCountUp ? .up : .down, locale: snapshot.resolvedLocale)
+    let duration = PrayerDurationFormat.string(
+      abs(event.time.timeIntervalSince(date)), width: .spoken, locale: display.locale)
     if isCountUp {
-      return "\(prayer.name) · \(labels.since) \(duration)"
+      return "\(display.name(of: event)) · \(labels.since) \(duration)"
     }
-    return "\(prayer.name) · \(duration) \(labels.remaining)"
+    return "\(display.name(of: event)) · \(duration) \(labels.remaining)"
   }
 }

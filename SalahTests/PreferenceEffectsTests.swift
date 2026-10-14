@@ -1,5 +1,5 @@
-import Adhan
 import Foundation
+import SalahCore
 import Testing
 
 /// Characterizes the refresh effects a preference change posts on

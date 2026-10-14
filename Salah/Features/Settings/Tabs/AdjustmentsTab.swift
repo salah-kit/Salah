@@ -1,4 +1,5 @@
-import Adhan
+import SalahCalculation
+import SalahTimes
 import SwiftUI
 
 struct AdjustmentsContent: View {
@@ -20,7 +21,7 @@ struct AdjustmentsContent: View {
       }
     }
 
-    if prefs.calculationMethod.params.ishaInterval > 0 {
+    if hasIntervalIsha {
       Section {
         Toggle("settings.adj.delayedIsha", isOn: $prefs.delayedIshaInRamadan)
       } header: {
@@ -42,5 +43,13 @@ struct AdjustmentsContent: View {
     } footer: {
       Text("settings.adj.offsetsFooter")
     }
+  }
+
+  /// Whether the method's Isha is an interval after Maghrib, the only kind the
+  /// Ramadan delay changes.
+  private var hasIntervalIsha: Bool {
+    let isha = prefs.calculationChoices.calculationSettings.parameters.isha
+    if case .minutesAfterMaghrib(let minutes) = isha { return minutes > 0 }
+    return false
   }
 }
