@@ -27,10 +27,12 @@ Salah's first release, 1.0.0, is in preparation.
 - Characterization tests and 450 visual baselines of the widget faces and the menu-bar
   dropdown, in English, Arabic and French, light and dark.
 - UI tests that drive the real app: its status item, menu-bar dropdown, Settings link
-  and About panel.
+  and About panel, and an alert turned on and off in Settings, which the running app
+  replans.
 - Real-app tests (`SalahRoundTripTests`, with `SalahStopHarness` standing in for the
   widget extension): the widget's stop round trip, the stop signal alone, an alert
-  missed while the app was frozen as during sleep, and a changed alert setting.
+  missed while the app was frozen as during sleep, a reminder missed past its grace,
+  and a changed alert setting at the next launch.
 
 ### Changed
 
@@ -46,7 +48,8 @@ Salah's first release, 1.0.0, is in preparation.
   - The widget builds its own timelines in the extension, from settings the app mirrors
     into the App Group, so it stays right when Salah isn't running and crosses midnight;
     a timeline that runs out before WidgetKit asks for another shows "Open Salah to
-    update" instead of an old countdown.
+    update" instead of an old countdown, and opening Salah, or waking the Mac, asks for
+    a new one. The Stop control shows only while a sound can still be playing.
   - The state comes from SalahCore: before Fajr the small widget shows the time since
     the previous night's Isha, and where the next prayer's time can't be calculated the
     menu bar shows "–" and the widget and dropdown say so, without a countdown. A prayer
@@ -56,6 +59,7 @@ Salah's first release, 1.0.0, is in preparation.
     so a changed time replaces its request; the next two days' alerts and reminders come
     first, then prayer-time alerts up to two weeks ahead; and every alert, reminders the
     system plan leaves out included, still plays while Salah runs, caught up after sleep.
+    A clock set back past an alert doesn't deliver it again.
   - Rows and the focus are SalahUI's `PrayerTimesList` and `NextPrayerView` in Salah's
     own styles; the custom theme's guardrails are SalahUI's `ContrastCheck`.
   - Countdowns use SalahCore's durations: the same in English, Arabic and French;
@@ -64,6 +68,8 @@ Salah's first release, 1.0.0, is in preparation.
 - The setup face of a widget placed before Salah first runs follows the device's
   language.
 - VoiceOver reads the dropdown's countdown in words.
+- Custom twilight angles stay within 1 to 30 degrees and per-prayer adjustments within a
+  day either way, the range the calculation accepts.
 - Rebranded from Guidance: bundle identifiers `io.github.salah-kit.Salah` and
   `io.github.salah-kit.Salah.Widgets`, App Group `group.io.github.salah-kit.Salah`,
   the `salah://` deep link, Salah's notification identifiers, logging subsystem and
