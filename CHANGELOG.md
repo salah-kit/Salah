@@ -20,6 +20,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- The Settings sidebar reads the app version from bundle metadata, so it stays aligned
+  with the About panel after an update.
 - A clock rollback into the engine's early-report window no longer requests an already
   handled alert again, including on later ordinary refreshes. The package retains the
   exclusion; ordinary wake and activation replans keep new early requests pending.
