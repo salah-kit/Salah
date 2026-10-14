@@ -519,7 +519,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -532,7 +532,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -545,7 +545,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -558,7 +558,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -571,7 +571,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -584,7 +584,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -1484,7 +1484,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1497,7 +1497,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1510,7 +1510,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -1523,7 +1523,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -1536,7 +1536,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -1549,7 +1549,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -2449,7 +2449,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2462,7 +2462,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2475,7 +2475,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -2488,7 +2488,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -2501,7 +2501,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -2514,7 +2514,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -3414,7 +3414,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3427,7 +3427,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3440,7 +3440,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -3453,7 +3453,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -3466,7 +3466,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -3479,7 +3479,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -4379,7 +4379,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4392,7 +4392,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4405,7 +4405,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -4418,7 +4418,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -4431,7 +4431,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -4444,7 +4444,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -5344,7 +5344,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -5357,7 +5357,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -5370,7 +5370,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "no published snapshot: the extension's setup entry (sample data, English in every language), at Dhuhr + 60 min",
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
       "state" : "setupNeeded",
       "surface" : "widget"
     },
@@ -5383,7 +5383,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -5396,7 +5396,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },
@@ -5409,7 +5409,7 @@
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "the fixture day's snapshot shown at 00:10 the next day",
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
       "state" : "stale",
       "surface" : "widget"
     },

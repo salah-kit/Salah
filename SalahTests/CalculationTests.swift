@@ -7,7 +7,8 @@ import Testing
 /// Salah's calculation on SalahCalculation: what its settings mean in SalahTimes'
 /// parameters, the times they give at the fixture, the delayed Ramadan Isha and the
 /// Jumu'ah Salah declares. The comparison with the old adhan-swift times over many
-/// places and methods is a separate harness (the release notes link its report).
+/// places and methods ran outside these tests (the 1.0.0 release notes summarize it);
+/// SalahKit's `docs/calculation-parity.md` explains every difference.
 @Suite("Calculation")
 struct CalculationTests {
   init() { TestEnvironment.configure() }
