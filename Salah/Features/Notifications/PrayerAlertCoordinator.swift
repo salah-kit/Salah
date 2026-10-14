@@ -83,10 +83,6 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// the schedule, the alert settings or the language change, and after a wake or a
   /// clock change.
   func update(schedule: PrayerSchedule) {
-    update(schedule: schedule, excluding: [])
-  }
-
-  private func update(schedule: PrayerSchedule, excluding priorHandled: Set<AlertOccurrenceID>) {
     let now = clock.now
     schedulerTime.follow(now)
     let alerts: AlertSchedule
@@ -107,9 +103,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       "planned alerts=\(alerts.alerts.count, privacy: .public) gaps=\(alerts.gaps.count, privacy: .public)"
     )
     // The installation first: alerts the engine reports due at once are posted after it.
-    let excluded = Set(engine.handledOccurrences.filter { now < $0.value }.keys)
-      .union(priorHandled)
-    install(planner.notificationPlan(alerts, from: now, excluding: excluded))
+    install(
+      planner.notificationPlan(alerts, from: now, excluding: engine.notificationExclusions(at: now))
+    )
     engine.update(alerts)
   }
 
@@ -118,9 +114,10 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// alert caught up is posted rather than skipped as still pending and then removed.
   func catchUp(schedule: PrayerSchedule, afterClockChange: Bool = false) {
     // A clock-change event can land after an early report but before its fire date.
-    // Snapshot before checking for newly due alerts; those must keep pending requests.
-    let priorHandled = afterClockChange ? Set(engine.handledOccurrences.keys) : []
-    update(schedule: schedule, excluding: priorHandled)
+    // Retain exclusions before checking for newly due alerts; those keep pending requests.
+    // The engine carries this state across later settings, wake and activation replans.
+    if afterClockChange { engine.excludeHandledOccurrencesFromNotifications() }
+    update(schedule: schedule)
     resync()
   }
 

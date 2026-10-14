@@ -21,7 +21,8 @@ All notable changes to this project are documented here. The format follows
 ### Fixed
 
 - A clock rollback into the engine's early-report window no longer requests an already
-  handled alert again. Ordinary wake and activation replans keep early requests pending.
+  handled alert again, including on later ordinary refreshes. The package retains the
+  exclusion; ordinary wake and activation replans keep new early requests pending.
 
 ## [1.0.0] - 2026-10-14
 

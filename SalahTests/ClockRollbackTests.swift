@@ -42,6 +42,14 @@ struct ClockRollbackTests {
     #expect(!rig.pendingIdentifiers.contains(identifier))
     #expect(rig.center.posted.count == 1)  // Only the simulated system delivery above.
     #expect(rig.audio.plays.count == 1)
+
+    // Refreshes after the clock event must not restore that delivered occurrence.
+    await rig.update()
+    #expect(!rig.pendingIdentifiers.contains(identifier))
+    await rig.wake(at: fire.addingTimeInterval(-0.5))
+    #expect(!rig.pendingIdentifiers.contains(identifier))
+    #expect(rig.center.posted.count == 1)
+    #expect(rig.audio.plays.count == 1)
   }
 
   @Test func newlyReportedEarlyOccurrenceKeepsItsPendingRequestOnWake() async {
@@ -55,4 +63,24 @@ struct ClockRollbackTests {
     #expect(rig.pendingIdentifiers.contains(PrayerAlertCoordinatorTests.identifier(.asr, .atTime)))
     #expect(rig.center.posted.isEmpty)
   }
+
+  @Test func newlyReportedEarlyOccurrenceKeepsItsPendingRequestOnClockChange() async {
+    let fire = Fixture.event(.asr).time
+    let rig = PrayerAlertCoordinatorTests.Harness(
+      now: fire.addingTimeInterval(-60), settings: [.asr: .alert(sound: .makkah)],
+      othersOff: true)
+    await rig.update()
+    rig.clock.now = fire.addingTimeInterval(-1)
+    rig.coordinator.catchUp(schedule: Fixture.schedule(), afterClockChange: true)
+    await rig.settle()
+    let identifier = PrayerAlertCoordinatorTests.identifier(.asr, .atTime)
+    #expect(rig.audio.plays.count == 1)
+    #expect(rig.pendingIdentifiers.contains(identifier))
+    await rig.update()
+    #expect(rig.pendingIdentifiers.contains(identifier))
+    await rig.wake(at: fire.addingTimeInterval(-1))
+    #expect(rig.pendingIdentifiers.contains(identifier))
+    #expect(rig.center.posted.isEmpty)
+  }
+
 }

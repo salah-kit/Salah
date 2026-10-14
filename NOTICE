@@ -39,7 +39,7 @@ release. The MIT License of this repository does not cover them.
 
 LINKED CODE
 
-SalahKit 0.2.0 (https://github.com/salah-kit/SalahKit) and SalahTimes 0.1.0
+SalahKit 0.4.0 (https://github.com/salah-kit/SalahKit) and SalahTimes 0.1.0
 (https://github.com/salah-kit/SalahTimes), fetched by Swift Package Manager and linked
 into the app and its widget extension: prayer-time calculation, the schedule, widget
 timelines, alerts and UI building blocks. They are the salah-kit ecosystem's own
