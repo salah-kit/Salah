@@ -1,8 +1,8 @@
 import Foundation
 import SalahCalculation
 import SalahCore
-import SalahUI
 import SalahTimes
+import SalahUI
 import SalahWidgets
 import Testing
 
