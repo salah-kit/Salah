@@ -54,6 +54,11 @@ nonisolated struct SalahPlayback: Codable, Equatable, Sendable {
     date < alertDate.addingTimeInterval(Self.longestPlay)
   }
 
+  /// This playback while it can still be playing at `date`, else `nil`.
+  func playing(at date: Date) -> SalahPlayback? {
+    mayBePlaying(at: date) ? self : nil
+  }
+
   /// The tone the playing state draws in.
   var tone: SalahWidgetTone {
     switch slot {

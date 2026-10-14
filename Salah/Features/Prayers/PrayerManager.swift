@@ -247,8 +247,8 @@ final class PrayerManager {
   /// skipped, and gives the widget a new timeline: one that ran out while the Mac slept
   /// shows "Open Salah to update", and opening Salah lands here.
   func refreshAfterPossibleMissedAlert() {
-    calculatePrayerTimes()
-    alerts.resync()
+    rebuildSchedule()
+    alerts.catchUp(schedule: schedule)
     mirror.reloadWidgets()
   }
 
@@ -286,11 +286,16 @@ final class PrayerManager {
   /// Rebuilds the schedule from the preferences, updates the state and the menu bar,
   /// and replans every alert.
   func calculatePrayerTimes() {
+    rebuildSchedule()
+    alerts.update(schedule: schedule)
+  }
+
+  /// The schedule, the state and the menu bar, from the preferences; not the alerts.
+  private func rebuildSchedule() {
     settings = preferences.mirroredSettings
     schedule = settings.schedule
     currentDay = CivilDay(containing: Date(), in: settings.location.timeZone)
     updateCurrentPrayer()
-    alerts.update(schedule: schedule)
   }
 
   private func updateCurrentPrayer() {
@@ -306,10 +311,14 @@ final class PrayerManager {
     case .unavailable(let reason):
       // Not a time-out to wait on: the same coordinates give the same answer, so it's
       // surfaced once, non-modally, until the place changes. The minute's tick lands
-      // here too: log only a new cause.
+      // here too: report only a new cause, or the same one again once another notice
+      // has taken its place.
       let location = settings.location
       let cause = UnavailableCause(location: location, reason: reason)
-      guard cause != reportedUnavailable else { break }
+      guard
+        cause != reportedUnavailable
+          || FailureReporter.shared.currentNotice?.domain != .prayerCalc
+      else { break }
       reportedUnavailable = cause
       AppLog.prayer.error(
         "No prayer times for (\(location.latitude, privacy: .private), \(location.longitude, privacy: .private)): \(reason.rawValue, privacy: .public)"

@@ -110,8 +110,8 @@ Two things follow on the Mac you run them on:
 - With `-salah.debug.scratchPreferences` (Debug builds only), the app keeps the
   preferences it was launched with in a scratch suite, so this Mac's own Salah
   preferences are untouched. What remains is the App Group's mirrored settings from the
-  last test launch (Makkah, that test's alerts), until Salah runs again and publishes its
-  own.
+  last test launch (Makkah, a prayer moved by the test's adjustment, that test's
+  alerts), which a placed widget shows until Salah runs again and publishes its own.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.
@@ -126,8 +126,7 @@ due, then check the widget's stop round trip, the stop signal alone, an alert mi
 while the app was frozen as during sleep (caught up once) and a reminder missed past its
 grace (dropped), and that a changed alert setting replans at the next launch. They read
 the app's log with `log stream`, only the lines of the process they launched, so they
-run without a host app, outside any sandbox, and a Salah you have running can't answer
-for the one under test. They take about 15 minutes:
+run without a host app, outside any sandbox. They take about 15 minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
@@ -138,8 +137,10 @@ They need your team, like the UI tests, and CI only builds them. The app runs mu
 with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never asks for
 notification permission or sends Music an Apple Event, and with
 `-salah.debug.scratchPreferences`, so this Mac's own Salah preferences are untouched.
-Afterwards the App Group holds what the app last published (Makkah, the last test's
-alerts) until Salah runs again.
+Like the UI tests, they quit a Salah you have running, and leave it quit, so only the
+app under test alerts and publishes. Afterwards the App Group holds what the app last
+published (Makkah, a prayer moved by the last test's adjustment, its alerts), which a
+placed widget shows until Salah runs again.
 
 ### Visual baselines
 

@@ -77,11 +77,10 @@ struct PrayerAlertCoordinatorTests {
     }
 
     /// Moves the clock without firing the wake-up (a sleep or a clock change), then does
-    /// what the app does on wake: `update`, then `resync()`.
+    /// what the app does on wake: `catchUp(schedule:)`.
     func wake(at date: Date) async {
       clock.now = date
-      await update()
-      coordinator.resync()
+      coordinator.catchUp(schedule: Fixture.schedule())
       await settle()
     }
 
@@ -603,14 +602,15 @@ struct PrayerAlertCoordinatorTests {
     var testDescription: String { name }
   }
 
-  /// After a wake (or a clock change), the app's `update` then `resync()` catch up an
+  /// After a wake (or a clock change), the app's `catchUp(schedule:)` catches up an
   /// alert within its grace, once: five minutes for an at-time alert, two for a reminder,
   /// and a before-reminder never once its prayer has begun. Only Asr's alert under test
   /// is on. The system hasn't delivered the overdue request yet: the replan removes it,
   /// and the coordinator posts the alert it catches up, once.
   ///
-  /// Regression: with `resync()` first, the posting skipped the alert as still pending,
-  /// then the replan removed the request, so no banner showed at all.
+  /// Regression: the app caught up (`resync()`) before it replanned, so the posting
+  /// skipped the alert as still pending, then the replan removed the request, and no
+  /// banner showed at all.
   @Test(arguments: [
     WakeCase(name: "adhan 3 min late", kind: .atTime, lateness: 180, played: true),
     WakeCase(name: "adhan 5 min late", kind: .atTime, lateness: 300, played: true),

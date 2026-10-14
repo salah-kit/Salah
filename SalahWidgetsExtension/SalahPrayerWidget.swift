@@ -27,7 +27,9 @@ struct SalahPrayerWidgetProvider: TimelineProvider {
     if context.isPreview {
       completion(Self.entry(settings: settings ?? .sample, at: now))
     } else if let settings {
-      completion(Self.entry(settings: settings, playback: SharedValue.playback.load(), at: now))
+      completion(
+        Self.entry(
+          settings: settings, playback: SharedValue.playback.load()?.playing(at: now), at: now))
     } else {
       completion(SalahWidgetEntry(date: now, content: .setupNeeded))
     }

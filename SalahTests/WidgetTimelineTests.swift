@@ -148,6 +148,9 @@ struct WidgetTimelineTests {
     #expect(reminder.alertDate == Fixture.time(.maghrib).adding(minutes: -10))
     #expect(reminder.mayBePlaying(at: Fixture.time(.maghrib).adding(minutes: 19)))
     #expect(!reminder.mayBePlaying(at: Fixture.time(.maghrib).adding(minutes: 20)))
+    // The widget's snapshot reads it the same way.
+    #expect(reminder.playing(at: Fixture.time(.maghrib).adding(minutes: 19)) == reminder)
+    #expect(reminder.playing(at: Fixture.time(.maghrib).adding(minutes: 20)) == nil)
   }
 
   /// A timeline built long after the alert, from a value a crashed app left, shows no

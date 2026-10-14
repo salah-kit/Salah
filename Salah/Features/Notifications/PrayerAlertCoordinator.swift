@@ -116,10 +116,15 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     engine.update(alerts)
   }
 
-  /// Reports what's due now and re-arms the engine's wake-up. Call it on wake, after a
-  /// clock change and when the app becomes active, after replanning: the replan drops an
-  /// overdue request first, so an alert caught up is posted rather than skipped as still
-  /// pending and then removed.
+  /// After a wake, a clock change or the app becoming active: replans from the clock's
+  /// instant, then reports what's due. The replan drops an overdue request first, so an
+  /// alert caught up is posted rather than skipped as still pending and then removed.
+  func catchUp(schedule: PrayerSchedule) {
+    update(schedule: schedule)
+    resync()
+  }
+
+  /// Reports what's due now and re-arms the engine's wake-up.
   func resync() {
     engine.resync()
   }

@@ -1,3 +1,4 @@
+import AppKit
 import Darwin
 import Foundation
 import SalahCalculation
@@ -117,7 +118,9 @@ nonisolated final class LogRecorder: @unchecked Sendable {
 final class RunningApp {
   let process = Process()
 
+  /// Quits every Salah already running, then launches this one.
   init(arguments: [String]) throws {
+    Self.quitOthers()
     process.executableURL = Products.app
     process.arguments = arguments
     let inherited = ProcessInfo.processInfo.environment
@@ -130,6 +133,20 @@ final class RunningApp {
   }
 
   var isRunning: Bool { process.isRunning }
+
+  /// Quits every Salah already running, as the UI tests do, and waits until they're gone:
+  /// the app under test is then the only one that alerts and publishes to the App Group.
+  /// A signal, as `quit()` sends, needs no Apple Event and so no consent.
+  static func quitOthers() {
+    let running = NSRunningApplication.runningApplications(
+      withBundleIdentifier: "io.github.salah-kit.Salah"
+    ).map(\.processIdentifier)
+    for pid in running { kill(pid, SIGTERM) }
+    let deadline = Date().addingTimeInterval(10)
+    while Date() < deadline, running.contains(where: { kill($0, 0) == 0 }) {
+      Thread.sleep(forTimeInterval: 0.1)
+    }
+  }
 
   /// The app's process, whose log lines the tests read.
   var processID: Int32 { process.processIdentifier }

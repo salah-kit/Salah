@@ -74,7 +74,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       days[civilDay] = day
       return SalahDisplay(
         date: date, settings: settings, day: day, state: state,
-        playback: playback.flatMap { $0.mayBePlaying(at: date) ? $0 : nil })
+        playback: playback?.playing(at: date))
     }
 
     let planned: PrayerTimeline
