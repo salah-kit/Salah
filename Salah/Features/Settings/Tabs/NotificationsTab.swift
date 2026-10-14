@@ -323,6 +323,14 @@ struct NotificationsContent: View {
 
   @MainActor
   private func requestAuthorizationIfNeeded() async {
+    #if DEBUG
+      // The tests that drive this tab in the real app must never bring up a consent
+      // prompt: show the status, never ask.
+      if prefs.defaults.bool(forKey: DebugOptions.withoutSystemPromptsKey) {
+        await refreshAuthorizationStatus(rescheduleOnGrant: false)
+        return
+      }
+    #endif
     guard !permissionRequestInFlight, hasEnabledNotifications else {
       await refreshAuthorizationStatus(rescheduleOnGrant: false)
       return

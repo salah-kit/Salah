@@ -3,9 +3,19 @@ import Foundation
 #if DEBUG
   /// Launch options of Debug builds, for the tests that run the real app.
   enum DebugOptions {
-    /// `-salah.debug.withoutSystemPrompts YES`: never ask for notification permission and
-    /// never send Apple Events to pause Music, so a test run can't bring up a consent
-    /// prompt. Alerts still play in the app; macOS just isn't asked to deliver them.
+    /// `-salah.debug.withoutSystemPrompts YES`: skip everything that can bring up a
+    /// consent prompt, so a test run never shows one:
+    ///
+    /// - `PrayerAlertCoordinator` doesn't ask for notification permission before it
+    ///   installs a plan.
+    /// - The Settings window's Notifications tab doesn't ask either when an alert is on;
+    ///   it only reads and shows the current status.
+    /// - `AudioPlaybackController` doesn't send Music the Apple Event that pauses it while
+    ///   an alert plays.
+    ///
+    /// Nothing else changes: the app still installs the plan, posts due alerts and plays
+    /// their sounds. Without permission, macOS just doesn't schedule or show those
+    /// notifications.
     static let withoutSystemPromptsKey = "salah.debug.withoutSystemPrompts"
 
     /// `-salah.debug.scratchPreferences YES`: keep the preferences in a store of their own,
