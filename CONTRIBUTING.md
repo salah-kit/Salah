@@ -84,9 +84,15 @@ visual baselines depend on the machine's language list.
 
 `SalahUITests` launches the real app and checks its status item, the menu-bar dropdown,
 the `salah://settings` link a widget tap opens, the Settings window and the About panel.
-It builds and launches the app, so it needs your team in `Config/Local.xcconfig`. UI
-testing on macOS runs in Automation Mode; the first time, macOS may ask an administrator
-to allow it (`automationmodetool` shows whether it will):
+Two of them change an alert in Settings → Notifications and wait for its minute: they
+move a prayer about two minutes ahead with Salah's own adjustments, turn its alert on
+(the Alafasy adhan then plays at that minute) or off (nothing plays). They read what the
+app publishes in its App Group, as the widget does, so the test runner is signed with
+your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). It builds
+and launches the app, so it needs your team in `Config/Local.xcconfig`. UI testing on
+macOS runs in Automation Mode; the first time, macOS may ask an administrator to allow it
+(`automationmodetool` shows whether it will). The two alert tests take about five
+minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
@@ -95,14 +101,17 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'plat
 
 CI builds these tests but doesn't run them, because its runners have no team to sign
 the app with. The tests launch Salah under its real identity, without prompts: no
-automatic location, every alert off, English, the default menu-bar format. Two things
-follow on the Mac you run them on:
+automatic location, English, the default menu-bar format, every alert off but the one a
+test changes, and `-salah.debug.withoutSystemPrompts` for the alert tests (Debug builds
+only), so neither the app nor its Notifications tab asks for notification permission.
+Two things follow on the Mac you run them on:
 
 - They quit a running Salah, and leave it quit.
-- Salah saves the settings it was launched with. Afterwards your own Salah has
-  automatic location off; every alert off, set to the system sound, with its reminders
-  off; English as its language; and the default menu-bar format. Run them on a Mac where
-  you don't rely on Salah, or set it up again afterwards.
+- With `-salah.debug.scratchPreferences` (Debug builds only), the app keeps the
+  preferences it was launched with in a scratch suite, so this Mac's own Salah
+  preferences are untouched. What remains is the App Group's mirrored settings from the
+  last test launch (Makkah, that test's alerts), until Salah runs again and publishes its
+  own.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing, where it can't be clicked.

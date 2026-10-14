@@ -227,17 +227,26 @@ targets:
         SWIFT_VERSION: "6.0"
   # Drives the real app (XCUITest). It builds and launches the app, which opens its App
   # Group, so it needs a signing team (Config/Local.xcconfig) and has its own scheme: the
-  # Salah scheme's tests never build the app.
+  # Salah scheme's tests never build the app. Its runner is signed with the team into the
+  # same App Group, sandboxed, so the alert tests can read what the app publishes there.
   SalahUITests:
     type: bundle.ui-testing
     platform: macOS
     sources:
       - path: SalahUITests
+        excludes:
+          - SalahUITests.entitlements
+      # The launch arguments the real-app tests use, shared rather than copied.
+      - path: SalahRoundTripTests/LaunchArguments.swift
     dependencies:
       - target: Salah
+      - package: SalahKit
+        product: SalahCore
+      - package: SalahKit
+        product: SalahCalculation
     settings:
       base:
-        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_ENTITLEMENTS: SalahUITests/SalahUITests.entitlements
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: YES
         LD_RUNPATH_SEARCH_PATHS:
