@@ -3,9 +3,9 @@ import SalahUI
 import SwiftUI
 import Testing
 
-/// Measures the opaque color after SwiftUI resolves it against the composed widget
-/// backdrop and the menu/large-widget hero surface. Caption labels need 4.5:1, even
-/// when the theme's decorative accent passes the editor's large-text 3:1 floor.
+/// Measures the nominal ink after SwiftUI composites it onto the actual widget
+/// background and hero/capsule surface. Caption text needs 4.5:1 even when the
+/// decorative theme accent meets the editor's large-text 3:1 floor.
 @Suite("Small accent text contrast")
 struct SmallTextContrastTests {
   init() { TestEnvironment.configure() }
@@ -13,20 +13,20 @@ struct SmallTextContrastTests {
   @Test func smallAccentInkPassesComposedSurfaces() throws {
     for theme in SalahWidgetTheme.allPresets {
       for scheme in [ColorScheme.light, .dark] {
-        // The public contrast trait is read-only; this test-only backing key is
-        // present in the local SwiftUI interface and drives its actual renderer.
+        // The public trait is read-only; the local SwiftUI interface exposes its
+        // test-only backing key. Read back the public trait before measuring.
         for contrast in [ColorSchemeContrast.standard, .increased] {
           let colors = theme.colors(for: scheme)
-          let inkPNG = try BaselineRenderer.stablePNG {
-            Rectangle().fill(colors.accentText).frame(width: 8, height: 8)
-              .environment(\.colorScheme, scheme)
-              .environment(\._colorSchemeContrast, contrast)
-          }
-          let inkPixels = try #require(PixelComparison.rgba(inkPNG))
-          let ink = Self.color(inkPixels.bytes, at: 0)
+          let trait = try #require(
+            PixelComparison.rgba(
+              BaselineRenderer.stablePNG {
+                ContrastTraitReadback(expected: contrast)
+                  .environment(\._colorSchemeContrast, contrast)
+              }))
+          #expect(Array(trait.bytes.prefix(4)) == [255, 255, 255, 255])
           for tone in [SalahWidgetTone.normal, .imminent, .silent] {
             for hero in [false, true] {
-              func face(showsText: Bool) -> some View {
+              func face(showsText: Bool, paintsInk: Bool = false) -> some View {
                 VStack(alignment: .leading, spacing: 0) {
                   EyebrowLabel(text: "NEXT PRAYER", accent: colors.accentText)
                     .opacity(showsText ? 1 : 0)
@@ -44,12 +44,12 @@ struct SmallTextContrastTests {
                 .padding(.horizontal, 16)
                 .frame(width: 338, height: 354)
                 .background { SalahWidgetBackground(tone: tone, colors: colors) }
+                .overlay { if paintsInk { Rectangle().fill(colors.accentText) } }
                 .environment(\.colorScheme, scheme)
                 .environment(\._colorSchemeContrast, contrast)
               }
-              // Hide only the label ink, retaining its layout. The difference mask
-              // locates the real caption glyphs, so bright decorations elsewhere
-              // in a card cannot be confused with a background behind text.
+              // Hiding only the ink preserves layout. This mask finds actual
+              // caption glyphs; bright decoration elsewhere is not text background.
               let shown = try #require(
                 PixelComparison.rgba(
                   BaselineRenderer.stablePNG {
@@ -60,6 +60,11 @@ struct SmallTextContrastTests {
                   BaselineRenderer.stablePNG {
                     face(showsText: false)
                   }))
+              let painted = try #require(
+                PixelComparison.rgba(
+                  BaselineRenderer.stablePNG {
+                    face(showsText: false, paintsInk: true)
+                  }))
               var lowest = Double.infinity
               var glyphPixels = 0
               for offset in stride(from: 0, to: shown.bytes.count, by: 4) {
@@ -67,18 +72,15 @@ struct SmallTextContrastTests {
                   abs(Int(shown.bytes[offset + $0]) - Int(hidden.bytes[offset + $0])) > 2
                 }) {
                   glyphPixels += 1
-                  lowest = min(
-                    lowest, ThemeColor.contrastRatio(ink, Self.color(hidden.bytes, at: offset)))
+                  lowest = min(lowest, Self.contrast(painted.bytes, over: hidden.bytes, at: offset))
                 }
               }
               #expect(glyphPixels > 20, "The probe must observe actual caption glyphs")
               #expect(
-                lowest >= 4.5,
-                "\(theme.id) \(scheme) \(contrast) \(tone) hero=\(hero): \(lowest)")
+                lowest >= 4.5, "\(theme.id) \(scheme) \(contrast) \(tone) hero=\(hero): \(lowest)")
               print(
                 "small-text-contrast \(theme.id) \(scheme) \(contrast) \(tone) hero=\(hero): \(lowest)"
               )
-
             }
           }
         }
@@ -86,48 +88,43 @@ struct SmallTextContrastTests {
     }
   }
 
-  private static func color(_ bytes: [UInt8], at offset: Int) -> ThemeColor {
-    ThemeColor(
-      red: Double(bytes[offset]) / 255, green: Double(bytes[offset + 1]) / 255,
-      blue: Double(bytes[offset + 2]) / 255)
-  }
-
   @Test func silentModeInkPassesItsComposedCapsule() throws {
     for theme in SalahWidgetTheme.allPresets {
       for scheme in [ColorScheme.light, .dark] {
         for contrast in [ColorSchemeContrast.standard, .increased] {
           let colors = theme.colors(for: scheme)
-          let inkPNG = try BaselineRenderer.stablePNG {
-            Rectangle().fill(colors.accentText).frame(width: 8, height: 8)
-              .environment(\.colorScheme, scheme)
-              .environment(\._colorSchemeContrast, contrast)
-          }
-          let inkPixels = try #require(PixelComparison.rgba(inkPNG))
-          let ink = Self.color(inkPixels.bytes, at: 0)
-          // The footer's capsule is decorative accent at 18% over the dropdown
-          // background. Measure the interior behind its caption, clear of the rim.
-          let png = try BaselineRenderer.stablePNG {
+          // The footer uses this 18% decorative capsule. Keep its layout when
+          // hidden, then measure the interior behind its caption, clear of the rim.
+          func face(showsCapsule: Bool, paintsInk: Bool = false) -> some View {
             VStack {
               Spacer()
               HStack {
                 Capsule().fill(colors.accent.opacity(0.18)).frame(width: 74, height: 24)
+                  .opacity(showsCapsule ? 1 : 0)
                 Spacer()
               }
               .padding(16)
             }
             .frame(width: 338, height: 354)
             .background { SalahWidgetBackground(tone: .silent, colors: colors) }
+            .overlay { if paintsInk { Rectangle().fill(colors.accentText) } }
             .environment(\.colorScheme, scheme)
             .environment(\._colorSchemeContrast, contrast)
           }
-          let pixels = try #require(PixelComparison.rgba(png))
+          let pixels = try #require(
+            PixelComparison.rgba(
+              BaselineRenderer.stablePNG {
+                face(showsCapsule: true)
+              }))
           let bare = try #require(
             PixelComparison.rgba(
               BaselineRenderer.stablePNG {
-                SalahWidgetBackground(tone: .silent, colors: colors)
-                  .frame(width: 338, height: 354)
-                  .environment(\.colorScheme, scheme)
-                  .environment(\._colorSchemeContrast, contrast)
+                face(showsCapsule: false)
+              }))
+          let painted = try #require(
+            PixelComparison.rgba(
+              BaselineRenderer.stablePNG {
+                face(showsCapsule: true, paintsInk: true)
               }))
           var xs: [Int] = []
           var ys: [Int] = []
@@ -148,8 +145,7 @@ struct SmallTextContrastTests {
           for y in (top + 5)..<(bottom - 4) {
             for x in (left + 8)..<(right - 7) {
               let offset = (y * pixels.width + x) * 4
-              lowest = min(
-                lowest, ThemeColor.contrastRatio(ink, Self.color(pixels.bytes, at: offset)))
+              lowest = min(lowest, Self.contrast(painted.bytes, over: pixels.bytes, at: offset))
             }
           }
           #expect(lowest >= 4.5, "\(theme.id) \(scheme) \(contrast) silent capsule: \(lowest)")
@@ -157,5 +153,27 @@ struct SmallTextContrastTests {
         }
       }
     }
+  }
+
+  private static func contrast(_ painted: [UInt8], over surface: [UInt8], at offset: Int) -> Double
+  {
+    // PixelComparison stores premultipliedLast. Both layers must already be opaque:
+    // SwiftUI has composited the semantic ink, including its alpha, on this exact
+    // surface. This avoids assuming an encoded/linear sRGB blending convention.
+    #expect(painted[offset + 3] == 255 && surface[offset + 3] == 255)
+    func color(_ bytes: [UInt8]) -> ThemeColor {
+      ThemeColor(
+        red: Double(bytes[offset]) / 255, green: Double(bytes[offset + 1]) / 255,
+        blue: Double(bytes[offset + 2]) / 255)
+    }
+    return ThemeColor.contrastRatio(color(painted), color(surface))
+  }
+}
+
+private struct ContrastTraitReadback: View {
+  @Environment(\.colorSchemeContrast) private var contrast
+  let expected: ColorSchemeContrast
+  var body: some View {
+    Rectangle().fill(contrast == expected ? Color.white : Color.black).frame(width: 1, height: 1)
   }
 }
