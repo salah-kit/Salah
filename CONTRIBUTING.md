@@ -114,7 +114,7 @@ Two things follow on the Mac you run them on:
   own.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
-item behind the camera housing, where it can't be clicked.
+item behind the camera housing or in its overflow, where a click doesn't reach it.
 
 ### Real-app tests
 
@@ -124,9 +124,10 @@ Group, it runs the Stop intent's own code and reads back what the app stored. Th
 move a prayer a minute or two ahead with Salah's own adjustments, so a real alert comes
 due, then check the widget's stop round trip, the stop signal alone, an alert missed
 while the app was frozen as during sleep (caught up once) and a reminder missed past its
-grace (dropped), and that a changed alert setting replans. They read the app's log with
-`log stream`, so they run without a host app, outside any sandbox. They take about 15
-minutes:
+grace (dropped), and that a changed alert setting replans at the next launch. They read
+the app's log with `log stream`, only the lines of the process they launched, so they
+run without a host app, outside any sandbox, and a Salah you have running can't answer
+for the one under test. They take about 15 minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
@@ -135,9 +136,10 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
 
 They need your team, like the UI tests, and CI only builds them. The app runs muted and
 with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never asks for
-notification permission or sends Music an Apple Event. Afterwards Salah keeps the
-settings the last test launched it with (Makkah, every alert but one off, English), and
-the App Group holds what the app last published.
+notification permission or sends Music an Apple Event, and with
+`-salah.debug.scratchPreferences`, so this Mac's own Salah preferences are untouched.
+Afterwards the App Group holds what the app last published (Makkah, the last test's
+alerts) until Salah runs again.
 
 ### Visual baselines
 
