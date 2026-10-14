@@ -116,6 +116,7 @@ Salah's first release, as source.
   settings, the older stored sound and bookmark formats, and the widget snapshot
   Guidance wrote. Salah starts from its own defaults.
 
-[Unreleased]: https://github.com/salah-kit/Salah/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/salah-kit/Salah/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/salah-kit/Salah/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/salah-kit/Salah/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/salah-kit/Salah/releases/tag/1.0.0
