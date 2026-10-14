@@ -1,4 +1,5 @@
 import SalahCore
+import SalahUI
 import SwiftUI
 
 /// The inline expanded focus in the menu-bar living schedule - the next event's
