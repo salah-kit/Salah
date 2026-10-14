@@ -108,7 +108,7 @@ final class SalahUITests: XCTestCase {
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
     XCTAssertTrue(settings.buttons["Salah Help"].exists, settings.debugDescription)
     XCTAssertTrue(settings.buttons["About Salah"].exists, settings.debugDescription)
-    XCTAssertTrue(settings.staticTexts["Salah 1.0"].exists, settings.debugDescription)
+    XCTAssertTrue(settings.staticTexts["Salah 1.1.0"].exists, settings.debugDescription)
   }
 
   /// The About panel names Salah and credits its authors.
@@ -123,7 +123,7 @@ final class SalahUITests: XCTestCase {
 
     let name = app.staticTexts["Salah"].firstMatch
     XCTAssertTrue(name.waitForExistence(timeout: 10), app.windows.debugDescription)
-    XCTAssertTrue(app.staticTexts["Version 1.0.0 (1)"].exists, app.windows.debugDescription)
+    XCTAssertTrue(app.staticTexts["Version 1.1.0 (2)"].exists, app.windows.debugDescription)
     let credits = app.textViews.firstMatch
     XCTAssertTrue(credits.exists, app.windows.debugDescription)
     let text = credits.value as? String ?? ""

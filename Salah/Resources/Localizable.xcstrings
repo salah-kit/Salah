@@ -123,55 +123,55 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "صلاة 1.0"
+            "value": "صلاة %@"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah 1.0"
+            "value": "Salah %@"
           }
         }
       }

@@ -50,7 +50,7 @@ struct SettingsView: View {
       .padding(.horizontal, 10)
       .padding(.bottom, 8)
 
-      Text("app.versionLabel")
+      Text(versionLabel)
         .font(.system(size: 10))
         .foregroundStyle(.quaternary)
         .padding(.horizontal, 16)
@@ -58,6 +58,14 @@ struct SettingsView: View {
     }
     .frame(width: 190)
     .background(.ultraThickMaterial)
+  }
+
+  private var versionLabel: String {
+    let version =
+      Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+    let locale = prefs.appLanguage.locale
+    let format = localizedString("app.versionLabel", locale: locale)
+    return String(format: format, locale: locale, version)
   }
 
   private var content: some View {
