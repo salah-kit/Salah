@@ -11,9 +11,11 @@ import Testing
 /// The harness stands in for the widget extension: it's sandboxed in the same App Group
 /// and runs the Stop intent's own code. Each test moves a prayer a minute or two ahead
 /// through Salah's own adjustments, so a real alert comes due; the app is muted, never
-/// asks macOS for anything (`-salah.debug.withoutSystemPrompts`) and keeps its launch
-/// preferences out of this Mac's own (`-salah.debug.scratchPreferences`). Run them with the
-/// `SalahRoundTripTests` scheme and a signing team (CONTRIBUTING.md); CI only builds them.
+/// asks macOS for anything (`-salah.debug.withoutSystemPrompts`), and keeps its launch
+/// preferences and its notifications out of this Mac's own
+/// (`-salah.debug.scratchPreferences`, `-salah.debug.withoutSystemNotifications`). Run them
+/// with the `SalahRoundTripTests` scheme and a signing team (CONTRIBUTING.md); CI only
+/// builds them.
 @Suite("Real app", .serialized)
 struct RealAppTests {
   /// Launches the app with `alerts` for a prayer placed `lead` seconds ahead, and waits

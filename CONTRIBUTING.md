@@ -113,8 +113,8 @@ Two things follow on the Mac you run them on:
   its own that holds nothing, so this Mac's own Salah preferences and notifications are
   untouched. What remains is the App Group's mirrored settings from the last test launch,
   which a placed widget shows until Salah runs again and publishes its own: Makkah with
-  every alert off after a full run, or, after one alert test alone, a prayer moved by
-  its adjustment and that test's alert.
+  every alert off after a full run, or, after the alert tests without the others, a
+  prayer moved by the last one's adjustment, with its alert.
 
 The dropdown test skips when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.

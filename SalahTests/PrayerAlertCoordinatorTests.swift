@@ -526,6 +526,15 @@ struct PrayerAlertCoordinatorTests {
     #expect(await center.deliveredNotificationRecords().isEmpty)
   }
 
+  /// The launch option picks the detached center, and only the option does.
+  @Test func theLaunchOptionPicksTheDetachedCenter() {
+    let scratch = ScratchDefaults()
+    #expect(DebugOptions.notificationCenter(defaults: scratch.defaults) == nil)
+    scratch.defaults.set(true, forKey: DebugOptions.withoutSystemNotificationsKey)
+    #expect(
+      DebugOptions.notificationCenter(defaults: scratch.defaults) is DetachedNotificationCenter)
+  }
+
   /// With the du'a off, an adhan plays alone.
   @Test func playsNoDuaWhenItIsOff() async throws {
     let harness = Harness(

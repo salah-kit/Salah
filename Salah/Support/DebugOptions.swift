@@ -37,9 +37,10 @@ import UserNotifications
     static let withoutSystemNotificationsKey = "salah.debug.withoutSystemNotifications"
 
     /// The detached center when the launch asks for it; `nil` for the system's.
-    static func notificationCenter() -> (any PrayerNotificationCenter)? {
-      UserDefaults.standard.bool(forKey: withoutSystemNotificationsKey)
-        ? DetachedNotificationCenter() : nil
+    static func notificationCenter(defaults: UserDefaults = .standard)
+      -> (any PrayerNotificationCenter)?
+    {
+      defaults.bool(forKey: withoutSystemNotificationsKey) ? DetachedNotificationCenter() : nil
     }
 
     /// The scratch store, emptied, when the launch asks for it. Launch arguments still

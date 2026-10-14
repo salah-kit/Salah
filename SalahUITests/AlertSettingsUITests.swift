@@ -13,8 +13,9 @@ import XCTest
 /// settings mirror (`SalahSettings.v1`) and what's playing (`SalahPlayback.v1`).
 ///
 /// The launch keeps the app's preferences in a scratch suite
-/// (`-salah.debug.scratchPreferences`), so the moved prayer and the changed alert never
-/// reach this Mac's own Salah preferences (CONTRIBUTING.md).
+/// (`-salah.debug.scratchPreferences`) and its alerts out of the system's notification
+/// center (`-salah.debug.withoutSystemNotifications`), so the moved prayer and the changed
+/// alert never reach this Mac's own Salah preferences or notifications (CONTRIBUTING.md).
 final class AlertSettingsUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
