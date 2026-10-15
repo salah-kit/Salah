@@ -228,10 +228,11 @@ the last release's; tags are the marketing version, with no `v`.
 1. **Prepare the release** in a pull request:
    - set `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` for every target in `project.yml`,
      and run `xcodegen`;
-   - update the version the UI tests expect in `SalahUITests/SalahUITests.swift`, and the
-     version in the README's Status and versioning section;
-   - if the release moves to another SalahKit or SalahTimes version, update NOTICE's linked
-     code too;
+   - update the version strings the UI tests expect in `SalahUITests/SalahUITests.swift`
+     (`Salah X.Y.Z` and `Version X.Y.Z (N)`), and the version in the README's Status and
+     versioning section;
+   - if the release moves to another SalahKit or SalahTimes version, update that version in
+     the README's Status and versioning section and in NOTICE's linked code too;
    - move the Unreleased entries of [CHANGELOG.md](CHANGELOG.md) into a new
      `## [X.Y.Z] - YYYY-MM-DD` section, and update the comparison links at the bottom.
 2. **Merge it, and wait for CI to pass** on the commit you'll tag. CI only builds the UI and

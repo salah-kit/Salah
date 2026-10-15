@@ -48,8 +48,9 @@ All notable changes to this project are documented here. The format follows
 
 ## [1.0.0] - 2026-10-14
 
-Salah's first release, as source. Salah succeeds Guidance for Mac, and the Changed and Removed
-sections compare it with Guidance.
+Salah's first release, as source. Salah grew out of a 2026 rebuild of Batoul Apps' Guidance
+for Mac ([batoulapps/GuidanceMac#8](https://github.com/batoulapps/GuidanceMac/pull/8)), and the
+Changed and Removed sections compare it with that rebuild.
 
 ### Added
 

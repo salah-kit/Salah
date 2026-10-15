@@ -9,15 +9,17 @@ its license as far as it is known.
 BUNDLED RECORDINGS (Salah/Resources/Audio/)
 
 The app plays these recordings for adhan alerts and the optional du'a after the adhan.
-All seven come from Guidance for Mac by Batoul Apps, the app Salah succeeds. They are
+All seven come from Guidance for Mac by Batoul Apps. Salah's code starts from a June 2026
+rebuild of that app, which was proposed to Batoul Apps in pull request #8
+(https://github.com/batoulapps/GuidanceMac/pull/8) and not merged. The recordings are
 byte-identical to the files Batoul Apps' GuidanceMac repository
 (https://github.com/batoulapps/GuidanceMac) added on 24 October 2019 (commit 4de9e46).
 That repository's first commit, the same day (a21eb77), added an MIT license,
 "Copyright (c) 2019 Batoul Apps". In November 2019 the license and the recordings moved
-together into an oldVersion/ folder (e9633ea), and the license file stayed there until
-the repository's June 2026 rebuild of the app removed it (2e7a290). Nothing in the
-repository names the recordings' original sources or the terms under which Batoul Apps
-obtained them, and a license from Batoul Apps covers only what Batoul Apps owned.
+together into an oldVersion/ folder (e9633ea). The rebuild kept the recordings and
+removed the license file (2e7a290). Nothing in Batoul Apps' repository names the
+recordings' original sources or the terms under which Batoul Apps obtained them, and a
+license from Batoul Apps covers only what Batoul Apps owned.
 
   File                 Shown in the app as   Source                          License
   Adhan-Alafasy.m4a    Mishary Alafasy       Guidance for Mac (Batoul Apps)  Unconfirmed
