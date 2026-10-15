@@ -49,8 +49,8 @@ nonisolated struct Baseline: Sendable, Hashable, Codable, CustomTestStringConver
   }
 }
 
-/// The states the widget's design spec lists for verification, as moments on the
-/// fixture day. The playing state is split by slot, since its color follows the slot.
+/// The widget and menu states the baselines check, as moments on the fixture day. The
+/// playing state is split by slot, since its color follows the slot.
 /// `stale` is the face a timeline that ran out shows (`SalahWidgetEntry.Content.expired`).
 nonisolated enum SpecState: String, Sendable, CaseIterable {
   case idle
@@ -66,14 +66,14 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
   case setupNeeded
   case stale
 
-  /// The spec's words for the state, and where the app departs from them.
+  /// The index's description of the state.
   var specName: String {
     switch self {
     case .idle: "idle/normal"
     case .imminent: "imminent (fixed 15-min red, not before Sunrise)"
     case .countUp: "Iqama count-up (green, leads 15 min, next prayer secondary)"
     case .countUpSilent:
-      "count-up in silent mode (spec: muted grey; the app keeps the count-up green, badge, timer and row, while silent mode mutes the rest)"
+      "count-up in silent mode (the count-up stays green, with its badge, timer and row, while silent mode mutes the rest)"
     case .countUpImminent: "count-up overlapping an imminent next (count-up leads, next line red)"
     case .endOfDay: "end-of-day Tomorrow card"
     case .playingAdhan: "playing audio (stop control): adhan, green"

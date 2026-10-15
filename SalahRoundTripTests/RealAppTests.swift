@@ -37,7 +37,7 @@ struct RealAppTests {
     if seconds > 0 { try await Task.sleep(for: .milliseconds(Int(seconds * 1_000))) }
   }
 
-  // MARK: - The stop round trip (proposal §7.3, Live state)
+  // MARK: - The stop round trip (SalahWidgets' "Lessons from Salah")
 
   /// The widget's Stop code, run in a separate sandboxed process, stops the running app's
   /// adhan; the app confirms by publishing again, and the widget's timeline, built by the

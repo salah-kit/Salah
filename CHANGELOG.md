@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Document the release process in CONTRIBUTING, and point contributors to the checks that
+  need a real Mac or a native speaker, which are open `help wanted` issues.
+
 ## [1.1.2] - 2026-10-14
 
 ### Fixed
@@ -43,11 +48,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [1.0.0] - 2026-10-14
 
-Salah's first release, as source.
+Salah's first release, as source. Salah succeeds Guidance for Mac, and the Changed and Removed
+sections compare it with Guidance.
 
 ### Added
 
-- Salah, a macOS menu-bar app for the five daily prayers, from the Guidance v3 rebuild:
+- Salah, a macOS menu-bar app for the five daily prayers:
   - a menu-bar status item with a countdown or the next prayer's time, which turns red
     in the last 15 minutes and green for a 15-minute count-up after the adhan;
   - a dropdown with the day's schedule, the Hijri date, per-prayer alert toggles, silent

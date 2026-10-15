@@ -5,10 +5,10 @@ import SalahTimes
 import SalahWidgets
 import Testing
 
-/// The settings mirror the widget extension builds from (proposal §10, step 1): what
-/// the app publishes, when, and what the widget draws from it. These are the parity
-/// assertions of the move onto SalahKit: initial publication, a language-only change,
-/// the Hijri offset, reminder summaries, Friday overrides and the playing banner.
+/// The settings mirror the widget extension builds from: what the app publishes, when,
+/// and what the widget draws from it. These are the parity assertions of the move onto
+/// SalahKit: initial publication, a language-only change, the Hijri offset, reminder
+/// summaries, Friday overrides and the playing banner.
 @Suite("Settings mirror")
 struct SettingsMirrorTests {
   init() { TestEnvironment.configure() }
@@ -297,8 +297,8 @@ struct SettingsMirrorTests {
   }
 }
 
-/// An App Group of its own for one test: a defaults suite named by a path in this run's
-/// preferences folder, whose widget reloads are recorded.
+/// An App Group of its own for one test: a defaults suite named by a path in the test
+/// run's preferences folder, whose widget reloads are recorded.
 final class MirrorGroup {
   let suite: String
   let reloads = ReloadRecorder()

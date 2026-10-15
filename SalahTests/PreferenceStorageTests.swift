@@ -3,9 +3,9 @@ import SalahCalculation
 import SalahCore
 import Testing
 
-/// Where preferences live and what a fresh install starts with. Salah has no installed
-/// base (Amendment 4): its keys are its own namespace, and nothing reads or migrates the
-/// `kBA*` keys of the app it was rebuilt from.
+/// Where preferences live and what a fresh install starts with. Salah doesn't migrate the
+/// settings of Guidance, the app it succeeds: its keys are its own namespace, and nothing
+/// reads or migrates Guidance's `kBA*` keys.
 @Suite("Preference storage")
 struct PreferenceStorageTests {
   init() { TestEnvironment.configure() }

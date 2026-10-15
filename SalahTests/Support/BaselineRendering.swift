@@ -7,7 +7,7 @@ import Testing
 // MARK: - Pipeline: catalog entry → display → view
 
 /// Builds the view each baseline renders. The catalog says what to show; this is the
-/// part that changed when the app moved onto SalahKit (D1 swapped the snapshot for
+/// part that changed when the app moved onto SalahKit (the move swapped the snapshot for
 /// SalahCore's schedule and kept the catalog, the moments and the PNGs).
 enum BaselinePipeline {
   /// The preview scenarios' clock: 16:00 on the fixture day. They place prayers at

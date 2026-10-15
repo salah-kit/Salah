@@ -29,7 +29,7 @@ enum TestEnvironment {
   /// (`Calendar.current`, default `DateFormatter`s) sees this one on every machine.
   static let timeZone = TimeZone(identifier: "Asia/Riyadh")!
 
-  /// This run's preference files. A suite named by an absolute path keeps its plist
+  /// The test run's preference files. A suite named by an absolute path keeps its plist
   /// at that path, so every defaults suite the tests use lives here: none lands in
   /// `~/Library/Preferences`, two test runs at once never share a suite, and
   /// `tearDown()` deletes the folder.
@@ -68,7 +68,7 @@ enum TestEnvironment {
   }
 }
 
-/// A `UserDefaults` suite of its own for one test, in this run's preferences
+/// A `UserDefaults` suite of its own for one test, in the test run's preferences
 /// folder (`TestEnvironment.preferencesDirectory`), emptied when released.
 nonisolated final class ScratchDefaults {
   private static let lock = NSLock()

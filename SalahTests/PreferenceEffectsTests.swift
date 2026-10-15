@@ -3,8 +3,8 @@ import SalahCore
 import Testing
 
 /// Characterizes the refresh effects a preference change posts on
-/// `.salahPreferencesDidChange` (`Preferences.swift`), the signal D1's settings
-/// mirror publishes on: `display`, `prayerTimes` and `localization` (§10 step 1),
+/// `.salahPreferencesDidChange` (`Preferences.swift`), the signal the widget's settings
+/// mirror (`WidgetMirror`) publishes on: `display`, `prayerTimes` and `localization`,
 /// plus `audioRuntime`. `PrayerManager.applyPreferenceRefresh` is the one consumer.
 @Suite("Preference effects")
 struct PreferenceEffectsTests {

@@ -24,8 +24,8 @@ nonisolated enum SalahWidgetRowState: Equatable {
 /// them in the user's language whatever the process's language is. The widget
 /// extension has no access to the app's String Catalog, so they live here.
 ///
-/// `notAvailable` and `nextUnknown` were drafted for D1 and need a native speaker's
-/// review in every language but English (the other labels came with the app).
+/// `notAvailable` and `nextUnknown` came with the move onto SalahKit, after the other
+/// labels, and need a native speaker's review in every language but English.
 nonisolated struct SalahWidgetLabels: Equatable, Sendable {
   var nextPrayer: String
   var tomorrow: String

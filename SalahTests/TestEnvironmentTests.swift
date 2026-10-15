@@ -27,7 +27,7 @@ struct TestEnvironmentTests {
     #expect(AppResources.bundle.url(forResource: "Dua", withExtension: "m4a") != nil)
   }
 
-  /// Every defaults suite the tests use keeps its file in this run's own folder
+  /// Every defaults suite the tests use keeps its file in the test run's own folder
   /// under the temporary directory: nothing lands in `~/Library/Preferences`, and
   /// two test runs at once never share a suite.
   @Test func defaultsSuitesLiveInTheRunsOwnFolder() {

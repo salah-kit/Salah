@@ -1,6 +1,6 @@
 # Contributing to Salah
 
-Thanks for helping. This file covers building, testing and formatting this repo. The
+Thanks for helping. This file covers building, testing, formatting and releasing this repo. The
 org-wide code of conduct, security policy and support page live in
 [salah-kit/.github](https://github.com/salah-kit/.github).
 
@@ -167,6 +167,14 @@ Record mode rewrites only the PNGs that no longer match, so `git status SalahTes
 lists exactly what changed. Check every changed image before you commit it. The baselines
 were recorded with Xcode 27 on macOS 27; CI uses the same toolchain.
 
+### Checks on a real Mac
+
+Some behavior only shows on a real desktop, or over time: notification banners, sleep and
+wake, a clock set back, the widget's Stop control under a real click, and the widget across
+midnight. These checks are open issues labelled
+[`help wanted`](https://github.com/salah-kit/Salah/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22),
+each with its steps and what to record.
+
 ## Formatting
 
 Code is formatted with `swift format` and the shared `.swift-format` (2-space indentation,
@@ -188,7 +196,9 @@ because the extension can't read the app's String Catalog; prayer names come fro
 SalahCore's `PrayerNames`. Every change needs all nine
 languages and right-to-left layouts for Arabic, Urdu and Persian. Mark machine-drafted
 translations `needs_review` in the catalog, and ask for a native speaker's review in your
-pull request.
+pull request. The entries that still need a native speaker are listed by language in open
+issues labelled
+[`translation`](https://github.com/salah-kit/Salah/issues?q=is%3Aissue+is%3Aopen+label%3Atranslation).
 
 The app's name is "Salah" in Latin script in every language except Arabic, where it is
 صلاة.
@@ -205,4 +215,43 @@ swift Scripts/render-app-icon.swift Salah/Assets.xcassets/AppIcon.appiconset
 ## Pull requests
 
 Work on a short-lived branch named for its topic, keep `main` green, and describe what
-you verified. A fix comes with a test that would have caught the bug.
+you verified. A fix comes with a test that would have caught the bug. If users can notice
+the change, add a line to the Unreleased section of [CHANGELOG.md](CHANGELOG.md).
+
+## Releasing
+
+A maintainer releases from `main`, as the ecosystem standard's
+[Releases](https://github.com/salah-kit/.github/blob/main/STANDARD.md#releases) section
+describes. A release has a marketing version (`1.1.2`) and a build number one higher than
+the last release's; tags are the marketing version, with no `v`.
+
+1. **Prepare the release** in a pull request:
+   - set `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` for every target in `project.yml`,
+     and run `xcodegen`;
+   - update the version the UI tests expect in `SalahUITests/SalahUITests.swift`, and the
+     version in the README's Status and versioning section;
+   - if the release moves to another SalahKit or SalahTimes version, update NOTICE's linked
+     code too;
+   - move the Unreleased entries of [CHANGELOG.md](CHANGELOG.md) into a new
+     `## [X.Y.Z] - YYYY-MM-DD` section, and update the comparison links at the bottom.
+2. **Merge it, and wait for CI to pass** on the commit you'll tag. CI only builds the UI and
+   real-app tests, so run them locally with your team.
+3. **Tag that commit** and push the tag:
+
+   ```sh
+   git tag -a X.Y.Z -m "Salah X.Y.Z"
+   git push origin X.Y.Z
+   ```
+
+   Never move or delete a tag; a mistake is fixed with a new release.
+4. **Publish a GitHub release** for the tag, with three headings:
+   - **Proven:** the gates and their evidence, such as the CI run on the tagged commit and the
+     local UI and real-app test runs;
+   - **Pending:** what still needs a person, a device or elapsed time, each item linked to the
+     `help wanted` issue that tracks it (open one if none exists);
+   - **Known limitations.**
+
+   A check that didn't run is never listed as proven.
+
+Releases are source only. A signed download or a Mac App Store build also needs a paid
+developer team and confirmed rights to the bundled recordings (see [NOTICE](NOTICE)).

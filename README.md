@@ -125,9 +125,11 @@ functional-tone or custom-theme text/background combination.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for building, testing and formatting. The org-wide
-code of conduct and security policy live in
-[salah-kit/.github](https://github.com/salah-kit/.github).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for building, testing, formatting and releasing. The
+org-wide code of conduct and security policy live in
+[salah-kit/.github](https://github.com/salah-kit/.github). Checks that need a real Mac, time
+or a native speaker are open issues labelled
+[`help wanted`](https://github.com/salah-kit/Salah/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
 
 ## License
 

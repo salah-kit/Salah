@@ -100,7 +100,7 @@ enum BaselineIndex {
     add("# Visual baselines")
     add()
     add(
-      "PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. They were first recorded from the app before it moved onto SalahKit, and kept through the move: the faces now draw from SalahKit's schedule, state and formatting, and every image still matches the earlier render within the comparison below. The folder's `git log` shows every re-record. This index is generated with the images by the same test: don't edit it by hand."
+      "PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. They were first recorded from the app before it moved onto SalahKit, and kept through the move: the faces now draw from SalahKit's schedule, state and formatting, and every image still matches the earlier render within the comparison below. The folder's `git log` shows every re-record. The same test writes this index along with the images: don't edit it by hand."
     )
     add()
     add("## Re-render or check")
@@ -154,13 +154,13 @@ enum BaselineIndex {
       add("| \(day.day) | \(row.joined(separator: " | ")) |")
     }
     add()
-    add("## Spec states: `widget/` and `menu/`")
+    add("## Widget and menu states: `widget/` and `menu/`")
     add()
     add(
-      "The states the widget's design spec lists for verification, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. The images show what the app renders; where that departs from the spec (silent count-up), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
+      "The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
     )
     add()
-    add("| State | Spec | Moment (Riyadh) | Setup |")
+    add("| State | Shows | Moment (Riyadh) | Setup |")
     add("|---|---|---|---|")
     for state in SpecState.allCases {
       add(

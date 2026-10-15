@@ -1,6 +1,6 @@
 # Visual baselines
 
-PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. They were first recorded from the app before it moved onto SalahKit, and kept through the move: the faces now draw from SalahKit's schedule, state and formatting, and every image still matches the earlier render within the comparison below. The folder's `git log` shows every re-record. This index is generated with the images by the same test: don't edit it by hand.
+PNG renders of the app's widget faces and menu-bar dropdown, made by `VisualBaselineTests` in SalahTests. They were first recorded from the app before it moved onto SalahKit, and kept through the move: the faces now draw from SalahKit's schedule, state and formatting, and every image still matches the earlier render within the comparison below. The folder's `git log` shows every re-record. The same test writes this index along with the images: don't edit it by hand.
 
 ## Re-render or check
 
@@ -33,16 +33,16 @@ The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura,
 | 2026-06-02 | 04:11 | 05:38 | 12:19 | 15:35 | 19:00 | 20:30 |
 | 2026-06-03 | 04:11 | 05:38 | 12:19 | 15:36 | 19:00 | 20:30 |
 
-## Spec states: `widget/` and `menu/`
+## Widget and menu states: `widget/` and `menu/`
 
-The states the widget's design spec lists for verification, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. The images show what the app renders; where that departs from the spec (silent count-up), the table says so. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
+The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
 
-| State | Spec | Moment (Riyadh) | Setup |
+| State | Shows | Moment (Riyadh) | Setup |
 |---|---|---|---|
 | `idle` | idle/normal | 2026-06-02 13:19 | Dhuhr + 60 min |
 | `imminent` | imminent (fixed 15-min red, not before Sunrise) | 2026-06-02 15:25 | Asr − 10 min |
 | `countUp` | Iqama count-up (green, leads 15 min, next prayer secondary) | 2026-06-02 12:23 | Dhuhr + 4 min |
-| `countUpSilent` | count-up in silent mode (spec: muted grey; the app keeps the count-up green, badge, timer and row, while silent mode mutes the rest) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
+| `countUpSilent` | count-up in silent mode (the count-up stays green, with its badge, timer and row, while silent mode mutes the rest) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
 | `countUpImminent` | count-up overlapping an imminent next (count-up leads, next line red) | 2026-06-02 19:04 | Maghrib + 4 min, Isha adjusted −78 min (19:12) |
 | `endOfDay` | end-of-day Tomorrow card | 2026-06-02 21:30 | Isha + 60 min |
 | `playingAdhan` | playing audio (stop control): adhan, green | 2026-06-02 19:02 | Maghrib + 2 min, Maghrib's adhan playing |
