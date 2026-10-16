@@ -1,0 +1,364 @@
+{
+  "dimension": {
+    "$description": "Spacing, corner radius, symbol size and stroke scales shared by every platform. Values are Apple points. DTCG dimensions allow only px and rem, so 1 px here means 1 pt (a density-independent point, the unit Figma and SwiftUI both use).",
+    "space": {
+      "2": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "2 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s2"
+          }
+        }
+      },
+      "4": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "4 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s4"
+          }
+        }
+      },
+      "6": {
+        "$type": "dimension",
+        "$value": {
+          "value": 6,
+          "unit": "px"
+        },
+        "$description": "6 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s6"
+          }
+        }
+      },
+      "8": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "8 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s8"
+          }
+        }
+      },
+      "10": {
+        "$type": "dimension",
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        },
+        "$description": "10 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s10"
+          }
+        }
+      },
+      "12": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "12 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s12"
+          }
+        }
+      },
+      "16": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "16 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s16"
+          }
+        }
+      },
+      "20": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "20 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s20"
+          }
+        }
+      },
+      "24": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "24 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s24"
+          }
+        }
+      },
+      "32": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        },
+        "$description": "32 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s32"
+          }
+        }
+      },
+      "40": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$description": "40 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s40"
+          }
+        }
+      },
+      "48": {
+        "$type": "dimension",
+        "$value": {
+          "value": 48,
+          "unit": "px"
+        },
+        "$description": "48 pt spacing step.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSpace.s48"
+          }
+        }
+      }
+    },
+    "radius": {
+      "4": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "4 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r4"
+          }
+        }
+      },
+      "8": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "8 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r8"
+          }
+        }
+      },
+      "12": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "12 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r12"
+          }
+        }
+      },
+      "16": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "16 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r16"
+          }
+        }
+      },
+      "20": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "20 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r20"
+          }
+        }
+      },
+      "26": {
+        "$type": "dimension",
+        "$value": {
+          "value": 26,
+          "unit": "px"
+        },
+        "$description": "26 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r26"
+          }
+        }
+      },
+      "34": {
+        "$type": "dimension",
+        "$value": {
+          "value": 34,
+          "unit": "px"
+        },
+        "$description": "34 pt corner radius. Use .continuous corners in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahRadius.r34"
+          }
+        }
+      },
+      "capsule": {
+        "$type": "dimension",
+        "$value": {
+          "value": 999,
+          "unit": "px"
+        },
+        "$description": "Capsule: buttons, chips, badges. Capsule() in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "Capsule()"
+          }
+        }
+      }
+    },
+    "size": {
+      "icon-small": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "Small symbol box.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSize.iconSmall"
+          }
+        }
+      },
+      "icon-medium": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "Default symbol box.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSize.iconMedium"
+          }
+        }
+      },
+      "icon-large": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Large symbol box.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSize.iconLarge"
+          }
+        }
+      },
+      "glyph-hero": {
+        "$type": "dimension",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        },
+        "$description": "Prayer glyph in the hero.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahSize.glyphHero"
+          }
+        }
+      }
+    },
+    "stroke": {
+      "hairline": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        },
+        "$description": "Hairline: 1 px in Figma, 1 / displayScale pt in code.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahStroke.hairline"
+          }
+        }
+      },
+      "regular": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1.5,
+          "unit": "px"
+        },
+        "$description": "Regular stroke for outlined marks.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahStroke.regular"
+          }
+        }
+      },
+      "emphasis": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2.5,
+          "unit": "px"
+        },
+        "$description": "Focus rings and progress strokes.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahStroke.emphasis"
+          }
+        }
+      }
+    }
+  }
+}

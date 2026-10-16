@@ -102,6 +102,8 @@ visual baselines' [index](SalahTests/Baselines/README.md) lists every widget and
 state the tests render. The packages Salah builds on document their APIs in their own
 repos: [SalahKit](https://github.com/salah-kit/SalahKit) and
 [SalahTimes](https://github.com/salah-kit/SalahTimes).
+The design system for the apps (tokens, the prayer symbols, the app icon and previews of
+key screens) is described in [Design](Design/README.md).
 
 ## Supported platforms
 

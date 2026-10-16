@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="moon" x1="0" y1="448" x2="0" y2="632" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#F9ECD6"/>
+  <stop offset="1" stop-color="#E1C188"/>
+</linearGradient>
+</defs>
+<path fill="url(#moon)" d="M498.19 449.04 A92 92 0 1 0 597.27 574.54 A80 80 0 0 1 498.19 449.04 Z"/>
+</svg>

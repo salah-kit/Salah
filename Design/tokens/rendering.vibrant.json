@@ -1,0 +1,117 @@
+{
+  "rendering": {
+    "$description": "Widget colors under each WidgetKit rendering mode. In full color, code uses the colors these tokens point to; the accented and vibrant files show what the system draws, for design review. Each token's swift entry gives the full-color code, then the accented and vibrant code after \" / \" where it differs. Mode: Vibrant.",
+    "widget": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.transparent}",
+        "$description": "Widget background top. Goes in containerBackground(for: .widget) so the system can remove it. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "containerBackground(for: .widget)"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.transparent}",
+        "$description": "Widget background bottom. Removed in accented and vibrant rendering. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "containerBackground(for: .widget)"
+          }
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Primary widget content (default group). Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": ".primary"
+          }
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{primitives.white.a60}",
+        "$description": "Secondary widget content. Full color: SalahColor.labelSecondary, which keeps 4.5:1 on every sky; the system .secondary doesn’t. Accented and vibrant: .secondary, whose hierarchy survives through opacity. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelSecondary / .secondary"
+          }
+        }
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "{primitives.white.a40}",
+        "$description": "Passed or quiet widget content (large text and marks only). Full color: SalahColor.labelTertiary, which keeps 3:1 on every sky. Accented and vibrant: .tertiary. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelTertiary / .tertiary"
+          }
+        }
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "The one accent element (next prayer name, countdown or gauge). Full color: SalahColor.accentText; accented and vibrant: .primary. Mark it .widgetAccentable(); iOS and macOS tint it white, watch faces use the face color. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentText / .primary"
+          }
+        }
+      },
+      "mark": {
+        "$type": "color",
+        "$value": "{primitives.white.a60}",
+        "$description": "Time-of-day marks: timeline segments, glyphs, gauge progress. Full color: SalahColor.phase.tint. Accented and vibrant: .secondary. On watch faces, keep the full-color tint and mark it .widgetAccentable(), so marks take the face color. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.phase.tint / .secondary"
+          }
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": "{primitives.white.a25}",
+        "$description": "Gauge and timeline tracks: .fill.secondary in every mode. Accessory widgets also put AccessoryWidgetBackground() behind their content. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": ".fill.secondary"
+          }
+        }
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "{primitives.white.a15}",
+        "$description": "Hairlines inside widgets. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": ".separator"
+          }
+        }
+      },
+      "badge": {
+        "$type": "color",
+        "$value": "{primitives.white.a25}",
+        "$description": "Now and Stop badges. Full color: SalahColor.accentFill. Accented and vibrant: .fill.tertiary, a quiet capsule. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentFill / .fill.tertiary"
+          }
+        }
+      },
+      "on-badge": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Text on a widget badge. Full color: SalahColor.labelOnAccent, which keeps 4.5:1 on the gold badge in light and dark. Accented and vibrant: .primary. Modes simulate WidgetKit rendering (full color, accented, accented on a watch face, vibrant); code never sets these colors for accented or vibrant.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelOnAccent / .primary"
+          }
+        }
+      }
+    }
+  }
+}

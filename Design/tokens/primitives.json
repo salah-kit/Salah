@@ -1,0 +1,2627 @@
+{
+  "primitives": {
+    "$description": "Raw palette. Never use a primitive directly in UI; use a semantic token from the color files.",
+    "gold": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9961,
+            0.9686,
+            0.9176
+          ],
+          "alpha": 1.0,
+          "hex": "#fef7ea"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9765,
+            0.9255,
+            0.8392
+          ],
+          "alpha": 1.0,
+          "hex": "#f9ecd6"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9373,
+            0.851,
+            0.698
+          ],
+          "alpha": 1.0,
+          "hex": "#efd9b2"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8824,
+            0.7569,
+            0.5333
+          ],
+          "alpha": 1.0,
+          "hex": "#e1c188"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.6471,
+            0.3569
+          ],
+          "alpha": 1.0,
+          "hex": "#cca55b"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7059,
+            0.5373,
+            0.1765
+          ],
+          "alpha": 1.0,
+          "hex": "#b4892d"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5961,
+            0.4353,
+            0.0196
+          ],
+          "alpha": 1.0,
+          "hex": "#986f05"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4784,
+            0.3412,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#7a5700"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.2549,
+            0.0039
+          ],
+          "alpha": 1.0,
+          "hex": "#5c4101"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2471,
+            0.1686,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#3f2b00"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.149,
+            0.098,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#261900"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold950"
+          }
+        }
+      },
+      "400-a16": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.6471,
+            0.3569
+          ],
+          "alpha": 0.16,
+          "hex": "#cca55b"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold400A16"
+          }
+        }
+      },
+      "400-a28": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.6471,
+            0.3569
+          ],
+          "alpha": 0.28,
+          "hex": "#cca55b"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.gold400A28"
+          }
+        }
+      }
+    },
+    "dawn": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529,
+            0.9725,
+            0.9961
+          ],
+          "alpha": 1.0,
+          "hex": "#f3f8fe"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8941,
+            0.9373,
+            0.9961
+          ],
+          "alpha": 1.0,
+          "hex": "#e4effe"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7882,
+            0.8706,
+            0.9922
+          ],
+          "alpha": 1.0,
+          "hex": "#c9defd"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6667,
+            0.7843,
+            0.9569
+          ],
+          "alpha": 1.0,
+          "hex": "#aac8f4"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5373,
+            0.6784,
+            0.8902
+          ],
+          "alpha": 1.0,
+          "hex": "#89ade3"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4157,
+            0.5725,
+            0.8078
+          ],
+          "alpha": 1.0,
+          "hex": "#6a92ce"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3176,
+            0.4706,
+            0.6902
+          ],
+          "alpha": 1.0,
+          "hex": "#5178b0"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2392,
+            0.3725,
+            0.5686
+          ],
+          "alpha": 1.0,
+          "hex": "#3d5f91"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1686,
+            0.2784,
+            0.4392
+          ],
+          "alpha": 1.0,
+          "hex": "#2b4770"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.102,
+            0.1843,
+            0.3098
+          ],
+          "alpha": 1.0,
+          "hex": "#1a2f4f"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0431,
+            0.1098,
+            0.2039
+          ],
+          "alpha": 1.0,
+          "hex": "#0b1c34"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dawn950"
+          }
+        }
+      }
+    },
+    "day": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9412,
+            0.9765,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#f0f9ff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8627,
+            0.949,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#dcf2ff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7333,
+            0.8902,
+            0.9843
+          ],
+          "alpha": 1.0,
+          "hex": "#bbe3fb"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5804,
+            0.8118,
+            0.9451
+          ],
+          "alpha": 1.0,
+          "hex": "#94cff1"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4118,
+            0.7137,
+            0.8745
+          ],
+          "alpha": 1.0,
+          "hex": "#69b6df"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2471,
+            0.6078,
+            0.7882
+          ],
+          "alpha": 1.0,
+          "hex": "#3f9bc9"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1294,
+            0.502,
+            0.6745
+          ],
+          "alpha": 1.0,
+          "hex": "#2180ac"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0235,
+            0.4,
+            0.5529
+          ],
+          "alpha": 1.0,
+          "hex": "#06668d"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0078,
+            0.302,
+            0.4196
+          ],
+          "alpha": 1.0,
+          "hex": "#024d6b"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0039,
+            0.2039,
+            0.2902
+          ],
+          "alpha": 1.0,
+          "hex": "#01344a"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0039,
+            0.1216,
+            0.1804
+          ],
+          "alpha": 1.0,
+          "hex": "#011f2e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.day950"
+          }
+        }
+      }
+    },
+    "amber": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            0.9647,
+            0.9294
+          ],
+          "alpha": 1.0,
+          "hex": "#fff6ed"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9961,
+            0.9176,
+            0.8471
+          ],
+          "alpha": 1.0,
+          "hex": "#feead8"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9725,
+            0.8353,
+            0.7137
+          ],
+          "alpha": 1.0,
+          "hex": "#f8d5b6"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9255,
+            0.7333,
+            0.5569
+          ],
+          "alpha": 1.0,
+          "hex": "#ecbb8e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.851,
+            0.6157,
+            0.3882
+          ],
+          "alpha": 1.0,
+          "hex": "#d99d63"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7608,
+            0.502,
+            0.2275
+          ],
+          "alpha": 1.0,
+          "hex": "#c2803a"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6471,
+            0.4,
+            0.1176
+          ],
+          "alpha": 1.0,
+          "hex": "#a5661e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5294,
+            0.3098,
+            0.0275
+          ],
+          "alpha": 1.0,
+          "hex": "#874f07"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4039,
+            0.2275,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#673a00"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2745,
+            0.149,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#462600"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1725,
+            0.0863,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#2c1600"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.amber950"
+          }
+        }
+      }
+    },
+    "dusk": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            0.9608,
+            0.9608
+          ],
+          "alpha": 1.0,
+          "hex": "#fff5f5"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            0.9059,
+            0.9098
+          ],
+          "alpha": 1.0,
+          "hex": "#ffe7e8"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9961,
+            0.8118,
+            0.8157
+          ],
+          "alpha": 1.0,
+          "hex": "#fecfd0"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9608,
+            0.698,
+            0.7098
+          ],
+          "alpha": 1.0,
+          "hex": "#f5b2b5"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8902,
+            0.5725,
+            0.5882
+          ],
+          "alpha": 1.0,
+          "hex": "#e39296"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.451,
+            0.4745
+          ],
+          "alpha": 1.0,
+          "hex": "#cc7379"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6824,
+            0.3529,
+            0.3765
+          ],
+          "alpha": 1.0,
+          "hex": "#ae5a60"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5569,
+            0.2667,
+            0.2902
+          ],
+          "alpha": 1.0,
+          "hex": "#8e444a"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4275,
+            0.1882,
+            0.2118
+          ],
+          "alpha": 1.0,
+          "hex": "#6d3036"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.302,
+            0.1176,
+            0.1333
+          ],
+          "alpha": 1.0,
+          "hex": "#4d1e22"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1961,
+            0.0549,
+            0.0706
+          ],
+          "alpha": 1.0,
+          "hex": "#320e12"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.dusk950"
+          }
+        }
+      }
+    },
+    "mauve": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9882,
+            0.9608,
+            0.9882
+          ],
+          "alpha": 1.0,
+          "hex": "#fcf5fc"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9686,
+            0.9137,
+            0.9647
+          ],
+          "alpha": 1.0,
+          "hex": "#f7e9f6"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9216,
+            0.8314,
+            0.9176
+          ],
+          "alpha": 1.0,
+          "hex": "#ebd4ea"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8588,
+            0.7294,
+            0.851
+          ],
+          "alpha": 1.0,
+          "hex": "#dbbad9"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7686,
+            0.6118,
+            0.7608
+          ],
+          "alpha": 1.0,
+          "hex": "#c49cc2"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6745,
+            0.498,
+            0.6667
+          ],
+          "alpha": 1.0,
+          "hex": "#ac7faa"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5647,
+            0.4,
+            0.5569
+          ],
+          "alpha": 1.0,
+          "hex": "#90668e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4549,
+            0.3098,
+            0.451
+          ],
+          "alpha": 1.0,
+          "hex": "#744f73"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.349,
+            0.2275,
+            0.3412
+          ],
+          "alpha": 1.0,
+          "hex": "#593a57"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2392,
+            0.1451,
+            0.2353
+          ],
+          "alpha": 1.0,
+          "hex": "#3d253c"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.149,
+            0.0784,
+            0.149
+          ],
+          "alpha": 1.0,
+          "hex": "#261426"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.mauve950"
+          }
+        }
+      }
+    },
+    "night": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9608,
+            0.9686,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#f5f7ff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night50"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9137,
+            0.9294,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#e9edff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night100"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8314,
+            0.8588,
+            0.9843
+          ],
+          "alpha": 1.0,
+          "hex": "#d4dbfb"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7294,
+            0.7647,
+            0.949
+          ],
+          "alpha": 1.0,
+          "hex": "#bac3f2"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6157,
+            0.6549,
+            0.8824
+          ],
+          "alpha": 1.0,
+          "hex": "#9da7e1"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5059,
+            0.549,
+            0.7961
+          ],
+          "alpha": 1.0,
+          "hex": "#818ccb"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4078,
+            0.4471,
+            0.6784
+          ],
+          "alpha": 1.0,
+          "hex": "#6872ad"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3176,
+            0.349,
+            0.5569
+          ],
+          "alpha": 1.0,
+          "hex": "#51598e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2353,
+            0.2588,
+            0.4314
+          ],
+          "alpha": 1.0,
+          "hex": "#3c426e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night800"
+          }
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1529,
+            0.1725,
+            0.302
+          ],
+          "alpha": 1.0,
+          "hex": "#272c4d"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night900"
+          }
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0863,
+            0.098,
+            0.1961
+          ],
+          "alpha": 1.0,
+          "hex": "#161932"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.night950"
+          }
+        }
+      }
+    },
+    "neutral": {
+      "white": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutralWhite"
+          }
+        }
+      },
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.949,
+            0.949,
+            0.9686
+          ],
+          "alpha": 1.0,
+          "hex": "#f2f2f7"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral50"
+          }
+        }
+      },
+      "75": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9255,
+            0.9255,
+            0.9255
+          ],
+          "alpha": 1.0,
+          "hex": "#ececec"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral75"
+          }
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.898,
+            0.898,
+            0.9176
+          ],
+          "alpha": 1.0,
+          "hex": "#e5e5ea"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral100"
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8196,
+            0.8196,
+            0.8392
+          ],
+          "alpha": 1.0,
+          "hex": "#d1d1d6"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral150"
+          }
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7804,
+            0.7804,
+            0.8
+          ],
+          "alpha": 1.0,
+          "hex": "#c7c7cc"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral200"
+          }
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6824,
+            0.6824,
+            0.698
+          ],
+          "alpha": 1.0,
+          "hex": "#aeaeb2"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral300"
+          }
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5569,
+            0.5569,
+            0.5765
+          ],
+          "alpha": 1.0,
+          "hex": "#8e8e93"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral400"
+          }
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3882,
+            0.3882,
+            0.4
+          ],
+          "alpha": 1.0,
+          "hex": "#636366"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral500"
+          }
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2824,
+            0.2824,
+            0.2902
+          ],
+          "alpha": 1.0,
+          "hex": "#48484a"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral600"
+          }
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2275,
+            0.2275,
+            0.2353
+          ],
+          "alpha": 1.0,
+          "hex": "#3a3a3c"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral700"
+          }
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1725,
+            0.1725,
+            0.1804
+          ],
+          "alpha": 1.0,
+          "hex": "#2c2c2e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral800"
+          }
+        }
+      },
+      "825": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.149,
+            0.149,
+            0.1569
+          ],
+          "alpha": 1.0,
+          "hex": "#262628"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral825"
+          }
+        }
+      },
+      "850": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1098,
+            0.1098,
+            0.1176
+          ],
+          "alpha": 1.0,
+          "hex": "#1c1c1e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral850"
+          }
+        }
+      },
+      "875": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1176,
+            0.1176,
+            0.1176
+          ],
+          "alpha": 1.0,
+          "hex": "#1e1e1e"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutral875"
+          }
+        }
+      },
+      "black": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.neutralBlack"
+          }
+        }
+      }
+    },
+    "ink": {
+      "light-78": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2353,
+            0.2353,
+            0.2627
+          ],
+          "alpha": 0.78,
+          "hex": "#3c3c43"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkLight78"
+          }
+        }
+      },
+      "light-62": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2353,
+            0.2353,
+            0.2627
+          ],
+          "alpha": 0.62,
+          "hex": "#3c3c43"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkLight62"
+          }
+        }
+      },
+      "light-18": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2353,
+            0.2353,
+            0.2627
+          ],
+          "alpha": 0.18,
+          "hex": "#3c3c43"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkLight18"
+          }
+        }
+      },
+      "dark-64": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9216,
+            0.9216,
+            0.9608
+          ],
+          "alpha": 0.64,
+          "hex": "#ebebf5"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkDark64"
+          }
+        }
+      },
+      "dark-44": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9216,
+            0.9216,
+            0.9608
+          ],
+          "alpha": 0.44,
+          "hex": "#ebebf5"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkDark44"
+          }
+        }
+      },
+      "dark-16": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9216,
+            0.9216,
+            0.9608
+          ],
+          "alpha": 0.16,
+          "hex": "#ebebf5"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.inkDark16"
+          }
+        }
+      }
+    },
+    "separator": {
+      "light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2353,
+            0.2353,
+            0.2627
+          ],
+          "alpha": 0.29,
+          "hex": "#3c3c43"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.separatorLight"
+          }
+        }
+      },
+      "dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3294,
+            0.3294,
+            0.3451
+          ],
+          "alpha": 0.6,
+          "hex": "#545458"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.separatorDark"
+          }
+        }
+      },
+      "opaque-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7765,
+            0.7765,
+            0.7843
+          ],
+          "alpha": 1.0,
+          "hex": "#c6c6c8"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.separatorOpaqueLight"
+          }
+        }
+      },
+      "opaque-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2196,
+            0.2196,
+            0.2275
+          ],
+          "alpha": 1.0,
+          "hex": "#38383a"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.separatorOpaqueDark"
+          }
+        }
+      }
+    },
+    "fill": {
+      "light-20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4706,
+            0.4706,
+            0.502
+          ],
+          "alpha": 0.2,
+          "hex": "#787880"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillLight20"
+          }
+        }
+      },
+      "light-16": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4706,
+            0.4706,
+            0.502
+          ],
+          "alpha": 0.16,
+          "hex": "#787880"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillLight16"
+          }
+        }
+      },
+      "light-12": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4627,
+            0.4627,
+            0.502
+          ],
+          "alpha": 0.12,
+          "hex": "#767680"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillLight12"
+          }
+        }
+      },
+      "light-08": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4549,
+            0.4549,
+            0.502
+          ],
+          "alpha": 0.08,
+          "hex": "#747480"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillLight08"
+          }
+        }
+      },
+      "dark-36": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4706,
+            0.4706,
+            0.502
+          ],
+          "alpha": 0.36,
+          "hex": "#787880"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillDark36"
+          }
+        }
+      },
+      "dark-32": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4706,
+            0.4706,
+            0.502
+          ],
+          "alpha": 0.32,
+          "hex": "#787880"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillDark32"
+          }
+        }
+      },
+      "dark-24": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4627,
+            0.4627,
+            0.502
+          ],
+          "alpha": 0.24,
+          "hex": "#767680"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillDark24"
+          }
+        }
+      },
+      "dark-18": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4627,
+            0.4627,
+            0.502
+          ],
+          "alpha": 0.18,
+          "hex": "#767680"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.fillDark18"
+          }
+        }
+      }
+    },
+    "white": {
+      "a90": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.9,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA90"
+          }
+        }
+      },
+      "a80": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.8,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA80"
+          }
+        }
+      },
+      "a60": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.6,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA60"
+          }
+        }
+      },
+      "a40": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.4,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA40"
+          }
+        }
+      },
+      "a25": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.25,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA25"
+          }
+        }
+      },
+      "a15": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.15,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA15"
+          }
+        }
+      },
+      "a08": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.08,
+          "hex": "#ffffff"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.whiteA08"
+          }
+        }
+      }
+    },
+    "black": {
+      "a60": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.6,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA60"
+          }
+        }
+      },
+      "a50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.5,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA50"
+          }
+        }
+      },
+      "a30": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.3,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA30"
+          }
+        }
+      },
+      "a20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.2,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA20"
+          }
+        }
+      },
+      "a12": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.12,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA12"
+          }
+        }
+      },
+      "a06": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.06,
+          "hex": "#000000"
+        },
+        "$description": "Primitive. Use a semantic token instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.blackA06"
+          }
+        }
+      }
+    },
+    "system": {
+      "red": {
+        "light": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8431,
+              0.0,
+              0.0824
+            ],
+            "alpha": 1.0,
+            "hex": "#d70015"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemRedLight"
+            }
+          }
+        },
+        "dark": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              0.4118,
+              0.3804
+            ],
+            "alpha": 1.0,
+            "hex": "#ff6961"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemRedDark"
+            }
+          }
+        }
+      },
+      "orange": {
+        "light": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7216,
+              0.1882,
+              0.0
+            ],
+            "alpha": 1.0,
+            "hex": "#b83000"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemOrangeLight"
+            }
+          }
+        },
+        "dark": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              0.702,
+              0.251
+            ],
+            "alpha": 1.0,
+            "hex": "#ffb340"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemOrangeDark"
+            }
+          }
+        }
+      },
+      "green": {
+        "light": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1176,
+              0.4824,
+              0.2039
+            ],
+            "alpha": 1.0,
+            "hex": "#1e7b34"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemGreenLight"
+            }
+          }
+        },
+        "dark": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1882,
+              0.8588,
+              0.3569
+            ],
+            "alpha": 1.0,
+            "hex": "#30db5b"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemGreenDark"
+            }
+          }
+        }
+      },
+      "blue": {
+        "light": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.251,
+              0.8667
+            ],
+            "alpha": 1.0,
+            "hex": "#0040dd"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemBlueLight"
+            }
+          }
+        },
+        "dark": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.251,
+              0.6118,
+              1.0
+            ],
+            "alpha": 1.0,
+            "hex": "#409cff"
+          },
+          "$description": "Primitive. Use a semantic token instead.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "SalahPalette.systemBlueDark"
+            }
+          }
+        }
+      }
+    },
+    "transparent": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "alpha": 0.0,
+        "hex": "#ffffff"
+      },
+      "$description": "Primitive. Use a semantic token instead.",
+      "$extensions": {
+        "io.github.salah-kit": {
+          "swift": "SalahPalette.transparent"
+        }
+      }
+    },
+    "watchface": {
+      "orange": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            0.6235,
+            0.0392
+          ],
+          "alpha": 1.0,
+          "hex": "#ff9f0a"
+        },
+        "$description": "Sample watch-face color, only for previewing the accented watch rendering. The face supplies the real color.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahPalette.watchfaceOrange"
+          }
+        }
+      }
+    }
+  }
+}

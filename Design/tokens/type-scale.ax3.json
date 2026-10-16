@@ -1,0 +1,1131 @@
+{
+  "type-scale": {
+    "$description": "Font sizes and line heights at the AX3 Dynamic Type size. Values are Apple points. DTCG dimensions allow only px and rem, so 1 px here means 1 pt (a density-independent point, the unit Figma and SwiftUI both use). macOS has no Dynamic Type, so its values repeat in every file. On watchOS, the sizes scaled with @ScaledMetric are those of a watch whose default text size is Large (40 to 42 mm).",
+    "ios": {
+      "large-title": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          },
+          "$description": "ios large-title: Font.TextStyle.largeTitle. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 61,
+            "unit": "px"
+          },
+          "$description": "Line height for ios large-title.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle (leading)"
+            }
+          }
+        }
+      },
+      "title-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "ios title-1: Font.TextStyle.title. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 57,
+            "unit": "px"
+          },
+          "$description": "Line height for ios title-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title (leading)"
+            }
+          }
+        }
+      },
+      "title-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "ios title-2: Font.TextStyle.title2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          },
+          "$description": "Line height for ios title-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2 (leading)"
+            }
+          }
+        }
+      },
+      "title-3": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 43,
+            "unit": "px"
+          },
+          "$description": "ios title-3: Font.TextStyle.title3. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 51,
+            "unit": "px"
+          },
+          "$description": "Line height for ios title-3.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3 (leading)"
+            }
+          }
+        }
+      },
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "ios headline: Font.TextStyle.headline. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Line height for ios headline.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline (leading)"
+            }
+          }
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "ios body: Font.TextStyle.body. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Line height for ios body.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body (leading)"
+            }
+          }
+        }
+      },
+      "callout": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 38,
+            "unit": "px"
+          },
+          "$description": "ios callout: Font.TextStyle.callout. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.callout"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 46,
+            "unit": "px"
+          },
+          "$description": "Line height for ios callout.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.callout (leading)"
+            }
+          }
+        }
+      },
+      "subheadline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 36,
+            "unit": "px"
+          },
+          "$description": "ios subheadline: Font.TextStyle.subheadline. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.subheadline"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 43,
+            "unit": "px"
+          },
+          "$description": "Line height for ios subheadline.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.subheadline (leading)"
+            }
+          }
+        }
+      },
+      "footnote": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 33,
+            "unit": "px"
+          },
+          "$description": "ios footnote: Font.TextStyle.footnote. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "Line height for ios footnote.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote (leading)"
+            }
+          }
+        }
+      },
+      "caption-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$description": "ios caption-1: Font.TextStyle.caption. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 39,
+            "unit": "px"
+          },
+          "$description": "Line height for ios caption-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption (leading)"
+            }
+          }
+        }
+      },
+      "caption-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 29,
+            "unit": "px"
+          },
+          "$description": "ios caption-2: Font.TextStyle.caption2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 35,
+            "unit": "px"
+          },
+          "$description": "Line height for ios caption-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2 (leading)"
+            }
+          }
+        }
+      },
+      "countdown-display": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 95.33,
+            "unit": "px"
+          },
+          "$description": "ios countdown-display: @ScaledMetric(relativeTo: .largeTitle), held at its AX3 size by .dynamicTypeSize(...DynamicTypeSize.accessibility3). Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .largeTitle)"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 101.33,
+            "unit": "px"
+          },
+          "$description": "Line height for ios countdown-display.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .largeTitle) (leading)"
+            }
+          }
+        }
+      },
+      "countdown-large": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 65.33,
+            "unit": "px"
+          },
+          "$description": "ios countdown-large: @ScaledMetric(relativeTo: .largeTitle). Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .largeTitle)"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 71.33,
+            "unit": "px"
+          },
+          "$description": "Line height for ios countdown-large.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .largeTitle) (leading)"
+            }
+          }
+        }
+      },
+      "countdown": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "ios countdown: Font.TextStyle.title. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 57,
+            "unit": "px"
+          },
+          "$description": "Line height for ios countdown.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title (leading)"
+            }
+          }
+        }
+      },
+      "countdown-small": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "ios countdown-small: Font.TextStyle.title2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          },
+          "$description": "Line height for ios countdown-small.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2 (leading)"
+            }
+          }
+        }
+      }
+    },
+    "macos": {
+      "large-title": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          },
+          "$description": "macos large-title: Font.TextStyle.largeTitle. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$description": "Line height for macos large-title.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle (leading)"
+            }
+          }
+        }
+      },
+      "title-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 22,
+            "unit": "px"
+          },
+          "$description": "macos title-1: Font.TextStyle.title. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          },
+          "$description": "Line height for macos title-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title (leading)"
+            }
+          }
+        }
+      },
+      "title-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 17,
+            "unit": "px"
+          },
+          "$description": "macos title-2: Font.TextStyle.title2. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 22,
+            "unit": "px"
+          },
+          "$description": "Line height for macos title-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2 (leading)"
+            }
+          }
+        }
+      },
+      "title-3": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          },
+          "$description": "macos title-3: Font.TextStyle.title3. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$description": "Line height for macos title-3.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3 (leading)"
+            }
+          }
+        }
+      },
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$description": "macos headline: Font.TextStyle.headline. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          },
+          "$description": "Line height for macos headline.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline (leading)"
+            }
+          }
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$description": "macos body: Font.TextStyle.body. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          },
+          "$description": "Line height for macos body.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body (leading)"
+            }
+          }
+        }
+      },
+      "callout": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          },
+          "$description": "macos callout: Font.TextStyle.callout. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.callout"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          },
+          "$description": "Line height for macos callout.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.callout (leading)"
+            }
+          }
+        }
+      },
+      "subheadline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 11,
+            "unit": "px"
+          },
+          "$description": "macos subheadline: Font.TextStyle.subheadline. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.subheadline"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          },
+          "$description": "Line height for macos subheadline.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.subheadline (leading)"
+            }
+          }
+        }
+      },
+      "footnote": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10,
+            "unit": "px"
+          },
+          "$description": "macos footnote: Font.TextStyle.footnote. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$description": "Line height for macos footnote.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote (leading)"
+            }
+          }
+        }
+      },
+      "caption-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10,
+            "unit": "px"
+          },
+          "$description": "macos caption-1: Font.TextStyle.caption. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$description": "Line height for macos caption-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption (leading)"
+            }
+          }
+        }
+      },
+      "caption-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10,
+            "unit": "px"
+          },
+          "$description": "macos caption-2: Font.TextStyle.caption2. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$description": "Line height for macos caption-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2 (leading)"
+            }
+          }
+        }
+      },
+      "countdown-large": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
+            "unit": "px"
+          },
+          "$description": "macos countdown-large: Font.system(size: 30). macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.system(size: 30)"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 34,
+            "unit": "px"
+          },
+          "$description": "Line height for macos countdown-large.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.system(size: 30) (leading)"
+            }
+          }
+        }
+      },
+      "countdown": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 22,
+            "unit": "px"
+          },
+          "$description": "macos countdown: Font.TextStyle.title. macOS has no Dynamic Type, so every mode holds the same value.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          },
+          "$description": "Line height for macos countdown.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title (leading)"
+            }
+          }
+        }
+      }
+    },
+    "watchos": {
+      "large-title": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 46,
+            "unit": "px"
+          },
+          "$description": "watchos large-title: Font.TextStyle.largeTitle. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos large-title.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.largeTitle (leading)"
+            }
+          }
+        }
+      },
+      "title-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "watchos title-1: Font.TextStyle.title. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos title-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title (leading)"
+            }
+          }
+        }
+      },
+      "title-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 36,
+            "unit": "px"
+          },
+          "$description": "watchos title-2: Font.TextStyle.title2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos title-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2 (leading)"
+            }
+          }
+        }
+      },
+      "title-3": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          },
+          "$description": "watchos title-3: Font.TextStyle.title3. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos title-3.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title3 (leading)"
+            }
+          }
+        }
+      },
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 23,
+            "unit": "px"
+          },
+          "$description": "watchos headline: Font.TextStyle.headline. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 27,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos headline.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.headline (leading)"
+            }
+          }
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 23,
+            "unit": "px"
+          },
+          "$description": "watchos body: Font.TextStyle.body. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 27,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos body.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.body (leading)"
+            }
+          }
+        }
+      },
+      "caption-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$description": "watchos caption-1: Font.TextStyle.caption. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos caption-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption (leading)"
+            }
+          }
+        }
+      },
+      "caption-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 19,
+            "unit": "px"
+          },
+          "$description": "watchos caption-2: Font.TextStyle.caption2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 23,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos caption-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.caption2 (leading)"
+            }
+          }
+        }
+      },
+      "footnote-1": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 18,
+            "unit": "px"
+          },
+          "$description": "watchos footnote-1: Font.TextStyle.footnote. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 21,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos footnote-1.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.footnote (leading)"
+            }
+          }
+        }
+      },
+      "footnote-2": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          },
+          "$description": "watchos footnote-2: @ScaledMetric(relativeTo: .footnote), because Font.TextStyle.footnote is Footnote 1. Modes follow Dynamic Type sizes. Scaled sizes are those of a watch whose default text size is Large (40 to 42 mm); 44 to 49 mm watches default to xLarge, where the base size applies.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .footnote)"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos footnote-2.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .footnote) (leading)"
+            }
+          }
+        }
+      },
+      "countdown-display": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 51.5,
+            "unit": "px"
+          },
+          "$description": "watchos countdown-display: @ScaledMetric(relativeTo: .title). Modes follow Dynamic Type sizes. Scaled sizes are those of a watch whose default text size is Large (40 to 42 mm); 44 to 49 mm watches default to xLarge, where the base size applies.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .title)"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 56.5,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos countdown-display.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "@ScaledMetric(relativeTo: .title) (leading)"
+            }
+          }
+        }
+      },
+      "countdown": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 36,
+            "unit": "px"
+          },
+          "$description": "watchos countdown: Font.TextStyle.title2. Modes follow Dynamic Type sizes.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "Line height for watchos countdown.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "swift": "Font.TextStyle.title2 (leading)"
+            }
+          }
+        }
+      }
+    }
+  }
+}

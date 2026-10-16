@@ -1,0 +1,499 @@
+{
+  "typography": {
+    "watchos": {
+      "$description": "Text styles for watchos at the Large text size, the default on 40 to 42 mm watches, in the system font: SF Compact and SF Compact Rounded. Arabic text renders in SF Arabic and SF Arabic Rounded, which the system selects. lineHeight is a ratio of fontSize; the point value is in $extensions. Larger Dynamic Type sizes are in the type-scale files; 44 to 49 mm watches default to xLarge. Values are Apple points. DTCG dimensions allow only px and rem, so 1 px here means 1 pt (a density-independent point, the unit Figma and SwiftUI both use).",
+      "large-title": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 36,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1667
+        },
+        "$description": "watchOS Large Title → Font.largeTitle. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Large Title",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 42,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "largeTitle",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.large-title.size}",
+              "lineHeight": "{type-scale.watchos.large-title.line-height}"
+            }
+          }
+        }
+      },
+      "title-1": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 34,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1176
+        },
+        "$description": "watchOS Title 1 → Font.title. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Title 1",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 38,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "title",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.title-1.size}",
+              "lineHeight": "{type-scale.watchos.title-1.line-height}"
+            }
+          }
+        }
+      },
+      "title-2": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1429
+        },
+        "$description": "watchOS Title 2 → Font.title2. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Title 2",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 32,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "title2",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.title-2.size}",
+              "lineHeight": "{type-scale.watchos.title-2.line-height}"
+            }
+          }
+        }
+      },
+      "title-3": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 19,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1579
+        },
+        "$description": "watchOS Title 3 → Font.title3. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Title 3",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 22,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "title3",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.title-3.size}",
+              "lineHeight": "{type-scale.watchos.title-3.line-height}"
+            }
+          }
+        }
+      },
+      "headline": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 16,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1875
+        },
+        "$description": "watchOS Headline → Font.headline (system weight semibold). Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Headline",
+            "design": "default",
+            "weight": "semibold",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 19,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "headline",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.headline.size}",
+              "lineHeight": "{type-scale.watchos.headline.line-height}"
+            }
+          }
+        }
+      },
+      "body": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 16,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1875
+        },
+        "$description": "watchOS Body → Font.body. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Body",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 19,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "body",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.body.size}",
+              "lineHeight": "{type-scale.watchos.body.line-height}"
+            }
+          }
+        }
+      },
+      "body-emphasized": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 16,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.1875
+        },
+        "$description": "watchOS Body → Font.body.weight(.semibold). Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Body Emphasized",
+            "design": "default",
+            "weight": "semibold",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 19,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "body",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.body.size}",
+              "lineHeight": "{type-scale.watchos.body.line-height}"
+            }
+          }
+        }
+      },
+      "caption-1": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 15,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.2
+        },
+        "$description": "watchOS Caption 1 → Font.caption. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Caption 1",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 18,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "caption",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.caption-1.size}",
+              "lineHeight": "{type-scale.watchos.caption-1.line-height}"
+            }
+          }
+        }
+      },
+      "caption-2": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.2143
+        },
+        "$description": "watchOS Caption 2 → Font.caption2. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Caption 2",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 17,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "caption2",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.caption-2.size}",
+              "lineHeight": "{type-scale.watchos.caption-2.line-height}"
+            }
+          }
+        }
+      },
+      "footnote-1": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.2308
+        },
+        "$description": "watchOS Footnote 1 → Font.footnote. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Footnote 1",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 16,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "textStyle": "footnote",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.footnote-1.size}",
+              "lineHeight": "{type-scale.watchos.footnote-1.line-height}"
+            }
+          }
+        }
+      },
+      "footnote-2": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "SF Compact",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.25
+        },
+        "$description": "watchOS Footnote 2: size 12 with @ScaledMetric(relativeTo: .footnote), because Font.footnote is Footnote 1. The base size applies at the watch’s default text size: Large on 40 to 42 mm, xLarge on 44 to 49 mm. Scales with Dynamic Type.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "figmaStyle": "watchOS/Footnote 2",
+            "design": "default",
+            "weight": "regular",
+            "monospacedDigit": false,
+            "lineHeight": {
+              "value": 15,
+              "unit": "px"
+            },
+            "arabicFontFamily": "SF Arabic",
+            "scaledRelativeTo": "footnote",
+            "typeScale": {
+              "fontSize": "{type-scale.watchos.footnote-2.size}",
+              "lineHeight": "{type-scale.watchos.footnote-2.line-height}"
+            }
+          }
+        }
+      },
+      "numeric": {
+        "countdown-display": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "SF Compact Rounded",
+            "fontSize": {
+              "value": 40,
+              "unit": "px"
+            },
+            "fontWeight": 600,
+            "letterSpacing": {
+              "value": 0,
+              "unit": "px"
+            },
+            "lineHeight": 1.1
+          },
+          "$description": "Watch hero countdown. @ScaledMetric(relativeTo: .title) size 40, .rounded, .monospacedDigit(); .lineLimit(1) and .minimumScaleFactor(0.5) keep it on one line, even with two-digit hours on a 40 mm watch. The base size applies at the watch’s default text size: Large on 40 to 42 mm, xLarge on 44 to 49 mm. Scales with Dynamic Type.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "figmaStyle": "watchOS/Numeric/Countdown Display",
+              "design": "rounded",
+              "weight": "semibold",
+              "monospacedDigit": true,
+              "lineHeight": {
+                "value": 44,
+                "unit": "px"
+              },
+              "arabicFontFamily": "SF Arabic Rounded",
+              "scaledRelativeTo": "title",
+              "typeScale": {
+                "fontSize": "{type-scale.watchos.countdown-display.size}",
+                "lineHeight": "{type-scale.watchos.countdown-display.line-height}"
+              }
+            }
+          }
+        },
+        "countdown": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "SF Compact Rounded",
+            "fontSize": {
+              "value": 28,
+              "unit": "px"
+            },
+            "fontWeight": 600,
+            "letterSpacing": {
+              "value": 0,
+              "unit": "px"
+            },
+            "lineHeight": 1.1429
+          },
+          "$description": "Watch countdown. .title2, .rounded, semibold, .monospacedDigit(). Scales with Dynamic Type.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "figmaStyle": "watchOS/Numeric/Countdown",
+              "design": "rounded",
+              "weight": "semibold",
+              "monospacedDigit": true,
+              "lineHeight": {
+                "value": 32,
+                "unit": "px"
+              },
+              "arabicFontFamily": "SF Arabic Rounded",
+              "textStyle": "title2",
+              "typeScale": {
+                "fontSize": "{type-scale.watchos.countdown.size}",
+                "lineHeight": "{type-scale.watchos.countdown.line-height}"
+              }
+            }
+          }
+        },
+        "time": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "SF Compact",
+            "fontSize": {
+              "value": 16,
+              "unit": "px"
+            },
+            "fontWeight": 400,
+            "letterSpacing": {
+              "value": 0,
+              "unit": "px"
+            },
+            "lineHeight": 1.1875
+          },
+          "$description": "Times in watch lists. .body.monospacedDigit(). Scales with Dynamic Type.",
+          "$extensions": {
+            "io.github.salah-kit": {
+              "figmaStyle": "watchOS/Numeric/Time",
+              "design": "default",
+              "weight": "regular",
+              "monospacedDigit": true,
+              "lineHeight": {
+                "value": 19,
+                "unit": "px"
+              },
+              "arabicFontFamily": "SF Arabic",
+              "textStyle": "body",
+              "typeScale": {
+                "fontSize": "{type-scale.watchos.body.size}",
+                "lineHeight": "{type-scale.watchos.body.line-height}"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "phase": {
+    "$description": "Time-of-day theme. Each file points at one phase set in the color files; the app picks the file for the current prayer period. Mode: Neutral.",
+    "sky": {
+      "top": {
+        "$type": "color",
+        "$value": "{color.phase-neutral.sky-top}",
+        "$description": "Top of the time-of-day sky gradient: hero, widgets, the Today background. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.phase.skyTop"
+          }
+        }
+      },
+      "bottom": {
+        "$type": "color",
+        "$value": "{color.phase-neutral.sky-bottom}",
+        "$description": "Bottom of the time-of-day sky gradient. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.phase.skyBottom"
+          }
+        }
+      }
+    },
+    "tint": {
+      "$type": "color",
+      "$value": "{color.phase-neutral.tint}",
+      "$description": "Signature mark of the time of day: timeline segment, glyph, progress (3:1). Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark).",
+      "$extensions": {
+        "io.github.salah-kit": {
+          "swift": "SalahColor.phase.tint"
+        }
+      }
+    },
+    "text": {
+      "$type": "color",
+      "$value": "{color.phase-neutral.text}",
+      "$description": "Text in the time-of-day color (4.5:1 on its sky and on cells). Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark).",
+      "$extensions": {
+        "io.github.salah-kit": {
+          "swift": "SalahColor.phase.text"
+        }
+      }
+    },
+    "tint-subtle": {
+      "$type": "color",
+      "$value": "{color.phase-neutral.tint-subtle}",
+      "$description": "Quiet wash of the time of day, behind the next row. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark).",
+      "$extensions": {
+        "io.github.salah-kit": {
+          "swift": "SalahColor.phase.tintSubtle"
+        }
+      }
+    }
+  }
+}

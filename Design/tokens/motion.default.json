@@ -1,0 +1,110 @@
+{
+  "motion": {
+    "$description": "Animation timings, Default values. Use the Reduce Motion file when accessibilityReduceMotion is on; 0 ms means no animation.",
+    "countdown-tick": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 350,
+          "unit": "ms"
+        },
+        "$description": "Countdown digit change: .contentTransition(.numericText(countsDown: true)); a 0.2 s cross-fade under Reduce Motion. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.countdownTickDuration"
+          }
+        }
+      }
+    },
+    "prayer-change": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        },
+        "$description": "Focus moves to the next prayer: .smooth(duration: 0.5); cross-fade under Reduce Motion. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.prayerChangeDuration"
+          }
+        }
+      }
+    },
+    "phase-change": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 1200,
+          "unit": "ms"
+        },
+        "$description": "Sky colors cross-fade at a phase boundary (widgets cap animations at 2 s). Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.phaseChangeDuration"
+          }
+        }
+      }
+    },
+    "adhan": {
+      "pulse-period": {
+        "$type": "duration",
+        "$value": {
+          "value": 1600,
+          "unit": "ms"
+        },
+        "$description": "Speaker glyph variable-color pulse while the adhan plays; static under Reduce Motion. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.adhanPulsePeriod"
+          }
+        }
+      }
+    },
+    "approaching": {
+      "breath-period": {
+        "$type": "duration",
+        "$value": {
+          "value": 2400,
+          "unit": "ms"
+        },
+        "$description": "Gentle accent breathing on the hero rim in the last 15 minutes; none under Reduce Motion. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.approachingBreathPeriod"
+          }
+        }
+      }
+    },
+    "press": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 120,
+          "unit": "ms"
+        },
+        "$description": "Press feedback. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.pressDuration"
+          }
+        }
+      }
+    },
+    "spring": {
+      "response": {
+        "$type": "duration",
+        "$value": {
+          "value": 350,
+          "unit": "ms"
+        },
+        "$description": "Spring response; 0 means no spring (cross-fade) under Reduce Motion. Seconds.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahMotion.springResponse"
+          }
+        }
+      }
+    }
+  }
+}

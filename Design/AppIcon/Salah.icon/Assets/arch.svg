@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="gold" x1="0" y1="149.62" x2="0" y2="832" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#EFD9B2"/>
+  <stop offset="1" stop-color="#B4892D"/>
+</linearGradient>
+</defs>
+<path fill="url(#gold)" d="M296 792 V470 A345.6 345.6 0 0 1 512 149.62 A345.6 345.6 0 0 1 728 470 V792 H668 V470 A285.6 285.6 0 0 0 512 215.5 A285.6 285.6 0 0 0 356 470 V792 Z"/>
+<path fill="url(#gold)" d="M256 792 H768 A20 20 0 0 1 768 832 H256 A20 20 0 0 1 256 792 Z"/>
+</svg>
