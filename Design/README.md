@@ -397,10 +397,16 @@ digits it shows.
 
 ## Fonts in the Figma file
 
-The Figma file draws text with stand-in fonts so it renders on any machine: Inter for SF
-Pro and SF Compact, Nunito for the rounded designs, and Noto Sans Arabic for Arabic. Its
-Typeface collection switches every style to Apple's fonts (SF Pro, SF Pro Rounded,
-SF Compact, SF Compact Rounded and SF Arabic) when they're installed.
+Salah's own text styles store stand-in fonts, so they render on any machine: Inter for SF
+Pro and SF Compact, Nunito for the rounded designs, and Noto Sans Arabic for Arabic. The
+file's Typeface collection switches every style to Apple's fonts (SF Pro, SF Pro Rounded,
+SF Compact, SF Compact Rounded, SF Arabic and SF Arabic Rounded) when they're installed.
+
+The system controls and bars on the screens (status bars, tab and navigation bars,
+toggles, buttons, alerts, the menu bar and the rest of the System references page) are
+Apple's own components, from Apple's iOS and iPadOS, macOS and watchOS design resources.
+They always draw in Apple's fonts, so open the file in Figma's desktop app on a Mac with
+SF Pro, SF Compact and SF Arabic installed to see them as designed.
 
 Code always uses the system font, so the stand-ins never ship. The typography tokens name
 the Apple fonts. Arabic text renders in SF Arabic and SF Arabic Rounded, which the system
@@ -408,8 +414,10 @@ picks; there's no separate Arabic token file.
 
 ## Previews
 
-`Previews/` holds a few rendered screens, for reading this folder without Figma. They use
-real times: Makkah on 2 June 2026 with Umm al-Qura, unless the image shows otherwise.
+`Previews/` holds a few rendered screens, for reading this folder without Figma. They show
+Apple's system components and are rendered in Apple's fonts, with the Typeface collection
+in its SF modes. They use real times: Makkah on 2 June 2026 with Umm al-Qura, unless the
+image shows otherwise.
 
 - `cover.png`: the cover of the library.
 - `iphone-today.png`: Today on iPhone, in English and Arabic, light and dark.
