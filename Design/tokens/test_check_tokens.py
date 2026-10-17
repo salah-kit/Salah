@@ -405,7 +405,8 @@ class CheckTokensTests(unittest.TestCase):
 
     def test_dark_increased_contrast_is_checked(self):
         self.edit_increased('dark', 'status', 'info', '{primitives.system.blue.dark}')
-        self.assert_fails('contrast dark-increased-contrast: status/info on bg/elevated', 'needs 7.0:1')
+        # 5.47:1 meets the standard target, so only the Increase Contrast one fails it.
+        self.assert_fails('contrast dark-increased-contrast: status/info on bg/secondary is 5.47:1, needs 7.0:1')
 
     def test_exception_must_give_its_recorded_ratio(self):
         self.edit_increased('light', 'status', 'warning', '{primitives.system.orange.light}')

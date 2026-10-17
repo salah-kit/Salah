@@ -147,11 +147,13 @@ When Increase Contrast is on, the colors come from the Increased contrast files:
 surfaces it's used on, and graphics and large text reach 4.5:1. Fills, glass and the scrim are
 more opaque. A few pairs keep the standard 4.5:1: secondary text on translucent chips, where
 7:1 would make it as dark as primary text, and the warning color, which turns brown at 7:1.
-`CONTRAST_EXCEPTIONS` in `tokens/check_tokens.py` lists each pair with its ratio.
+`CONTRAST_EXCEPTIONS` in `tokens/check_tokens.py` lists each pair with its ratio. The checker
+fails when a listed ratio changes or a listed pair reaches its target, so the list stays true.
 
-- **System colors need nothing.** The tokens in the table above adapt because the system
-  colors do. Their values in the Increased contrast files are the system's own, for the Figma
-  drawings.
+- **System colors need nothing.** The tokens the table above maps to system colors (all but
+  `accent/default`) adapt because the system colors do. In the Increased contrast files they
+  change where the system's colors change under Increase Contrast, as measured on iOS 27 and
+  macOS 27, so the Figma drawings match.
 - **Asset catalog colors.** In each color set, the accent color included, turn on High
   Contrast in the Attributes inspector, and fill the High Contrast slots from the Increased
   contrast files. `Color("…")` and `Color.accentColor` then pick the variant themselves.
@@ -160,23 +162,24 @@ more opaque. A few pairs keep the standard 4.5:1: secondary text on translucent 
 
 ```swift
 extension SalahColor {
-  // accent/default in the four color files
-  static func accentDefault(_ scheme: ColorScheme, _ contrast: ColorSchemeContrast) -> Color {
+  // accent/text in the four color files
+  static func accentText(_ scheme: ColorScheme, _ contrast: ColorSchemeContrast) -> Color {
     switch (scheme == .dark, contrast == .increased) {
-    case (false, false): SalahPalette.gold600
-    case (false, true): SalahPalette.gold700
-    case (true, false): SalahPalette.gold400
-    case (true, true): SalahPalette.gold300
+    case (false, false): SalahPalette.gold700
+    case (false, true): SalahPalette.gold850
+    case (true, false): SalahPalette.gold300
+    case (true, true): SalahPalette.gold100
     }
   }
 }
 
-struct AccentMark: View {
+struct NextPrayerTime: View {
+  let time: String
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.colorSchemeContrast) private var contrast
 
   var body: some View {
-    Capsule().fill(SalahColor.accentDefault(colorScheme, contrast))
+    Text(time).foregroundStyle(SalahColor.accentText(colorScheme, contrast))
   }
 }
 ```

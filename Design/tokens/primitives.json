@@ -2223,82 +2223,6 @@
             "swift": "SalahPalette.separatorOpaqueDark"
           }
         }
-      },
-      "light-high-contrast": {
-        "$type": "color",
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [
-            0.2353,
-            0.2353,
-            0.2627
-          ],
-          "alpha": 0.12,
-          "hex": "#3c3c43"
-        },
-        "$description": "Primitive. Use a semantic token instead.",
-        "$extensions": {
-          "io.github.salah-kit": {
-            "swift": "SalahPalette.separatorLightHighContrast"
-          }
-        }
-      },
-      "dark-high-contrast": {
-        "$type": "color",
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [
-            0.3294,
-            0.3294,
-            0.3451
-          ],
-          "alpha": 0.5,
-          "hex": "#545458"
-        },
-        "$description": "Primitive. Use a semantic token instead.",
-        "$extensions": {
-          "io.github.salah-kit": {
-            "swift": "SalahPalette.separatorDarkHighContrast"
-          }
-        }
-      },
-      "opaque-light-high-contrast": {
-        "$type": "color",
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [
-            0.9059,
-            0.9059,
-            0.9098
-          ],
-          "alpha": 1.0,
-          "hex": "#e7e7e8"
-        },
-        "$description": "Primitive. Use a semantic token instead.",
-        "$extensions": {
-          "io.github.salah-kit": {
-            "swift": "SalahPalette.separatorOpaqueLightHighContrast"
-          }
-        }
-      },
-      "opaque-dark-high-contrast": {
-        "$type": "color",
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [
-            0.1647,
-            0.1647,
-            0.1725
-          ],
-          "alpha": 1.0,
-          "hex": "#2a2a2c"
-        },
-        "$description": "Primitive. Use a semantic token instead.",
-        "$extensions": {
-          "io.github.salah-kit": {
-            "swift": "SalahPalette.separatorOpaqueDarkHighContrast"
-          }
-        }
       }
     },
     "fill": {
@@ -2898,7 +2822,7 @@
             }
           }
         },
-        "light-high-contrast": {
+        "light-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -2913,11 +2837,11 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemRedLightHighContrast"
+              "swift": "SalahPalette.systemRedLightEnhanced"
             }
           }
         },
-        "dark-high-contrast": {
+        "dark-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -2932,7 +2856,7 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemRedDarkHighContrast"
+              "swift": "SalahPalette.systemRedDarkEnhanced"
             }
           }
         }
@@ -2976,7 +2900,7 @@
             }
           }
         },
-        "light-high-contrast": {
+        "light-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -2991,11 +2915,11 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemOrangeLightHighContrast"
+              "swift": "SalahPalette.systemOrangeLightEnhanced"
             }
           }
         },
-        "dark-high-contrast": {
+        "dark-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -3010,7 +2934,7 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemOrangeDarkHighContrast"
+              "swift": "SalahPalette.systemOrangeDarkEnhanced"
             }
           }
         }
@@ -3054,7 +2978,7 @@
             }
           }
         },
-        "light-high-contrast": {
+        "light-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -3069,11 +2993,11 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemGreenLightHighContrast"
+              "swift": "SalahPalette.systemGreenLightEnhanced"
             }
           }
         },
-        "dark-high-contrast": {
+        "dark-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -3088,7 +3012,7 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemGreenDarkHighContrast"
+              "swift": "SalahPalette.systemGreenDarkEnhanced"
             }
           }
         }
@@ -3132,7 +3056,7 @@
             }
           }
         },
-        "light-high-contrast": {
+        "light-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -3147,11 +3071,11 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemBlueLightHighContrast"
+              "swift": "SalahPalette.systemBlueLightEnhanced"
             }
           }
         },
-        "dark-high-contrast": {
+        "dark-enhanced": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -3166,7 +3090,7 @@
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
             "io.github.salah-kit": {
-              "swift": "SalahPalette.systemBlueDarkHighContrast"
+              "swift": "SalahPalette.systemBlueDarkEnhanced"
             }
           }
         }

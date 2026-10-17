@@ -89,6 +89,7 @@ CONTRAST_EXCEPTIONS = {
     ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-neutral/sky-top'): 6.88,
     # Warning orange. At 7:1 it turns brown on light surfaces and pale on dark ones.
     ('light-increased-contrast', 'status/warning', 'bg/secondary'): 6.54,
+    ('light-increased-contrast', 'status/warning', 'bg/window'): 6.57,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-top'): 5.35,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-bottom'): 5.75,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-dhuhr/sky-top'): 5.37,
