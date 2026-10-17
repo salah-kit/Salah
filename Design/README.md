@@ -124,6 +124,7 @@ for example with an asset catalog color set (see [Increase Contrast](#increase-c
 | `bg/primary`, `bg/secondary`, `bg/tertiary` | `Color(.systemBackground)`, `Color(.secondarySystemBackground)`, `Color(.tertiarySystemBackground)` (iOS) |
 | `bg/grouped`, `bg/grouped-secondary`, `bg/grouped-tertiary` | `Color(.systemGroupedBackground)` and its secondary and tertiary variants (iOS) |
 | `bg/window`, `bg/content` | `Color(nsColor: .windowBackgroundColor)`, `Color(nsColor: .controlBackgroundColor)` (macOS) |
+| `fill/form-group`, `separator/form-row` | Nothing: `Form` with `.formStyle(.grouped)` draws its sections and row lines itself on macOS (`quaternarySystemFill` and `quinaryLabelColor`). The tokens let the Figma screens draw them. |
 | `separator/default` | `.separator` |
 | `separator/opaque` | `Color(.opaqueSeparator)` (iOS) |
 | `fill/primary` … `fill/quaternary` | `.fill`, `.fill.secondary`, `.fill.tertiary`, `.fill.quaternary` |

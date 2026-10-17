@@ -428,8 +428,8 @@ class CheckTokensTests(unittest.TestCase):
 
     def test_increased_contrast_never_weakens_a_color(self):
         # A fainter separator than the standard one, though no contrast pair covers separators.
-        self.edit_increased('light', 'separator', 'default', '{primitives.ink.light-18}')
-        self.assert_fails('light-increased-contrast: separator/default stands out less from bg/primary (1.37:1) than in light (1.71:1)')
+        self.edit_increased('light', 'separator', 'default', '{primitives.black.a03}')
+        self.assert_fails('light-increased-contrast: separator/default stands out less from bg/primary (1.07:1) than in light (1.23:1)')
 
     def test_increased_contrast_files_define_the_same_tokens(self):
         self.edit('color.dark-increased-contrast.json', lambda doc: doc['color']['label'].pop('quaternary'))

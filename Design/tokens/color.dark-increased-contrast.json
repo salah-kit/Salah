@@ -74,8 +74,8 @@
       },
       "window": {
         "$type": "color",
-        "$value": "{primitives.neutral.825}",
-        "$description": "macOS windowBackgroundColor.",
+        "$value": "{primitives.neutral.875}",
+        "$description": "macOS windowBackgroundColor. On macOS 27 it matches bg/content, so a grouped Form sets its sections apart with fill/form-group.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.bgWindow"
@@ -175,6 +175,16 @@
             "swift": "SalahColor.separatorOpaque"
           }
         }
+      },
+      "form-row": {
+        "$type": "color",
+        "$value": "{primitives.white.a05}",
+        "$description": "The line between the rows of a macOS grouped Form section: quinaryLabelColor. Form draws it with .formStyle(.grouped).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.separatorFormRow"
+          }
+        }
       }
     },
     "fill": {
@@ -215,6 +225,16 @@
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.fillQuaternary"
+          }
+        }
+      },
+      "form-group": {
+        "$type": "color",
+        "$value": "{primitives.white.a03}",
+        "$description": "A section of a macOS grouped Form, on bg/window: quaternarySystemFill. Form draws it with .formStyle(.grouped).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.fillFormGroup"
           }
         }
       }

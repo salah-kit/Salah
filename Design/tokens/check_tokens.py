@@ -91,7 +91,6 @@ CONTRAST_EXCEPTIONS = {
     ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-neutral/sky-top'): 6.88,
     # Warning orange. At 7:1 it turns brown on light surfaces and pale on dark ones.
     ('light-increased-contrast', 'status/warning', 'bg/secondary'): 6.54,
-    ('light-increased-contrast', 'status/warning', 'bg/window'): 6.57,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-top'): 5.35,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-bottom'): 5.75,
     ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-dhuhr/sky-top'): 5.37,
@@ -345,6 +344,8 @@ def contrast_checks(files):
         for p in PHASES:
             for f in ('sky-top', 'sky-bottom', 'tint-subtle'):
                 surfaces[f'phase-{p}/{f}'] = surface(f'phase-{p}/{f}')
+        # A macOS grouped Form section: its translucent fill over the window.
+        surfaces['fill/form-group over bg/window'] = over(col('fill/form-group'), surfaces['bg/window'])
 
         def check(fg, bg, need):
             ratio = contrast(over(col(fg), surfaces[bg]), surfaces[bg])
@@ -369,7 +370,8 @@ def contrast_checks(files):
                 check(f'phase-{p}/text', bg, 4.5)
                 check(f'phase-{p}/tint', bg, 3.0)
         for fg in ('status/error', 'status/warning', 'status/success', 'status/info'):
-            for bg in ('bg/primary', 'bg/secondary', 'bg/grouped-secondary', 'bg/elevated', 'bg/content', 'bg/window'):
+            for bg in ('bg/primary', 'bg/secondary', 'bg/grouped-secondary', 'bg/elevated', 'bg/content', 'bg/window',
+                       'fill/form-group over bg/window'):
                 check(fg, bg, 4.5)
         for fg, chip, bases in CHIPS:
             for base in bases:
