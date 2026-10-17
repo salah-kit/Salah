@@ -22,7 +22,9 @@ It verifies that:
 - the documented color pairs meet WCAG 2 contrast in every color mode: in light and dark, 4.5:1
   for text and 3:1 for graphics and large text; in the two Increased contrast modes, 7:1 and 4.5:1.
   The pairs in CONTRAST_EXCEPTIONS keep 4.5:1 and 3:1 there, and must give the ratio recorded for
-  them. Translucent colors are composited over their background first.
+  them. Translucent colors are composited over their background first;
+- no color in an Increased contrast file stands out less from bg/primary than it does in the
+  standard file of its appearance.
 
 It prints a summary and exits with status 1 if any check fails.
 """
@@ -378,7 +380,24 @@ def contrast_checks(files):
         check('label/on-accent', 'accent/fill', 4.5)
     for key in sorted(set(CONTRAST_EXCEPTIONS) - excepted):
         fail(f'contrast exception for a pair the checker does not check: {key}')
+    # Increase Contrast never weakens a color: each stands out from the plain background at least
+    # as much as in the standard mode.
+    for mode in INCREASED_CONTRAST:
+        base = mode.replace('-increased-contrast', '')
+        for path in files[f'color.{mode}.json'][1]:
+            name = path.partition('.')[2].replace('.', '/')
+            stronger, standard = stands_out(files, mode, name), stands_out(files, base, name)
+            if stronger < standard - 1e-9:
+                fail(f'{mode}: {name} stands out less from bg/primary ({stronger:.2f}:1) than in {base} ({standard:.2f}:1)')
     return rows
+
+
+def stands_out(files, mode, name):
+    """Contrast of a color token, composited over bg/primary, against bg/primary."""
+    pool = {**files['primitives.json'][1], **files[f'color.{mode}.json'][1]}
+    col = lambda n: rgba(resolve('color.' + n.replace('/', '.'), pool))
+    bg = col('bg/primary')[:3]
+    return contrast(over(col(name), bg), bg)
 
 
 # ------------------------------------------------------------------ typography

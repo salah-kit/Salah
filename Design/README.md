@@ -379,7 +379,8 @@ status when compiling fails.
    matches its type-scale entry and the code that sizes it, and the documented color pairs
    meet WCAG 2 contrast in every color mode (in light and dark, 4.5:1 for text and 3:1 for
    graphics and large text; in the Increased contrast modes, 7:1 and 4.5:1, apart from the
-   pairs in its `CONTRAST_EXCEPTIONS`). It exits with an error if anything fails.
+   pairs in its `CONTRAST_EXCEPTIONS`), and that no color in an Increased contrast file is
+   weaker than in the standard file. It exits with an error if anything fails.
 
 A new color pair that carries text or meaning needs its contrast checked too: add it to the
 checker's lists. A new token file goes in its `FILES`.

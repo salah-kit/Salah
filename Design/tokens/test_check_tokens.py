@@ -426,6 +426,11 @@ class CheckTokensTests(unittest.TestCase):
         path.write_text(text.replace('CONTRAST_EXCEPTIONS = {', "CONTRAST_EXCEPTIONS = {('dark-increased-contrast', 'label/primary', 'bg/nowhere'): 9.99,", 1), encoding='utf-8')
         self.assert_fails("contrast exception for a pair the checker does not check: ('dark-increased-contrast', 'label/primary', 'bg/nowhere')")
 
+    def test_increased_contrast_never_weakens_a_color(self):
+        # A fainter separator than the standard one, though no contrast pair covers separators.
+        self.edit_increased('light', 'separator', 'default', '{primitives.ink.light-18}')
+        self.assert_fails('light-increased-contrast: separator/default stands out less from bg/primary (1.37:1) than in light (1.71:1)')
+
     def test_increased_contrast_files_define_the_same_tokens(self):
         self.edit('color.dark-increased-contrast.json', lambda doc: doc['color']['label'].pop('quaternary'))
         self.assert_fails('color.dark-increased-contrast.json differs from color.light.json')
