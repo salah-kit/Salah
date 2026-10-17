@@ -19,8 +19,10 @@ It verifies that:
   files; a size scaled with @ScaledMetric grows with its text style, within 10%, up to its
   maxDynamicTypeSize;
 - type-scale sizes never shrink as the text size grows;
-- the documented color pairs meet WCAG 2 contrast in light and dark: 4.5:1 for text, 3:1 for
-  graphics and large text. Translucent colors are composited over their background first.
+- the documented color pairs meet WCAG 2 contrast in every color mode: in light and dark, 4.5:1
+  for text and 3:1 for graphics and large text; in the two Increased contrast modes, 7:1 and 4.5:1.
+  The pairs in CONTRAST_EXCEPTIONS keep 4.5:1 and 3:1 there, and must give the ratio recorded for
+  them. Translucent colors are composited over their background first.
 
 It prints a summary and exits with status 1 if any check fails.
 """
@@ -40,7 +42,7 @@ PHASES = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'neutral']
 # Collections with one file per mode, in the order of their modes. Every file of a collection must
 # define the same tokens.
 MODES = {
-    'color': ['light', 'dark'],
+    'color': ['light', 'dark', 'light-increased-contrast', 'dark-increased-contrast'],
     'phase': PHASES,
     'rendering': ['full-color', 'accented', 'accented-watch', 'vibrant'],
     'type-scale': ['default', 'xxxlarge', 'ax3', 'ax5'],
@@ -59,6 +61,53 @@ DYNAMIC_TYPE_ORDER = ['xSmall', 'small', 'medium', 'large', 'xLarge', 'xxLarge',
 TEXT_STYLES = {'largeTitle': 'large-title', 'title': 'title-1', 'title2': 'title-2', 'title3': 'title-3',
                'headline': 'headline', 'body': 'body', 'callout': 'callout', 'subheadline': 'subheadline',
                'footnote': 'footnote', 'caption': 'caption-1', 'caption2': 'caption-2'}
+# Under Increase Contrast, text needs 7:1 and graphics and large text 4.5:1 (WCAG's enhanced level).
+ENHANCED = {4.5: 7.0, 3.0: 4.5}
+INCREASED_CONTRAST = ('light-increased-contrast', 'dark-increased-contrast')
+# Pairs that can't reach the enhanced target without losing their meaning, with the ratio each gets
+# (to 2 decimals). They keep the standard target. Remove a pair once it reaches the enhanced one.
+CONTRAST_EXCEPTIONS = {
+    # Secondary text on a fill/tertiary chip. The chip darkens as the fill gets more opaque, and 7:1
+    # would make secondary text as dark as primary text.
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-fajr/sky-top'): 6.24,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-fajr/sky-bottom'): 6.61,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-dhuhr/sky-top'): 6.22,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-dhuhr/sky-bottom'): 6.66,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-asr/sky-top'): 6.21,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-asr/sky-bottom'): 6.61,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-maghrib/sky-top'): 6.18,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-maghrib/sky-bottom'): 6.14,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-isha/sky-top'): 6.21,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-isha/sky-bottom'): 6.6,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over phase-neutral/sky-top'): 6.15,
+    ('light-increased-contrast', 'label/secondary', 'fill/tertiary over bg/grouped'): 6.15,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-fajr/sky-bottom'): 6.26,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-dhuhr/sky-bottom'): 6.26,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-asr/sky-bottom'): 6.39,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-maghrib/sky-bottom'): 6.49,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-isha/sky-bottom'): 6.24,
+    ('dark-increased-contrast', 'label/secondary', 'fill/tertiary over phase-neutral/sky-top'): 6.88,
+    # Warning orange. At 7:1 it turns brown on light surfaces and pale on dark ones.
+    ('light-increased-contrast', 'status/warning', 'bg/secondary'): 6.54,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-top'): 5.35,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-bottom'): 5.75,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-dhuhr/sky-top'): 5.37,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-dhuhr/sky-bottom'): 5.78,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-asr/sky-top'): 5.33,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-asr/sky-bottom'): 5.74,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-maghrib/sky-top'): 5.31,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-maghrib/sky-bottom'): 5.27,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-isha/sky-top'): 5.33,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-isha/sky-bottom'): 5.74,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-neutral/sky-top'): 5.26,
+    ('light-increased-contrast', 'status/warning', 'fill/tertiary over phase-neutral/sky-bottom'): 6.12,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-fajr/sky-bottom'): 5.94,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-dhuhr/sky-bottom'): 5.99,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-asr/sky-bottom'): 6.09,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-maghrib/sky-bottom'): 6.2,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-isha/sky-bottom'): 5.95,
+    ('dark-increased-contrast', 'status/warning', 'fill/tertiary over phase-neutral/sky-top'): 6.63,
+}
 # $extensions keys that hold a color reference.
 COLOR_LINKS = ('tint', 'rim', 'highlight', 'reduceTransparencyFallback')
 
@@ -278,7 +327,8 @@ CHIPS = [
 def contrast_checks(files):
     prims = files['primitives.json'][1]
     rows = []
-    for mode in ('light', 'dark'):
+    excepted = set()
+    for mode in MODES['color']:
         pool = {**prims, **files[f'color.{mode}.json'][1]}
         col = lambda name: rgba(resolve('color.' + name.replace('/', '.'), pool))
 
@@ -295,6 +345,16 @@ def contrast_checks(files):
 
         def check(fg, bg, need):
             ratio = contrast(over(col(fg), surfaces[bg]), surfaces[bg])
+            if mode in INCREASED_CONTRAST:
+                recorded = CONTRAST_EXCEPTIONS.get((mode, fg, bg))
+                if recorded is None:
+                    need = ENHANCED[need]
+                else:
+                    excepted.add((mode, fg, bg))
+                    if round(ratio, 2) != recorded:
+                        fail(f'contrast {mode}: the exception for {fg} on {bg} records {recorded}:1, but the pair is {ratio:.2f}:1')
+                    if ratio >= ENHANCED[need]:
+                        fail(f'contrast {mode}: {fg} on {bg} reaches {ENHANCED[need]}:1 now; remove its exception')
             rows.append((mode, fg, bg, ratio, need))
 
         for fg, need in [('label/primary', 4.5), ('label/secondary', 4.5), ('label/tertiary', 3.0),
@@ -315,6 +375,8 @@ def contrast_checks(files):
                 check(fg, name, 4.5)
         surfaces['accent/fill'] = surface('accent/fill')
         check('label/on-accent', 'accent/fill', 4.5)
+    for key in sorted(set(CONTRAST_EXCEPTIONS) - excepted):
+        fail(f'contrast exception for a pair the checker does not check: {key}')
     return rows
 
 
@@ -547,7 +609,7 @@ def report(files, rows, ref_count=0, typo_count=0):
     if rows:
         low = [r for r in rows if r[3] < r[4]]
         worst = min(rows, key=lambda r: r[3] / r[4])
-        print(f'{len(rows)} contrast pairs checked (light and dark), {len(low)} below target')
+        print(f'{len(rows)} contrast pairs checked in {len(MODES["color"])} color modes, {len(low)} below target')
         print(f'closest to its target: {worst[0]} {worst[1]} on {worst[2]} = {worst[3]:.2f}:1 (needs {worst[4]}:1)')
         for mode, fg, bg, ratio, need in low:
             fail(f'contrast {mode}: {fg} on {bg} is {ratio:.2f}:1, needs {need}:1')

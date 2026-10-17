@@ -36,7 +36,7 @@ Variable collections and their modes:
 | Collection | Modes | Holds |
 | --- | --- | --- |
 | Primitives | one | The raw palette: a gold ramp, six time-of-day ramps and Apple's system grays |
-| Color | Light, Dark | Semantic colors, plus one color set per time of day |
+| Color | Light, Dark, Light · Increased contrast, Dark · Increased contrast | Semantic colors, plus one color set per time of day |
 | Phase | Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral | The sky, tint and text of the current time of day |
 | Rendering | Full color, Accented, Accented · watch, Vibrant | Widget colors under each WidgetKit rendering mode |
 | Typeface | Latin, Arabic, Latin · SF fonts, Arabic · SF fonts | Font families for the Figma drawings |
@@ -62,7 +62,7 @@ tokens, so you pick one file per collection:
 | Files | Root group | Pick |
 | --- | --- | --- |
 | `primitives.json` | `primitives` | Always |
-| `color.light.json`, `color.dark.json` | `color` | The appearance |
+| `color.light.json`, `color.dark.json`, `color.light-increased-contrast.json`, `color.dark-increased-contrast.json` | `color` | The appearance and the Increase Contrast setting |
 | `phase.fajr.json` … `phase.neutral.json` | `phase` | The current prayer period |
 | `rendering.full-color.json`, `.accented`, `.accented-watch`, `.vibrant` | `rendering` | The widget rendering mode |
 | `typography.ios.json`, `.macos`, `.watchos` | `typography` | One per platform; they can be combined |
@@ -115,8 +115,8 @@ Liquid Glass has no token type, so each glass style is a group described only by
 Use a system color wherever one matches, so the app follows the platform, Increase Contrast
 and future appearance changes. Every color token's `swift` entry names it in a `SalahColor`
 namespace that mirrors the color files. For the tokens in this table, define that name as
-the system color or style shown; give the others the token's light and dark values, for
-example with an asset catalog color set.
+the system color or style shown; give the others the token's values from the color files,
+for example with an asset catalog color set (see [Increase Contrast](#increase-contrast)).
 
 | Token | SwiftUI |
 | --- | --- |
@@ -138,6 +138,48 @@ per period (`phase-fajr` … `phase-neutral`), each with the same five slots: `s
 `sky-bottom`, `tint`, `text` and `tint-subtle`. Code picks the set for the period and
 reads the slots; the Phase files name the slots so a design can switch periods without
 rebinding. Draw the sky as a top-to-bottom gradient from `sky-top` to `sky-bottom`.
+
+### Increase Contrast
+
+When Increase Contrast is on, the colors come from the Increased contrast files:
+`color.light-increased-contrast.json` in the light appearance and
+`color.dark-increased-contrast.json` in the dark one. In them, text reaches 7:1 against the
+surfaces it's used on, and graphics and large text reach 4.5:1. Fills, glass and the scrim are
+more opaque. A few pairs keep the standard 4.5:1: secondary text on translucent chips, where
+7:1 would make it as dark as primary text, and the warning color, which turns brown at 7:1.
+`CONTRAST_EXCEPTIONS` in `tokens/check_tokens.py` lists each pair with its ratio.
+
+- **System colors need nothing.** The tokens in the table above adapt because the system
+  colors do. Their values in the Increased contrast files are the system's own, for the Figma
+  drawings.
+- **Asset catalog colors.** In each color set, the accent color included, turn on High
+  Contrast in the Attributes inspector, and fill the High Contrast slots from the Increased
+  contrast files. `Color("…")` and `Color.accentColor` then pick the variant themselves.
+- **Colors defined in code.** Give the token all four values, and pick one with
+  `colorScheme` and `colorSchemeContrast`:
+
+```swift
+extension SalahColor {
+  // accent/default in the four color files
+  static func accentDefault(_ scheme: ColorScheme, _ contrast: ColorSchemeContrast) -> Color {
+    switch (scheme == .dark, contrast == .increased) {
+    case (false, false): SalahPalette.gold600
+    case (false, true): SalahPalette.gold700
+    case (true, false): SalahPalette.gold400
+    case (true, true): SalahPalette.gold300
+    }
+  }
+}
+
+struct AccentMark: View {
+  @Environment(\.colorScheme) private var colorScheme
+  @Environment(\.colorSchemeContrast) private var contrast
+
+  var body: some View {
+    Capsule().fill(SalahColor.accentDefault(colorScheme, contrast))
+  }
+}
+```
 
 ### Type
 
@@ -332,8 +374,9 @@ status when compiling fails.
    files, every file has the expected shape, every reference resolves to a token of the
    right type, the mode files of a collection define the same tokens, each text style
    matches its type-scale entry and the code that sizes it, and the documented color pairs
-   meet WCAG 2 contrast in light and dark (4.5:1 for text, 3:1 for graphics and large text).
-   It exits with an error if anything fails.
+   meet WCAG 2 contrast in every color mode (in light and dark, 4.5:1 for text and 3:1 for
+   graphics and large text; in the Increased contrast modes, 7:1 and 4.5:1, apart from the
+   pairs in its `CONTRAST_EXCEPTIONS`). It exits with an error if anything fails.
 
 A new color pair that carries text or meaning needs its contrast checked too: add it to the
 checker's lists. A new token file goes in its `FILES`.

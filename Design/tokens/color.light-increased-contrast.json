@@ -1,0 +1,727 @@
+{
+  "color": {
+    "$description": "Semantic colors. Load one of color.light.json, color.dark.json, color.light-increased-contrast.json or color.dark-increased-contrast.json together with primitives.json. Use an Increased contrast file when Increase Contrast is on. Mode: Light · Increased contrast.",
+    "bg": {
+      "primary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "systemBackground: the base of plain screens.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgPrimary"
+          }
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.50-high-contrast}",
+        "$description": "secondarySystemBackground: content layered on bg/primary.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgSecondary"
+          }
+        }
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "tertiarySystemBackground.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgTertiary"
+          }
+        }
+      },
+      "grouped": {
+        "$type": "color",
+        "$value": "{primitives.neutral.50-high-contrast}",
+        "$description": "systemGroupedBackground: behind inset grouped lists.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgGrouped"
+          }
+        }
+      },
+      "grouped-secondary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "secondarySystemGroupedBackground: list cells and cards.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgGroupedSecondary"
+          }
+        }
+      },
+      "grouped-tertiary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.50-high-contrast}",
+        "$description": "tertiarySystemGroupedBackground: controls inside cells.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgGroupedTertiary"
+          }
+        }
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Sheets, popovers and menus (dark mode lifts them).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgElevated"
+          }
+        }
+      },
+      "window": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "macOS windowBackgroundColor.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgWindow"
+          }
+        }
+      },
+      "content": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "macOS controlBackgroundColor: lists and forms in windows.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.bgContent"
+          }
+        }
+      }
+    },
+    "label": {
+      "primary": {
+        "$type": "color",
+        "$value": "{primitives.neutral.black}",
+        "$description": "Primary text and glyphs. SwiftUI .primary.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelPrimary"
+          }
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{primitives.ink.light-92}",
+        "$description": "Secondary text. Stronger than the Apple secondaryLabel so body text keeps 4.5:1 on every surface.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelSecondary"
+          }
+        }
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "{primitives.ink.light-76}",
+        "$description": "Large text, icons and disabled text only (3:1).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelTertiary"
+          }
+        }
+      },
+      "quaternary": {
+        "$type": "color",
+        "$value": "{primitives.ink.light-36}",
+        "$description": "Decoration only; never information.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelQuaternary"
+          }
+        }
+      },
+      "on-accent": {
+        "$type": "color",
+        "$value": "{primitives.gold.950}",
+        "$description": "Text and glyphs on accent/fill.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelOnAccent"
+          }
+        }
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Text on an inverted surface.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.labelInverse"
+          }
+        }
+      }
+    },
+    "separator": {
+      "default": {
+        "$type": "color",
+        "$value": "{primitives.separator.light-high-contrast}",
+        "$description": "separator: hairlines between rows.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.separatorDefault"
+          }
+        }
+      },
+      "opaque": {
+        "$type": "color",
+        "$value": "{primitives.separator.opaque-light-high-contrast}",
+        "$description": "opaqueSeparator.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.separatorOpaque"
+          }
+        }
+      }
+    },
+    "fill": {
+      "primary": {
+        "$type": "color",
+        "$value": "{primitives.fill.light-28-high-contrast}",
+        "$description": "systemFill: thin and small shapes (slider tracks, switch off).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.fillPrimary"
+          }
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{primitives.fill.light-24-high-contrast}",
+        "$description": "secondarySystemFill: medium shapes.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.fillSecondary"
+          }
+        }
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "{primitives.fill.light-20-high-contrast}",
+        "$description": "tertiarySystemFill: large shapes (input fields, search).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.fillTertiary"
+          }
+        }
+      },
+      "quaternary": {
+        "$type": "color",
+        "$value": "{primitives.fill.light-16-high-contrast}",
+        "$description": "quaternarySystemFill: large areas with complex content.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.fillQuaternary"
+          }
+        }
+      }
+    },
+    "accent": {
+      "default": {
+        "$type": "color",
+        "$value": "{primitives.gold.700}",
+        "$description": "The one accent. App tint: controls, selection, the next-prayer marker. 3:1 for graphics.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentDefault"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.gold.850}",
+        "$description": "Accent-colored text, 4.5:1 on every surface.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentText"
+          }
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{primitives.gold.400}",
+        "$description": "Prominent accent fill (prominent buttons, Now badge). Text on it uses label/on-accent.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentFill"
+          }
+        }
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": "{primitives.gold.100}",
+        "$description": "Quiet accent wash behind a selected or next element.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentSubtle"
+          }
+        }
+      },
+      "stroke": {
+        "$type": "color",
+        "$value": "{primitives.gold.400}",
+        "$description": "Hairline outline for accent surfaces.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.accentStroke"
+          }
+        }
+      }
+    },
+    "status": {
+      "error": {
+        "$type": "color",
+        "$value": "{primitives.system.red.light-high-contrast}",
+        "$description": "Errors only (location failed, times unavailable). Accessible system red.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.statusError"
+          }
+        }
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{primitives.system.orange.light-high-contrast}",
+        "$description": "Needs attention (a permission is off).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.statusWarning"
+          }
+        }
+      },
+      "success": {
+        "$type": "color",
+        "$value": "{primitives.system.green.light-high-contrast}",
+        "$description": "Confirmed state (alerts scheduled).",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.statusSuccess"
+          }
+        }
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{primitives.system.blue.light-high-contrast}",
+        "$description": "Neutral information and links in system contexts.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.statusInfo"
+          }
+        }
+      }
+    },
+    "overlay": {
+      "scrim": {
+        "$type": "color",
+        "$value": "{primitives.black.a50}",
+        "$description": "Dimming behind modal content.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.overlayScrim"
+          }
+        }
+      }
+    },
+    "shadow": {
+      "key": {
+        "$type": "color",
+        "$value": "{primitives.black.a12}",
+        "$description": "Key shadow of elevated surfaces.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.shadowKey"
+          }
+        }
+      },
+      "ambient": {
+        "$type": "color",
+        "$value": "{primitives.black.a06}",
+        "$description": "Ambient shadow of elevated surfaces.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.shadowAmbient"
+          }
+        }
+      }
+    },
+    "glass": {
+      "fill": {
+        "$type": "color",
+        "$value": "{primitives.white.a60}",
+        "$description": "Tint layered under the Glass effect in Figma drawings.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.glassFill"
+          }
+        }
+      },
+      "stroke": {
+        "$type": "color",
+        "$value": "{primitives.white.a80}",
+        "$description": "Glass rim highlight.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.glassStroke"
+          }
+        }
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "{primitives.white.a90}",
+        "$description": "Specular edge on glass controls.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.glassHighlight"
+          }
+        }
+      }
+    },
+    "material": {
+      "opaque": {
+        "$type": "color",
+        "$value": "{primitives.neutral.50-high-contrast}",
+        "$description": "Reduce Transparency fallback for glass and materials.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.materialOpaque"
+          }
+        }
+      },
+      "opaque-thin": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Reduce Transparency fallback for thin materials.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.materialOpaqueThin"
+          }
+        }
+      },
+      "opaque-thick": {
+        "$type": "color",
+        "$value": "{primitives.neutral.100}",
+        "$description": "Reduce Transparency fallback for thick materials.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.materialOpaqueThick"
+          }
+        }
+      }
+    },
+    "phase-fajr": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.dawn.100}",
+        "$description": "Fajr theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.fajr.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.mauve.50}",
+        "$description": "Fajr theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.fajr.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.dawn.700}",
+        "$description": "Fajr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.fajr.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.dawn.800}",
+        "$description": "Fajr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.fajr.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.dawn.100}",
+        "$description": "Fajr theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.fajr.tintSubtle"
+          }
+        }
+      }
+    },
+    "phase-dhuhr": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.day.100}",
+        "$description": "Dhuhr theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.dhuhr.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.day.50}",
+        "$description": "Dhuhr theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.dhuhr.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.day.700}",
+        "$description": "Dhuhr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.dhuhr.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.day.800}",
+        "$description": "Dhuhr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.dhuhr.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.day.100}",
+        "$description": "Dhuhr theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.dhuhr.tintSubtle"
+          }
+        }
+      }
+    },
+    "phase-asr": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.amber.100}",
+        "$description": "Asr theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.asr.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.amber.50}",
+        "$description": "Asr theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.asr.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.amber.700}",
+        "$description": "Asr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.asr.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.amber.800}",
+        "$description": "Asr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.asr.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.amber.100}",
+        "$description": "Asr theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.asr.tintSubtle"
+          }
+        }
+      }
+    },
+    "phase-maghrib": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.mauve.100}",
+        "$description": "Maghrib theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.maghrib.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.dusk.100}",
+        "$description": "Maghrib theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.maghrib.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.dusk.700}",
+        "$description": "Maghrib theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.maghrib.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.dusk.800}",
+        "$description": "Maghrib theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.maghrib.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.dusk.100}",
+        "$description": "Maghrib theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.maghrib.tintSubtle"
+          }
+        }
+      }
+    },
+    "phase-isha": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.night.100}",
+        "$description": "Isha theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.isha.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.night.50}",
+        "$description": "Isha theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.isha.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.night.700}",
+        "$description": "Isha theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.isha.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.night.800}",
+        "$description": "Isha theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.isha.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.night.100}",
+        "$description": "Isha theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.isha.tintSubtle"
+          }
+        }
+      }
+    },
+    "phase-neutral": {
+      "sky-top": {
+        "$type": "color",
+        "$value": "{primitives.neutral.50-high-contrast}",
+        "$description": "Neutral theme. Top of the time-of-day sky gradient: hero, widgets, the Today background. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.neutral.skyTop"
+          }
+        }
+      },
+      "sky-bottom": {
+        "$type": "color",
+        "$value": "{primitives.neutral.white}",
+        "$description": "Neutral theme. Bottom of the time-of-day sky gradient. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.neutral.skyBottom"
+          }
+        }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "{primitives.gold.700}",
+        "$description": "Neutral theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.neutral.tint"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{primitives.gold.850}",
+        "$description": "Neutral theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.neutral.text"
+          }
+        }
+      },
+      "tint-subtle": {
+        "$type": "color",
+        "$value": "{primitives.neutral.100}",
+        "$description": "Neutral theme. Quiet wash of the time of day, behind the next row. Bind the Phase collection instead.",
+        "$extensions": {
+          "io.github.salah-kit": {
+            "swift": "SalahColor.Phase.neutral.tintSubtle"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "color": {
-    "$description": "Semantic colors. Load one of color.light.json or color.dark.json together with primitives.json. Mode: Light.",
+    "$description": "Semantic colors. Load one of color.light.json, color.dark.json, color.light-increased-contrast.json or color.dark-increased-contrast.json together with primitives.json. Use an Increased contrast file when Increase Contrast is on. Mode: Light.",
     "bg": {
       "primary": {
         "$type": "color",
