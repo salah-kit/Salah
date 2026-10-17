@@ -330,6 +330,12 @@ generates flat images for older system versions.
 keeps its own copies in `Salah.icon/Assets/`, so after editing a layer, replace it in Icon
 Composer as well.
 
+The canvas is 1024 × 1024 pt, but watchOS's circle reaches about 3% past the canvas at the
+middle of each side. So the layers that fill the icon (`background`, `background-dark` and
+`texture`) are 1152 pt square, 64 pt past the canvas on every side. If one of them stopped at
+the canvas, the icon's own fill would show as a band at the circle's left and right edges.
+Squares clip at the canvas, so the extra doesn't show on iOS, iPadOS or macOS.
+
 To check the icon before a change lands, compile it with `actool` from the repository root,
 once per platform (`iphoneos`, `macosx` and `watchos`, each with its minimum version):
 
