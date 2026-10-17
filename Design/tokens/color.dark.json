@@ -1,6 +1,6 @@
 {
   "color": {
-    "$description": "Semantic colors. Load one of color.light.json or color.dark.json together with primitives.json. Mode: Dark.",
+    "$description": "Semantic colors. Load one of color.light.json, color.dark.json, color.light-increased-contrast.json or color.dark-increased-contrast.json together with primitives.json. Use an Increased contrast file when Increase Contrast is on. Mode: Dark.",
     "bg": {
       "primary": {
         "$type": "color",
@@ -107,7 +107,7 @@
       "secondary": {
         "$type": "color",
         "$value": "{primitives.ink.dark-64}",
-        "$description": "Secondary text. Stronger than the Apple secondaryLabel so body text keeps 4.5:1 on every surface.",
+        "$description": "Secondary text. Stronger than the Apple secondaryLabel so body text keeps 4.5:1 on every surface (7:1 with Increase Contrast, apart from the listed exceptions).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.labelSecondary"
@@ -117,7 +117,7 @@
       "tertiary": {
         "$type": "color",
         "$value": "{primitives.ink.dark-44}",
-        "$description": "Large text, icons and disabled text only (3:1).",
+        "$description": "Large text, icons and disabled text only (3:1; 4.5:1 with Increase Contrast).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.labelTertiary"
@@ -223,7 +223,7 @@
       "default": {
         "$type": "color",
         "$value": "{primitives.gold.400}",
-        "$description": "The one accent. App tint: controls, selection, the next-prayer marker. 3:1 for graphics.",
+        "$description": "The one accent. App tint: controls, selection, the next-prayer marker. 3:1 for graphics (4.5:1 with Increase Contrast).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.accentDefault"
@@ -233,7 +233,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.gold.300}",
-        "$description": "Accent-colored text, 4.5:1 on every surface.",
+        "$description": "Accent-colored text, 4.5:1 on every surface (7:1 with Increase Contrast).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.accentText"
@@ -435,7 +435,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.dawn.300}",
-        "$description": "Fajr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Fajr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.fajr.tint"
@@ -445,7 +445,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.dawn.200}",
-        "$description": "Fajr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Fajr theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.fajr.text"
@@ -487,7 +487,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.day.300}",
-        "$description": "Dhuhr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Dhuhr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.dhuhr.tint"
@@ -497,7 +497,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.day.200}",
-        "$description": "Dhuhr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Dhuhr theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.dhuhr.text"
@@ -539,7 +539,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.amber.300}",
-        "$description": "Asr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Asr theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.asr.tint"
@@ -549,7 +549,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.amber.200}",
-        "$description": "Asr theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Asr theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.asr.text"
@@ -591,7 +591,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.dusk.300}",
-        "$description": "Maghrib theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Maghrib theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.maghrib.tint"
@@ -601,7 +601,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.dusk.200}",
-        "$description": "Maghrib theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Maghrib theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.maghrib.text"
@@ -643,7 +643,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.night.300}",
-        "$description": "Isha theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Isha theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.isha.tint"
@@ -653,7 +653,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.night.200}",
-        "$description": "Isha theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Isha theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.isha.text"
@@ -695,7 +695,7 @@
       "tint": {
         "$type": "color",
         "$value": "{primitives.gold.400}",
-        "$description": "Neutral theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1). Bind the Phase collection instead.",
+        "$description": "Neutral theme. Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.neutral.tint"
@@ -705,7 +705,7 @@
       "text": {
         "$type": "color",
         "$value": "{primitives.gold.300}",
-        "$description": "Neutral theme. Text in the time-of-day color (4.5:1 on its sky and on cells). Bind the Phase collection instead.",
+        "$description": "Neutral theme. Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Bind the Phase collection instead.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.Phase.neutral.text"

@@ -390,6 +390,51 @@ class CheckTokensTests(unittest.TestCase):
         self.edit('color.light.json', lambda doc: doc['color']['fill'].update(tertiary={**doc['color']['fill']['tertiary'], '$value': '{primitives.fill.light-20}'}))
         self.assert_fails('contrast light: status/warning on fill/tertiary over phase-maghrib/sky-bottom')
 
+    # Increase Contrast
+    def edit_increased(self, mode, group, name, value):
+        self.edit(f'color.{mode}-increased-contrast.json', lambda doc: doc['color'][group][name].update({'$value': value}))
+
+    def test_increased_contrast_text_needs_7_to_1(self):
+        # gold.700 is the standard accent text: 4.5:1 or more on every surface, but under 7:1 on white.
+        self.edit_increased('light', 'accent', 'text', '{primitives.gold.700}')
+        self.assert_fails('contrast light-increased-contrast: accent/text on bg/primary is 6.', 'needs 7.0:1')
+
+    def test_increased_contrast_graphics_need_4_5_to_1(self):
+        self.edit_increased('light', 'accent', 'default', '{primitives.gold.600}')
+        self.assert_fails('contrast light-increased-contrast: accent/default on bg/secondary is 3.83:1, needs 4.5:1')
+
+    def test_dark_increased_contrast_is_checked(self):
+        self.edit_increased('dark', 'status', 'info', '{primitives.system.blue.dark}')
+        # 5.47:1 meets the standard target, so only the Increase Contrast one fails it.
+        self.assert_fails('contrast dark-increased-contrast: status/info on bg/secondary is 5.47:1, needs 7.0:1')
+
+    def test_exception_must_give_its_recorded_ratio(self):
+        self.edit_increased('light', 'status', 'warning', '{primitives.system.orange.light}')
+        self.assert_fails('contrast light-increased-contrast: the exception for status/warning on bg/secondary records 6.54:1, but the pair is')
+
+    def test_exception_keeps_the_standard_target(self):
+        self.edit_increased('light', 'label', 'secondary', '{primitives.ink.light-62}')
+        self.assert_fails('contrast light-increased-contrast: label/secondary on fill/tertiary over bg/grouped is', 'needs 4.5:1')
+
+    def test_exception_that_reaches_the_target_must_go(self):
+        self.edit_increased('light', 'label', 'secondary', '{primitives.neutral.black}')
+        self.assert_fails('contrast light-increased-contrast: label/secondary on fill/tertiary over bg/grouped reaches 7.0:1 now; remove its exception')
+
+    def test_exception_must_name_a_checked_pair(self):
+        path = self.dir / 'check_tokens.py'
+        text = path.read_text(encoding='utf-8')
+        path.write_text(text.replace('CONTRAST_EXCEPTIONS = {', "CONTRAST_EXCEPTIONS = {('dark-increased-contrast', 'label/primary', 'bg/nowhere'): 9.99,", 1), encoding='utf-8')
+        self.assert_fails("contrast exception for a pair the checker does not check: ('dark-increased-contrast', 'label/primary', 'bg/nowhere')")
+
+    def test_increased_contrast_never_weakens_a_color(self):
+        # A fainter separator than the standard one, though no contrast pair covers separators.
+        self.edit_increased('light', 'separator', 'default', '{primitives.ink.light-18}')
+        self.assert_fails('light-increased-contrast: separator/default stands out less from bg/primary (1.37:1) than in light (1.71:1)')
+
+    def test_increased_contrast_files_define_the_same_tokens(self):
+        self.edit('color.dark-increased-contrast.json', lambda doc: doc['color']['label'].pop('quaternary'))
+        self.assert_fails('color.dark-increased-contrast.json differs from color.light.json')
+
 
 if __name__ == '__main__':
     unittest.main()
