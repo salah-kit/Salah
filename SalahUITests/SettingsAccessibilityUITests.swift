@@ -18,9 +18,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
       language: "arabic", code: "ar", pane: "التنبيهات", name: "مستوى الصوت")
   }
 
-  /// Xcode's accessibility audit finds nothing in any Settings pane: every control has a
-  /// description, can be found, hit and acted on, and its text has enough contrast. The few
-  /// issues it reports about system and SwiftUI parts are set aside in `isKnownToTheSystem`.
+  /// Xcode's accessibility audit finds nothing in what each Settings pane shows when it opens:
+  /// every control there has a description and can be found and hit, and its text has enough
+  /// contrast. `isSetAside` lists, with reasons, what the test doesn't hold the panes to.
   @MainActor
   func testEverySettingsPanePassesTheAccessibilityAudit() throws {
     let app = XCUIApplication()
@@ -78,7 +78,8 @@ final class SettingsAccessibilityUITests: XCTestCase {
     statusItem.click()
     XCTAssertTrue(
       app.buttons["Quit Salah"].waitForExistence(timeout: 10), app.windows.debugDescription)
-    report(try audit(app, in: "the menu-bar dropdown", window: nil, preview: nil))
+    report(
+      try audit(app, in: "the menu-bar dropdown", window: app.windows.firstMatch, preview: nil))
   }
 
   /// The Settings panes, by their English names.
@@ -87,7 +88,7 @@ final class SettingsAccessibilityUITests: XCTestCase {
   ]
 
   /// Runs every audit on what the app shows now, and describes each issue it finds, except
-  /// those `isKnownToTheSystem` sets aside.
+  /// those `isSetAside` lists.
   @MainActor
   private func audit(
     _ app: XCUIApplication, in place: String, window: XCUIElement?, preview: CGRect?
@@ -96,7 +97,7 @@ final class SettingsAccessibilityUITests: XCTestCase {
     let windowFrame = window?.frame
     let windowTitle = window?.title
     try app.performAccessibilityAudit { issue in
-      if Self.isKnownToTheSystem(
+      if Self.isSetAside(
         issue, windowFrame: windowFrame, windowTitle: windowTitle, preview: preview)
       {
         return true
@@ -109,18 +110,19 @@ final class SettingsAccessibilityUITests: XCTestCase {
     return issues
   }
 
-  /// Issues the audit reports about parts Salah doesn't draw or can't change:
-  /// - the system's Touch Bar element, the window's title, which macOS draws, and the
-  ///   window's own content group, which has the window's frame;
+  /// What the test sets aside:
+  /// - parts Salah doesn't draw: the system's Touch Bar element, the window's title, which
+  ///   macOS draws, and the window's own content group, which has the window's frame;
+  /// - the missing press action the audit reports for SwiftUI's own pop-up and disclosure
+  ///   controls, and the description it wants for a slider's knob. Whether VoiceOver
+  ///   operates those controls is a step in #17;
   /// - contrast of text the window's edge or scrolling cuts off, which the audit measures
-  ///   against whatever covers it;
-  /// - the missing press action it reports for SwiftUI's own pop-up and disclosure controls,
-  ///   and the description it wants for a slider's knob;
-  /// - contrast in the Appearance preview, which draws the widget in the chosen theme:
-  ///   SmallTextContrastTests and the design tokens' checker measure the themes' text.
-  /// Whether VoiceOver operates those controls is for the person-check in #17.
+  ///   against whatever covers it. The test doesn't scroll, so rows below a pane's first
+  ///   screen aren't measured;
+  /// - contrast in the Appearance preview, which draws the widget in the chosen theme. Its
+  ///   rows, passed ones dimmed, are #35.
   @MainActor
-  private static func isKnownToTheSystem(
+  private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
     preview: CGRect?
   ) -> Bool {
