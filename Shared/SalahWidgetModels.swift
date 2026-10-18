@@ -25,13 +25,20 @@ nonisolated enum SalahWidgetRowState: Equatable {
 /// extension has no access to the app's String Catalog, so they live here.
 ///
 /// `notAvailable` and `nextUnknown` came with the move onto SalahKit, after the other
-/// labels, and need a native speaker's review in every language but English.
+/// labels, and need a native speaker's review in every language but English. So do the
+/// `sinceSpoken` and `sinceLine` phrases of Urdu, Indonesian, Turkish, Persian, Bengali and
+/// Malay, which were drafted to fix their word order.
 nonisolated struct SalahWidgetLabels: Equatable, Sendable {
   var nextPrayer: String
   var tomorrow: String
   var now: String
-  /// Word joining a prayer name to its elapsed count-up ("Dhuhr since 1:30").
-  var since: String
+  /// What VoiceOver reads while a prayer counts up: `%1$@` is the prayer's name and `%2$@`
+  /// the time since it began, spelled out ("Dhuhr · started 5 minutes ago"). Each language
+  /// puts them in its own order.
+  var sinceSpoken: String
+  /// The small widget's line after a prayer: `%1$@` is the prayer's name and `%2$@` the time
+  /// since it began ("Dhuhr since: +1:30").
+  var sinceLine: String
   var remaining: String
   var silent: String
   var stopShort: String
@@ -64,7 +71,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "Next Prayer",
     tomorrow: "Tomorrow",
     now: "Now",
-    since: "since",
+    sinceSpoken: "%1$@ · started %2$@ ago",
+    sinceLine: "%1$@ since: %2$@",
     remaining: "remaining",
     silent: "Silent",
     stopShort: "Stop",
@@ -89,7 +97,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "الصلاة القادمة",
     tomorrow: "غدًا",
     now: "الآن",
-    since: "منذ",
+    sinceSpoken: "%1$@ · منذ %2$@",
+    sinceLine: "%1$@ منذ: %2$@",
     remaining: "متبقّية",
     silent: "صامت",
     stopShort: "إيقاف",
@@ -114,7 +123,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "Prochaine prière",
     tomorrow: "Demain",
     now: "Maintenant",
-    since: "depuis",
+    sinceSpoken: "%1$@ · depuis %2$@",
+    sinceLine: "%1$@ depuis: %2$@",
     remaining: "restant",
     silent: "Silencieux",
     stopShort: "Arrêter",
@@ -139,7 +149,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "اگلی نماز",
     tomorrow: "کل",
     now: "ابھی",
-    since: "سے",
+    sinceSpoken: "%1$@ · %2$@ سے",
+    sinceLine: "%1$@ سے: %2$@",
     remaining: "باقی",
     silent: "خاموش",
     stopShort: "روکیں",
@@ -164,7 +175,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "Salat Berikutnya",
     tomorrow: "Besok",
     now: "Sekarang",
-    since: "sejak",
+    sinceSpoken: "%1$@ · dimulai %2$@ yang lalu",
+    sinceLine: "%1$@ sejak: %2$@",
     remaining: "tersisa",
     silent: "Senyap",
     stopShort: "Hentikan",
@@ -189,7 +201,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "Sonraki Namaz",
     tomorrow: "Yarın",
     now: "Şimdi",
-    since: "önce",
+    sinceSpoken: "%1$@ vaktinden beri %2$@ geçti",
+    sinceLine: "%1$@ vaktinden beri: %2$@",
     remaining: "kaldı",
     silent: "Sessiz",
     stopShort: "Durdur",
@@ -214,7 +227,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "نماز بعدی",
     tomorrow: "فردا",
     now: "اکنون",
-    since: "از",
+    sinceSpoken: "از وقت %1$@ %2$@ گذشته",
+    sinceLine: "از وقت %1$@: %2$@",
     remaining: "مانده",
     silent: "بی‌صدا",
     stopShort: "توقف",
@@ -239,7 +253,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "পরবর্তী নামাজ",
     tomorrow: "আগামীকাল",
     now: "এখন",
-    since: "থেকে",
+    sinceSpoken: "%1$@ শুরু হয়েছে %2$@ আগে",
+    sinceLine: "%1$@ থেকে: %2$@",
     remaining: "বাকি",
     silent: "নীরব",
     stopShort: "বন্ধ",
@@ -264,7 +279,8 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     nextPrayer: "Solat Seterusnya",
     tomorrow: "Esok",
     now: "Sekarang",
-    since: "sejak",
+    sinceSpoken: "%1$@ · bermula %2$@ yang lalu",
+    sinceLine: "%1$@ sejak: %2$@",
     remaining: "lagi",
     silent: "Senyap",
     stopShort: "Henti",
@@ -322,5 +338,24 @@ nonisolated enum LocalizedTimeUnit {
     }
     if code == nil || code == "en" { return minute }
     return " \(minute)"
+  }
+}
+
+extension SalahWidgetLabels {
+  /// The VoiceOver count-up for a prayer: "Dhuhr · since 1 hour, 30 minutes".
+  nonisolated func sinceSpoken(prayer: String, time: String) -> String {
+    Self.fill(sinceSpoken, prayer: prayer, time: time)
+  }
+
+  /// The small widget's line after a prayer: "Dhuhr since: +1:30".
+  nonisolated func sinceLine(prayer: String, time: String) -> String {
+    Self.fill(sinceLine, prayer: prayer, time: time)
+  }
+
+  /// Puts the name and the time in a template's `%1$@` and `%2$@`, without the isolates and
+  /// digits a locale's string formatting would add.
+  nonisolated private static func fill(_ template: String, prayer: String, time: String) -> String {
+    template.replacingOccurrences(of: "%1$@", with: prayer)
+      .replacingOccurrences(of: "%2$@", with: time)
   }
 }

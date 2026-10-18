@@ -204,13 +204,14 @@ nonisolated struct SalahDisplay: Sendable {
       date.timeIntervalSince(previous.time), direction: .elapsed, bidiIsolated: true)
   }
 
-  /// The small widget's "since previous prayer" line ("Dhuhr since: 1:30"), or `nil`
-  /// while a prayer counts up or when the latest event isn't known.
+  /// The small widget's "since previous prayer" line ("Dhuhr since: +1:30"), in the
+  /// language's word order, or `nil` while a prayer counts up or when the latest event
+  /// isn't known.
   var sinceLine: String? {
     guard focus?.isCountUp != true, let previous = prayerState?.previous else { return nil }
     let elapsed = text.duration(
       date.timeIntervalSince(previous.time), direction: .elapsed, bidiIsolated: true)
-    return "\(name(of: previous)) \(labels.since): \(elapsed)"
+    return labels.sinceLine(prayer: name(of: previous), time: elapsed)
   }
 
   // MARK: - Playing

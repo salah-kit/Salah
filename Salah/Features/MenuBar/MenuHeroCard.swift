@@ -152,7 +152,7 @@ struct MenuHeroCard: View {
     let duration = PrayerDurationFormat.string(
       abs(event.time.timeIntervalSince(date)), width: .spoken, locale: display.locale)
     if isCountUp {
-      return "\(display.name(of: event)) · \(labels.since) \(duration)"
+      return labels.sinceSpoken(prayer: display.name(of: event), time: duration)
     }
     return "\(display.name(of: event)) · \(duration) \(labels.remaining)"
   }

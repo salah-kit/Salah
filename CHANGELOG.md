@@ -16,6 +16,18 @@ All notable changes to this project are documented here. The format follows
 - Show the banner for an alert the Mac slept through even when Salah's alert timer reports
   it before macOS reports the wake. The adhan played, but the banner was skipped and its
   request removed.
+- Fix French, Arabic, Urdu and Bengali wording:
+  - French notifications read "C'est l'heure de Asr"; they now say "C'est l'heure : Asr".
+  - The Friday section in Settings spelled the prayer "Jumu'ah" in French, unlike its name
+    "Joumouah" everywhere else.
+  - Arabic reminders and their Settings steppers wrote "١٠ دقيقة", which doesn't agree
+    with 3 to 10. They now write minutes as "١٠ د", as the dropdown does.
+  - The Ramadan Isha footer writes its 120 minutes in the language's digits, as the rest of
+    the app does.
+- Read the count-up after a prayer in each language's word order. On the small widget's
+  line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
+  VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish
+  "önce", and Persian, Urdu and Bengali put their word on the wrong side of the time.
 
 ## [1.1.2] - 2026-10-14
 

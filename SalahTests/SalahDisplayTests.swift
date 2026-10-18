@@ -116,6 +116,44 @@ struct SalahDisplayTests {
     #expect(playing.sinceText(for: dhuhr, status: .justStarted) == "\u{2068}+2m\u{2069}")
   }
 
+  /// The small widget's line follows each language's word order: Turkish's "önce" means
+  /// "ago", so the line says "vaktinden beri" ("since its time"), and Persian puts "از وقت"
+  /// before the name. English, Arabic and French read as before.
+  @Test func theSinceLineFollowsTheLanguagesWordOrder() {
+    let dhuhr = event(.dhuhr)
+    let date = dhuhr.time.adding(minutes: 90)
+    let expected: [(AppLanguage, (String, String) -> String)] = [
+      (.english, { "\($0) since: \($1)" }),
+      (.arabic, { "\($0) منذ: \($1)" }),
+      (.french, { "\($0) depuis: \($1)" }),
+      (.turkish, { "\($0) vaktinden beri: \($1)" }),
+      (.persian, { "از وقت \($0): \($1)" }),
+    ]
+    for (language, line) in expected {
+      let display = Self.display(at: date) { $0.appLanguage = language }
+      let elapsed = display.text.duration(90 * 60, direction: .elapsed, bidiIsolated: true)
+      #expect(display.sinceLine == line(display.name(of: dhuhr), elapsed), "\(language)")
+    }
+  }
+
+  /// VoiceOver's count-up puts the name and the time in each language's order.
+  @Test func theSpokenCountUpFollowsTheLanguagesWordOrder() {
+    let spoken: [(SalahWidgetLabels, String, String, String)] = [
+      (.english, "Dhuhr", "5 minutes", "Dhuhr · started 5 minutes ago"),
+      (.arabic, "الظهر", "٥ دقائق", "الظهر · منذ ٥ دقائق"),
+      (.french, "Dhuhr", "5 minutes", "Dhuhr · depuis 5 minutes"),
+      (.urdu, "ظہر", "۵ منٹ", "ظہر · ۵ منٹ سے"),
+      (.turkish, "Öğle", "5 dakika", "Öğle vaktinden beri 5 dakika geçti"),
+      (.persian, "ظهر", "۵ دقیقه", "از وقت ظهر ۵ دقیقه گذشته"),
+      (.bengali, "যোহর", "৫ মিনিট", "যোহর শুরু হয়েছে ৫ মিনিট আগে"),
+      (.indonesian, "Zuhur", "5 menit", "Zuhur · dimulai 5 menit yang lalu"),
+      (.malay, "Zohor", "5 minit", "Zohor · bermula 5 minit yang lalu"),
+    ]
+    for (labels, prayer, time, text) in spoken {
+      #expect(labels.sinceSpoken(prayer: prayer, time: time) == text)
+    }
+  }
+
   /// Regression for the one-day snapshot's defect: before Fajr there was no previous
   /// prayer, because yesterday wasn't in the snapshot. SalahCore's state crosses
   /// midnight: at 04:00 yesterday's Isha is the latest prayer and the previous event.
