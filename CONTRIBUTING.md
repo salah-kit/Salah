@@ -128,16 +128,22 @@ changes the name style with VoiceOver and back. They need macOS 27 in English, w
 VoiceOver's default settings: VoiceOver says its own words, such as "selected" and
 "dimmed", in the Mac's language and as its verbosity settings choose, and the tests send
 VO-Space as Control-Option. They skip before macOS 27, on a Mac that isn't in English, and
-when VoiceOver doesn't turn on. VoiceOver speaks aloud while these tests run and reads
-whichever app is in front, so leave the Mac alone until they end: a test fails, keeping
-nothing more VoiceOver says, as soon as Salah leaves the front or the window it reads
-closes. Each test turns VoiceOver off at its end, unless it was on before; if a run stops
-first, Command-F5 turns it off. They take about ten minutes:
+when VoiceOver doesn't turn on. They take about ten minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
   -allowProvisioningUpdates -only-testing:SalahUITests/VoiceOverSpeechUITests
 ```
+
+VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
+the Mac alone, with Do Not Disturb on, until they end. A test keeps only what VoiceOver
+says after its own moves in the window it reads, and fails at the first move after Salah
+leaves the front or that window closes; speech VoiceOver makes for another app right after
+a move, such as a notification it reads out, can still be kept. Each test turns VoiceOver
+off at its end, unless it was on before; if a run stops first, the next test within half an
+hour turns it off, or Command-F5 does. When a test fails, Xcode keeps screenshots and a
+screen recording of the whole screen in the result bundle, so share its failure message and
+its "VoiceOver" attachment, not the bundle.
 
 ### Real-app tests
 

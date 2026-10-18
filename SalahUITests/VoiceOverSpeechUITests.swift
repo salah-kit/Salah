@@ -10,11 +10,14 @@ import XCTest
 /// Each test turns VoiceOver on and moves it as VO-Right Arrow, VO-Shift-Down Arrow and
 /// VO-Shift-Up Arrow do; VO-Space, Escape, Return and the arrow keys reach VoiceOver as
 /// key presses. VoiceOver speaks aloud while a test runs and reads whichever app is in
-/// front, so leave the Mac alone until the tests end. A test keeps what VoiceOver says only
-/// while it's in the window the test reads, and fails when it leaves; it turns VoiceOver
-/// off at its end, unless it was on before (`Speech`). They launch Salah as `Launch` does:
-/// Makkah with Salah's default calculation, English, muted, every alert off but the ones a
-/// test turns on, in a scratch preferences suite.
+/// front, so leave the Mac alone, with Do Not Disturb on, until the tests end. A test keeps
+/// only what VoiceOver says after its own moves in the window it reads, while Salah is in
+/// front with that window open, and fails at the first move after that stops holding;
+/// speech VoiceOver makes for another app right after a move, such as a notification it
+/// reads out, can still be kept (`Speech`). A test turns VoiceOver off at its end, unless it
+/// was on before. They launch Salah as `Launch` does: Makkah with Salah's default
+/// calculation, English, muted, every alert off but the ones a test turns on, in a scratch
+/// preferences suite.
 ///
 /// They skip before macOS 27, which the service needs, on a Mac that isn't in English, and
 /// when VoiceOver doesn't turn on. The dropdown tests also skip when the menu bar is full,
@@ -229,8 +232,8 @@ final class VoiceOverSpeechUITests: XCTestCase {
         || said.contains(language.quit)
     }
     // Every item, from the dropdown's first to its last, the Quit button.
-    try speech.previousToTheStart()
-    let items = [try speech.current()] + (try speech.rest(limit: 60))
+    let first = try speech.previousToTheStart()
+    let items = [first].compactMap { $0 } + (try speech.rest(limit: 60))
     let end = Date()
     XCTAssertEqual(items.last, language.quitSpoken, speech.log)
 
@@ -470,19 +473,23 @@ extension VoiceOverSpeechUITests {
 
 // MARK: - VoiceOver
 
-/// VoiceOver on this Mac, and everything it said in the window of Salah's a test reads.
+/// VoiceOver on this Mac, and what it said after the test's moves in the window of Salah's
+/// the test reads.
 ///
-/// The service reports what VoiceOver says for the item it moves to, without the hints it
-/// adds later, and at most 64 characters of it, cutting a longer utterance there. A
-/// move takes up to about 10 seconds. `currentSpeech()` is the last thing VoiceOver said.
-/// Past the first or last item of a group VoiceOver stays put: the service repeats the
-/// item, or reports `noSpeech`. Utterances keep the bidi isolates Salah puts around numbers
-/// and names and the narrow spaces of times, which `spoken(_:)` drops and widens.
+/// The service reports what VoiceOver says after a move, without the hints it adds later,
+/// and at most 64 characters of it, cutting a longer utterance there: the item it moved
+/// to, unless VoiceOver says something else first. A move takes up to about 10 seconds.
+/// `currentSpeech()` is the last thing VoiceOver said, whatever it was about. Past the first
+/// or last item of a group VoiceOver stays put: the service repeats the item, or reports
+/// `noSpeech`. Utterances keep the bidi isolates Salah puts around numbers and names and the
+/// narrow spaces of times, which `spoken(_:)` drops and widens.
 ///
 /// VoiceOver reads whichever app is in front, so nothing it says is kept until it's in the
-/// window the test reads (`confirm`), and every utterance after that only while Salah is in
-/// front with that window open. At the first utterance after that stops holding, the
-/// utterance is dropped and the test fails (`Left`).
+/// window the test reads (`confirm`). After that, only what it says after the test's own
+/// moves is kept, and only while Salah is in front with that window open: at the first move
+/// after that stops holding, the test drops the speech and fails (`Left`). Speech VoiceOver
+/// makes for another app right after a move, such as a notification it reads out while
+/// Salah stays in front, can still be kept; run the tests with Do Not Disturb on.
 @available(macOS 27.0, *)
 @MainActor
 final class Speech {
@@ -495,16 +502,26 @@ final class Speech {
   private(set) var transcript: [String] = []
   /// What VoiceOver said at the last kept move.
   private var lastSaid: String?
-  /// Whether VoiceOver came on for the test.
-  private var turnedOn = false
+  /// Whether VoiceOver is on for the test: it came on, or was on already.
+  private var isOn = false
 
   /// The transcript, one move a line.
   var log: String { transcript.joined(separator: "\n") }
 
-  /// Set in the test runner's own defaults while a test has VoiceOver on. A runner that
-  /// stops before its teardown leaves VoiceOver on with the key set, so the next test turns
-  /// it off at its end; until then, Command-F5 turns it off.
+  /// The time a test turned VoiceOver on, in the test runner's own defaults, until it turns
+  /// it off. A runner that stops before its teardown leaves VoiceOver on and the time set:
+  /// for half an hour, the next test takes that VoiceOver as a test's and turns it off at
+  /// its end. Later it's taken as the person's own, which no test turns off; Command-F5
+  /// does.
   private static let turnedOnKey = "VoiceOverSpeechUITests.turnedVoiceOverOn"
+
+  /// Whether a test turned VoiceOver on in the last half hour and didn't turn it off.
+  private static var aTestTurnedItOn: Bool {
+    guard let date = UserDefaults.standard.object(forKey: turnedOnKey) as? Date else {
+      return false
+    }
+    return Date().timeIntervalSince(date) < 30 * 60
+  }
 
   private init(place: String, isInPlace: @escaping @MainActor () -> Bool) {
     self.place = place
@@ -512,9 +529,10 @@ final class Speech {
   }
 
   /// Turns VoiceOver on for the rest of `test`, to read `place`, a window of Salah's that is
-  /// open and in front while `isInPlace` holds. Turns VoiceOver off at the test's end, unless
-  /// it was on before a test turned it on, and attaches the transcript.
+  /// open and in front while `isInPlace` holds; attaches the transcript at the test's end.
   ///
+  /// VoiceOver that was on already is the person's, and stays on. Otherwise the test turns
+  /// VoiceOver off at its end, including when `enable()` gave up but VoiceOver came on later.
   /// Skips the test on a Mac that isn't in English, as VoiceOver's own words, such as
   /// "selected" and "dimmed", are in the Mac's language, and when VoiceOver doesn't turn on.
   static func start(
@@ -527,18 +545,28 @@ final class Speech {
       "VoiceOver speaks its own words in the Mac's language, and these tests expect English.")
     let service = XCUIDevice.shared.voiceOverService
     let defaults = UserDefaults.standard
-    let wasOn = service.isEnabled && !defaults.bool(forKey: turnedOnKey)
-    if !wasOn { defaults.set(true, forKey: turnedOnKey) }
+    let wasOn = service.isEnabled && !aTestTurnedItOn
+    if wasOn {
+      defaults.removeObject(forKey: turnedOnKey)
+    } else {
+      defaults.set(Date(), forKey: turnedOnKey)
+    }
     let speech = Speech(place: place, isInPlace: isInPlace)
     test.addTeardownBlock { @MainActor in
       let attachment = XCTAttachment(string: speech.log)
       attachment.name = "VoiceOver"
       attachment.lifetime = .keepAlways
       test.add(attachment)
-      // When VoiceOver didn't come on, the key stays set: should it come on after all, the
-      // next test turns it off.
-      guard !wasOn, speech.turnedOn else { return }
+      guard !wasOn else { return }
       let service = XCUIDevice.shared.voiceOverService
+      if !speech.isOn {
+        // enable() gave up, and VoiceOver may still start: it's turned off if it does now.
+        // If it doesn't, the time stays set, so a test in the next half hour turns it off
+        // should it start later.
+        let deadline = Date().addingTimeInterval(10)
+        while !service.isEnabled, Date() < deadline { Thread.sleep(forTimeInterval: 0.5) }
+        guard service.isEnabled else { return }
+      }
       guard service.isEnabled else {
         UserDefaults.standard.removeObject(forKey: turnedOnKey)
         return
@@ -547,17 +575,18 @@ final class Speech {
         try service.disable()
         UserDefaults.standard.removeObject(forKey: turnedOnKey)
       } catch {
-        // The key stays set, so the next test turns VoiceOver off.
+        // The time stays set, so the next test turns VoiceOver off.
         XCTFail("VoiceOver didn't turn off (\(error)); Command-F5 turns it off.")
       }
     }
-    do {
-      try service.enable()
-      speech.turnedOn = true
-    } catch {
-      try? service.disable()
-      throw XCTSkip("VoiceOver didn't turn on: \(error.localizedDescription)")
+    if !service.isEnabled {
+      do {
+        try service.enable()
+      } catch {
+        throw XCTSkip("VoiceOver didn't turn on: \(error.localizedDescription)")
+      }
     }
+    speech.isOn = true
     return speech
   }
 
@@ -582,38 +611,44 @@ final class Speech {
     throw Missing(what: "anything in \(place)", transcript: transcript)
   }
 
-  /// What VoiceOver said last, for the item it's on.
-  func current() throws -> String { try record("·") { try service.currentSpeech() } }
-
   /// Moves to the next item, as VO-Right Arrow does; what VoiceOver said there.
   @discardableResult
-  func next() throws -> String { try move("→") { try service.moveForward() } }
+  func next() throws -> String {
+    try move("→", { try service.moveForward() }, back: { try service.moveBackward() })
+  }
 
   /// Moves to the previous item, as VO-Left Arrow does.
   @discardableResult
-  func previous() throws -> String { try move("←") { try service.moveBackward() } }
+  func previous() throws -> String {
+    try move("←", { try service.moveBackward() }, back: { try service.moveForward() })
+  }
 
   /// Moves into the item, as VO-Shift-Down Arrow does.
   @discardableResult
-  func enter() throws -> String { try move("↘") { try service.moveIn() } }
+  func enter() throws -> String {
+    try move("↘", { try service.moveIn() }, back: { try service.moveOut() })
+  }
 
   /// Moves out to the item's group, as VO-Shift-Up Arrow does.
   @discardableResult
   func leave() throws -> String { try record("↖") { try service.moveOut() } }
 
   /// Moves as `body` does. VoiceOver sometimes says what it said last again: it didn't move,
-  /// or it moved and hasn't spoken yet. A second later, what it says then is kept if that's
-  /// new; otherwise the move is tried once more. (Past a group's last item, VoiceOver says
-  /// the same thing at every try.)
-  private func move(_ move: String, _ body: () throws -> XCUIVoiceOverService.Output) throws
-    -> String
-  {
+  /// or it moved and hasn't spoken yet. A second later, if it still hasn't said anything new,
+  /// the move is tried once more. If it has, which may also be another app's speech, it
+  /// moves `back` and as `body` again, so what's kept is what it says after a move: the item
+  /// it's on. (Past a group's last item, VoiceOver says the same thing at every try.)
+  private func move(
+    _ move: String, _ body: () throws -> XCUIVoiceOverService.Output,
+    back: () throws -> XCUIVoiceOverService.Output
+  ) throws -> String {
     let before = lastSaid
     let said = try record(move, body)
     guard said == before else { return said }
     Thread.sleep(forTimeInterval: 1)
-    let now = Self.spoken((try? service.currentSpeech())?.utterance ?? said)
-    guard now == said else { return try keep("…", now) }
+    if Self.spoken((try? service.currentSpeech())?.utterance ?? said) != said {
+      _ = try? back()
+    }
     return try record(move, body)
   }
 
@@ -656,8 +691,9 @@ final class Speech {
     return said
   }
 
-  /// Moves back to the group's first item, the same way, at most `limit` moves.
-  func previousToTheStart(limit: Int = 40) throws {
+  /// Moves back to the group's first item, the same way, at most `limit` moves, and returns
+  /// what VoiceOver says there.
+  func previousToTheStart(limit: Int = 40) throws -> String? {
     var last: String?
     var repeats = 0
     for _ in 0..<limit {
@@ -667,26 +703,28 @@ final class Speech {
       } catch let left as Left {
         throw left
       } catch {
-        return
+        break
       }
       repeats = said == last ? repeats + 1 : 0
-      if repeats == 2 { return }
       last = said
+      if repeats == 2 { break }
     }
+    return lastSaid
   }
 
   /// Waits up to `timeout` seconds for VoiceOver to say something `match` accepts, and
-  /// returns it: what it says after a key press.
+  /// returns it: what it says after a key press. What it says otherwise isn't kept, as it
+  /// may be about something else.
   @discardableResult
   func waitFor(timeout: TimeInterval = 10, _ match: (String) -> Bool) throws -> String {
     let deadline = Date().addingTimeInterval(timeout)
-    var said = ""
     repeat {
-      said = Self.spoken((try? service.currentSpeech())?.utterance ?? "")
+      let said = Self.spoken((try? service.currentSpeech())?.utterance ?? "")
       if match(said) { return try keep("…", said) }
       Thread.sleep(forTimeInterval: 0.25)
     } while Date() < deadline
-    _ = try keep("…", "\(said) (still, after \(Int(timeout)) seconds)")
+    guard isInPlace() else { throw left() }
+    transcript.append("… (nothing it waited for, in \(Int(timeout)) seconds)")
     throw Missing(what: "what the test waited for", transcript: transcript)
   }
 
@@ -706,7 +744,8 @@ final class Speech {
     var description: String { "VoiceOver left \(place)." }
   }
 
-  /// Records what `body` makes VoiceOver say (`keep(_:_:)`).
+  /// Records what `body` makes VoiceOver say (`keep(_:_:)`). When the service fails instead,
+  /// as it can once VoiceOver has left `place`, that's `Left` too.
   private func record(_ move: String, _ body: () throws -> XCUIVoiceOverService.Output) throws
     -> String
   {
@@ -714,6 +753,7 @@ final class Speech {
     do {
       said = Self.spoken(try body().utterance)
     } catch {
+      guard isInPlace() else { throw left() }
       transcript.append("\(move) (\(error.localizedDescription))")
       throw error
     }
@@ -723,13 +763,16 @@ final class Speech {
   /// Keeps `said` while VoiceOver can only be in `place`. Once it can't, drops `said`, which
   /// may be another app's, and throws `Left`.
   private func keep(_ move: String, _ said: String) throws -> String {
-    guard isInPlace() else {
-      transcript.append("(VoiceOver left \(place).)")
-      throw Left(place: place)
-    }
+    guard isInPlace() else { throw left() }
     transcript.append("\(move) \(said)")
     lastSaid = said
     return said
+  }
+
+  /// `Left`, noted in the transcript.
+  private func left() -> Left {
+    transcript.append("(VoiceOver left \(place).)")
+    return Left(place: place)
   }
 
   /// What VoiceOver said, without bidi isolates and marks, and with plain spaces.
