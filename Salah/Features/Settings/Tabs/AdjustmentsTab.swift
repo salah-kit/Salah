@@ -5,6 +5,13 @@ import SwiftUI
 struct AdjustmentsContent: View {
   @Bindable var prefs = Preferences.shared
 
+  /// The footer of the Ramadan Isha switch, with its 120 minutes in the language's digits.
+  static func delayedIshaFooter(locale: Locale) -> String {
+    String(
+      format: localizedString("settings.adj.delayedIsha.footer", locale: locale), locale: locale,
+      120.localizedDigits(locale: locale).bidiIsolated)
+  }
+
   var body: some View {
     Section("settings.adj.hijriHeader") {
       Stepper(
@@ -27,7 +34,7 @@ struct AdjustmentsContent: View {
       } header: {
         Text("settings.adj.ramadan")
       } footer: {
-        Text("settings.adj.delayedIsha.footer")
+        Text(verbatim: Self.delayedIshaFooter(locale: .app))
       }
     }
 

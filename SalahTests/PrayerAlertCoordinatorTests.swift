@@ -255,14 +255,14 @@ struct PrayerAlertCoordinatorTests {
     let arabicBefore = try #require(
       arabic.center.pendingRequest(Self.identifier(.maghrib, .before)))
     #expect(arabicBefore.content.title == "المغرب")
-    #expect(Self.withoutIsolates(arabicBefore.content.body) == "تذكير قبل المغرب بـ١٠ دقيقة.")
+    #expect(Self.withoutIsolates(arabicBefore.content.body) == "تذكير قبل المغرب (١٠ د).")
     #expect(arabicBefore.content.body.contains("\u{2068}١٠\u{2069}"))
 
     let french = Harness(now: Fixture.date(13, 0), settings: settings, language: .french)
     await french.update()
     let frenchText = SalahText(locale: Locale(identifier: "fr"), timeZone: Fixture.timeZone)
     let frenchAsr = try #require(french.center.pendingRequest(Self.identifier(.asr, .atTime)))
-    #expect(frenchAsr.content.body == "C'est l'heure de Asr (\(frenchText.time(Self.asr.time)))")
+    #expect(frenchAsr.content.body == "C'est l'heure : Asr (\(frenchText.time(Self.asr.time)))")
     let frenchBefore = try #require(
       french.center.pendingRequest(Self.identifier(.maghrib, .before)))
     #expect(frenchBefore.content.body == "Rappel avant Maghrib (\u{2068}10\u{2069} min avant).")

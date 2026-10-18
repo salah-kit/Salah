@@ -603,8 +603,8 @@
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "C'est l'heure de %1$@ (%2$@)"
+            "state": "needs_review",
+            "value": "C'est l'heure : %1$@ (%2$@)"
           }
         },
         "ur": {
@@ -707,8 +707,8 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "تذكير بعد %@ بـ%@ دقيقة."
+            "state": "needs_review",
+            "value": "تذكير بعد %@ (%@ د)."
           }
         },
         "en": {
@@ -823,8 +823,8 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "تذكير قبل %@ بـ%@ دقيقة."
+            "state": "needs_review",
+            "value": "تذكير قبل %@ (%@ د)."
           }
         },
         "en": {
@@ -2332,55 +2332,55 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يمدد فترة العشاء إلى 120 دقيقة خلال رمضان للطرق التي تستخدم فاصلا ثابتا."
+            "value": "يمدد فترة العشاء إلى %@ دقيقة خلال رمضان للطرق التي تستخدم فاصلا ثابتا."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Extends Isha interval to 120 minutes during Ramadan for methods that use a fixed interval."
+            "value": "Extends Isha interval to %@ minutes during Ramadan for methods that use a fixed interval."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Étend l'intervalle de l'Isha à 120 minutes pendant le Ramadan pour les méthodes utilisant un intervalle fixe."
+            "value": "Étend l'intervalle de l'Isha à %@ minutes pendant le Ramadan pour les méthodes utilisant un intervalle fixe."
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "ان طریقوں کے لیے جو مقررہ وقفہ استعمال کرتے ہیں، رمضان کے دوران عشاء کا وقفہ 120 منٹ تک بڑھا دیتا ہے۔"
+            "value": "ان طریقوں کے لیے جو مقررہ وقفہ استعمال کرتے ہیں، رمضان کے دوران عشاء کا وقفہ %@ منٹ تک بڑھا دیتا ہے۔"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Memperpanjang interval Isya menjadi 120 menit selama Ramadan untuk metode yang menggunakan interval tetap."
+            "value": "Memperpanjang interval Isya menjadi %@ menit selama Ramadan untuk metode yang menggunakan interval tetap."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sabit aralık kullanan yöntemlerde Ramazan boyunca Yatsı aralığını 120 dakikaya uzatır."
+            "value": "Sabit aralık kullanan yöntemlerde Ramazan boyunca Yatsı aralığını %@ dakikaya uzatır."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "بازه عشاء را در ماه رمضان برای روش‌هایی که از بازه ثابت استفاده می‌کنند به ۱۲۰ دقیقه افزایش می‌دهد."
+            "value": "بازه عشاء را در ماه رمضان برای روش‌هایی که از بازه ثابت استفاده می‌کنند به %@ دقیقه افزایش می‌دهد."
           }
         },
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "নির্দিষ্ট ব্যবধান ব্যবহারকারী পদ্ধতিগুলোর জন্য রমজানে এশার ব্যবধান 120 মিনিট পর্যন্ত বাড়ায়।"
+            "value": "নির্দিষ্ট ব্যবধান ব্যবহারকারী পদ্ধতিগুলোর জন্য রমজানে এশার ব্যবধান %@ মিনিট পর্যন্ত বাড়ায়।"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Memanjangkan selang Isyak kepada 120 minit semasa Ramadan bagi kaedah yang menggunakan selang tetap."
+            "value": "Memanjangkan selang Isyak kepada %@ minit semasa Ramadan bagi kaedah yang menggunakan selang tetap."
           }
         }
       }
@@ -8204,8 +8204,8 @@
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Jumu'ah (vendredi)"
+            "state": "needs_review",
+            "value": "Joumouah (vendredi)"
           }
         },
         "ur": {
@@ -8714,8 +8714,8 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقيقة بعد"
+            "state": "needs_review",
+            "value": "بعد %@ د"
           }
         },
         "en": {
@@ -8946,8 +8946,8 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقيقة قبل"
+            "state": "needs_review",
+            "value": "قبل %@ د"
           }
         },
         "en": {
