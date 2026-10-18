@@ -689,6 +689,69 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.center.posted.count == (testCase.played ? 1 : 0))
   }
 
+  /// The engine's wake-up waits on a clock that counts time asleep, so at the end of a
+  /// sleep it can report an overdue alert before the app sees the wake notification. The
+  /// alert still gets one banner and one adhan when that report comes before the wake's
+  /// `catchUp(schedule:)`, and its request is gone. (`catchesUpAfterAWake` covers the
+  /// wake coming first.)
+  ///
+  /// Regression: the posting waited only for the installation from before the sleep, found
+  /// the request still pending and skipped it, and the wake's replan then removed the
+  /// request, whose time had passed. The adhan played, but no banner showed.
+  @Test(arguments: [120.0, 1.5])
+  func aWakeUpBeforeTheWakeNotificationStillPostsTheBanner(lateness: Double) async {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true)
+    await harness.update()
+    let identifier = Self.identifier(.asr, .atTime)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+
+    harness.clock.now = Self.asr.time.adding(seconds: lateness)
+    harness.clock.fireLate()
+    // Let the posting's task start before the wake arrives, as it does on a real Mac.
+    for _ in 0..<10 { await Task.yield() }
+    await harness.wake(at: harness.clock.now)
+    await harness.settle()
+
+    #expect(harness.center.posted.map(\.identifier) == [identifier])
+    #expect(!harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A late report with no wake after it, as the minute timer's `resync()` makes after the
+  /// alert's timer was held up, replans and posts the banner itself.
+  @Test func aLateReportWithoutAWakePostsTheBanner() async {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true)
+    await harness.update()
+    let identifier = Self.identifier(.asr, .atTime)
+
+    harness.clock.now = Self.asr.time.adding(seconds: 120)
+    harness.coordinator.resync()
+    await harness.settle()
+
+    #expect(harness.center.posted.map(\.identifier) == [identifier])
+    #expect(!harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A report within `onTimeReportDelay` of the fire date is on time: no replan, and the
+  /// request stays pending for the system to deliver, so the app posts nothing.
+  @Test func anOnTimeReportLeavesTheRequestToTheSystem() async {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true)
+    await harness.update()
+    let identifier = Self.identifier(.asr, .atTime)
+
+    harness.clock.now = Self.asr.time.adding(seconds: 0.9)
+    harness.clock.fireLate()
+    await harness.settle()
+
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
   /// A clock set back past an alert that already fired doesn't request it again, so the
   /// system doesn't deliver it twice; the next day's alert stays planned.
   ///

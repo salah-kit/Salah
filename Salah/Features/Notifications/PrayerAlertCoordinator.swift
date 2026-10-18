@@ -30,6 +30,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// How far back the engine's schedule starts, so an alert due just before a replan
   /// is still caught up.
   static let catchUpWindow: TimeInterval = 5 * 60
+  /// How long after an alert's fire date the engine's wake-up reports it on a Mac that's
+  /// awake: the engine arms it 0.15 seconds after the fire date, and `SystemAlertClock`
+  /// wakes within 0.75 seconds of that. A later report catches up, after a sleep or a busy
+  /// moment. A sleep that ends within this second looks like an on-time report.
+  static let onTimeReportDelay: TimeInterval = 1
 
   private let preferences: Preferences
   private let center: any PrayerNotificationCenter
@@ -48,6 +53,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   private(set) var delivery: Task<Void, Never>?
   /// The latest alert schedule, the engine's and the plan's.
   private(set) var alertSchedule: AlertSchedule?
+  /// The prayer schedule the latest plan came from, so a late report can replan from it.
+  private var plannedSchedule: PrayerSchedule?
+  /// Set while `update(schedule:)` or `catchUp(schedule:)` runs: an alert reported then is
+  /// posted after the installation they start, which is planned from the current instant.
+  private var replanning = false
 
   /// The defaults are the app's wiring; tests inject the preferences, a fake
   /// notification center, a recording audio player and a manual clock.
@@ -81,8 +91,13 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Plans every alert of `schedule` from the clock's current instant: the engine gets
   /// the whole schedule, the system the budgeted plan. Call it on launch and whenever
   /// the schedule, the alert settings or the language change, and after a wake or a
-  /// clock change.
+  /// clock change. The coordinator also replans from the latest schedule itself when the
+  /// engine reports an alert late, which it can do before the app sees a wake.
   func update(schedule: PrayerSchedule) {
+    let wasReplanning = replanning
+    replanning = true
+    defer { replanning = wasReplanning }
+    plannedSchedule = schedule
     let now = clock.now
     schedulerTime.follow(now)
     let alerts: AlertSchedule
@@ -117,6 +132,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     // Retain exclusions before checking for newly due alerts; those keep pending requests.
     // The engine carries this state across later settings, wake and activation replans.
     if afterClockChange { engine.excludeHandledOccurrencesFromNotifications() }
+    let wasReplanning = replanning
+    replanning = true
+    defer { replanning = wasReplanning }
     update(schedule: schedule)
     resync()
   }
@@ -209,10 +227,23 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Posts the due alerts the system won't deliver itself, and plays the preferred
   /// app-played sound among them.
   private func handleDue(_ due: [PlannedAlert]) {
+    let now = clock.now
     for alert in due {
       AppLog.notifications.notice(
-        "due \(alert.id.requestIdentifier(prefix: ""), privacy: .public) late=\(Int(self.clock.now.timeIntervalSince(alert.fireDate)), privacy: .public)s"
+        "due \(alert.id.requestIdentifier(prefix: ""), privacy: .public) late=\(Int(now.timeIntervalSince(alert.fireDate)), privacy: .public)s"
       )
+    }
+    // The engine's wake-up waits on a clock that counts time asleep, so at the end of a
+    // sleep it can report an overdue alert before the app sees the wake. Posting after the
+    // installation from before the sleep would skip the alert as still pending, and the
+    // wake's replan would then remove its request. Replanning first, as the wake will,
+    // puts the posting behind an installation planned from now: it removes the overdue
+    // request, and the posting posts the alert, or skips it if the system delivered it.
+    if !replanning, let plannedSchedule,
+      due.contains(where: { now.timeIntervalSince($0.fireDate) > Self.onTimeReportDelay })
+    {
+      AppLog.notifications.notice("replanning before a late report")
+      update(schedule: plannedSchedule)
     }
     let content = PrayerAlertContent(preferences: preferences)
     let previous = delivery

@@ -56,6 +56,14 @@ final class ManualAlertClock: AlertClock {
     self.action = nil
     action()
   }
+
+  /// Fires the armed wake-up at the current instant, as `SystemAlertClock`'s timer does
+  /// when the Mac wakes after sleeping through it: its clock counts time asleep.
+  func fireLate() {
+    guard armed != nil, let action else { return }
+    self.action = nil
+    action()
+  }
 }
 
 /// An in-memory notification center that logs every call in order.
