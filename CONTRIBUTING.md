@@ -91,8 +91,9 @@ app publishes in its App Group, as the widget does, so the test runner is signed
 your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). It builds
 and launches the app, so it needs your team in `Config/Local.xcconfig`. UI testing on
 macOS runs in Automation Mode; the first time, macOS may ask an administrator to allow it
-(`automationmodetool` shows whether it will). The two alert tests take about five
-minutes:
+(`automationmodetool` shows whether it will). A full run takes about 15 minutes: the two
+alert tests take about five, and `VoiceOverSpeechUITests`, which turns VoiceOver on
+(below), about ten:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
@@ -119,14 +120,17 @@ Two things follow on the Mac you run them on:
 The dropdown tests skip when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.
 
-`VoiceOverSpeechUITests` turns VoiceOver on through XCTest's VoiceOver service, which
-needs macOS 27, and checks what VoiceOver says for the pop-ups and pickers each Settings
-pane shows when it opens, the Appearance preview, and the dropdown's prayers and countdown
-in English and Arabic. Keys reach VoiceOver too: one test opens the time zone's pop-up with
-VO-Space, and another changes the name style with VoiceOver and back. VoiceOver speaks
-aloud while these tests run and reads whichever app is in front, so leave the Mac alone
-until they end. Each test turns VoiceOver off at its end, unless it was on before; if a
-run stops first, Command-F5 turns it off. They take about ten minutes:
+`VoiceOverSpeechUITests` turns VoiceOver on through XCTest's VoiceOver service and checks
+what VoiceOver says for the pop-ups and pickers each Settings pane shows when it opens, the
+Appearance preview, and the dropdown's prayers and countdown in English and Arabic. Keys
+reach VoiceOver too: one test opens the time zone's pop-up with VO-Space, and another
+changes the name style with VoiceOver and back. They need macOS 27 in English, with
+VoiceOver's default settings: VoiceOver says its own words, such as "selected" and
+"dimmed", in the Mac's language and as its verbosity settings choose, and the tests send
+VO-Space as Control-Option. They skip on a Mac that isn't in English and before macOS 27.
+VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
+the Mac alone until they end. Each test turns VoiceOver off at its end, unless it was on
+before; if a run stops first, Command-F5 turns it off. They take about ten minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \

@@ -198,19 +198,36 @@ final class VoiceOverSpeechUITests: XCTestCase {
       statusItem.isHittable,
       "The menu bar is full: macOS put Salah's status item in its overflow.")
 
-    let speech = try Speech.start(in: self)
     statusItem.click()
-    XCTAssertTrue(
-      app.buttons[language.quit].waitForExistence(timeout: 10), app.windows.debugDescription)
+    let quit = app.buttons[language.quit]
+    XCTAssertTrue(quit.waitForExistence(timeout: 10), app.windows.debugDescription)
+    app.activate()
+    XCTAssertTrue(quit.exists, "The dropdown closed when Salah came to the front.")
+    try assertSpeechOfTheOpenDropdown(in: language)
+  }
+
+  /// Turns VoiceOver on in the dropdown, which is open and in front, reads it from its first
+  /// item to its last, and compares what VoiceOver said with what Salah shows.
+  @available(macOS 27.0, *)
+  @MainActor
+  private func assertSpeechOfTheOpenDropdown(in language: Language) throws {
     let start = Date()
+    let today = Self.events(on: CivilDay(containing: start, in: Self.makkah))
+    XCTAssertEqual(today.count, 6, "Today's events in Makkah")
+
+    let speech = try Speech.start(in: self)
+    let names = today.map { language.names.name(of: $0) }
+    // A row reads "Fajr", a toggle and the countdown "Fajr · …", and the last item "Quit Salah".
+    try speech.confirm("the dropdown") { said in
+      names.contains(said) || names.contains { said.contains("\($0) · ") }
+        || said.contains(language.quit)
+    }
     // Every item, from the dropdown's first to its last, the Quit button.
     speech.previousToTheStart()
     let items = [try speech.current()] + speech.rest(limit: 60)
     let end = Date()
     XCTAssertEqual(items.last, language.quitSpoken, speech.log)
 
-    let today = Self.events(on: CivilDay(containing: start, in: Self.makkah))
-    XCTAssertEqual(today.count, 6, "Today's events in Makkah")
     for event in today {
       let name = language.names.name(of: event)
       let time = Self.time(event.time, in: language)
@@ -222,11 +239,14 @@ final class VoiceOverSpeechUITests: XCTestCase {
           items[index...].prefix(4).contains(time), "\(name) at \(time)\n\(speech.log)")
       }
     }
-    // A prayer's alert toggle says the prayer and the alert's state; every alert is off.
-    let names = today.map { language.names.name(of: $0) }
-    let toggles = items.filter { $0.contains(language.playAtPrayerTime) }
-    XCTAssertFalse(toggles.isEmpty, speech.log)
-    for toggle in toggles {
+    // Each prayer's alert toggle says the prayer and the alert's state; every alert is off.
+    // The next event's row shows its state instead while a prayer counts up.
+    let stateRows = Self.nextWhileCountingUp(from: start.addingTimeInterval(-120), to: end)
+    for event in today where event.kind.isPrayer && !stateRows.contains(event.time) {
+      let toggle = language.alertOff(language.names.name(of: event))
+      XCTAssertTrue(items.contains(toggle), "\(toggle)\n\(speech.log)")
+    }
+    for toggle in items.filter({ $0.contains(language.playAtPrayerTime) }) {
       XCTAssertTrue(names.contains { toggle == language.alertOff($0) }, "\(toggle)\n\(speech.log)")
     }
     let countdowns = Self.countdowns(from: start.addingTimeInterval(-120), to: end, in: language)
@@ -269,6 +289,9 @@ extension VoiceOverSpeechUITests {
     app.activate()
 
     let speech = try Speech.start(in: self)
+    try speech.confirm("Salah's Settings", timeout: 3) { said in
+      SettingsAccessibilityUITests.panes.contains { said.contains("\($0) button") }
+    }
     try speech.next(within: 12) { $0 == "scroll area" }
     let opening = try speech.enter()
     XCTAssertTrue(
@@ -387,17 +410,9 @@ extension VoiceOverSpeechUITests {
   /// or else the countdown to the next event, sunrise included, "Isha · 1 hour, 10
   /// minutes remaining". The dropdown words it at each minute.
   static func countdowns(from start: Date, to end: Date, in language: Language) -> Set<String> {
-    let events = events(
-      from: start.addingTimeInterval(-86_400), through: end.addingTimeInterval(86_400))
     var said: Set<String> = []
-    var minute = Date(
-      timeIntervalSinceReferenceDate: (start.timeIntervalSinceReferenceDate / 60).rounded(.down)
-        * 60)
-    while minute <= end.addingTimeInterval(60) {
-      let started = events.last {
-        $0.kind.isPrayer && $0.time <= minute && minute.timeIntervalSince($0.time) < 15 * 60
-      }
-      if let event = started ?? events.first(where: { $0.time > minute }) {
+    for (minute, started, next) in minutes(from: start, to: end) {
+      if let event = started ?? next {
         let duration = PrayerDurationFormat.string(
           abs(event.time.timeIntervalSince(minute)), width: .spoken, locale: language.locale)
         let name = language.names.name(of: event)
@@ -406,9 +421,35 @@ extension VoiceOverSpeechUITests {
             ? "\(name) · \(duration) \(language.remaining)"
             : "\(name) · \(language.since(duration))")
       }
-      minute.addTimeInterval(60)
     }
     return said
+  }
+
+  /// The times of the events whose dropdown row shows its state instead of its alert toggle
+  /// at any minute from `start` to `end`: the next event, while a prayer counts up.
+  static func nextWhileCountingUp(from start: Date, to end: Date) -> Set<Date> {
+    Set(minutes(from: start, to: end).compactMap { $0.started == nil ? nil : $0.next?.time })
+  }
+
+  /// Each minute from `start` to `end`, with the prayer counting up in its first 15 minutes
+  /// then, if any, and the next event, sunrise included.
+  static func minutes(from start: Date, to end: Date) -> [(
+    minute: Date, started: PrayerEvent?, next: PrayerEvent?
+  )] {
+    let events = events(
+      from: start.addingTimeInterval(-86_400), through: end.addingTimeInterval(86_400))
+    var minutes: [(Date, PrayerEvent?, PrayerEvent?)] = []
+    var minute = Date(
+      timeIntervalSinceReferenceDate: (start.timeIntervalSinceReferenceDate / 60).rounded(.down)
+        * 60)
+    while minute <= end.addingTimeInterval(60) {
+      let started = events.last {
+        $0.kind.isPrayer && $0.time <= minute && minute.timeIntervalSince($0.time) < 15 * 60
+      }
+      minutes.append((minute, started, events.first { $0.time > minute }))
+      minute.addTimeInterval(60)
+    }
+    return minutes
   }
 }
 
@@ -428,6 +469,8 @@ final class Speech {
   private let service = XCUIDevice.shared.voiceOverService
   /// Each move and what VoiceOver said, for failure messages and the attachment.
   private(set) var transcript: [String] = []
+  /// What VoiceOver said at the last recorded move.
+  private var lastSaid: String?
 
   /// The transcript, one move a line.
   var log: String { transcript.joined(separator: "\n") }
@@ -441,7 +484,14 @@ final class Speech {
 
   /// Turns VoiceOver on for the rest of `test`, and off at its end unless it was on before
   /// a test turned it on; attaches the transcript.
+  ///
+  /// Skips the test on a Mac that isn't in English, as VoiceOver's own words, such as
+  /// "selected" and "dimmed", are in the Mac's language, and when VoiceOver doesn't turn on.
   static func start(in test: XCTestCase) throws -> Speech {
+    let language = Locale.preferredLanguages.first.map { Locale(identifier: $0).language }
+    try XCTSkipUnless(
+      language?.languageCode == .english,
+      "VoiceOver speaks its own words in the Mac's language, and these tests expect English.")
     let service = XCUIDevice.shared.voiceOverService
     let defaults = UserDefaults.standard
     let wasOn = service.isEnabled && !defaults.bool(forKey: turnedOnKey)
@@ -453,16 +503,45 @@ final class Speech {
       attachment.lifetime = .keepAlways
       test.add(attachment)
       guard !wasOn else { return }
+      let service = XCUIDevice.shared.voiceOverService
+      guard service.isEnabled else {
+        // Off already, as when it didn't turn on: nothing for a later test to turn off.
+        UserDefaults.standard.removeObject(forKey: turnedOnKey)
+        return
+      }
       do {
-        try XCUIDevice.shared.voiceOverService.disable()
+        try service.disable()
         UserDefaults.standard.removeObject(forKey: turnedOnKey)
       } catch {
         // The key stays set, so the next test turns VoiceOver off.
         XCTFail("VoiceOver didn't turn off (\(error)); Command-F5 turns it off.")
       }
     }
-    try service.enable()
+    do {
+      try service.enable()
+    } catch {
+      throw XCTSkip("VoiceOver didn't turn on: \(error.localizedDescription)")
+    }
     return speech
+  }
+
+  /// Waits up to `timeout` seconds for VoiceOver, just turned on, to say something of
+  /// `place`'s, which `match` recognizes, then moves forward at most `moves` items for it.
+  /// Nothing VoiceOver says until then is kept, as it may be another app's; when it never
+  /// says anything of `place`'s, the error names only the place.
+  func confirm(
+    _ place: String, timeout: TimeInterval = 10, moves: Int = 2, _ match: (String) -> Bool
+  ) throws {
+    let deadline = Date().addingTimeInterval(timeout)
+    repeat {
+      if match(Self.spoken((try? service.currentSpeech())?.utterance ?? "")) { return }
+      Thread.sleep(forTimeInterval: 0.25)
+    } while Date() < deadline
+    for _ in 0..<moves {
+      if match(Self.spoken((try? service.moveForward())?.utterance ?? "")) { return }
+    }
+    transcript.append("(VoiceOver isn't in \(place).)")
+    throw Missing(what: "anything of \(place)'s", transcript: transcript)
   }
 
   /// What VoiceOver said last, for the item it's on.
@@ -470,15 +549,28 @@ final class Speech {
 
   /// Moves to the next item, as VO-Right Arrow does; what VoiceOver said there.
   @discardableResult
-  func next() throws -> String { try record("→") { try service.moveForward() } }
+  func next() throws -> String { try move("→") { try service.moveForward() } }
 
   /// Moves to the previous item, as VO-Left Arrow does.
   @discardableResult
-  func previous() throws -> String { try record("←") { try service.moveBackward() } }
+  func previous() throws -> String { try move("←") { try service.moveBackward() } }
 
   /// Moves into the item, as VO-Shift-Down Arrow does.
   @discardableResult
-  func enter() throws -> String { try record("↘") { try service.moveIn() } }
+  func enter() throws -> String { try move("↘") { try service.moveIn() } }
+
+  /// Moves as `body` does. VoiceOver sometimes doesn't move at the first try, and says what
+  /// it said last again; then it tries once more, a second later. (Past a group's last
+  /// item, it says the same thing at every try.)
+  private func move(_ move: String, _ body: () throws -> XCUIVoiceOverService.Output) throws
+    -> String
+  {
+    let before = lastSaid
+    let said = try record(move, body)
+    guard said == before else { return said }
+    Thread.sleep(forTimeInterval: 1)
+    return try record(move, body)
+  }
 
   /// Moves out to the item's group, as VO-Shift-Up Arrow does.
   @discardableResult
@@ -561,6 +653,7 @@ final class Speech {
     do {
       let said = Self.spoken(try body().utterance)
       transcript.append("\(move) \(said)")
+      lastSaid = said
       return said
     } catch {
       transcript.append("\(move) (\(error.localizedDescription))")
