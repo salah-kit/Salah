@@ -116,8 +116,22 @@ Two things follow on the Mac you run them on:
   every alert off after a full run, or, after the alert tests without the others, a
   prayer moved by the last one's adjustment, with its alert.
 
-The dropdown test skips when the menu bar is so full that macOS puts Salah's status
+The dropdown tests skip when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.
+
+`VoiceOverSpeechUITests` turns VoiceOver on through XCTest's VoiceOver service, which
+needs macOS 27, and checks what VoiceOver says for the pop-ups and pickers each Settings
+pane shows when it opens, the Appearance preview, and the dropdown's prayers and countdown
+in English and Arabic. Keys reach VoiceOver too: one test opens the time zone's pop-up with
+VO-Space, and another changes the name style with VoiceOver and back. VoiceOver speaks
+aloud while these tests run and reads whichever app is in front, so leave the Mac alone
+until they end. Each test turns VoiceOver off at its end, unless it was on before; if a
+run stops first, Command-F5 turns it off. They take about ten minutes:
+
+```sh
+xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
+  -allowProvisioningUpdates -only-testing:SalahUITests/VoiceOverSpeechUITests
+```
 
 ### Real-app tests
 

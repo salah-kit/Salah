@@ -1,0 +1,583 @@
+import AppKit
+import SalahCore
+import XCTest
+
+/// What VoiceOver says for the pop-ups and pickers each Settings pane shows when it opens,
+/// the Appearance preview and the menu-bar dropdown, through the VoiceOver service of
+/// macOS 27's XCTest (`XCUIDevice.voiceOverService`). They cover part of what #17 asks a
+/// person to listen to.
+///
+/// Each test turns VoiceOver on and moves it as VO-Right Arrow, VO-Shift-Down Arrow and
+/// VO-Shift-Up Arrow do; VO-Space, Escape, Return and the arrow keys reach VoiceOver as
+/// key presses. VoiceOver speaks aloud while a test runs and reads whichever app is in
+/// front, so leave the Mac alone until the tests end. Each test turns VoiceOver off at its
+/// end, unless it was on before (`Speech`). They launch Salah as `Launch` does: Makkah with
+/// Salah's default calculation, English, muted, every alert off but the ones a test turns
+/// on, in a scratch preferences suite.
+///
+/// They skip before macOS 27, which the service needs. The dropdown tests also skip when
+/// the menu bar is full, as `SalahUITests` does (#14).
+final class VoiceOverSpeechUITests: XCTestCase {
+  override func setUpWithError() throws {
+    continueAfterFailure = false
+  }
+
+  static let needsMacOS27 = "XCTest's VoiceOver service needs macOS 27."
+
+  // MARK: - Settings
+
+  /// Settings → Location, with automatic location off: VoiceOver reads the time zone's row,
+  /// then its pop-up as the zone, the name and the role. VO-Space opens the pop-up's menu
+  /// of every zone, and Escape closes it on the same zone.
+  ///
+  /// VoiceOver names a Settings pop-up after its row's label, so it reads "Time zone" even
+  /// without the pop-up's own name, which `SettingsAccessibilityUITests` checks.
+  @MainActor
+  func testTimeZonePopUpSaysTheZoneThenItsName() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let pane = try openPane("Location", heading: "Detection")
+    let (app, speech) = (pane.app, pane.speech)
+    try speech.next { $0 == "Time zone" }
+    XCTAssertEqual(try speech.next(), "Riyadh Time zone pop up button", speech.log)
+
+    app.typeKey(" ", modifierFlags: [.control, .option])
+    try speech.waitFor { $0 == "menu (\(TimeZone.knownTimeZoneIdentifiers.count) items)" }
+    let riyadh = app.menuItems["Riyadh"]
+    XCTAssertTrue(riyadh.exists, speech.log)
+    app.typeKey(.escape, modifierFlags: [])
+    XCTAssertTrue(Self.eventually { !riyadh.exists }, speech.log)
+    XCTAssertEqual(pane.settings.popUpButtons["Time zone"].value as? String, "Riyadh")
+    // VoiceOver stays on the pop-up, which reads the same zone.
+    XCTAssertEqual(try speech.previous(), "Time zone", speech.log)
+    XCTAssertEqual(try speech.next(), "Riyadh Time zone pop up button", speech.log)
+  }
+
+  /// Settings → General: VoiceOver reads each row's name, then its pop-up as the choice,
+  /// the name and the role.
+  @MainActor
+  func testGeneralPopUpsSayTheirChoiceThenTheirName() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let speech = try openPane("General", heading: "Language").speech
+    try speech.next { $0 == "Name style" }
+    XCTAssertEqual(try speech.next(), "Full name Name style pop up button", speech.log)
+    try speech.next { $0 == "Time style" }
+    XCTAssertEqual(try speech.next(), "Countdown Time style pop up button", speech.log)
+  }
+
+  /// VoiceOver changes a pop-up's choice and changes it back, as #17 asks a person to try:
+  /// VO-Space opens Settings → General's name style, the arrow keys move through its three
+  /// choices, which VoiceOver reads, and Return chooses one.
+  @MainActor
+  func testVoiceOverChangesTheNameStyleAndBack() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let pane = try openPane("General", heading: "Language")
+    let (app, speech) = (pane.app, pane.speech)
+    try speech.next { $0 == "Full name Name style pop up button" }
+    // The pane's first pop-up; it has no name of its own, as the row's label names it.
+    let nameStyle = pane.settings.popUpButtons.element(boundBy: 0)
+    XCTAssertEqual(nameStyle.value as? String, "Full name", speech.log)
+
+    app.typeKey(" ", modifierFlags: [.control, .option])
+    try speech.waitFor { $0 == "menu (3 items)" }
+    app.typeKey(.downArrow, modifierFlags: [])
+    try speech.waitFor { $0 == "✓ Full name" }
+    app.typeKey(.downArrow, modifierFlags: [])
+    try speech.waitFor { $0 == "Abbreviation" }
+    app.typeKey(.return, modifierFlags: [])
+    XCTAssertTrue(Self.eventually { nameStyle.value as? String == "Abbreviation" }, speech.log)
+
+    app.typeKey(" ", modifierFlags: [.control, .option])
+    try speech.waitFor { $0 == "menu (3 items)" }
+    app.typeKey(.downArrow, modifierFlags: [])
+    try speech.waitFor { $0 == "Full name" }
+    app.typeKey(.return, modifierFlags: [])
+    XCTAssertTrue(Self.eventually { nameStyle.value as? String == "Full name" }, speech.log)
+  }
+
+  /// Settings → Calculation: VoiceOver reads each pop-up as its choice, its name and its
+  /// role, and says "dimmed" for the high-latitude rule while it's detected from the
+  /// location.
+  @MainActor
+  func testCalculationPopUpsSayTheirChoiceThenTheirName() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let speech = try openPane(
+      "Calculation", heading: "Method",
+      arguments: Self.launch(["-salah.autoDetectHighLatitudeRule": "YES"])
+    ).speech
+    try speech.next { $0 == "Calculation method" }
+    XCTAssertEqual(
+      try speech.next(), "Umm Al-Qura, Makkah Calculation method pop up button", speech.log)
+    try speech.next { $0 == "Asr calculation" }
+    XCTAssertEqual(
+      try speech.next(), "Shafi / Maliki / Hanbali Asr calculation pop up button", speech.log)
+    try speech.next { $0 == "High latitude rule dimmed" }
+    XCTAssertEqual(
+      try speech.next(), "Middle of the night High latitude rule dimmed pop up button",
+      speech.log)
+  }
+
+  /// Settings → Notifications, with Fajr's alert on: the prayer picker is a radio group
+  /// named "Prayer" that says which prayer is selected, and the alert's sound pop-up reads
+  /// as its choice, its name and its role.
+  @MainActor
+  func testNotificationsPickersSayTheirChoiceAndName() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let speech = try openPane(
+      "Notifications", heading: "Global Alerts",
+      arguments: Launch.arguments(alerts: [.fajr: ["alertEnabled": true]])
+    ).speech
+    try speech.next { $0 == "Prayer radio group" }
+    XCTAssertEqual(
+      try speech.enter(), "In Prayer radio group 6 items Fajr selected radio button, 1 of 6",
+      speech.log)
+    XCTAssertEqual(try speech.next(), "Sunrise radio button, 2 of 6", speech.log)
+    try speech.leave()
+    try speech.next { $0 == "Sound" }
+    XCTAssertEqual(try speech.next(), "System Default Sound pop up button", speech.log)
+  }
+
+  /// Settings → Appearance: the preview is one group named "Preview", in which VoiceOver
+  /// reads each of today's prayers by its name, then its time; the preview's size is a
+  /// radio group that says which size is selected.
+  @MainActor
+  func testAppearancePreviewIsOneGroupNamedPreview() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    let speech = try openPane("Appearance", heading: "Preview").speech
+    XCTAssertEqual(try speech.next(), "Preview group", speech.log)
+    let opening = try speech.enter()
+    XCTAssertTrue(opening.hasPrefix("In Preview group "), speech.log)
+    let items = [opening] + speech.rest()
+    for (name, time) in Self.today(in: Self.english) {
+      // A row reads "Fajr, 5:01 AM"; a passed or current one has its count-up or "Now"
+      // between the two.
+      XCTAssertTrue(
+        items.contains { $0.hasPrefix("\(name), ") && $0.hasSuffix(", \(time)") },
+        "\(name) at \(time)\n\(speech.log)")
+    }
+    try speech.leave()
+    try speech.next { $0 == "Size radio group" }
+    XCTAssertEqual(
+      try speech.enter(), "In Size radio group 3 items Small radio button, 1 of 3", speech.log)
+    XCTAssertEqual(try speech.next(), "Medium selected radio button, 2 of 3", speech.log)
+  }
+
+  // MARK: - Dropdown
+
+  /// The dropdown, in English: VoiceOver reads each prayer's name, then its time, names the
+  /// alert toggles by their prayer and state, and reads the countdown in words: "Isha ·
+  /// 1 hour, 10 minutes remaining".
+  @MainActor
+  func testDropdownSaysThePrayersAndTheCountdownInEnglish() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    try assertDropdownSpeech(in: Self.english)
+  }
+
+  /// The dropdown, in Arabic, with VoiceOver's own words in Arabic too: "العشاء · ساعة
+  /// و١١ دقيقة متبقّية".
+  @MainActor
+  func testDropdownSaysThePrayersAndTheCountdownInArabic() throws {
+    guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
+    try assertDropdownSpeech(in: Self.arabic)
+  }
+
+  @available(macOS 27.0, *)
+  @MainActor
+  private func assertDropdownSpeech(in language: Language) throws {
+    let app = XCUIApplication()
+    app.launchArguments = Self.launch([
+      "-salah.appLanguage": language.setting, "-AppleLanguages": "(\(language.code))",
+    ])
+    app.launch()
+    addTeardownBlock { @MainActor in app.terminate() }
+    let statusItem = app.statusItems.firstMatch
+    XCTAssertTrue(statusItem.waitForExistence(timeout: 30))
+    try XCTSkipUnless(
+      SalahUITests.canClick(statusItem.frame),
+      "The menu bar is full: macOS put Salah's status item behind the camera housing.")
+    try XCTSkipUnless(
+      statusItem.isHittable,
+      "The menu bar is full: macOS put Salah's status item in its overflow.")
+
+    let speech = try Speech.start(in: self)
+    statusItem.click()
+    XCTAssertTrue(
+      app.buttons[language.quit].waitForExistence(timeout: 10), app.windows.debugDescription)
+    let start = Date()
+    // Every item, from the dropdown's first to its last, the Quit button.
+    speech.previousToTheStart()
+    let items = [try speech.current()] + speech.rest(limit: 60)
+    let end = Date()
+    XCTAssertEqual(items.last, language.quitSpoken, speech.log)
+
+    let today = Self.events(on: CivilDay(containing: start, in: Self.makkah))
+    XCTAssertEqual(today.count, 6, "Today's events in Makkah")
+    for event in today {
+      let name = language.names.name(of: event)
+      let time = Self.time(event.time, in: language)
+      let index = items.firstIndex(of: name)
+      XCTAssertNotNil(index, "\(name)\n\(speech.log)")
+      if let index {
+        // The time follows the name, after the count-up of the prayer that passed last.
+        XCTAssertTrue(
+          items[index...].prefix(4).contains(time), "\(name) at \(time)\n\(speech.log)")
+      }
+    }
+    // A prayer's alert toggle says the prayer and the alert's state; every alert is off.
+    let names = today.map { language.names.name(of: $0) }
+    let toggles = items.filter { $0.contains(language.playAtPrayerTime) }
+    XCTAssertFalse(toggles.isEmpty, speech.log)
+    for toggle in toggles {
+      XCTAssertTrue(names.contains { toggle == language.alertOff($0) }, "\(toggle)\n\(speech.log)")
+    }
+    let countdowns = Self.countdowns(from: start.addingTimeInterval(-120), to: end, in: language)
+    XCTAssertTrue(
+      items.contains(where: countdowns.contains),
+      "None of \(countdowns.sorted())\n\(speech.log)")
+  }
+}
+
+// MARK: - Launching and expectations
+
+extension VoiceOverSpeechUITests {
+  /// A Settings pane, with VoiceOver on in it.
+  @available(macOS 27.0, *)
+  struct Pane {
+    let app: XCUIApplication
+    let settings: XCUIElement
+    let speech: Speech
+  }
+
+  /// Opens Settings on `pane` and turns VoiceOver on, with its cursor moved into the pane.
+  ///
+  /// VoiceOver starts on the window's first item, the sidebar's General. The pane is the
+  /// window's scroll area, after the sidebar; moving into it, VoiceOver says the scroll
+  /// area and the pane's first heading, `heading`.
+  @available(macOS 27.0, *)
+  @MainActor
+  func openPane(
+    _ pane: String, heading: String, arguments: [String] = VoiceOverSpeechUITests.launch()
+  ) throws -> Pane {
+    let app = XCUIApplication()
+    app.launchArguments = arguments
+    app.open(try XCTUnwrap(URL(string: "salah://settings")))
+    addTeardownBlock { @MainActor in app.terminate() }
+    let settings = app.windows["Salah Settings"]
+    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
+    let tab = settings.buttons[pane]
+    XCTAssertTrue(tab.waitForExistence(timeout: 10), settings.debugDescription)
+    tab.click()
+    app.activate()
+
+    let speech = try Speech.start(in: self)
+    try speech.next(within: 12) { $0 == "scroll area" }
+    let opening = try speech.enter()
+    XCTAssertTrue(
+      opening.hasPrefix("In scroll area ") && opening.hasSuffix(" heading \(heading)"),
+      speech.log)
+    return Pane(app: app, settings: settings, speech: speech)
+  }
+
+  /// Polls `condition` until it holds; whether it did within `timeout` seconds.
+  @MainActor
+  static func eventually(timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {
+    let deadline = Date().addingTimeInterval(timeout)
+    while !condition() {
+      guard Date() < deadline else { return false }
+      Thread.sleep(forTimeInterval: 0.25)
+    }
+    return true
+  }
+
+  /// `Launch`'s arguments, with each of `overrides`' keys set to its value.
+  static func launch(_ overrides: [String: String] = [:]) -> [String] {
+    var arguments = Launch.arguments()
+    for (key, value) in overrides {
+      if let index = arguments.firstIndex(of: key) {
+        arguments[index + 1] = value
+      } else {
+        arguments += [key, value]
+      }
+    }
+    return arguments
+  }
+
+  /// A language of the dropdown tests, with the words Salah and VoiceOver use in it.
+  struct Language: Sendable {
+    /// `-salah.appLanguage`'s value.
+    var setting: String
+    var code: String
+    /// The locale Salah formats in.
+    var locale: Locale
+    /// The Quit button's name, and what VoiceOver says for it.
+    var quit: String
+    var quitSpoken: String
+    /// `SalahWidgetLabels`' words for the countdown and the count-up.
+    var remaining: String
+    var since: @Sendable (_ duration: String) -> String
+    /// What VoiceOver says for a prayer's alert toggle while the alert is off, and the
+    /// toggle's name after the prayer's.
+    var alertOff: @Sendable (_ prayer: String) -> String
+    var playAtPrayerTime: String
+
+    var names: PrayerNames { PrayerNames(locale: locale) }
+  }
+
+  static let english = Language(
+    setting: "english", code: "en", locale: Locale(identifier: "en"), quit: "Quit Salah",
+    quitSpoken: "Quit Salah button", remaining: "remaining", since: { "started \($0) ago" },
+    alertOff: { "Alert off \($0) · Play at prayer time button" },
+    playAtPrayerTime: "Play at prayer time")
+
+  static let arabic: Language = {
+    // Salah's Arabic: Arabic-Indic digits, which `Locale(identifier: "ar")` doesn't use.
+    var components = Locale.Components(languageCode: .arabic)
+    components.numberingSystem = Locale.NumberingSystem("arab")
+    return Language(
+      setting: "arabic", code: "ar", locale: Locale(components: components), quit: "إنهاء صلاة",
+      quitSpoken: "إنهاء صلاة زر", remaining: "متبقّية", since: { "منذ \($0)" },
+      alertOff: { "تنبيه مُعطّل \($0) · تشغيل عند وقت الصلاة زر" },
+      playAtPrayerTime: "تشغيل عند وقت الصلاة")
+  }()
+
+  static let makkah = TimeZone(identifier: "Asia/Riyadh") ?? .gmt
+
+  /// The events of `Launch`'s schedule from `start` through `end`, as Salah names them:
+  /// every Friday's Dhuhr is Jumu'ah, Salah's own policy (`SalahPrayerSource`).
+  static func events(from start: Date, through end: Date) -> [PrayerEvent] {
+    PlacedPrayer.schedule.events(from: start, through: end).events.map { event in
+      var event = event
+      if event.kind == .dhuhr, event.scheduleDay.weekday == 6 {
+        event.observance = .jumuah
+      }
+      return event
+    }
+  }
+
+  /// The events of `day` in `Launch`'s schedule.
+  static func events(on day: CivilDay) -> [PrayerEvent] {
+    let middle = Date()
+    return events(
+      from: middle.addingTimeInterval(-2 * 86_400), through: middle.addingTimeInterval(2 * 86_400)
+    ).filter { $0.scheduleDay == day }
+  }
+
+  /// Today's events in Makkah, by name and time, as the Appearance preview shows them.
+  @available(macOS 27.0, *)
+  static func today(in language: Language) -> [(name: String, time: String)] {
+    events(on: CivilDay(containing: Date(), in: makkah)).map {
+      (language.names.name(of: $0), time($0.time, in: language))
+    }
+  }
+
+  /// A time as Salah's lists write it, the locale's short time in Makkah, as VoiceOver's
+  /// utterance has it (`Speech.spoken(_:)`).
+  @available(macOS 27.0, *)
+  static func time(_ date: Date, in language: Language) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language.locale
+    formatter.calendar = language.locale.calendar
+    formatter.timeZone = makkah
+    formatter.dateStyle = .none
+    formatter.timeStyle = .short
+    return Speech.spoken(formatter.string(from: date))
+  }
+
+  /// What the dropdown's countdown can say for VoiceOver at any minute from `start` to
+  /// `end`: the count-up of a prayer in its first 15 minutes, "Asr · started 5 minutes ago",
+  /// or else the countdown to the next event, sunrise included, "Isha · 1 hour, 10
+  /// minutes remaining". The dropdown words it at each minute.
+  static func countdowns(from start: Date, to end: Date, in language: Language) -> Set<String> {
+    let events = events(
+      from: start.addingTimeInterval(-86_400), through: end.addingTimeInterval(86_400))
+    var said: Set<String> = []
+    var minute = Date(
+      timeIntervalSinceReferenceDate: (start.timeIntervalSinceReferenceDate / 60).rounded(.down)
+        * 60)
+    while minute <= end.addingTimeInterval(60) {
+      let started = events.last {
+        $0.kind.isPrayer && $0.time <= minute && minute.timeIntervalSince($0.time) < 15 * 60
+      }
+      if let event = started ?? events.first(where: { $0.time > minute }) {
+        let duration = PrayerDurationFormat.string(
+          abs(event.time.timeIntervalSince(minute)), width: .spoken, locale: language.locale)
+        let name = language.names.name(of: event)
+        said.insert(
+          started == nil
+            ? "\(name) · \(duration) \(language.remaining)"
+            : "\(name) · \(language.since(duration))")
+      }
+      minute.addTimeInterval(60)
+    }
+    return said
+  }
+}
+
+// MARK: - VoiceOver
+
+/// VoiceOver on this Mac, and everything it said while a test moved it.
+///
+/// The service reports what VoiceOver says for the item it moves to, without the hints it
+/// adds later, and at most 64 characters of it, cutting a longer utterance there. A
+/// move takes up to about 10 seconds. `currentSpeech()` is the last thing VoiceOver said.
+/// Past the first or last item of a group VoiceOver stays put: the service repeats the
+/// item, or reports `noSpeech`. Utterances keep the bidi isolates Salah puts around numbers
+/// and names and the narrow spaces of times, which `spoken(_:)` drops and widens.
+@available(macOS 27.0, *)
+@MainActor
+final class Speech {
+  private let service = XCUIDevice.shared.voiceOverService
+  /// Each move and what VoiceOver said, for failure messages and the attachment.
+  private(set) var transcript: [String] = []
+
+  /// The transcript, one move a line.
+  var log: String { transcript.joined(separator: "\n") }
+
+  /// Set in the test runner's own defaults while a test has VoiceOver on. A runner that
+  /// stops before its teardown leaves VoiceOver on with the key set, so the next test turns
+  /// it off at its end; until then, Command-F5 turns it off.
+  private static let turnedOnKey = "VoiceOverSpeechUITests.turnedVoiceOverOn"
+
+  private init() {}
+
+  /// Turns VoiceOver on for the rest of `test`, and off at its end unless it was on before
+  /// a test turned it on; attaches the transcript.
+  static func start(in test: XCTestCase) throws -> Speech {
+    let service = XCUIDevice.shared.voiceOverService
+    let defaults = UserDefaults.standard
+    let wasOn = service.isEnabled && !defaults.bool(forKey: turnedOnKey)
+    if !wasOn { defaults.set(true, forKey: turnedOnKey) }
+    let speech = Speech()
+    test.addTeardownBlock { @MainActor in
+      let attachment = XCTAttachment(string: speech.log)
+      attachment.name = "VoiceOver"
+      attachment.lifetime = .keepAlways
+      test.add(attachment)
+      guard !wasOn else { return }
+      do {
+        try XCUIDevice.shared.voiceOverService.disable()
+        UserDefaults.standard.removeObject(forKey: turnedOnKey)
+      } catch {
+        // The key stays set, so the next test turns VoiceOver off.
+        XCTFail("VoiceOver didn't turn off (\(error)); Command-F5 turns it off.")
+      }
+    }
+    try service.enable()
+    return speech
+  }
+
+  /// What VoiceOver said last, for the item it's on.
+  func current() throws -> String { try record("·") { try service.currentSpeech() } }
+
+  /// Moves to the next item, as VO-Right Arrow does; what VoiceOver said there.
+  @discardableResult
+  func next() throws -> String { try record("→") { try service.moveForward() } }
+
+  /// Moves to the previous item, as VO-Left Arrow does.
+  @discardableResult
+  func previous() throws -> String { try record("←") { try service.moveBackward() } }
+
+  /// Moves into the item, as VO-Shift-Down Arrow does.
+  @discardableResult
+  func enter() throws -> String { try record("↘") { try service.moveIn() } }
+
+  /// Moves out to the item's group, as VO-Shift-Up Arrow does.
+  @discardableResult
+  func leave() throws -> String { try record("↖") { try service.moveOut() } }
+
+  /// Moves forward until VoiceOver says something `match` accepts, and returns it. Fails
+  /// after `limit` moves, or when VoiceOver says the same thing three times in a row: the
+  /// end of the group.
+  @discardableResult
+  func next(within limit: Int = 30, until match: (String) -> Bool) throws -> String {
+    var last: String?
+    var repeats = 0
+    for _ in 0..<limit {
+      let said = try next()
+      if match(said) { return said }
+      repeats = said == last ? repeats + 1 : 0
+      if repeats == 2 { break }
+      last = said
+    }
+    throw Missing(what: "what the test looked for", transcript: transcript)
+  }
+
+  /// Moves forward to the group's last item, and returns what VoiceOver said on the way:
+  /// until it says the same thing three times in a row or has nothing to say, at most
+  /// `limit` moves.
+  func rest(limit: Int = 40) -> [String] {
+    var said: [String] = []
+    var repeats = 0
+    for _ in 0..<limit {
+      guard let next = try? next() else { break }
+      repeats = next == said.last ? repeats + 1 : 0
+      if repeats == 2 { break }
+      said.append(next)
+    }
+    return said
+  }
+
+  /// Moves back to the group's first item, the same way, at most `limit` moves.
+  func previousToTheStart(limit: Int = 40) {
+    var last: String?
+    var repeats = 0
+    for _ in 0..<limit {
+      guard let said = try? previous() else { return }
+      repeats = said == last ? repeats + 1 : 0
+      if repeats == 2 { return }
+      last = said
+    }
+  }
+
+  /// Waits up to `timeout` seconds for VoiceOver to say something `match` accepts, and
+  /// returns it: what it says after a key press.
+  @discardableResult
+  func waitFor(timeout: TimeInterval = 10, _ match: (String) -> Bool) throws -> String {
+    let deadline = Date().addingTimeInterval(timeout)
+    var said = ""
+    repeat {
+      said = Self.spoken((try? service.currentSpeech())?.utterance ?? "")
+      if match(said) {
+        transcript.append("… \(said)")
+        return said
+      }
+      Thread.sleep(forTimeInterval: 0.25)
+    } while Date() < deadline
+    transcript.append("… \(said) (still, after \(Int(timeout)) seconds)")
+    throw Missing(what: "what the test waited for", transcript: transcript)
+  }
+
+  /// A move or a wait didn't reach what a test looked for.
+  struct Missing: Error, CustomStringConvertible {
+    var what: String
+    var transcript: [String]
+    var description: String {
+      "VoiceOver didn't say \(what). It said:\n" + transcript.joined(separator: "\n")
+    }
+  }
+
+  private func record(_ move: String, _ body: () throws -> XCUIVoiceOverService.Output) throws
+    -> String
+  {
+    do {
+      let said = Self.spoken(try body().utterance)
+      transcript.append("\(move) \(said)")
+      return said
+    } catch {
+      transcript.append("\(move) (\(error.localizedDescription))")
+      throw error
+    }
+  }
+
+  /// What VoiceOver said, without bidi isolates and marks, and with plain spaces.
+  nonisolated static func spoken(_ utterance: String) -> String {
+    var scalars = String.UnicodeScalarView()
+    for scalar in utterance.unicodeScalars {
+      switch scalar.value {
+      case 0x2066...0x2069, 0x200E, 0x200F, 0x061C: continue
+      case 0x00A0, 0x202F: scalars.append(" ")
+      default: scalars.append(scalar)
+      }
+    }
+    return String(scalars)
+  }
+}
