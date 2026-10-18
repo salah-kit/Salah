@@ -59,7 +59,8 @@ final class SettingsAccessibilityUITests: XCTestCase {
     XCTAssertTrue(picker.waitForExistence(timeout: 10), settings.debugDescription)
   }
 
-  /// Xcode's accessibility audit finds nothing in the menu-bar dropdown.
+  /// Xcode's accessibility audit finds nothing in the menu-bar dropdown, apart from what
+  /// `isSetAside` lists.
   @MainActor
   func testMenuBarDropdownPassesTheAccessibilityAudit() throws {
     let app = XCUIApplication()
@@ -78,8 +79,13 @@ final class SettingsAccessibilityUITests: XCTestCase {
     statusItem.click()
     XCTAssertTrue(
       app.buttons["Quit Salah"].waitForExistence(timeout: 10), app.windows.debugDescription)
-    report(
-      try audit(app, in: "the menu-bar dropdown", window: app.windows.firstMatch, preview: nil))
+    let dropdown = app.windows.containing(
+      NSPredicate(
+        format: "elementType == %d AND label == %@", XCUIElement.ElementType.button.rawValue,
+        "Quit Salah")
+    ).firstMatch
+    XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.windows.debugDescription)
+    report(try audit(app, in: "the menu-bar dropdown", window: dropdown, preview: nil))
   }
 
   /// The Settings panes, by their English names.
@@ -139,7 +145,8 @@ final class SettingsAccessibilityUITests: XCTestCase {
     if issue.auditType == .sufficientElementDescription, type == .valueIndicator { return true }
     guard issue.auditType == .contrast else { return false }
     if let windowFrame, !windowFrame.contains(frame) { return true }
-    if let windowTitle, let windowFrame, element.value as? String == windowTitle,
+    if let windowTitle, !windowTitle.isEmpty, let windowFrame,
+      element.value as? String == windowTitle,
       frame.minY < windowFrame.minY + 40
     {
       return true
