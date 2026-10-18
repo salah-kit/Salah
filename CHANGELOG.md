@@ -28,6 +28,13 @@ All notable changes to this project are documented here. The format follows
 - Draw the version line under the Settings sidebar and the menu bar preview's caption in the
   secondary label colour; they had too little contrast.
 - Group the Appearance preview's rows for VoiceOver, in a group named "Preview".
+- Give the widget's text enough contrast on every theme, in the widget and the Appearance
+  preview ([#35](https://github.com/salah-kit/Salah/issues/35)). Secondary text uses the
+  design system's secondary label; the system's was about 3.6:1 in light. Text in the
+  theme's or a state's color, such as the next prayer's row, the countdown and the count-up,
+  keeps its hue and darkens or lightens until it reaches 4.5:1 on the glow and tint under it;
+  it was as low as 2.3:1. Passed prayers stay dimmed, but with Increase Contrast they draw undimmed in the
+  secondary label.
 - Read the count-up after a prayer in each language's word order. On the small widget's
   line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish

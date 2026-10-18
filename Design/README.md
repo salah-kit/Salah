@@ -303,6 +303,33 @@ private var secondary: AnyShapeStyle {
 }
 ```
 
+The macOS widget and its Settings → Appearance preview draw their themed skies, with a
+glow in the state's color from the bottom-trailing corner, and draw every text and glyph
+through `SalahWidgetInk` (`Shared/WidgetUI/SalahWidgetInk.swift`). In full color:
+
+- Primary text is `.primary`. Secondary text is `SalahColor.labelSecondary`, made more
+  opaque on a face whose glow would take it below 4.5:1, such as the green count-up glow in
+  dark.
+- Text in the theme's primary color or a state's color (the next prayer's row, the
+  countdown, the count-up, the Now badge, Tap to Stop) keeps its hue, moving toward white
+  in dark or black in light until it reaches 4.5:1. Glyphs in those colors, and in the
+  theme's accent, reach 3:1. A custom theme gets the same treatment, so a primary that only
+  just passes the Appearance tab's 3:1 check still draws readable text.
+- The surface each ink is checked against is the hardest point of the sky and its glows
+  inside the 14-pt content margin of every widget size, under the tint the text sits on,
+  if any (a large row's fill, the large focus card, the Now badge), counted at 28%. Glows,
+  tints, strokes and hairlines draw the theme's colors unchanged.
+- Passed prayers dim to 50% (55% on the large widget) in standard contrast. That's a
+  deliberate exception to 4.5:1, so the day's remaining prayers stand out: on the presets,
+  passed names measure 2.9–4.7:1, their times 2.0–2.6:1 and the large widget's bells
+  2.2–2.9:1. With Increase Contrast, passed rows draw undimmed in `labelSecondary`, at
+  5.2:1 or more.
+
+`WidgetInkContrastTests` in SalahTests renders each widget state in each size, for every
+preset and for custom themes at the edge of the Appearance tab's check, in light and dark
+and with and without Increase Contrast, and measures each ink against the pixels under its
+glyphs.
+
 ## Symbols
 
 `Icons/` holds eight custom symbols as SF Symbols templates: `salah.fajr`,

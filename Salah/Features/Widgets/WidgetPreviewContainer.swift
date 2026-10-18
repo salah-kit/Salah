@@ -13,18 +13,13 @@ struct WidgetPreviewContainer: View {
 
   @Environment(\.colorScheme) private var scheme
 
-  /// macOS desktop widget point sizes.
-  private var pointSize: CGSize {
-    switch size {
-    case .small: CGSize(width: 158, height: 158)
-    case .medium: CGSize(width: 338, height: 158)
-    case .large: CGSize(width: 338, height: 354)
-    }
-  }
-
   var body: some View {
     let colors = display.theme.colors(for: scheme)
-    content(colors)
+    let pointSize = size.desktopPointSize
+    content
+      .environment(
+        \.salahWidgetBackdrop, SalahWidgetBackdrop(colors: colors, tone: display.backgroundTone)
+      )
       .frame(width: pointSize.width, height: pointSize.height)
       .background {
         SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
@@ -37,14 +32,14 @@ struct WidgetPreviewContainer: View {
 
   /// The extension shell's branches that don't need a widget host.
   @ViewBuilder
-  private func content(_ colors: SalahWidgetColors) -> some View {
+  private var content: some View {
     switch display.widgetFace {
     case .stop:
-      WidgetStopContent(display: display, size: size, colors: colors)
+      WidgetStopContent(display: display, size: size)
     case .unavailable:
       WidgetMessageContent(
         systemImage: "exclamationmark.triangle",
-        message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent)
+        message: Text(verbatim: display.labels.timesUnavailable))
     case .schedule:
       WidgetContentView(display: display, size: size)
     }

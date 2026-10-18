@@ -65,13 +65,14 @@ private struct WidgetHeader: View {
       HStack(spacing: 6) {
         Image(systemName: silentMode ? "bell.slash.fill" : "moon.stars.fill")
           .font(compact ? .caption : .subheadline)
-          .foregroundStyle(silentMode ? Color.secondary : colors.accent)
+          .salahInk(silentMode ? SalahWidgetInk.secondary.glyph : SalahWidgetInk.accent.glyph)
           // Optically pull the Hijri date toward the glyph: `moon.stars.fill`
           // carries empty side-bearing that otherwise reads as a stray gap.
           .padding(.trailing, -2)
           .accessibilityHidden(true)
         Text(verbatim: hijriText)
           .font(.system(compact ? .subheadline : .headline, design: .serif, weight: .semibold))
+          .salahInk(.primary)
           .lineLimit(1)
           .minimumScaleFactor(0.7)
         Spacer(minLength: 8)
@@ -84,14 +85,14 @@ private struct WidgetHeader: View {
             Image(systemName: "location.fill")
           }
           .font(.caption)
-          .foregroundStyle(.secondary)
+          .salahInk(.secondary)
           .labelStyle(.tight)
         }
       }
       if !compact {
         Text(verbatim: header.gregorianDate)
           .font(.caption2)
-          .foregroundStyle(.secondary)
+          .salahInk(.secondary)
           .lineLimit(1)
           .minimumScaleFactor(0.8)
       }
@@ -123,7 +124,7 @@ private struct RelativeTime: View {
   /// The moment this view represents: the timeline entry's date in the widget,
   /// or "now" in the in-app preview.
   let reference: Date
-  let color: Color
+  let ink: SalahWidgetInk
   let font: Font
   var bold: Bool = false
   var countingUp: Bool = false
@@ -157,7 +158,7 @@ private struct RelativeTime: View {
     }
     .font(bold ? font.weight(.bold) : font)
     .monospacedDigit()
-    .foregroundStyle(color)
+    .salahInk(ink)
     .lineLimit(1)
     .minimumScaleFactor(0.6)
   }
@@ -247,26 +248,29 @@ private struct ScheduleRowView: View {
   var sinceText: String? = nil
   /// What VoiceOver reads for the time, when the visible time isn't words.
   var timeAccessibilityLabel: String? = nil
+  @Environment(\.colorSchemeContrast) private var contrast
 
   var body: some View {
     HStack(spacing: compact ? 6 : 10) {
       if !compact {
         Image(systemName: iconName)
           .font(.subheadline)
-          .foregroundStyle(emphasisColor ?? .secondary)
+          .salahInk(ink(emphasisInk?.glyph ?? SalahWidgetInk.secondary.glyph))
           .frame(width: 20)
           .accessibilityHidden(true)
       }
 
       name
         .font(.system(compact ? .subheadline : .body, design: .serif).weight(weight))
-        .foregroundStyle(emphasisColor ?? (compact ? .primary : .primary))
+        .salahInk(ink(emphasisInk ?? (isQuieted ? .secondary : .primary)))
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: compact ? nil : 62, alignment: .leading)
 
       if isCurrent {
-        InlineBadge(text: nowLabel, tint: SalahWidgetTone.prayerColor(colors))
+        InlineBadge(
+          text: nowLabel, tint: SalahWidgetTone.prayerColor(colors),
+          ink: SalahWidgetInk.tone(.playingPrayerAudio).on(.playingPrayerAudio))
       }
 
       Spacer(minLength: 6)
@@ -277,7 +281,7 @@ private struct ScheduleRowView: View {
       if let sinceText {
         Text(verbatim: sinceText)
           .font((compact ? Font.caption : Font.subheadline).monospacedDigit())
-          .foregroundStyle(SalahWidgetTone.prayerColor(colors).opacity(0.9))
+          .salahInk(ink(.tone(.playingPrayerAudio)))
           .lineLimit(1)
           .minimumScaleFactor(0.7)
           .layoutPriority(-1)
@@ -286,7 +290,7 @@ private struct ScheduleRowView: View {
 
       time
         .font((compact ? Font.subheadline : Font.body).monospacedDigit())
-        .foregroundStyle(timeColor)
+        .salahInk(ink(timeInk))
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: compact ? nil : 82, alignment: .trailing)
@@ -296,34 +300,61 @@ private struct ScheduleRowView: View {
     .padding(.horizontal, compact ? 0 : 10)
     .padding(.vertical, compact ? 0 : 4)
     .background(compact ? AnyView(Color.clear) : AnyView(rowBackground))
-    .opacity(isDimmed ? (compact ? 0.5 : 0.55) : 1)
     .accessibilityElement(children: .combine)
   }
 
   private var isCurrent: Bool { state == .current }
 
-  /// Passed rows dim, except the "you are here" row; so does a prayer the
+  /// Passed rows step back, except the "you are here" row; so does a prayer the
   /// calculation can't give.
-  private var isDimmed: Bool {
+  private var isPassed: Bool {
     if case .missing = icon { return true }
     return state == .passed && sinceText == nil
   }
 
-  /// Emphasis color for the name (and icon, full only): next→tone, active→tone,
-  /// current→green; nil means use the default text color.
-  private var emphasisColor: Color? {
+  /// With Increase Contrast, a passed row draws in the secondary ink, undimmed, so its
+  /// text keeps 4.5:1.
+  private var isQuieted: Bool { isPassed && contrast == .increased }
+
+  /// Passed rows dim to 50% (55% on large) in standard contrast, as the widget has always
+  /// drawn them. That's a documented exception to 4.5:1 (`Design/README.md`, Widgets): on
+  /// the presets their names measure 2.9-4.7:1, their times 2.0-2.6:1 and their large
+  /// rows' bells 2.2-2.9:1. `WidgetInkContrastTests` holds them to 1.9:1.
+  private var dimming: Double {
+    guard isPassed, contrast != .increased else { return 1 }
+    return compact ? 0.5 : 0.55
+  }
+
+  /// The tint under a large row's content: its state fill.
+  private var tint: SalahWidgetTone? {
+    guard !compact else { return nil }
     switch state {
-    case .next(let tone), .active(let tone): return tone.color(colors)
-    case .current: return SalahWidgetTone.prayerColor(colors)
+    case .next(let tone), .active(let tone): return tone
+    case .current: return .playingPrayerAudio
     default: return nil
     }
   }
 
-  private var timeColor: Color {
+  /// `ink` on the row's tint, dimmed as the row is.
+  private func ink(_ ink: SalahWidgetInk) -> SalahWidgetInk {
+    ink.on(tint).dimmed(dimming)
+  }
+
+  /// Emphasis ink for the name (and icon, full only): next→tone, active→tone,
+  /// current→green; nil means use the default text ink.
+  private var emphasisInk: SalahWidgetInk? {
     switch state {
-    case .next(let tone): return tone.color(colors)
-    case .current: return SalahWidgetTone.prayerColor(colors)
-    default: return compact ? .secondary : .primary
+    case .next(let tone), .active(let tone): return .tone(tone)
+    case .current: return .tone(.playingPrayerAudio)
+    default: return nil
+    }
+  }
+
+  private var timeInk: SalahWidgetInk {
+    switch state {
+    case .next(let tone): return .tone(tone)
+    case .current: return .tone(.playingPrayerAudio)
+    default: return compact || isQuieted ? .secondary : .primary
     }
   }
 
@@ -441,6 +472,8 @@ private struct ActiveCardView: View {
     }
   }
   private var toneColor: Color { tone.color(colors) }
+  /// The large focus card's tint, under all its text.
+  private var cardTint: SalahWidgetTone? { size == .large ? tone : nil }
   private var isImminent: Bool {
     if case .countdown = focus { return tone == .imminent }
     return false
@@ -507,11 +540,13 @@ private struct ActiveCardView: View {
   @ViewBuilder
   private var statusLine: some View {
     if isCountUp {
-      InlineBadge(text: labels.now, tint: SalahWidgetTone.prayerColor(colors))
+      InlineBadge(
+        text: labels.now, tint: SalahWidgetTone.prayerColor(colors),
+        ink: SalahWidgetInk.tone(.playingPrayerAudio).on(.playingPrayerAudio))
     } else {
       EyebrowLabel(
         text: display.focusIsTomorrow ? labels.tomorrow : labels.nextPrayer,
-        accent: colors.accentText)
+        accent: colors.accentText, ink: SalahWidgetInk.primary.on(cardTint))
     }
   }
 
@@ -523,6 +558,7 @@ private struct ActiveCardView: View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
       (name ?? Text(verbatim: "–"))
         .font(nameFont)
+        .salahInk(SalahWidgetInk.primary.on(cardTint))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       if size != .small {
@@ -535,7 +571,7 @@ private struct ActiveCardView: View {
           Image(systemName: "clock")
         }
         .font(.caption)
-        .foregroundStyle(.secondary)
+        .salahInk(SalahWidgetInk.secondary.on(cardTint))
         .labelStyle(.tight)
         .layoutPriority(-1)
       }
@@ -548,11 +584,11 @@ private struct ActiveCardView: View {
       if isImminent {
         Image(systemName: "exclamationmark.circle.fill")
           .font(timerFont)
-          .foregroundStyle(toneColor)
+          .salahInk(SalahWidgetInk.tone(tone).glyph.on(cardTint))
           .accessibilityHidden(true)
       }
       RelativeTime(
-        target: event.time, reference: date, color: toneColor,
+        target: event.time, reference: date, ink: SalahWidgetInk.tone(tone).on(cardTint),
         font: timerFont, bold: isImminent, countingUp: isCountUp)
     }
   }
@@ -571,7 +607,7 @@ private struct ActiveCardView: View {
           Image(systemName: "clock.arrow.circlepath")
         }
         .font(.footnote)
-        .foregroundStyle(.secondary)
+        .salahInk(.secondary)
         .labelStyle(.tight)
       }
     } else if !isCountUp, let detail = display.reminderDetail(for: event) {
@@ -581,7 +617,7 @@ private struct ActiveCardView: View {
         Image(systemName: "alarm")
       }
       .font(.caption)
-      .foregroundStyle(.secondary)
+      .salahInk(SalahWidgetInk.secondary.on(cardTint))
       .labelStyle(.tight)
     }
   }
@@ -596,7 +632,7 @@ private struct NextUnknownView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 5) {
-      EyebrowLabel(text: display.labels.nextPrayer, accent: colors.accentText)
+      EyebrowLabel(text: display.labels.nextPrayer, accent: colors.accentText, ink: .primary)
       Label {
         Text(verbatim: display.labels.nextUnknown)
           .lineLimit(2)
@@ -605,7 +641,7 @@ private struct NextUnknownView: View {
         Image(systemName: "questionmark.circle")
       }
       .font(size == .small ? .footnote : .caption)
-      .foregroundStyle(.secondary)
+      .salahInk(.secondary)
       .labelStyle(.tight)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -711,16 +747,16 @@ private struct LargeContent: View {
 nonisolated struct WidgetMessageContent: View {
   let systemImage: String
   let message: Text
-  var accent: Color = SalahWidgetTheme.nocturne.dark.accent.color
 
   var body: some View {
     VStack(spacing: 10) {
       Image(systemName: systemImage)
         .font(.title)
-        .foregroundStyle(accent)
+        .salahInk(SalahWidgetInk.accent.glyph)
         .accessibilityHidden(true)
       message
         .font(.callout.weight(.medium))
+        .salahInk(.primary)
         .multilineTextAlignment(.center)
         .minimumScaleFactor(0.8)
     }
@@ -740,33 +776,32 @@ nonisolated struct WidgetStopContent: View {
   let tone: SalahWidgetTone
   let labels: SalahWidgetLabels
   let size: SalahWidgetSize
-  let colors: SalahWidgetColors
 
   private var isSmall: Bool { size == .small }
 
   var body: some View {
-    let tone = tone.color(colors)
     VStack(spacing: isSmall ? 6 : 10) {
       Spacer(minLength: 0)
       Image(systemName: "stop.circle.fill")
         .font(.system(size: isSmall ? 44 : 58))
-        .foregroundStyle(tone)
+        .salahInk(SalahWidgetInk.tone(tone).glyph)
         .accessibilityHidden(true)
       VStack(spacing: 3) {
         Text(verbatim: title)
           .font(.system(isSmall ? .subheadline : .title3, design: .serif, weight: .semibold))
+          .salahInk(.primary)
           .lineLimit(1)
           .minimumScaleFactor(0.6)
         Text(verbatim: subtitle)
           .font(.caption2)
-          .foregroundStyle(.secondary)
+          .salahInk(.secondary)
           .lineLimit(1)
           .minimumScaleFactor(0.7)
       }
       Text(verbatim: labels.tapToStop)
         .font(.caption2.weight(.bold))
         .textCase(.uppercase)
-        .foregroundStyle(tone)
+        .salahInk(.tone(tone))
         .lineLimit(1)
         .minimumScaleFactor(0.7)
       Spacer(minLength: 0)
@@ -781,12 +816,11 @@ nonisolated struct WidgetStopContent: View {
 
 extension WidgetStopContent {
   /// The stop control for what a display is playing; `nil` when nothing plays.
-  init?(display: SalahDisplay, size: SalahWidgetSize, colors: SalahWidgetColors) {
+  init?(display: SalahDisplay, size: SalahWidgetSize) {
     guard let playback = display.playback, let title = display.playingTitle,
       let subtitle = display.playingSubtitle
     else { return nil }
     self.init(
-      title: title, subtitle: subtitle, tone: playback.tone, labels: display.labels, size: size,
-      colors: colors)
+      title: title, subtitle: subtitle, tone: playback.tone, labels: display.labels, size: size)
   }
 }

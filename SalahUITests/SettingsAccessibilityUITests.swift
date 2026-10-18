@@ -125,8 +125,14 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// - contrast of text the window's edge or scrolling cuts off, which the audit measures
   ///   against whatever covers it. The test doesn't scroll, so rows below a pane's first
   ///   screen aren't measured;
-  /// - contrast in the Appearance preview, which draws the widget in the chosen theme. Its
-  ///   rows, passed ones dimmed, are #35.
+  /// - contrast of the text in the Appearance preview, which draws the widget on its
+  ///   themed gradient and glows. The audit reports each of its text elements even where
+  ///   their glyphs reach well over 4.5:1: in Nocturne in dark, with every row upcoming, a
+  ///   screenshot of the preview measures 5.4:1 or more for every text it reported, the
+  ///   rows' times and the header's place included. `WidgetInkContrastTests` measures each
+  ///   ink of each widget face against the pixels under its glyphs instead, and holds text
+  ///   to 4.5:1 and passed rows, which dim by design, to the floor `Design/README.md`
+  ///   (Widgets) documents.
   @MainActor
   private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
@@ -151,7 +157,7 @@ final class SettingsAccessibilityUITests: XCTestCase {
     {
       return true
     }
-    if let preview, preview.contains(frame) { return true }
+    if let preview, type == .staticText, preview.contains(frame) { return true }
     return false
   }
 

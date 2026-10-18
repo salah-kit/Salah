@@ -202,27 +202,17 @@ struct WidgetShellMessage: View {
 
   @Environment(\.colorScheme) private var scheme
 
-  /// `WidgetPreviewContainer`'s macOS desktop widget point sizes.
-  static func pointSize(_ size: SalahWidgetSize) -> CGSize {
-    switch size {
-    case .small: CGSize(width: 158, height: 158)
-    case .medium: CGSize(width: 338, height: 158)
-    case .large: CGSize(width: 338, height: 354)
-    }
-  }
-
   var body: some View {
     let colors = theme.colors(for: scheme)
-    let point = Self.pointSize(size)
-    let face = WidgetMessageContent(
-      systemImage: systemImage, message: Text(verbatim: message), accent: colors.accent
-    )
-    .frame(width: point.width, height: point.height)
-    .background {
-      SalahWidgetBackground(tone: tone, colors: colors)
-    }
-    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-    .salahColorScheme(theme.forcedColorScheme)
+    let point = size.desktopPointSize
+    let face = WidgetMessageContent(systemImage: systemImage, message: Text(verbatim: message))
+      .environment(\.salahWidgetBackdrop, SalahWidgetBackdrop(colors: colors, tone: tone))
+      .frame(width: point.width, height: point.height)
+      .background {
+        SalahWidgetBackground(tone: tone, colors: colors)
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+      .salahColorScheme(theme.forcedColorScheme)
     if let locale {
       face
         .environment(\.locale, locale)
