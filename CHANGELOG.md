@@ -11,6 +11,12 @@ All notable changes to this project are documented here. The format follows
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.
 
+### Fixed
+
+- Show the banner for an alert the Mac slept through even when Salah's alert timer reports
+  it before macOS reports the wake. The adhan played, but the banner was skipped and its
+  request removed.
+
 ## [1.1.2] - 2026-10-14
 
 ### Fixed
