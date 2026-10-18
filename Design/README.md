@@ -124,7 +124,6 @@ for example with an asset catalog color set (see [Increase Contrast](#increase-c
 | `bg/primary`, `bg/secondary`, `bg/tertiary` | `Color(.systemBackground)`, `Color(.secondarySystemBackground)`, `Color(.tertiarySystemBackground)` (iOS) |
 | `bg/grouped`, `bg/grouped-secondary`, `bg/grouped-tertiary` | `Color(.systemGroupedBackground)` and its secondary and tertiary variants (iOS) |
 | `bg/window`, `bg/content` | `Color(nsColor: .windowBackgroundColor)`, `Color(nsColor: .controlBackgroundColor)` (macOS) |
-| `fill/form-group`, `separator/form-row` | Nothing: `Form` with `.formStyle(.grouped)` draws its sections and row lines itself on macOS (`quaternarySystemFill` and `quinaryLabelColor`). The tokens let the Figma screens draw them. |
 | `separator/default` | `.separator` |
 | `separator/opaque` | `Color(.opaqueSeparator)` (iOS) |
 | `fill/primary` … `fill/quaternary` | `.fill`, `.fill.secondary`, `.fill.tertiary`, `.fill.quaternary` |
@@ -133,6 +132,12 @@ for example with an asset catalog color set (see [Increase Contrast](#increase-c
 
 `label/secondary` is deliberately stronger than the system's secondary label so body text
 keeps 4.5:1 on every surface; don't swap in `.secondary` for body text.
+
+`fill/form-group` and `separator/form-row` are a macOS grouped `Form`'s section and the line
+between its rows. On macOS 27 the window and its content share one color, so `Form` with
+`.formStyle(.grouped)` sets each section apart with a faint fill. It draws both of these
+itself, so a form needs neither; the Figma screens use them to draw Settings. Use them only
+for a section you draw yourself.
 
 The time-of-day colors come from the current prayer period. The color files hold one set
 per period (`phase-fajr` … `phase-neutral`), each with the same five slots: `sky-top`,

@@ -85,7 +85,7 @@
       "content": {
         "$type": "color",
         "$value": "{primitives.neutral.white}",
-        "$description": "macOS controlBackgroundColor: lists and forms in windows.",
+        "$description": "macOS controlBackgroundColor: the background of lists, tables and text views in windows. On macOS 27 it matches bg/window.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.bgContent"
@@ -178,8 +178,8 @@
       },
       "form-row": {
         "$type": "color",
-        "$value": "{primitives.black.a05}",
-        "$description": "The line between the rows of a macOS grouped Form section: quinaryLabelColor. Form draws it with .formStyle(.grouped).",
+        "$value": "{primitives.black.a15}",
+        "$description": "The line between the rows of a macOS grouped Form section: quinaryLabelColor (5%, or 15% with Increase Contrast), as Form draws it with .formStyle(.grouped).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.separatorFormRow"
@@ -231,7 +231,7 @@
       "form-group": {
         "$type": "color",
         "$value": "{primitives.black.a03}",
-        "$description": "A section of a macOS grouped Form, on bg/window: quaternarySystemFill. Form draws it with .formStyle(.grouped).",
+        "$description": "A section of a macOS grouped Form, on bg/window: black or white at 3%, as Form draws it with .formStyle(.grouped).",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.fillFormGroup"

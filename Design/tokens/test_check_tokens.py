@@ -390,6 +390,12 @@ class CheckTokensTests(unittest.TestCase):
         self.edit('color.light.json', lambda doc: doc['color']['fill'].update(tertiary={**doc['color']['fill']['tertiary'], '$value': '{primitives.fill.light-20}'}))
         self.assert_fails('contrast light: status/warning on fill/tertiary over phase-maghrib/sky-bottom')
 
+    def test_text_on_a_form_group_is_checked(self):
+        # A section of a macOS grouped Form: its translucent fill over the window.
+        self.edit('color.light.json', lambda doc: doc['color']['fill']['form-group'].update({'$value': '{primitives.black.a60}'}))
+        self.assert_fails('contrast light: label/secondary on fill/form-group over bg/window',
+                          'contrast light: status/error on fill/form-group over bg/window')
+
     # Increase Contrast
     def edit_increased(self, mode, group, name, value):
         self.edit(f'color.{mode}-increased-contrast.json', lambda doc: doc['color'][group][name].update({'$value': value}))
