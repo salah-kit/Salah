@@ -24,6 +24,10 @@ All notable changes to this project are documented here. The format follows
     with 3 to 10. They now write minutes as "١٠ د", as the dropdown does.
   - The Ramadan Isha footer writes its 120 minutes in the language's digits, as the rest of
     the app does.
+- Name the time zone's pop-up in Settings → Location for VoiceOver, which read only the zone.
+- Draw the version line under the Settings sidebar and the menu bar preview's caption in the
+  secondary label colour; they had too little contrast.
+- Group the Appearance preview's rows for VoiceOver, in a group named "Preview".
 - Read the count-up after a prayer in each language's word order. On the small widget's
   line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish

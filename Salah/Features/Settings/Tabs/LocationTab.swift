@@ -128,7 +128,8 @@ struct LocationContent: View {
           Text(prefs.storedTimeZone)
             .environment(\.layoutDirection, .leftToRight)
         } else {
-          Picker("", selection: $prefs.storedTimeZone) {
+          // Labelled for VoiceOver; the row's own label shows it.
+          Picker("settings.location.timeZone", selection: $prefs.storedTimeZone) {
             ForEach(timeZoneChoices) { choice in
               Text(choice.title).tag(choice.identifier)
             }
