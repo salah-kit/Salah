@@ -151,7 +151,8 @@ When Increase Contrast is on, the colors come from the Increased contrast files:
 `color.light-increased-contrast.json` in the light appearance and
 `color.dark-increased-contrast.json` in the dark one. In them, text reaches 7:1 against the
 surfaces it's used on, and graphics and large text reach 4.5:1. Fills, glass and the scrim are
-more opaque. A few pairs keep the standard 4.5:1: secondary text on translucent chips, where
+more opaque, except `fill/form-group`, which stays at 3% as `Form` draws it; the row line
+between its rows rises from 5% to 15%. A few pairs keep the standard 4.5:1: secondary text on translucent chips, where
 7:1 would make it as dark as primary text, and the warning color, which turns brown at 7:1.
 `CONTRAST_EXCEPTIONS` in `tokens/check_tokens.py` lists each pair with its ratio. The checker
 fails when a listed ratio changes or a listed pair reaches its target, so the list stays true.

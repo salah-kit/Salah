@@ -85,7 +85,7 @@
       "content": {
         "$type": "color",
         "$value": "{primitives.neutral.875}",
-        "$description": "macOS controlBackgroundColor: the background of lists, tables and text views in windows. On macOS 27 it matches bg/window.",
+        "$description": "macOS controlBackgroundColor: the background of large controls such as tables and browsers. On macOS 27 it matches bg/window.",
         "$extensions": {
           "io.github.salah-kit": {
             "swift": "SalahColor.bgContent"
