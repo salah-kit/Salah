@@ -13,7 +13,7 @@ struct MenuBarPreview: View {
     HStack(alignment: .center, spacing: 8) {
       Text("settings.general.language.preview.label")
         .font(.caption2)
-        .foregroundStyle(.tertiary)
+        .foregroundStyle(.secondary)
         .lineLimit(1)
 
       HStack(spacing: 4) {

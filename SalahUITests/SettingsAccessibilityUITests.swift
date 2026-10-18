@@ -1,6 +1,7 @@
 import XCTest
 
-/// Names the notification volume control in the running app's accessibility tree.
+/// Names the notification volume and time-zone controls in the running app's accessibility
+/// tree, and runs Xcode's accessibility audit on Settings and the menu-bar dropdown.
 final class SettingsAccessibilityUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
@@ -15,6 +16,145 @@ final class SettingsAccessibilityUITests: XCTestCase {
   func testNotificationVolumeHasArabicAccessibleName() throws {
     try assertVolumeName(
       language: "arabic", code: "ar", pane: "التنبيهات", name: "مستوى الصوت")
+  }
+
+  /// Xcode's accessibility audit finds nothing in any Settings pane: every control has a
+  /// description, can be found, hit and acted on, and its text has enough contrast. The few
+  /// issues it reports about system and SwiftUI parts are set aside in `isKnownToTheSystem`.
+  @MainActor
+  func testEverySettingsPanePassesTheAccessibilityAudit() throws {
+    let app = XCUIApplication()
+    app.launchArguments = SalahUITests.quietLaunch + ["-salah.debug.withoutSystemPrompts", "YES"]
+    app.open(try XCTUnwrap(URL(string: "salah://settings")))
+    addTeardownBlock { @MainActor in app.terminate() }
+
+    let settings = app.windows["Salah Settings"]
+    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
+    var issues: [String] = []
+    for pane in Self.panes {
+      let tab = settings.buttons[pane]
+      XCTAssertTrue(tab.waitForExistence(timeout: 10), settings.debugDescription)
+      tab.click()
+      let preview = settings.descendants(matching: .any)["appearance.preview"]
+      let previewFrame =
+        pane == "Appearance" && preview.waitForExistence(timeout: 5)
+        ? preview.frame : nil
+      issues += try audit(app, in: pane, window: settings, preview: previewFrame)
+    }
+    report(issues)
+  }
+
+  /// The time zone's pop-up, which shows only the zone, has its name for VoiceOver.
+  @MainActor
+  func testTheTimeZonePickerHasItsName() throws {
+    let app = XCUIApplication()
+    app.launchArguments = SalahUITests.quietLaunch + ["-salah.debug.withoutSystemPrompts", "YES"]
+    app.open(try XCTUnwrap(URL(string: "salah://settings")))
+    addTeardownBlock { @MainActor in app.terminate() }
+
+    let settings = app.windows["Salah Settings"]
+    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
+    settings.buttons["Location"].click()
+    let picker = settings.popUpButtons["Time zone"]
+    XCTAssertTrue(picker.waitForExistence(timeout: 10), settings.debugDescription)
+  }
+
+  /// Xcode's accessibility audit finds nothing in the menu-bar dropdown.
+  @MainActor
+  func testMenuBarDropdownPassesTheAccessibilityAudit() throws {
+    let app = XCUIApplication()
+    app.launchArguments = SalahUITests.quietLaunch + ["-salah.debug.withoutSystemPrompts", "YES"]
+    app.launch()
+    addTeardownBlock { @MainActor in app.terminate() }
+
+    let statusItem = app.statusItems.firstMatch
+    XCTAssertTrue(statusItem.waitForExistence(timeout: 30))
+    try XCTSkipUnless(
+      SalahUITests.canClick(statusItem.frame),
+      "The menu bar is full: macOS put Salah's status item behind the camera housing.")
+    try XCTSkipUnless(
+      statusItem.isHittable,
+      "The menu bar is full: macOS put Salah's status item in its overflow.")
+    statusItem.click()
+    XCTAssertTrue(
+      app.buttons["Quit Salah"].waitForExistence(timeout: 10), app.windows.debugDescription)
+    report(try audit(app, in: "the menu-bar dropdown", window: nil, preview: nil))
+  }
+
+  /// The Settings panes, by their English names.
+  static let panes = [
+    "General", "Location", "Calculation", "Adjustments", "Notifications", "Appearance",
+  ]
+
+  /// Runs every audit on what the app shows now, and describes each issue it finds, except
+  /// those `isKnownToTheSystem` sets aside.
+  @MainActor
+  private func audit(
+    _ app: XCUIApplication, in place: String, window: XCUIElement?, preview: CGRect?
+  ) throws -> [String] {
+    var issues: [String] = []
+    let windowFrame = window?.frame
+    let windowTitle = window?.title
+    try app.performAccessibilityAudit { issue in
+      if Self.isKnownToTheSystem(
+        issue, windowFrame: windowFrame, windowTitle: windowTitle, preview: preview)
+      {
+        return true
+      }
+      issues.append(
+        "\(place): \(issue.compactDescription). \(issue.detailedDescription)\n"
+          + (issue.element?.debugDescription ?? "no element"))
+      return true
+    }
+    return issues
+  }
+
+  /// Issues the audit reports about parts Salah doesn't draw or can't change:
+  /// - the system's Touch Bar element, the window's title, which macOS draws, and the
+  ///   window's own content group, which has the window's frame;
+  /// - contrast of text the window's edge or scrolling cuts off, which the audit measures
+  ///   against whatever covers it;
+  /// - the missing press action it reports for SwiftUI's own pop-up and disclosure controls,
+  ///   and the description it wants for a slider's knob;
+  /// - contrast in the Appearance preview, which draws the widget in the chosen theme:
+  ///   SmallTextContrastTests and the design tokens' checker measure the themes' text.
+  /// Whether VoiceOver operates those controls is for the person-check in #17.
+  @MainActor
+  private static func isKnownToTheSystem(
+    _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
+    preview: CGRect?
+  ) -> Bool {
+    guard let element = issue.element else { return false }
+    let type = element.elementType
+    let frame = element.frame
+    if type == .touchBar { return true }
+    if issue.auditType == .sufficientElementDescription, type == .group, frame == windowFrame {
+      return true
+    }
+    if issue.auditType == .action, type == .popUpButton || type == .disclosureTriangle {
+      return true
+    }
+    if issue.auditType == .sufficientElementDescription, type == .valueIndicator { return true }
+    guard issue.auditType == .contrast else { return false }
+    if let windowFrame, !windowFrame.contains(frame) { return true }
+    if let windowTitle, let windowFrame, element.value as? String == windowTitle,
+      frame.minY < windowFrame.minY + 40
+    {
+      return true
+    }
+    if let preview, preview.contains(frame) { return true }
+    return false
+  }
+
+  /// Attaches the issues, and fails if there are any.
+  @MainActor
+  private func report(_ issues: [String]) {
+    let attachment = XCTAttachment(
+      string: issues.isEmpty ? "No issues" : issues.joined(separator: "\n\n"))
+    attachment.name = "Accessibility audit"
+    attachment.lifetime = .keepAlways
+    add(attachment)
+    XCTAssertTrue(issues.isEmpty, issues.joined(separator: "\n\n"))
   }
 
   @MainActor

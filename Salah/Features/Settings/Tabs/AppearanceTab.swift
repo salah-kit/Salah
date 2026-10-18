@@ -40,6 +40,9 @@ struct AppearanceContent: View {
     VStack(spacing: 12) {
       WidgetPreviewContainer(display: previewDisplay, size: previewSize)
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("settings.appearance.preview"))
+        .accessibilityIdentifier("appearance.preview")
       Picker("settings.appearance.size", selection: $previewSize) {
         Text("settings.appearance.size.small").tag(SalahWidgetSize.small)
         Text("settings.appearance.size.medium").tag(SalahWidgetSize.medium)

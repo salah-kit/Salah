@@ -52,7 +52,7 @@ struct SettingsView: View {
 
       Text(versionLabel)
         .font(.system(size: 10))
-        .foregroundStyle(.quaternary)
+        .foregroundStyle(.secondary)
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
     }
