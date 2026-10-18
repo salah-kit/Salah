@@ -127,10 +127,12 @@ reach VoiceOver too: one test opens the time zone's pop-up with VO-Space, and an
 changes the name style with VoiceOver and back. They need macOS 27 in English, with
 VoiceOver's default settings: VoiceOver says its own words, such as "selected" and
 "dimmed", in the Mac's language and as its verbosity settings choose, and the tests send
-VO-Space as Control-Option. They skip on a Mac that isn't in English and before macOS 27.
-VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
-the Mac alone until they end. Each test turns VoiceOver off at its end, unless it was on
-before; if a run stops first, Command-F5 turns it off. They take about ten minutes:
+VO-Space as Control-Option. They skip before macOS 27, on a Mac that isn't in English, and
+when VoiceOver doesn't turn on. VoiceOver speaks aloud while these tests run and reads
+whichever app is in front, so leave the Mac alone until they end: a test fails, keeping
+nothing more VoiceOver says, as soon as Salah leaves the front or the window it reads
+closes. Each test turns VoiceOver off at its end, unless it was on before; if a run stops
+first, Command-F5 turns it off. They take about ten minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
