@@ -91,8 +91,9 @@ app publishes in its App Group, as the widget does, so the test runner is signed
 your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). It builds
 and launches the app, so it needs your team in `Config/Local.xcconfig`. UI testing on
 macOS runs in Automation Mode; the first time, macOS may ask an administrator to allow it
-(`automationmodetool` shows whether it will). The two alert tests take about five
-minutes:
+(`automationmodetool` shows whether it will). A full run takes about 15 minutes: the two
+alert tests take about five, and `VoiceOverSpeechUITests`, which turns VoiceOver on
+(below), about ten:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
@@ -116,8 +117,50 @@ Two things follow on the Mac you run them on:
   every alert off after a full run, or, after the alert tests without the others, a
   prayer moved by the last one's adjustment, with its alert.
 
-The dropdown test skips when the menu bar is so full that macOS puts Salah's status
+The dropdown tests skip when the menu bar is so full that macOS puts Salah's status
 item behind the camera housing or in its overflow, where a click doesn't reach it.
+
+`VoiceOverSpeechUITests` turns VoiceOver on through XCTest's VoiceOver service and checks
+what VoiceOver says for the pop-ups and pickers each Settings pane shows when it opens, the
+Appearance preview, and the dropdown's prayers and countdown in English and Arabic. Keys
+reach VoiceOver too: one test opens the time zone's pop-up with VO-Space, and another
+changes the name style with VoiceOver and back. They need macOS 27 in English, with
+VoiceOver's default settings: VoiceOver says its own words, such as "selected" and
+"dimmed", in the Mac's language and as its verbosity settings choose, and the tests send
+VO-Space as Control-Option. They turn VoiceOver on and off themselves, and skip when it's
+already on, leaving it as it is: turn it off and run them again. They also skip before
+macOS 27, on a Mac that isn't in English, and when VoiceOver doesn't turn on. They take
+about ten minutes:
+
+```sh
+xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
+  -allowProvisioningUpdates -only-testing:SalahUITests/VoiceOverSpeechUITests
+```
+
+VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
+the Mac alone, with Do Not Disturb on, until they end. If VoiceOver Quickstart, VoiceOver's
+welcome window, is open, close it first: VoiceOver reads it instead of Salah, and the tests
+fail with "VoiceOver didn't say anything in Settings". A test keeps only what VoiceOver
+says after its own moves in the window it reads, and, after a key press, the exact words it
+waits for; it fails at the first move after Salah leaves the front or that window closes.
+Speech VoiceOver makes for another app right after a move, such as a notification it reads
+out, can still be kept. Each test turns VoiceOver off at its end. A run that stops first,
+or whose VoiceOver didn't turn on, leaves the time it turned VoiceOver on in the test
+runner's defaults: for half an hour after that, the tests take VoiceOver that's on as
+theirs, even one you turned on meanwhile, restart it, and turn it off at their end.
+Command-F5 turns it off too.
+
+When a test fails, Xcode keeps screenshots and a screen recording of the whole screen in
+the result bundle, so share its failure message and its "VoiceOver" attachment, not the
+bundle, and read both first: they can hold speech for another app. To get the attachment
+from a run on the command line, add `-resultBundlePath VoiceOver.xcresult` to the command
+above (xcodebuild won't write over a bundle that's already there), then export each
+test's "VoiceOver" text file; `VoiceOver/manifest.json` says which test each is from:
+
+```sh
+xcrun xcresulttool export attachments --path VoiceOver.xcresult --output-path VoiceOver \
+  --filter 'VoiceOver*'
+```
 
 ### Real-app tests
 

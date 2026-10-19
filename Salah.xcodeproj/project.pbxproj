@@ -45,6 +45,7 @@
 		29662E8E9460FB53A6777092 /* SalahApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCDC01270443ADA8787FCBF /* SalahApp.swift */; };
 		29D98E5E66C43F822BEF3DB1 /* PrayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C680F7787ED544F2D480E5F /* PrayerManager.swift */; };
 		29F34932700B35016BA0D47C /* WidgetMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB0C7DDE4C9B388DC7EC9FB /* WidgetMirror.swift */; };
+		2A03CF56D2651831EF2B2B62 /* VoiceOverSpeechUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D34D87BE592637BB56E8E8CC /* VoiceOverSpeechUITests.swift */; };
 		2A20AD19ED373DE32CDB19FC /* AlertDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D50070CA708AA392086771 /* AlertDoubles.swift */; };
 		2AAA42EA9ADDB619859BAD04 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C27B824CF1B9C5D41E580EA /* LocationManager.swift */; };
 		2BC5FBDBEDD16CABB6E2C07D /* SalahText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BAFE950109CD5DEE9FEF68 /* SalahText.swift */; };
@@ -399,6 +400,7 @@
 		CEE9FAAEFB4B160776C283E6 /* NotificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModels.swift; sourceTree = "<group>"; };
 		D11FC1F1E5D80D15687E3899 /* LaunchArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchArguments.swift; sourceTree = "<group>"; };
 		D32A855F46C7172EFE3F0658 /* AppFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFailure.swift; sourceTree = "<group>"; };
+		D34D87BE592637BB56E8E8CC /* VoiceOverSpeechUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOverSpeechUITests.swift; sourceTree = "<group>"; };
 		D359B166C89F23825A5922A3 /* SalahPrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPrayerWidget.swift; sourceTree = "<group>"; };
 		D3A61B56AAC43F94A7A72972 /* PrayerAlertCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertCoordinatorTests.swift; sourceTree = "<group>"; };
 		D85A1F9F52601F7605DFD353 /* Locale+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Locale+App.swift"; sourceTree = "<group>"; };
@@ -797,6 +799,7 @@
 				2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */,
 				85502C7E155811EF17729F5A /* SalahUITests.swift */,
 				A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */,
+				D34D87BE592637BB56E8E8CC /* VoiceOverSpeechUITests.swift */,
 			);
 			path = SalahUITests;
 			sourceTree = "<group>";
@@ -1134,6 +1137,7 @@
 				D879E5C5B19564BF57C65B03 /* LaunchArguments.swift in Sources */,
 				3C17A1F0E9B5E1DCB09B0163 /* SalahUITests.swift in Sources */,
 				C096B51AFBAC7FB1D3792615 /* SettingsAccessibilityUITests.swift in Sources */,
+				2A03CF56D2651831EF2B2B62 /* VoiceOverSpeechUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
