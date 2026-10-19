@@ -182,9 +182,10 @@ nonisolated extension EnvironmentValues {
 ///
 /// Each ink resolves against the hardest point of the backdrop under its own frame, with the
 /// tint it sits on (`SalahWidgetBackdrop.limit`). Text aims at 4.6:1 and glyphs at 3.1:1, a
-/// little above the 4.5:1 and 3:1 they must reach, so rounding can't take them below. In accented and vibrant rendering the system recolors the content and removes
-/// the backdrop, so the inks are the system's `.primary` and `.secondary`, and the tones and
-/// the accent as the theme gives them.
+/// little above the 4.5:1 and 3:1 they must reach, so rounding can't take them below. In
+/// accented and vibrant rendering the system recolors the content and removes the
+/// backdrop: tone and accent text use `.primary`, their glyphs use `.secondary`, and
+/// secondary text keeps the system's `.secondary` hierarchy.
 ///
 /// `opacity` dims an ink, as passed rows are dimmed. A dimmed ink is a documented choice
 /// that doesn't reach its contrast (`Design/README.md`, Widgets).
@@ -279,9 +280,9 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
     guard renderingMode == .fullColor else {
       switch source {
       case .primary: return Self.system(.primary, opacity: opacity)
-      case .secondary, .tone(.silent): return Self.system(.secondary, opacity: opacity)
-      case .tone(let tone): return color(tone.components(palette: palette, isDark: isDark))
-      case .accent: return color(palette.accent)
+      case .secondary: return Self.system(.secondary, opacity: opacity)
+      case .tone, .accent:
+        return Self.system(isGlyph ? .secondary : .primary, opacity: opacity)
       }
     }
     func limit() -> ThemeColor {

@@ -1,6 +1,7 @@
 import SalahCore
 import SalahUI
 import SwiftUI
+import WidgetKit
 
 // MARK: - Tight label style
 
@@ -569,7 +570,8 @@ private struct ActiveCardView: View {
   /// Name + (on medium/large) the clock time on its trailing edge. Small drops
   /// the clock: at the focus name size there isn't room for both, and the
   /// countdown already conveys the timing - the absolute time lives on the bigger
-  /// sizes and the menu bar.
+  /// sizes and the menu bar. The name leads every size, so it is the face's one
+  /// accentable element.
   private var nameRow: some View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
       (name ?? Text(verbatim: "–"))
@@ -577,6 +579,7 @@ private struct ActiveCardView: View {
         .salahInk(onCard(.primary))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
+        .widgetAccentable()
       if size != .small {
         Spacer(minLength: 6)
         Label {

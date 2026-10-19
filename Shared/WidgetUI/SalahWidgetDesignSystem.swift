@@ -277,7 +277,6 @@ nonisolated struct InlineBadge: View {
     .padding(.vertical, 2)
     .background(Capsule().fill(tint.opacity(SalahWidgetTint.badge)))
     .overlay(Capsule().strokeBorder(tint.opacity(0.5), lineWidth: 0.75))
-    .foregroundStyle(tint)
     .lineLimit(1)
   }
 
@@ -286,7 +285,7 @@ nonisolated struct InlineBadge: View {
     if let ink {
       label.salahInk(ink)
     } else {
-      label
+      label.foregroundStyle(tint)
     }
   }
 }
