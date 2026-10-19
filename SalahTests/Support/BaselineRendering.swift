@@ -206,8 +206,14 @@ struct WidgetShellMessage: View {
     let colors = theme.colors(for: scheme)
     let point = size.desktopPointSize
     let face = WidgetMessageContent(systemImage: systemImage, message: Text(verbatim: message))
-      .environment(\.salahWidgetBackdrop, SalahWidgetBackdrop(colors: colors, tone: tone))
+      .environment(
+        \.salahWidgetBackdrop,
+        SalahWidgetBackdrop(
+          colors: colors, tone: tone, size: point,
+          isRightToLeft: locale?.language.characterDirection == .rightToLeft)
+      )
       .frame(width: point.width, height: point.height)
+      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
       .background {
         SalahWidgetBackground(tone: tone, colors: colors)
       }

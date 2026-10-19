@@ -28,6 +28,16 @@ nonisolated enum SalahColor {
     labelSecondaryComponents(scheme, contrast).color
   }
 
+  /// The system's primary label, which `label/primary` maps to, as components on macOS 27:
+  /// black or white at 85%, and opaque with Increase Contrast. Only contrast math uses them.
+  static func labelPrimaryComponents(_ scheme: ColorScheme, _ contrast: ColorSchemeContrast)
+    -> ThemeColor
+  {
+    let white: Double = scheme == .dark ? 1 : 0
+    return ThemeColor(
+      red: white, green: white, blue: white, opacity: contrast == .increased ? 1 : 0.85)
+  }
+
   /// `label/secondary` as components, for contrast math.
   static func labelSecondaryComponents(
     _ scheme: ColorScheme, _ contrast: ColorSchemeContrast
@@ -43,82 +53,117 @@ nonisolated enum SalahColor {
 
 // MARK: - Backdrop
 
-/// What a widget face is drawn over: its theme's palette in one appearance, and the tone of
-/// the glow. The view that draws `SalahWidgetBackground` puts it in the environment
-/// (`salahWidgetBackdrop`), so each ink in the face can reach its contrast against it.
+/// What a widget face is drawn over: its theme's palette in one appearance, the tone of the
+/// glow, the face's size, and the direction the backdrop is drawn in. The view that draws `SalahWidgetBackground` puts it in the
+/// environment (`salahWidgetBackdrop`) and names the face's coordinate space
+/// (`SalahWidgetBackdrop.coordinateSpace`), so each ink can reach its contrast against the
+/// backdrop where it's drawn.
 nonisolated struct SalahWidgetBackdrop: Equatable, Sendable {
   var palette: SalahWidgetPalette
   var isDark: Bool
   var tone: SalahWidgetTone
+  /// The face's size, which `SalahWidgetBackground` fills.
+  var size: CGSize
+  /// Whether `SalahWidgetBackground` is drawn right to left, which mirrors its glows.
+  var isRightToLeft: Bool
 
-  init(colors: SalahWidgetColors, tone: SalahWidgetTone) {
+  init(colors: SalahWidgetColors, tone: SalahWidgetTone, size: CGSize, isRightToLeft: Bool) {
     self.palette = colors.palette
     self.isDark = colors.isDark
     self.tone = tone
+    self.size = size
+    self.isRightToLeft = isRightToLeft
   }
 
-  /// The opacity of the tints text can sit on: a large row's state fill (at most 22%), the
-  /// large focus card (24%), and the Now badge on its row (16% over 12%).
-  static let tintOpacity = 0.28
+  /// The coordinate space of the face that `SalahWidgetBackground` fills.
+  static let coordinateSpace = "salahWidgetFace"
 
-  /// The point of the backdrop where an ink is hardest to read: the lightest in dark, the
-  /// darkest in light, under a tint of `tint` when the ink sits on one. `contrast` is the
-  /// Increase Contrast setting, which strengthens the silent tone's glow.
+  /// How far past an element's frame its surface is sampled, in points, for glyphs whose
+  /// antialiasing reaches past the frame.
+  static let sampleMargin = 3.0
+
+  /// The point of the backdrop under `frame` where an ink is hardest to read: the lightest
+  /// in dark, the darkest in light.
   ///
-  /// It samples `SalahWidgetBackground`'s gradient and glows inside the content margin of
-  /// every widget size, as SwiftUI composites them, so a face's ink holds wherever its
-  /// text lands.
-  func limit(tint: SalahWidgetTone?, contrast: ColorSchemeContrast) -> ThemeColor {
-    let top = palette.backgroundTop
-    let bottom = palette.backgroundBottom
-    let toneColor = tone.components(palette: palette, isDark: isDark, contrast: contrast)
-    let toneOpacity = SalahWidgetBackground.toneGlowOpacity(isDark: isDark)
-    let accentOpacity = SalahWidgetBackground.accentGlowOpacity(isDark: isDark)
+  /// It composites `SalahWidgetBackground`'s gradient and glows as SwiftUI draws them, at a
+  /// grid of points over `frame` and `sampleMargin` around it, both bare and under the tint
+  /// the ink sits on at `tintOpacity`: a tint can be a gradient that fades, or lighten in
+  /// light and darken in dark, so the bare backdrop can be the harder one. `contrast` is the Increase Contrast setting, which strengthens the
+  /// silent tone's glow. Without a frame, it samples the content of every widget size, which
+  /// holds anywhere.
+  func limit(
+    in frame: CGRect?, tint: SalahWidgetTone?, tintOpacity: Double,
+    contrast: ColorSchemeContrast
+  ) -> ThemeColor {
     let tintColor = tint?.components(palette: palette, isDark: isDark, contrast: contrast)
-    let margin = SalahWidgetSize.contentMargin
-    let steps = 8
-    var limit: ThemeColor?
-    var limitLuminance = 0.0
-    for size in [SalahWidgetSize.small, .medium, .large] {
-      let frame = size.desktopPointSize
+    var regions: [(face: CGSize, area: CGRect)] = []
+    if let frame {
+      let face = CGRect(origin: .zero, size: size)
+      let area = frame.insetBy(dx: -Self.sampleMargin, dy: -Self.sampleMargin).intersection(face)
+      regions = [(size, area.isNull ? face : area)]
+    } else {
+      let margin = SalahWidgetSize.contentMargin
+      regions = [SalahWidgetSize.small, .medium, .large].map {
+        let face = $0.desktopPointSize
+        return (face: face, area: CGRect(origin: .zero, size: face).insetBy(dx: margin, dy: margin))
+      }
+    }
+    var limit = palette.backgroundTop
+    var limitLuminance: Double?
+    let steps = 6
+    for (face, area) in regions {
       for column in 0...steps {
         for row in 0...steps {
-          let x = margin + (frame.width - 2 * margin) * Double(column) / Double(steps)
-          let y = margin + (frame.height - 2 * margin) * Double(row) / Double(steps)
-          var point = top.mixed(with: bottom, by: y / frame.height)
-          let toneDistance = hypot(frame.width - x, frame.height - y)
-          point = toneColor.over(
-            point,
-            opacity: toneOpacity
-              * max(0, 1 - toneDistance / SalahWidgetBackground.toneGlowRadius))
-          point = palette.glow.over(
-            point,
-            opacity: accentOpacity
-              * max(0, 1 - hypot(x, y) / SalahWidgetBackground.accentGlowRadius))
-          if let tintColor {
-            point = tintColor.over(point, opacity: Self.tintOpacity)
-          }
-          let luminance = point.relativeLuminance
-          if limit == nil || (isDark ? luminance > limitLuminance : luminance < limitLuminance) {
-            limit = point
+          let point = CGPoint(
+            x: area.minX + area.width * Double(column) / Double(steps),
+            y: area.minY + area.height * Double(row) / Double(steps))
+          let bare = surface(at: point, face: face, contrast: contrast)
+          for color in [bare, tintColor.map { $0.over(bare, opacity: tintOpacity) } ?? bare] {
+            let luminance = color.relativeLuminance
+            if let current = limitLuminance, isDark ? luminance <= current : luminance >= current {
+              continue
+            }
+            limit = color
             limitLuminance = luminance
           }
         }
       }
     }
-    return limit ?? top
+    return limit
+  }
+
+  /// The backdrop's color at `point` of a face of size `face`. Right to left, SwiftUI
+  /// mirrors the glows: the tone's comes from the bottom-left corner.
+  private func surface(at point: CGPoint, face: CGSize, contrast: ColorSchemeContrast)
+    -> ThemeColor
+  {
+    let toneColor = tone.components(palette: palette, isDark: isDark, contrast: contrast)
+    let toneCenter = CGPoint(x: isRightToLeft ? 0 : face.width, y: face.height)
+    let accentCenter = CGPoint(x: isRightToLeft ? face.width : 0, y: 0)
+    func distance(_ a: CGPoint, _ b: CGPoint) -> Double { hypot(a.x - b.x, a.y - b.y) }
+    var color = palette.backgroundTop.mixed(
+      with: palette.backgroundBottom, by: face.height > 0 ? point.y / face.height : 0)
+    color = toneColor.over(
+      color,
+      opacity: SalahWidgetBackground.toneGlowOpacity(isDark: isDark)
+        * max(0, 1 - distance(point, toneCenter) / SalahWidgetBackground.toneGlowRadius))
+    color = palette.glow.over(
+      color,
+      opacity: SalahWidgetBackground.accentGlowOpacity(isDark: isDark)
+        * max(0, 1 - distance(point, accentCenter) / SalahWidgetBackground.accentGlowRadius))
+    return color
   }
 }
 
 private nonisolated struct SalahWidgetBackdropKey: EnvironmentKey {
-  static let defaultValue = SalahWidgetBackdrop(
-    colors: SalahWidgetTheme.nocturne.colors(for: .light), tone: .normal)
+  static let defaultValue: SalahWidgetBackdrop? = nil
 }
 
 nonisolated extension EnvironmentValues {
   /// The backdrop the widget face is drawn over. Set it where `SalahWidgetBackground` is
-  /// drawn.
-  var salahWidgetBackdrop: SalahWidgetBackdrop {
+  /// drawn. Without one, inks resolve against Nocturne in the current appearance, anywhere
+  /// on a face.
+  var salahWidgetBackdrop: SalahWidgetBackdrop? {
     get { self[SalahWidgetBackdropKey.self] }
     set { self[SalahWidgetBackdropKey.self] = newValue }
   }
@@ -130,15 +175,16 @@ nonisolated extension EnvironmentValues {
 ///
 /// In full-color rendering, which the in-app preview also gets:
 /// - `primary` is the system's `.primary`;
-/// - `secondary` is `SalahColor.labelSecondary`, made more opaque where a face's glow would
-///   take it below its contrast;
-/// - a tone or the accent keeps its hue, moved toward white in dark or black in light until
-///   it reaches its contrast.
+/// - `secondary` is `SalahColor.labelSecondary`, made more opaque where the backdrop under it
+///   would take it below its contrast;
+/// - a tone or the accent keeps its hue, moved toward white in dark or black in light only
+///   as far as the backdrop under it needs.
 ///
-/// Text reaches 4.5:1 and glyphs 3:1 against the backdrop's `limit`, including the tint
-/// under it. In accented and vibrant rendering the system recolors the content and
-/// removes the backdrop, so the inks are the system's `.primary` and `.secondary`, and the
-/// tones and the accent as the theme gives them.
+/// Each ink resolves against the hardest point of the backdrop under its own frame, with the
+/// tint it sits on (`SalahWidgetBackdrop.limit`). Text aims at 4.6:1 and glyphs at 3.1:1, a
+/// little above the 4.5:1 and 3:1 they must reach, so rounding can't take them below. In accented and vibrant rendering the system recolors the content and removes
+/// the backdrop, so the inks are the system's `.primary` and `.secondary`, and the tones and
+/// the accent as the theme gives them.
 ///
 /// `opacity` dims an ink, as passed rows are dimmed. A dimmed ink is a documented choice
 /// that doesn't reach its contrast (`Design/README.md`, Widgets).
@@ -155,6 +201,8 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
   var isGlyph = false
   /// The tone of the tint the ink sits on, or `nil` on the bare backdrop.
   var tint: SalahWidgetTone?
+  /// The opacity of that tint, with any tints stacked under it (`SalahWidgetTint`).
+  var tintOpacity = 0.0
   var opacity = 1.0
 
   static let primary = SalahWidgetInk(source: .primary)
@@ -171,10 +219,11 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
     return ink
   }
 
-  /// The same ink, on a tint of `tone`.
-  func on(_ tone: SalahWidgetTone?) -> SalahWidgetInk {
+  /// The same ink, on a tint of `tone` at `opacity`; `nil` for the bare backdrop.
+  func on(_ tone: SalahWidgetTone?, opacity: Double) -> SalahWidgetInk {
     var ink = self
     ink.tint = tone
+    ink.tintOpacity = tone == nil ? 0 : opacity
     return ink
   }
 
@@ -188,52 +237,88 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
   /// The contrast the ink reaches against its surface, undimmed.
   var minimumContrast: Double { isGlyph ? 3 : 4.5 }
 
-  /// The style to draw the ink with.
-  func style(
-    on backdrop: SalahWidgetBackdrop, contrast: ColorSchemeContrast,
-    renderingMode: WidgetRenderingMode
-  ) -> AnyShapeStyle {
+  /// The contrast the ink aims at, a little above `minimumContrast`: the model of the
+  /// backdrop matches SwiftUI's rendering to about one level in 255.
+  var targetContrast: Double { minimumContrast + 0.1 }
+
+  /// The ink resolved for a face.
+  struct Resolved {
+    var style: AnyShapeStyle
+    /// The color drawn, when it isn't one of the system's styles.
+    var color: ThemeColor?
+  }
+
+  /// The ink resolved for `backdrop` under `frame`, a frame in the face's coordinate space.
+  /// Without a backdrop, it resolves against Nocturne in `scheme`, anywhere on a face.
+  func resolved(
+    on backdrop: SalahWidgetBackdrop?, in frame: CGRect?, scheme: ColorScheme,
+    contrast: ColorSchemeContrast, renderingMode: WidgetRenderingMode
+  ) -> Resolved {
+    let backdrop =
+      backdrop
+      ?? SalahWidgetBackdrop(
+        colors: SalahWidgetTheme.nocturne.colors(for: scheme), tone: .normal, size: .zero,
+        isRightToLeft: false)
+    let frame = backdrop.size == .zero ? nil : frame
     let palette = backdrop.palette
     let isDark = backdrop.isDark
+    func color(_ color: ThemeColor) -> Resolved {
+      Resolved(style: AnyShapeStyle(color.inkColor(opacity)), color: color)
+    }
     guard renderingMode == .fullColor else {
       switch source {
       case .primary: return Self.system(.primary, opacity: opacity)
       case .secondary, .tone(.silent): return Self.system(.secondary, opacity: opacity)
-      case .tone(let tone):
-        return AnyShapeStyle(tone.components(palette: palette, isDark: isDark).inkColor(opacity))
-      case .accent: return AnyShapeStyle(palette.accent.inkColor(opacity))
+      case .tone(let tone): return color(tone.components(palette: palette, isDark: isDark))
+      case .accent: return color(palette.accent)
       }
     }
-    let limit = backdrop.limit(tint: tint, contrast: contrast)
+    func limit() -> ThemeColor {
+      backdrop.limit(
+        in: frame, tint: tint, tintOpacity: tintOpacity, contrast: contrast)
+    }
     switch source {
     case .primary:
-      return Self.system(.primary, opacity: opacity)
+      // The label color itself, rather than the hierarchical style, so it doesn't follow a
+      // foreground style set around the face. Only a glow as light as the text, from a theme
+      // primary near white in dark, say, needs more.
+      let label = SalahColor.labelPrimaryComponents(isDark ? .dark : .light, contrast)
+      let surface = limit()
+      if ThemeColor.contrastRatio(label.over(surface), surface) >= targetContrast {
+        return Resolved(
+          style: AnyShapeStyle(opacity == 1 ? Color.primary : Color.primary.opacity(opacity)),
+          color: nil)
+      }
+      return color(label.raisedForContrast(over: surface, ratio: targetContrast, lighter: isDark))
     case .secondary, .tone(.silent):
       let ink = SalahColor.labelSecondaryComponents(isDark ? .dark : .light, contrast)
-      return AnyShapeStyle(
-        ink.raisedForContrast(over: limit, ratio: minimumContrast).inkColor(opacity))
+      return color(ink.raisedForContrast(over: limit(), ratio: targetContrast, lighter: isDark))
     case .tone(let tone):
-      let base = tone.components(palette: palette, isDark: isDark)
-      return AnyShapeStyle(
-        base.movedForContrast(over: limit, ratio: minimumContrast, lighter: isDark).inkColor(
-          opacity))
+      return color(
+        tone.components(palette: palette, isDark: isDark)
+          .movedForContrast(over: limit(), ratio: targetContrast, lighter: isDark))
     case .accent:
-      return AnyShapeStyle(
-        palette.accent.movedForContrast(over: limit, ratio: minimumContrast, lighter: isDark)
-          .inkColor(opacity))
+      return color(
+        palette.accent.movedForContrast(over: limit(), ratio: targetContrast, lighter: isDark))
     }
   }
 
-  private static func system(_ style: HierarchicalShapeStyle, opacity: Double) -> AnyShapeStyle {
-    opacity == 1 ? AnyShapeStyle(style) : AnyShapeStyle(style.opacity(opacity))
+  private static func system(_ style: HierarchicalShapeStyle, opacity: Double) -> Resolved {
+    Resolved(
+      style: opacity == 1 ? AnyShapeStyle(style) : AnyShapeStyle(style.opacity(opacity)),
+      color: nil)
   }
 }
 
 // MARK: - Drawing an ink
 
 nonisolated extension View {
-  /// Draws the view's text and glyphs in `ink`, resolved for the face's backdrop, the
+  /// Draws the view's text and glyphs in `ink`, resolved for the backdrop under the view, the
   /// rendering mode and the Increase Contrast setting.
+  ///
+  /// The view lays out as usual but draws nothing itself: a copy of it in an overlay, which
+  /// reads its frame in the face's coordinate space, draws it in the resolved ink. That works
+  /// in WidgetKit's single render pass. Only the copy is visible to accessibility.
   func salahInk(_ ink: SalahWidgetInk) -> some View {
     modifier(SalahInkModifier(ink: ink))
   }
@@ -242,50 +327,85 @@ nonisolated extension View {
 private nonisolated struct SalahInkModifier: ViewModifier {
   let ink: SalahWidgetInk
   @Environment(\.salahWidgetBackdrop) private var backdrop
+  @Environment(\.colorScheme) private var scheme
   @Environment(\.colorSchemeContrast) private var contrast
   @Environment(\.widgetRenderingMode) private var renderingMode
   @Environment(\.salahWidgetInkProbe) private var probe
 
   func body(content: Content) -> some View {
-    let styled = content.foregroundStyle(
-      ink.style(on: backdrop, contrast: contrast, renderingMode: renderingMode))
-    if let probe {
-      styled.opacity(probe.draws(ink, over: backdrop) ? 1 : 0)
-    } else {
-      styled
+    content
+      .hidden()
+      .accessibilityHidden(true)
+      .overlay {
+        GeometryReader { proxy in
+          let frame = proxy.frame(in: .named(SalahWidgetBackdrop.coordinateSpace))
+          let resolved = ink.resolved(
+            on: backdrop, in: frame, scheme: scheme, contrast: contrast,
+            renderingMode: renderingMode)
+          drawn(content, resolved, frame: frame)
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+      }
+  }
+
+  @ViewBuilder
+  private func drawn(_ content: Content, _ resolved: SalahWidgetInk.Resolved, frame: CGRect)
+    -> some View
+  {
+    switch probe?.record(ink, in: frame, color: resolved.color) {
+    case nil, .show?:
+      content.foregroundStyle(resolved.style)
+    case .hide?:
+      content.foregroundStyle(resolved.style).opacity(0)
+    case .paint?:
+      Rectangle().fill(resolved.style).padding(-SalahWidgetInkProbe.paintMargin)
     }
   }
 }
 
-/// Draws only some of a face's inks, so a test can find each ink's glyphs and measure the
-/// ink against the surface beneath them. SalahTests renders a face with every ink hidden,
-/// then with one shown at a time; the probe lists the inks the face draws, and the backdrop
-/// each resolves against.
+/// Measures a face's inks in SalahTests. It lists each inked element the face draws, with its
+/// frame in the face's coordinate space, and draws every element one way: as usual, hidden
+/// (the surface under the text), or as a rectangle of its resolved ink over its frame, so a
+/// test can measure each ink against the pixels under its glyphs.
 nonisolated final class SalahWidgetInkProbe: @unchecked Sendable {
-  /// An ink a face draws, and the backdrop it resolves against.
-  struct Drawn: Sendable {
+  enum Mode: Sendable {
+    case show
+    case hide
+    case paint
+  }
+
+  /// An inked element of a face.
+  struct Element: Equatable, Sendable {
     var ink: SalahWidgetInk
-    var backdrop: SalahWidgetBackdrop
+    /// Its frame in the face's coordinate space.
+    var frame: CGRect
+    /// The color it draws in, when that isn't one of the system's styles.
+    var color: ThemeColor?
   }
 
-  /// The ink drawn, or `nil` to hide every ink.
-  let shown: SalahWidgetInk?
+  /// How far past its frame `paint` draws an element, in points.
+  static let paintMargin = 3.0
+
+  let mode: Mode
   private let lock = NSLock()
-  private var inks: [SalahWidgetInk: SalahWidgetBackdrop] = [:]
+  private var recorded: [Element] = []
 
-  init(showing shown: SalahWidgetInk? = nil) {
-    self.shown = shown
+  init(_ mode: Mode) {
+    self.mode = mode
   }
 
-  /// The inks the face has asked to draw.
-  var drawn: [Drawn] {
-    lock.withLock { inks.map { Drawn(ink: $0.key, backdrop: $0.value) } }
+  /// The inked elements the face has drawn.
+  var elements: [Element] {
+    lock.withLock { recorded }
   }
 
-  /// Notes that the face draws `ink` over `backdrop`, and says whether to show it.
-  func draws(_ ink: SalahWidgetInk, over backdrop: SalahWidgetBackdrop) -> Bool {
-    lock.withLock { inks[ink] = backdrop }
-    return ink == shown
+  /// Notes an element the face draws, and says how to draw it.
+  func record(_ ink: SalahWidgetInk, in frame: CGRect, color: ThemeColor?) -> Mode {
+    let element = Element(ink: ink, frame: frame, color: color)
+    lock.withLock {
+      if !recorded.contains(element) { recorded.append(element) }
+    }
+    return mode
   }
 }
 
@@ -294,7 +414,7 @@ private nonisolated struct SalahWidgetInkProbeKey: EnvironmentKey {
 }
 
 nonisolated extension EnvironmentValues {
-  /// The probe that measures a face's inks in SalahTests; `nil` draws every ink.
+  /// The probe that measures a face's inks in SalahTests; `nil` draws every ink as usual.
   var salahWidgetInkProbe: SalahWidgetInkProbe? {
     get { self[SalahWidgetInkProbeKey.self] }
     set { self[SalahWidgetInkProbeKey.self] = newValue }
@@ -343,13 +463,15 @@ nonisolated extension ThemeColor {
   }
 
   /// This translucent ink with its opacity raised, a hundredth at a time, until it reaches
-  /// `ratio` over `surface`. An ink that already reaches it comes back unchanged.
-  func raisedForContrast(over surface: ThemeColor, ratio: Double) -> ThemeColor {
+  /// `ratio` over `surface`; once opaque, moved toward white (`lighter`) or black if it still
+  /// needs to. An ink that already reaches it comes back unchanged.
+  func raisedForContrast(over surface: ThemeColor, ratio: Double, lighter: Bool) -> ThemeColor {
     var ink = self
     while ink.opacity < 1, Self.contrastRatio(ink.over(surface), surface) < ratio {
       ink.opacity = min(1, ink.opacity + 0.01)
     }
-    return ink
+    if Self.contrastRatio(ink.over(surface), surface) >= ratio { return ink }
+    return ink.movedForContrast(over: surface, ratio: ratio, lighter: lighter)
   }
 
   /// The color to draw, at `opacity` times its own.

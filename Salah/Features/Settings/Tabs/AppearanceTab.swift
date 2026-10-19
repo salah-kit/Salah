@@ -157,7 +157,8 @@ struct AppearanceContent: View {
   /// The background the custom primary sits on, for the contrast check (the card
   /// tint is a thin wash over this, so it's a fair approximation of the surface).
   /// Text the widget draws in the primary needs more than this check: `SalahWidgetInk`
-  /// moves it to 4.5:1 against the glows and tints under it, keeping its hue.
+  /// lightens or darkens it, keeping its hue, only as far as the sky, glow and tint under
+  /// that text need for 4.5:1.
   private var previewSurface: SalahColorSpec {
     effectivePreviewScheme == .dark
       ? prefs.widgetCustomBase.darkTop : prefs.widgetCustomBase.lightTop

@@ -18,9 +18,13 @@ struct WidgetPreviewContainer: View {
     let pointSize = size.desktopPointSize
     content
       .environment(
-        \.salahWidgetBackdrop, SalahWidgetBackdrop(colors: colors, tone: display.backgroundTone)
+        \.salahWidgetBackdrop,
+        SalahWidgetBackdrop(
+          colors: colors, tone: display.backgroundTone, size: pointSize,
+          isRightToLeft: display.isRightToLeft)
       )
       .frame(width: pointSize.width, height: pointSize.height)
+      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
       .background {
         SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
       }

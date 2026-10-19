@@ -148,6 +148,8 @@ private struct SalahWidgetShell<Content: View>: View {
   var isRightToLeft = false
   @ViewBuilder let content: (SalahWidgetColors) -> Content
   @Environment(\.colorScheme) private var scheme
+  /// The direction the container background is drawn in: the system's, not the face's.
+  @Environment(\.layoutDirection) private var backgroundDirection
 
   init(
     theme: SalahWidgetTheme, tone: SalahWidgetTone, locale: Locale? = nil,
@@ -180,14 +182,24 @@ private struct SalahWidgetShell<Content: View>: View {
 
   var body: some View {
     let colors = theme.colors(for: scheme)
-    localized(content(colors))
-      .environment(\.salahWidgetBackdrop, SalahWidgetBackdrop(colors: colors, tone: tone))
-      // Honor a pinned theme appearance (Always Dark/Light) so the system colors
-      // match the themed background; .system passes through unchanged.
-      .salahColorScheme(theme.forcedColorScheme)
-      .containerBackground(for: .widget) {
-        SalahWidgetBackground(tone: tone, colors: colors)
-      }
+    // The face's size and coordinate space, which its inks resolve against.
+    GeometryReader { proxy in
+      localized(content(colors))
+        .environment(
+          \.salahWidgetBackdrop,
+          SalahWidgetBackdrop(
+            colors: colors, tone: tone, size: proxy.size,
+            isRightToLeft: backgroundDirection == .rightToLeft)
+        )
+        .frame(width: proxy.size.width, height: proxy.size.height)
+        .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
+    }
+    // Honor a pinned theme appearance (Always Dark/Light) so the system colors
+    // match the themed background; .system passes through unchanged.
+    .salahColorScheme(theme.forcedColorScheme)
+    .containerBackground(for: .widget) {
+      SalahWidgetBackground(tone: tone, colors: colors)
+    }
   }
 
   /// The face in the user's language and direction; the setup face keeps the

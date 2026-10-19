@@ -307,28 +307,41 @@ The macOS widget and its Settings → Appearance preview draw their themed skies
 glow in the state's color from the bottom-trailing corner, and draw every text and glyph
 through `SalahWidgetInk` (`Shared/WidgetUI/SalahWidgetInk.swift`). In full color:
 
-- Primary text is `.primary`. Secondary text is `SalahColor.labelSecondary`, made more
-  opaque on a face whose glow would take it below 4.5:1, such as the green count-up glow in
-  dark.
-- Text in the theme's primary color or a state's color (the next prayer's row, the
-  countdown, the count-up, the Now badge, Tap to Stop) keeps its hue, moving toward white
-  in dark or black in light until it reaches 4.5:1. Glyphs in those colors, and in the
-  theme's accent, reach 3:1. A custom theme gets the same treatment, so a primary that only
-  just passes the Appearance tab's 3:1 check still draws readable text.
-- The surface each ink is checked against is the hardest point of the sky and its glows
-  inside the 14-pt content margin of every widget size, under the tint the text sits on,
-  if any (a large row's fill, the large focus card, the Now badge), counted at 28%. Glows,
-  tints, strokes and hairlines draw the theme's colors unchanged.
+- Each ink is checked against the hardest point of the sky, its glows and the tint under it,
+  within the ink's own frame and 3 pt around it. The tints are a large row's state fill, the
+  large focus card and the Now badge's capsule, at each fill's strongest end, stacked where
+  they overlap (`SalahWidgetTint`; the badge on the large count-up card is 36%). The bare sky
+  counts too, since a gradient fill fades and a light tint lightens.
+- Primary text is the system's primary label. Only on a glow as light as the text, from a
+  custom primary near white in dark, does it get more opaque or lighter.
+- Secondary text is `SalahColor.labelSecondary`, made more opaque where its surface needs it.
+  On the presets in light, that's most secondary text, idle faces included: 78–83% on the bare
+  sky and up to 91% on the large focus card's tint. In dark it's 64–71% on calm faces, up to
+  76% near a bright glow such as the green count-up's, and up to 89% on a tint.
+- Text in the theme's primary color or a state's color (the next prayer's row, the countdown,
+  the count-up, the Now badge, Tap to Stop) keeps its hue, and moves toward white in dark or
+  black in light only as far as its surface needs. Glyphs in those colors, and in the
+  theme's accent, do the same for 3:1. Text aims at 4.6:1 and glyphs at 3.1:1, so rounding can't
+  take them below 4.5:1 and 3:1.
+- A custom theme gets the same treatment, so a primary that only just passes the Appearance
+  tab's 3:1 check, or one near white or black, still draws readable text.
+- Glows, tints, strokes and hairlines draw the theme's colors unchanged.
 - Passed prayers dim to 50% (55% on the large widget) in standard contrast. That's a
-  deliberate exception to 4.5:1, so the day's remaining prayers stand out: on the presets,
-  passed names measure 2.9–4.7:1, their times 2.0–2.6:1 and the large widget's bells
-  2.2–2.9:1. With Increase Contrast, passed rows draw undimmed in `labelSecondary`, at
-  5.2:1 or more.
+  deliberate exception to 4.5:1, so the day's remaining prayers stand out. On the presets,
+  the medium widget's passed names measure 2.9–4.0:1 and their times 1.95–2.6:1; the large
+  widget's passed names and times 3.2–4.8:1, and their bells 2.2–2.9:1. The floor is 1.9:1:
+  `WidgetInkContrastTests` fails below it, and the lowest it measures, on the presets and on
+  custom themes, is 1.95:1. With Increase Contrast, passed rows draw undimmed in
+  `labelSecondary`, at 5.2:1 or more.
 
-`WidgetInkContrastTests` in SalahTests renders each widget state in each size, for every
-preset and for custom themes at the edge of the Appearance tab's check, in light and dark
-and with and without Increase Contrast, and measures each ink against the pixels under its
-glyphs.
+`WidgetInkContrastTests` in SalahTests measures each ink against the pixels under its
+glyphs. It draws every widget state the visual baselines draw, the times-unavailable face,
+the focus when the next prayer is unknown and a day with missing prayers, in every size, for
+the presets in light and dark, custom themes at the edge of the Appearance tab's check and
+with near-white and near-black primaries, with and without Increase Contrast, in English;
+and the medium and large sizes of the presets in Arabic, right to left, in standard
+contrast. It also fails on text drawn without an ink, and on a layer that dims an ink's
+glyphs below the ink it resolves to.
 
 ## Symbols
 

@@ -152,6 +152,30 @@ nonisolated extension SalahWidgetTone {
   }
 }
 
+// MARK: - Tints
+
+/// The opacities of the tone-colored fills text sits on. The views draw with them, and
+/// `SalahWidgetInk` checks text against them (at each gradient's strongest end).
+nonisolated enum SalahWidgetTint {
+  /// The next prayer's large row: a gradient from leading to trailing.
+  static let nextRow = 0.22
+  static let nextRowTrailing = 0.08
+  /// The playing prayer's large row.
+  static let activeRow = 0.20
+  /// The large row of the prayer that just started.
+  static let currentRow = 0.12
+  /// The large focus card: a gradient from top-leading to bottom-trailing.
+  static let card = 0.24
+  static let cardTrailing = 0.07
+  /// The Now badge's capsule.
+  static let badge = 0.16
+
+  /// The opacity of a tint at `top` over one at `bottom`, in the same color.
+  static func stacked(_ top: Double, over bottom: Double) -> Double {
+    1 - (1 - top) * (1 - bottom)
+  }
+}
+
 // MARK: - Backdrop
 
 /// Atmospheric widget backdrop: a vertical night/dawn gradient (from the theme)
@@ -251,7 +275,7 @@ nonisolated struct InlineBadge: View {
     )
     .padding(.horizontal, 7)
     .padding(.vertical, 2)
-    .background(Capsule().fill(tint.opacity(0.16)))
+    .background(Capsule().fill(tint.opacity(SalahWidgetTint.badge)))
     .overlay(Capsule().strokeBorder(tint.opacity(0.5), lineWidth: 0.75))
     .foregroundStyle(tint)
     .lineLimit(1)
@@ -275,7 +299,10 @@ nonisolated extension View {
       RoundedRectangle(cornerRadius: 18, style: .continuous)
         .fill(
           LinearGradient(
-            colors: [toneColor.opacity(0.24), toneColor.opacity(0.07)],
+            colors: [
+              toneColor.opacity(SalahWidgetTint.card),
+              toneColor.opacity(SalahWidgetTint.cardTrailing),
+            ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
           )

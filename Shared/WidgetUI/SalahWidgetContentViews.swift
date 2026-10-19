@@ -270,7 +270,10 @@ private struct ScheduleRowView: View {
       if isCurrent {
         InlineBadge(
           text: nowLabel, tint: SalahWidgetTone.prayerColor(colors),
-          ink: SalahWidgetInk.tone(.playingPrayerAudio).on(.playingPrayerAudio))
+          ink: SalahWidgetInk.tone(.playingPrayerAudio).on(
+            .playingPrayerAudio,
+            opacity: SalahWidgetTint.stacked(
+              SalahWidgetTint.badge, over: compact ? 0 : SalahWidgetTint.currentRow)))
       }
 
       Spacer(minLength: 6)
@@ -318,26 +321,29 @@ private struct ScheduleRowView: View {
 
   /// Passed rows dim to 50% (55% on large) in standard contrast, as the widget has always
   /// drawn them. That's a documented exception to 4.5:1 (`Design/README.md`, Widgets): on
-  /// the presets their names measure 2.9-4.7:1, their times 2.0-2.6:1 and their large
-  /// rows' bells 2.2-2.9:1. `WidgetInkContrastTests` holds them to 1.9:1.
+  /// the presets, medium rows' names measure 2.9-4.0:1 and their times 1.95-2.6:1, large
+  /// rows' names and times 3.2-4.8:1 and their bells 2.2-2.9:1. `WidgetInkContrastTests`
+  /// holds them to 1.9:1.
   private var dimming: Double {
     guard isPassed, contrast != .increased else { return 1 }
     return compact ? 0.5 : 0.55
   }
 
-  /// The tint under a large row's content: its state fill.
-  private var tint: SalahWidgetTone? {
+  /// The tint under a large row's content, its state fill, and the fill's strongest
+  /// opacity.
+  private var tint: (tone: SalahWidgetTone, opacity: Double)? {
     guard !compact else { return nil }
     switch state {
-    case .next(let tone), .active(let tone): return tone
-    case .current: return .playingPrayerAudio
+    case .next(let tone): return (tone, SalahWidgetTint.nextRow)
+    case .active(let tone): return (tone, SalahWidgetTint.activeRow)
+    case .current: return (.playingPrayerAudio, SalahWidgetTint.currentRow)
     default: return nil
     }
   }
 
   /// `ink` on the row's tint, dimmed as the row is.
   private func ink(_ ink: SalahWidgetInk) -> SalahWidgetInk {
-    ink.on(tint).dimmed(dimming)
+    ink.on(tint?.tone, opacity: tint?.opacity ?? 0).dimmed(dimming)
   }
 
   /// Emphasis ink for the name (and icon, full only): next→tone, active→tone,
@@ -388,7 +394,10 @@ private struct ScheduleRowView: View {
       RoundedRectangle(cornerRadius: 9, style: .continuous)
         .fill(
           LinearGradient(
-            colors: [c.opacity(0.22), c.opacity(0.08)], startPoint: .leading, endPoint: .trailing)
+            colors: [
+              c.opacity(SalahWidgetTint.nextRow), c.opacity(SalahWidgetTint.nextRowTrailing),
+            ],
+            startPoint: .leading, endPoint: .trailing)
         )
         .overlay(
           RoundedRectangle(cornerRadius: 9, style: .continuous)
@@ -396,10 +405,10 @@ private struct ScheduleRowView: View {
         )
     case .active(let tone):
       RoundedRectangle(cornerRadius: 9, style: .continuous)
-        .fill(tone.color(colors).opacity(0.20))
+        .fill(tone.color(colors).opacity(SalahWidgetTint.activeRow))
     case .current:
       RoundedRectangle(cornerRadius: 9, style: .continuous)
-        .fill(SalahWidgetTone.prayerColor(colors).opacity(0.12))
+        .fill(SalahWidgetTone.prayerColor(colors).opacity(SalahWidgetTint.currentRow))
     default:
       Color.clear
     }
@@ -474,6 +483,10 @@ private struct ActiveCardView: View {
   private var toneColor: Color { tone.color(colors) }
   /// The large focus card's tint, under all its text.
   private var cardTint: SalahWidgetTone? { size == .large ? tone : nil }
+  /// `ink` on the large focus card's tint.
+  private func onCard(_ ink: SalahWidgetInk) -> SalahWidgetInk {
+    ink.on(cardTint, opacity: SalahWidgetTint.card)
+  }
   private var isImminent: Bool {
     if case .countdown = focus { return tone == .imminent }
     return false
@@ -542,11 +555,14 @@ private struct ActiveCardView: View {
     if isCountUp {
       InlineBadge(
         text: labels.now, tint: SalahWidgetTone.prayerColor(colors),
-        ink: SalahWidgetInk.tone(.playingPrayerAudio).on(.playingPrayerAudio))
+        ink: SalahWidgetInk.tone(.playingPrayerAudio).on(
+          .playingPrayerAudio,
+          opacity: SalahWidgetTint.stacked(
+            SalahWidgetTint.badge, over: size == .large ? SalahWidgetTint.card : 0)))
     } else {
       EyebrowLabel(
         text: display.focusIsTomorrow ? labels.tomorrow : labels.nextPrayer,
-        accent: colors.accentText, ink: SalahWidgetInk.primary.on(cardTint))
+        accent: colors.accentText, ink: onCard(.primary))
     }
   }
 
@@ -558,7 +574,7 @@ private struct ActiveCardView: View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
       (name ?? Text(verbatim: "–"))
         .font(nameFont)
-        .salahInk(SalahWidgetInk.primary.on(cardTint))
+        .salahInk(onCard(.primary))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       if size != .small {
@@ -571,7 +587,7 @@ private struct ActiveCardView: View {
           Image(systemName: "clock")
         }
         .font(.caption)
-        .salahInk(SalahWidgetInk.secondary.on(cardTint))
+        .salahInk(onCard(.secondary))
         .labelStyle(.tight)
         .layoutPriority(-1)
       }
@@ -584,11 +600,11 @@ private struct ActiveCardView: View {
       if isImminent {
         Image(systemName: "exclamationmark.circle.fill")
           .font(timerFont)
-          .salahInk(SalahWidgetInk.tone(tone).glyph.on(cardTint))
+          .salahInk(onCard(SalahWidgetInk.tone(tone).glyph))
           .accessibilityHidden(true)
       }
       RelativeTime(
-        target: event.time, reference: date, ink: SalahWidgetInk.tone(tone).on(cardTint),
+        target: event.time, reference: date, ink: onCard(.tone(tone)),
         font: timerFont, bold: isImminent, countingUp: isCountUp)
     }
   }
@@ -617,7 +633,7 @@ private struct ActiveCardView: View {
         Image(systemName: "alarm")
       }
       .font(.caption)
-      .salahInk(SalahWidgetInk.secondary.on(cardTint))
+      .salahInk(onCard(.secondary))
       .labelStyle(.tight)
     }
   }
