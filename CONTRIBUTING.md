@@ -127,8 +127,10 @@ reach VoiceOver too: one test opens the time zone's pop-up with VO-Space, and an
 changes the name style with VoiceOver and back. They need macOS 27 in English, with
 VoiceOver's default settings: VoiceOver says its own words, such as "selected" and
 "dimmed", in the Mac's language and as its verbosity settings choose, and the tests send
-VO-Space as Control-Option. They skip before macOS 27, on a Mac that isn't in English, and
-when VoiceOver doesn't turn on. They take about ten minutes:
+VO-Space as Control-Option. They turn VoiceOver on and off themselves, and skip when it's
+already on, leaving it as it is: turn it off and run them again. They also skip before
+macOS 27, on a Mac that isn't in English, and when VoiceOver doesn't turn on. They take
+about ten minutes:
 
 ```sh
 xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'platform=macOS' \
@@ -136,14 +138,18 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'plat
 ```
 
 VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
-the Mac alone, with Do Not Disturb on, until they end. A test keeps only what VoiceOver
-says after its own moves in the window it reads, and fails at the first move after Salah
-leaves the front or that window closes; speech VoiceOver makes for another app right after
-a move, such as a notification it reads out, can still be kept. Each test turns VoiceOver
-off at its end, unless it was on before; if a run stops first, the next test within half an
-hour turns it off, or Command-F5 does. When a test fails, Xcode keeps screenshots and a
-screen recording of the whole screen in the result bundle, so share its failure message and
-its "VoiceOver" attachment, not the bundle.
+the Mac alone, with Do Not Disturb on, until they end. If VoiceOver's welcome window is
+open, close it first: VoiceOver reads it instead of Salah. A test keeps only what VoiceOver
+says after its own moves in the window it reads, and, after a key press, the exact words it
+waits for; it fails at the first move after Salah leaves the front or that window closes.
+Speech VoiceOver makes for another app right after a move, such as a notification it reads
+out, can still be kept. Each test turns VoiceOver off at its end. A run that stops first,
+or whose VoiceOver didn't turn on, leaves the time it turned VoiceOver on in the test
+runner's defaults: for half an hour after that, the tests take VoiceOver that's on as
+theirs, even one you turned on meanwhile, restart it, and turn it off at their end.
+Command-F5 turns it off too. When a test fails, Xcode keeps screenshots and a screen
+recording of the whole screen in the result bundle, so share its failure message and its
+"VoiceOver" attachment, not the bundle.
 
 ### Real-app tests
 
