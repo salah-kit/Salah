@@ -85,29 +85,6 @@ struct SettingsView: View {
   }
 }
 
-private struct WindowTitleSetter: NSViewRepresentable {
-  let title: String
-
-  func makeNSView(context: Context) -> NSView {
-    let view = NSView(frame: .zero)
-    apply(to: view)
-    return view
-  }
-
-  func updateNSView(_ nsView: NSView, context: Context) {
-    apply(to: nsView)
-  }
-
-  private func apply(to view: NSView) {
-    // `view.window` is nil until the next runloop pass after attach. Defer the
-    // assignment so it lands on the actual Settings NSWindow rather than a no-op.
-    let title = title
-    DispatchQueue.main.async {
-      view.window?.title = title
-    }
-  }
-}
-
 private struct SettingsSidebarActionRow: View {
   let title: LocalizedStringKey
   let systemImage: String

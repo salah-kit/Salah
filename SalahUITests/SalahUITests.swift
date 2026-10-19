@@ -86,6 +86,10 @@ final class SalahUITests: XCTestCase {
     try XCTSkipUnless(
       statusItem.isHittable,
       "The menu bar is full: macOS put Salah's status item in its overflow.")
+    let screenshot = XCTAttachment(screenshot: statusItem.screenshot())
+    screenshot.name = "Dropdown menu bar item"
+    screenshot.lifetime = .keepAlways
+    add(screenshot)
     statusItem.click()
 
     for prayer in Self.prayerNames {

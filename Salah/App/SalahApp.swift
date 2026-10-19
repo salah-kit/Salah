@@ -33,6 +33,13 @@ struct SalahApp: App {
   var body: some Scene {
     MenuBarExtra {
       MenuBarDropdownView(prayerManager: prayerManager)
+        .background(
+          WindowTitleSetter(
+            title: String(
+              localized: LocalizedStringResource(
+                "CFBundleDisplayName", table: "InfoPlist", locale: appLocale,
+                bundle: AppResources.localizationBundle)))
+        )
         .environment(\.locale, appLocale)
         .environment(\.layoutDirection, appLayoutDirection)
     } label: {
