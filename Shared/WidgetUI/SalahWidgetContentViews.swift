@@ -657,7 +657,7 @@ private struct NextUnknownView: View {
         Image(systemName: "questionmark.circle")
       }
       .font(size == .small ? .footnote : .caption)
-      .salahInk(.secondary)
+      .salahInk(SalahWidgetInk.secondary.wrapping)
       .labelStyle(.tight)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -772,7 +772,7 @@ nonisolated struct WidgetMessageContent: View {
         .accessibilityHidden(true)
       message
         .font(.callout.weight(.medium))
-        .salahInk(.primary)
+        .salahInk(SalahWidgetInk.primary.wrapping)
         .multilineTextAlignment(.center)
         .minimumScaleFactor(0.8)
     }

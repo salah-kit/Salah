@@ -22,13 +22,24 @@ import WidgetKit
 ///
 /// Each face renders four ways through `SalahWidgetInkProbe`: with every ink hidden, twice
 /// over different inherited foreground colors (so text that isn't inked, which would keep
-/// that color, shows up as a difference); as drawn; and with each inked element painted as a
-/// rectangle of its resolved ink, in place, under the same modifiers as its glyphs. The pixels
-/// that change between hidden and drawn are glyphs; each belongs to the one element whose
-/// frame holds it. The test measures the painted pixel against the hidden one: the ink as
-/// drawn over the real gradient, glows and tints, without the antialiasing a one-pixel-per-point
-/// render gives the glyphs. It also checks that each element's strongest glyph pixel reaches
-/// 90% of its painted ink, so nothing between the ink and its glyphs dims them.
+/// that color, shows up as a difference and fails); as drawn; and with each inked element
+/// painted as a rectangle of its resolved ink, in place, under the same modifiers as its
+/// glyphs, over its frame and `SalahWidgetInkProbe.paintMargin` around it. The pixels that
+/// change between hidden and drawn are glyphs; each belongs to the one element whose painted
+/// area holds it, and a glyph pixel outside every painted area fails. The test measures the
+/// painted pixel against the hidden one: the ink as drawn over the real gradient, glows and
+/// tints, without the antialiasing a one-pixel-per-point render gives the glyphs.
+///
+/// Because the paint sits under the same modifiers as the glyphs, a layer above `salahInk`
+/// that dims or blends both shows in the measurement. `glyphsReachTheirInk` catches the rest,
+/// a layer inside the inked view that dims or recolors only its glyphs: at three pixels per
+/// point, each element's fullest glyph pixel must reach 90% of its painted ink in every
+/// channel the ink moves. It draws Nocturne in light and dark, every face and size in English
+/// and the medium and large sizes in Arabic, which reaches every inked element.
+///
+/// `stateColorsKeepTheirHue` checks that each ink moves only as far as its own surface needs,
+/// and `facesHoldOverABackdropInTheOtherDirection` draws faces over a backdrop in the other
+/// direction, as the widget extension can.
 @Suite("Widget ink contrast")
 struct WidgetInkContrastTests {
   init() { TestEnvironment.configure() }
@@ -215,21 +226,29 @@ struct WidgetInkContrastTests {
 
   typealias Pixels = (width: Int, height: Int, bytes: [UInt8])
 
+  /// How far a glyph's fullest pixel must reach its painted ink at three pixels per point,
+  /// in every channel the ink moves, where strokes cover whole pixels.
+  static let glyphCoverage = 0.9
+
+  /// Renders `face`, holds each inked element to its floor, and with `checksCoverage`, to
+  /// `glyphCoverage` too.
   private func measure(
-    _ face: AnyView, label: String, scheme: ColorScheme, contrast: ColorSchemeContrast
+    _ face: AnyView, label: String, scheme: ColorScheme, contrast: ColorSchemeContrast,
+    scale: Int = 1, checksCoverage: Bool = false
   ) throws {
+    func view(_ probe: SalahWidgetInkProbe?, inherited: Color) -> some View {
+      face
+        .foregroundStyle(inherited)
+        .environment(\.salahWidgetInkProbe, probe)
+        .environment(\.colorScheme, scheme)
+        .environment(\._colorSchemeContrast, contrast)
+    }
     func render(_ probe: SalahWidgetInkProbe?, inherited: Color = .init(red: 1, green: 0, blue: 1))
       throws -> Pixels
     {
       try #require(
         PixelComparison.rgba(
-          BaselineRenderer.stablePNG {
-            face
-              .foregroundStyle(inherited)
-              .environment(\.salahWidgetInkProbe, probe)
-              .environment(\.colorScheme, scheme)
-              .environment(\._colorSchemeContrast, contrast)
-          }))
+          BaselineRenderer.stablePNG(scale: scale) { view(probe, inherited: inherited) }))
     }
     // A face's first render in a process can differ slightly while its glyphs are first
     // rasterized.
@@ -239,8 +258,7 @@ struct WidgetInkContrastTests {
     // differently.
     let listing = SalahWidgetInkProbe(.hide)
     _ = try BaselineRenderer.png(
-      face.environment(\.salahWidgetInkProbe, listing).environment(\.colorScheme, scheme)
-        .environment(\._colorSchemeContrast, contrast))
+      view(listing, inherited: .init(red: 1, green: 0, blue: 1)), scale: scale)
     let elements = Self.merged(listing.elements)
     #expect(elements.count >= 2, "\(label): the probe must see the face's inks")
 
@@ -269,18 +287,17 @@ struct WidgetInkContrastTests {
     }
     var tallies = [Tally](repeating: Tally(), count: elements.count)
     var unclaimed = 0
+    // The paint covers each frame and this margin around it, so a glyph pixel in it has the
+    // element's paint over it.
     let margin = SalahWidgetInkProbe.paintMargin
     let areas = elements.map { $0.frame.insetBy(dx: -margin, dy: -margin) }
     for offset in stride(from: 0, to: shown.bytes.count, by: 4) {
       let deltas = (0..<3).map { Int(shown.bytes[offset + $0]) - Int(hidden.bytes[offset + $0]) }
       guard deltas.contains(where: { abs($0) > 2 }) else { continue }
       let point = CGPoint(
-        x: Double(offset / 4 % shown.width) + 0.5, y: Double(offset / 4 / shown.width) + 0.5)
-      var owners = areas.indices.filter { areas[$0].contains(point) }
-      if owners.isEmpty {
-        // A swash or diacritic can reach a little further, as Arabic's do.
-        owners = areas.indices.filter { areas[$0].insetBy(dx: -3, dy: -3).contains(point) }
-      }
+        x: (Double(offset / 4 % shown.width) + 0.5) / Double(scale),
+        y: (Double(offset / 4 / shown.width) + 0.5) / Double(scale))
+      let owners = areas.indices.filter { areas[$0].contains(point) }
       guard owners.count == 1, let owner = owners.first else {
         if owners.isEmpty { unclaimed += 1 }
         continue
@@ -288,13 +305,14 @@ struct WidgetInkContrastTests {
       tallies[owner].pixels += 1
       tallies[owner].lowest = min(
         tallies[owner].lowest, Self.contrast(painted.bytes, over: hidden.bytes, at: offset))
-      // How much of the painted ink this glyph pixel reaches, in its strongest channel.
+      // How much of the painted ink this glyph pixel reaches: its lowest share over the
+      // channels the ink moves, so an ink of another color can't pass on one channel.
       let inks = (0..<3).map { Int(painted.bytes[offset + $0]) - Int(hidden.bytes[offset + $0]) }
-      if let channel = inks.indices.max(by: { abs(inks[$0]) < abs(inks[$1]) }),
-        abs(inks[channel]) >= 24
-      {
-        tallies[owner].coverage = max(
-          tallies[owner].coverage, Double(deltas[channel]) / Double(inks[channel]))
+      let shares = (0..<3).filter { abs(inks[$0]) >= 24 }.map {
+        Double(deltas[$0]) / Double(inks[$0])
+      }
+      if let share = shares.min() {
+        tallies[owner].coverage = max(tallies[owner].coverage, share)
       }
     }
     #expect(unclaimed == 0, "\(label): \(unclaimed) glyph pixels outside every inked frame")
@@ -304,14 +322,140 @@ struct WidgetInkContrastTests {
       let floor = element.ink.opacity < 1 ? Self.passedRowFloor : element.ink.minimumContrast
       #expect(tally.pixels > 4, "\(name): the element's glyphs must show")
       #expect(tally.lowest >= floor, "\(name): \(tally.lowest), needs \(floor)")
-      // At one pixel per point a small glyph's strongest pixel reaches 67% of its ink or
-      // more (a dash), a larger one's 90%; dimming between the ink and its glyphs stays below.
-      let coverage = tally.pixels >= 100 ? 0.9 : 0.6
-      #expect(
-        tally.coverage >= coverage, "\(name): glyphs reach \(tally.coverage) of the ink")
+      if checksCoverage {
+        #expect(
+          tally.coverage >= Self.glyphCoverage,
+          "\(name): glyphs reach \(tally.coverage) of the ink")
+      }
       print(
         "widget-ink-contrast \(name): \(String(format: "%.2f", tally.lowest)) (\(tally.pixels) px, coverage \(String(format: "%.2f", tally.coverage)))"
       )
+    }
+  }
+
+  /// Nothing between an ink and its glyphs dims or recolors them. At three pixels per point
+  /// every glyph's strokes cover whole pixels, so its fullest pixel reaches the ink it
+  /// resolves to in every channel the ink moves. Layout doesn't depend on the theme, so
+  /// Nocturne in light and dark covers every element: each face and size in English, and
+  /// the medium and large sizes in Arabic.
+  @Test func glyphsReachTheirInk() throws {
+    for language in [Baseline.Language.en, .ar] {
+      let run = Run(
+        name: "nocturne", theme: .nocturne, language: language,
+        sizes: language == .en ? [.small, .medium, .large] : [.medium, .large])
+      try AppLanguageScope.with(BaselinePipeline.appLanguage(language)) {
+        for scheme in run.schemes {
+          for face in Face.allCases where face != .setupNeeded || language == .en {
+            for size in run.sizes {
+              try measure(
+                view(face, size: size, run: run),
+                label: "coverage \(language.rawValue) \(scheme) \(face) \(size)",
+                scheme: scheme, contrast: .standard, scale: 3, checksCoverage: true)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /// The inked elements of a face, as it draws them.
+  private func elements(_ face: AnyView, scheme: ColorScheme) throws
+    -> [SalahWidgetInkProbe.Element]
+  {
+    let probe = SalahWidgetInkProbe(.show)
+    _ = try BaselineRenderer.stablePNG {
+      face.environment(\.salahWidgetInkProbe, probe).environment(\.colorScheme, scheme)
+    }
+    return Self.merged(probe.elements)
+  }
+
+  /// A state's color stays itself where the surface under it allows: each ink moves only as
+  /// far as its own surface needs. Solving every ink against the hardest point of the whole
+  /// face would bleach these, on the dark large count-up faces in Nocturne.
+  @Test func stateColorsKeepTheirHue() throws {
+    let run = Run(name: "nocturne", theme: .nocturne)
+    let countUp = try elements(view(.countUp, size: .large, run: run), scheme: .dark)
+    let green = SalahWidgetTone.prayerDark
+    // The count-up on the large card keeps the green exactly.
+    let timer = try #require(
+      countUp.first {
+        $0.ink.source == .tone(.playingPrayerAudio) && $0.ink.tintOpacity == SalahWidgetTint.card
+      })
+    #expect(timer.color == green, "\(Self.describe(timer))")
+    // The Now badge on the card stays green.
+    let badge = try #require(
+      countUp.first {
+        $0.ink.source == .tone(.playingPrayerAudio) && $0.ink.tintOpacity > SalahWidgetTint.card
+      })
+    try Self.expectHue(of: badge, like: green, saturation: 0.45)
+    // The next prayer's name stays blue.
+    let next = try #require(
+      countUp.first { $0.ink.source == .tone(.normal) && !$0.ink.isGlyph && $0.frame.minX < 100 })
+    try Self.expectHue(of: next, like: SalahWidgetTheme.nocturne.dark.primary, saturation: 0.7)
+    // On the count-up face with an imminent next prayer, that prayer's name stays red.
+    let imminent = try elements(view(.countUpImminent, size: .large, run: run), scheme: .dark)
+    let isha = try #require(
+      imminent.first {
+        $0.ink.source == .tone(.imminent) && !$0.ink.isGlyph && $0.frame.minX < 100
+      })
+    try Self.expectHue(of: isha, like: SalahWidgetTone.imminentDark, saturation: 0.6)
+  }
+
+  private static func expectHue(
+    of element: SalahWidgetInkProbe.Element, like expected: ThemeColor, saturation: Double
+  ) throws {
+    let color = try #require(element.color, "\(describe(element))")
+    let (hue, chroma) = hueAndSaturation(color)
+    let (expectedHue, _) = hueAndSaturation(expected)
+    let apart = min(abs(hue - expectedHue), 360 - abs(hue - expectedHue))
+    #expect(apart <= 10, "\(describe(element)): hue \(hue), expected \(expectedHue)")
+    #expect(chroma >= saturation, "\(describe(element)): saturation \(chroma)")
+  }
+
+  /// HSV hue in degrees and saturation.
+  private static func hueAndSaturation(_ color: ThemeColor) -> (Double, Double) {
+    let r = color.red
+    let g = color.green
+    let b = color.blue
+    let high = max(r, g, b)
+    let low = min(r, g, b)
+    let range = high - low
+    guard range > 0 else { return (0, 0) }
+    var hue: Double
+    switch high {
+    case r: hue = (g - b) / range
+    case g: hue = (b - r) / range + 2
+    default: hue = (r - g) / range + 4
+    }
+    hue = (hue * 60).truncatingRemainder(dividingBy: 360)
+    return (hue < 0 ? hue + 360 : hue, range / high)
+  }
+
+  /// In the widget extension, the container background is drawn in the system's direction,
+  /// outside the face's own: an Arabic face can sit over a left-to-right backdrop, or an
+  /// English one over a right-to-left backdrop, with its glows mirrored. Each ink resolves
+  /// against the backdrop as drawn and holds the same floors.
+  @Test(arguments: [true, false])
+  func facesHoldOverABackdropInTheOtherDirection(_ faceIsRightToLeft: Bool) throws {
+    let language: Baseline.Language = faceIsRightToLeft ? .ar : .en
+    try AppLanguageScope.with(BaselinePipeline.appLanguage(language)) {
+      for theme in SalahWidgetTheme.allPresets {
+        for scheme in [ColorScheme.light, .dark] {
+          for state in [SpecState.idle, .imminent, .countUp, .endOfDay, .playingPreReminder] {
+            for size in [SalahWidgetSize.small, .medium, .large] {
+              var display = BaselinePipeline.display(for: state, language: language)
+              display.settings.theme = theme
+              try measure(
+                AnyView(
+                  MixedDirectionFace(
+                    display: display, size: size, faceIsRightToLeft: faceIsRightToLeft)),
+                label:
+                  "mixed \(theme.id) \(language.rawValue) \(scheme) \(state.rawValue) \(size)",
+                scheme: scheme, contrast: .standard)
+            }
+          }
+        }
+      }
     }
   }
 
@@ -370,6 +514,99 @@ struct WidgetInkContrastTests {
         blue: Double(bytes[offset + 2]) / 255)
     }
     return ThemeColor.contrastRatio(color(painted), color(surface))
+  }
+}
+
+/// A face drawn as the widget extension's shell draws it when the face's direction differs
+/// from the system's: the content in its own direction and locale, the backdrop in the other
+/// direction, with the backdrop the inks resolve against saying so.
+private struct MixedDirectionFace: View {
+  let display: SalahDisplay
+  let size: SalahWidgetSize
+  let faceIsRightToLeft: Bool
+  @Environment(\.colorScheme) private var scheme
+
+  var body: some View {
+    let colors = display.theme.colors(for: scheme)
+    let point = size.desktopPointSize
+    content
+      .environment(\.locale, display.locale)
+      .environment(\.layoutDirection, faceIsRightToLeft ? .rightToLeft : .leftToRight)
+      .environment(
+        \.salahWidgetBackdrop,
+        SalahWidgetBackdrop(
+          colors: colors, tone: display.backgroundTone, size: point,
+          isRightToLeft: !faceIsRightToLeft)
+      )
+      .frame(width: point.width, height: point.height)
+      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
+      .background { SalahWidgetBackground(tone: display.backgroundTone, colors: colors) }
+      .environment(\.layoutDirection, faceIsRightToLeft ? .leftToRight : .rightToLeft)
+      .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+  }
+
+  @ViewBuilder
+  private var content: some View {
+    switch display.widgetFace {
+    case .stop: WidgetStopContent(display: display, size: size)
+    case .unavailable:
+      WidgetMessageContent(
+        systemImage: "exclamationmark.triangle",
+        message: Text(verbatim: display.labels.timesUnavailable))
+    case .schedule: WidgetContentView(display: display, size: size)
+    }
+  }
+}
+
+/// `salahInk` keeps text's layout: wrapping text wraps, and single-line text sits, exactly as
+/// the same text styled directly.
+@Suite("Widget inks keep text's layout")
+struct WidgetInkLayoutTests {
+  init() { TestEnvironment.configure() }
+
+  /// Text, and widths of the face it's centered in, at which a copy laid out again at its
+  /// own size broke its lines differently.
+  static let wrapping: [(String, Double)] = [
+    ("Prayer times aren\u{2019}t available for this location.", 141.5),
+    ("Heure de la prochaine prière indisponible", 96.5),
+  ]
+
+  @Test func textLaysOutAsStyledDirectly() throws {
+    for (text, width) in Self.wrapping {
+      for scheme in [ColorScheme.light, .dark] {
+        for wraps in [true, false] {
+          func face(inked: Bool) -> some View {
+            let label = Text(verbatim: text)
+              .font(.callout.weight(.medium))
+              .multilineTextAlignment(.center)
+              .lineLimit(wraps ? nil : 1)
+              .minimumScaleFactor(0.8)
+            let ink = wraps ? SalahWidgetInk.primary.wrapping : .primary
+            // As `WidgetMessageContent` lays out its message, in a face `width` wide.
+            return VStack(spacing: 10) {
+              if inked { label.salahInk(ink) } else { label.foregroundStyle(Color.primary) }
+            }
+            .padding()
+            .frame(width: width, height: 158)
+            .environment(
+              \.salahWidgetBackdrop,
+              SalahWidgetBackdrop(
+                colors: SalahWidgetTheme.nocturne.colors(for: scheme), tone: .normal,
+                size: CGSize(width: width, height: 158), isRightToLeft: false)
+            )
+            .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
+            .background(scheme == .dark ? Color.black : Color.white)
+            .environment(\.colorScheme, scheme)
+          }
+          let inked = try BaselineRenderer.stablePNG { face(inked: true) }
+          let direct = try BaselineRenderer.stablePNG { face(inked: false) }
+          let result = try #require(PixelComparison.compare(inked, to: direct))
+          #expect(
+            result.differingPixels == 0,
+            "\(text) at \(width) pt, \(scheme), wraps \(wraps): \(result)")
+        }
+      }
+    }
   }
 }
 

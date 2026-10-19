@@ -80,7 +80,7 @@ nonisolated struct SalahWidgetBackdrop: Equatable, Sendable {
 
   /// How far past an element's frame its surface is sampled, in points, for glyphs whose
   /// antialiasing reaches past the frame.
-  static let sampleMargin = 3.0
+  static let sampleMargin = 4.0
 
   /// The point of the backdrop under `frame` where an ink is hardest to read: the lightest
   /// in dark, the darkest in light.
@@ -204,6 +204,10 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
   /// The opacity of that tint, with any tints stacked under it (`SalahWidgetTint`).
   var tintOpacity = 0.0
   var opacity = 1.0
+  /// Text that can wrap onto more lines. It resolves against the whole face rather than its
+  /// own frame, so it's drawn once, in place, and wraps exactly as styled text does: a copy
+  /// laid out again at its own size could break its lines differently.
+  var wraps = false
 
   static let primary = SalahWidgetInk(source: .primary)
   static let secondary = SalahWidgetInk(source: .secondary)
@@ -224,6 +228,13 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
     var ink = self
     ink.tint = tone
     ink.tintOpacity = tone == nil ? 0 : opacity
+    return ink
+  }
+
+  /// The same ink, for text that can wrap onto more lines.
+  var wrapping: SalahWidgetInk {
+    var ink = self
+    ink.wraps = true
     return ink
   }
 
@@ -333,6 +344,40 @@ private nonisolated struct SalahInkModifier: ViewModifier {
   @Environment(\.salahWidgetInkProbe) private var probe
 
   func body(content: Content) -> some View {
+    if ink.wraps {
+      wrapped(content)
+    } else {
+      placed(content)
+    }
+  }
+
+  /// Text that can wrap, drawn in place in an ink that holds anywhere on the face.
+  @ViewBuilder
+  private func wrapped(_ content: Content) -> some View {
+    let resolved = ink.resolved(
+      on: backdrop, in: nil, scheme: scheme, contrast: contrast, renderingMode: renderingMode)
+    if let probe {
+      content
+        .foregroundStyle(resolved.style)
+        .opacity(probe.mode == .show ? 1 : 0)
+        .overlay {
+          GeometryReader { proxy in
+            let frame = proxy.frame(in: .named(SalahWidgetBackdrop.coordinateSpace))
+            if probe.record(ink, in: frame, color: resolved.color) == .paint {
+              Rectangle().fill(resolved.style).padding(-SalahWidgetInkProbe.paintMargin)
+            }
+          }
+        }
+    } else {
+      content.foregroundStyle(resolved.style)
+    }
+  }
+
+  /// The view laid out as usual, hidden, with a copy in an overlay that reads its frame and
+  /// draws in the ink resolved there. The copy is proposed the view's own size, so a view
+  /// whose layout depends on its proposal beyond that, such as wrapping text, should use
+  /// `wrapping`.
+  private func placed(_ content: Content) -> some View {
     content
       .hidden()
       .accessibilityHidden(true)
@@ -384,7 +429,7 @@ nonisolated final class SalahWidgetInkProbe: @unchecked Sendable {
   }
 
   /// How far past its frame `paint` draws an element, in points.
-  static let paintMargin = 3.0
+  static let paintMargin = SalahWidgetBackdrop.sampleMargin
 
   let mode: Mode
   private let lock = NSLock()

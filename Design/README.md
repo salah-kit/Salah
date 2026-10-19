@@ -308,7 +308,9 @@ glow in the state's color from the bottom-trailing corner, and draw every text a
 through `SalahWidgetInk` (`Shared/WidgetUI/SalahWidgetInk.swift`). In full color:
 
 - Each ink is checked against the hardest point of the sky, its glows and the tint under it,
-  within the ink's own frame and 3 pt around it. The tints are a large row's state fill, the
+  within the ink's own frame and 4 pt around it. Text that can wrap onto more lines (a
+  face's message, the unknown next prayer) is checked against the whole face instead, so
+  it's drawn once and wraps as styled text does. The tints are a large row's state fill, the
   large focus card and the Now badge's capsule, at each fill's strongest end, stacked where
   they overlap (`SalahWidgetTint`; the badge on the large count-up card is 36%). The bare sky
   counts too, since a gradient fill fades and a light tint lightens.
@@ -340,8 +342,12 @@ the focus when the next prayer is unknown and a day with missing prayers, in eve
 the presets in light and dark, custom themes at the edge of the Appearance tab's check and
 with near-white and near-black primaries, with and without Increase Contrast, in English;
 and the medium and large sizes of the presets in Arabic, right to left, in standard
-contrast. It also fails on text drawn without an ink, and on a layer that dims an ink's
-glyphs below the ink it resolves to.
+contrast; and the presets' faces over a backdrop drawn in the other direction, as the
+widget extension's container background can be. It fails on text drawn without an ink, and,
+rendering Nocturne at three pixels per point, on any glyph whose fullest pixel doesn't reach
+90% of its ink in every channel the ink moves, such as one dimmed or recolored inside the
+inked view. It also checks that the count-up, the Now badge, the next prayer and an imminent
+prayer keep their hue on the dark large count-up faces.
 
 ## Symbols
 

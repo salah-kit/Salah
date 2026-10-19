@@ -268,7 +268,7 @@ enum BaselineRenderer {
   }
 
   /// ImageRenderer at a fixed scale, encoded as PNG.
-  static func png(_ view: some View) throws -> Data {
+  static func png(_ view: some View, scale: Int = scale) throws -> Data {
     let renderer = ImageRenderer(content: view)
     renderer.scale = CGFloat(scale)
     guard let image = renderer.cgImage else { throw RenderFailed() }
@@ -281,10 +281,10 @@ enum BaselineRenderer {
   /// Renders until two renders in a row are identical and returns that image. The
   /// first render of a face in a process can differ slightly while glyphs and
   /// symbols are first rasterized; every later render matches.
-  static func stablePNG(_ view: () throws -> some View) throws -> Data {
-    var previous = try png(view())
+  static func stablePNG(scale: Int = scale, _ view: () throws -> some View) throws -> Data {
+    var previous = try png(view(), scale: scale)
     for _ in 1..<4 {
-      let next = try png(view())
+      let next = try png(view(), scale: scale)
       if next == previous { return next }
       previous = next
     }
