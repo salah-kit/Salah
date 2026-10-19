@@ -25,6 +25,8 @@ All notable changes to this project are documented here. The format follows
   - The Ramadan Isha footer writes its 120 minutes in the language's digits, as the rest of
     the app does.
 - Name the time zone's pop-up in Settings → Location for VoiceOver, which read only the zone.
+- Name the menu-bar dropdown for VoiceOver in the selected app language
+  ([#14](https://github.com/salah-kit/Salah/issues/14)).
 - Draw the version line under the Settings sidebar and the menu bar preview's caption in the
   secondary label colour; they had too little contrast.
 - Group the Appearance preview's rows for VoiceOver, in a group named "Preview".

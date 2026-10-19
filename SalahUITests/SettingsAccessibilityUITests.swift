@@ -79,12 +79,10 @@ final class SettingsAccessibilityUITests: XCTestCase {
     statusItem.click()
     XCTAssertTrue(
       app.buttons["Quit Salah"].waitForExistence(timeout: 10), app.windows.debugDescription)
-    let dropdown = app.windows.containing(
-      NSPredicate(
-        format: "elementType == %d AND label == %@", XCUIElement.ElementType.button.rawValue,
-        "Quit Salah")
-    ).firstMatch
-    XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.windows.debugDescription)
+    // SwiftUI exposes the MenuBarExtra's panel as a dialog, without a Window node.
+    let dropdown = app.dialogs.containing(.button, identifier: "Quit Salah").firstMatch
+    XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.dialogs.debugDescription)
+    XCTAssertEqual(dropdown.title, "Salah")
     report(try audit(app, in: "the menu-bar dropdown", window: dropdown, preview: nil))
   }
 

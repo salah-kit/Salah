@@ -11,6 +11,7 @@
 		01C343C2B2B40F4F2E0FBC82 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		01D8B6E95751D5DB2F3D2F20 /* ReachabilityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */; };
 		0265E172DCFC63E0FA95E567 /* SalahWidgetDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C0AB68BAB5CD64A695C9A /* SalahWidgetDesignSystem.swift */; };
+		044D6547BD33DB22ECEDAFB8 /* WindowTitleSetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */; };
 		050A8765832930123F3090C3 /* ReachabilityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */; };
 		0688A63C84C48354D878A6FC /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C27B824CF1B9C5D41E580EA /* LocationManager.swift */; };
 		0B49448DDC43B4F7173BF173 /* PrayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C680F7787ED544F2D480E5F /* PrayerManager.swift */; };
@@ -93,6 +94,7 @@
 		5A5BF993197384F6D5BEBF46 /* Preferences+Mirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */; };
 		5BB6B368DD7D09598F975312 /* MenuLiveCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C91D0346BB9B137F6DBA2C /* MenuLiveCountdown.swift */; };
 		5D1D857355FC195B9C915B6A /* MenuHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3852BBDB7E322EF2ABBAB3 /* MenuHeroCard.swift */; };
+		5D3FB9A45AE6B935988AB6C1 /* WindowTitleSetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */; };
 		5D6E8D1C9CFFA0CD0F45AC64 /* LanguagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */; };
 		5D7667E3FBC255A481CCFF50 /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
 		5D85DB7AAA550AABCA954081 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB737BA897DB588818B580D2 /* SettingsView.swift */; };
@@ -383,6 +385,7 @@
 		A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
 		A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownView.swift; sourceTree = "<group>"; };
 		A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityUITests.swift; sourceTree = "<group>"; };
+		A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowTitleSetter.swift; sourceTree = "<group>"; };
 		AB09C03A424F943C26D488DE /* PrayerAlertCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertCoordinator.swift; sourceTree = "<group>"; };
 		ABA58A6BEAC64F188DCC199F /* BaselineIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineIndex.swift; sourceTree = "<group>"; };
 		AD80627E90B010963831E2FF /* LocationNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotifications.swift; sourceTree = "<group>"; };
@@ -759,6 +762,7 @@
 				C6AA0132B344E5E89BD675F3 /* AppSupportActions.swift */,
 				3FD6738C76E5D3804685D784 /* DebugOptions.swift */,
 				2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */,
+				A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1269,6 +1273,7 @@
 				97A4C921D7151D75E078F9F4 /* WidgetPlaybackGapTests.swift in Sources */,
 				390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */,
 				7CA5E2F449BD638FD2AC06AC /* WidgetTimelineTests.swift in Sources */,
+				5D3FB9A45AE6B935988AB6C1 /* WindowTitleSetter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1346,6 +1351,7 @@
 				6C712DB2519F6910E5BF091D /* StopSalahAudioIntent.swift in Sources */,
 				85EB9C3CAACE4F4E54A2645E /* WidgetMirror.swift in Sources */,
 				725CFDC1316EC033E2CF2B14 /* WidgetPreviewContainer.swift in Sources */,
+				044D6547BD33DB22ECEDAFB8 /* WindowTitleSetter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
