@@ -6,21 +6,24 @@ import SwiftUI
 struct WindowTitleSetter: NSViewRepresentable {
   let title: String
 
-  func makeNSView(context: Context) -> NSView {
-    let view = NSView(frame: .zero)
-    apply(to: view)
+  func makeNSView(context: Context) -> TitleView {
+    let view = TitleView(frame: .zero)
+    view.title = title
     return view
   }
 
-  func updateNSView(_ nsView: NSView, context: Context) {
-    apply(to: nsView)
+  func updateNSView(_ nsView: TitleView, context: Context) {
+    nsView.title = title
   }
 
-  private func apply(to view: NSView) {
-    // The view is attached to its owning window on the next run-loop pass.
-    let title = title
-    DispatchQueue.main.async {
-      view.window?.title = title
+  final class TitleView: NSView {
+    var title = "" {
+      didSet { window?.title = title }
+    }
+
+    override func viewDidMoveToWindow() {
+      super.viewDidMoveToWindow()
+      window?.title = title
     }
   }
 }

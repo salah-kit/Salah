@@ -209,6 +209,11 @@ final class VoiceOverSpeechUITests: XCTestCase {
     let dropdown = app.dialogs.containing(.button, identifier: language.quit).firstMatch
     XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.dialogs.debugDescription)
     XCTAssertEqual(dropdown.title, language.code == "ar" ? "صلاة" : "Salah")
+    app.typeKey(.escape, modifierFlags: [])
+    XCTAssertTrue(quit.waitForNonExistence(timeout: 10))
+    statusItem.click()
+    XCTAssertTrue(quit.waitForExistence(timeout: 10))
+    XCTAssertEqual(dropdown.title, language.code == "ar" ? "صلاة" : "Salah")
     app.activate()
     let isOpen: @MainActor () -> Bool = { app.state == .runningForeground && quit.exists }
     XCTAssertTrue(isOpen(), "The dropdown closed, or Salah isn't in front.")
