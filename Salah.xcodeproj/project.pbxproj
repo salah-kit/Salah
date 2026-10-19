@@ -23,6 +23,7 @@
 		17A60654AB0FD41FAD07B400 /* SalahWidgetContentViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE99AB4EB5102E80B7DCFE94 /* SalahWidgetContentViews.swift */; };
 		17E905FE2AB6C9B06D7E0F7F /* SalahWidgetTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEF13225DB44C5D49BC5229 /* SalahWidgetTimeline.swift */; };
 		1842FDF77351E2D11D4887C0 /* SalahWidgetConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD961191847B459803C37A27 /* SalahWidgetConstants.swift */; };
+		18D6A35753E9DC68488F9CA0 /* SalahWidgetInk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */; };
 		1AE3C47B12A5526EA785CFE8 /* Adhan-Fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBB0F867FFC2EA5013746B10 /* Adhan-Fajr.mp3 */; };
 		1BD3A6E4834851F2E4C72CF1 /* NotificationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BEF191A1AC3CC459F76A3F /* NotificationsTab.swift */; };
 		1C0755173BA8B58B6285B4ED /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = C29C8EA95CAA56606EB0A30C /* SalahCalculation */; };
@@ -108,6 +109,7 @@
 		6577CB72B4C5B03F2A07E3B5 /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = 2E3C6C5BF64AE9C7B53F1B08 /* SalahCalculation */; };
 		65B397444F56392019C9B9E9 /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = DF9B1803FD57BD3BD576DCA0 /* SalahCore */; };
 		668343B350317D95134AD06E /* SalahWidgetTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEF13225DB44C5D49BC5229 /* SalahWidgetTimeline.swift */; };
+		67EF2FD7FFB508A491EBFB3C /* SalahWidgetInk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */; };
 		6A1A223EF0321A34611C4683 /* TestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232BCFB180F83294F5E3E373 /* TestEnvironment.swift */; };
 		6B624B8B5D9FBC52E22631A9 /* CalculationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B782277B15B49EBB7F63F /* CalculationTab.swift */; };
 		6B79905BFE642F54D75A15B7 /* InlineNoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52A400F1902D63656AE733 /* InlineNoticeLabel.swift */; };
@@ -197,6 +199,7 @@
 		B7B012B57629E0FCE2E1D645 /* LanguagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */; };
 		B8723D00C08774ED4A2E8DC2 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C4D45ACF670852D66F36C6 /* Preferences.swift */; };
 		B9A842C82E9803F172368A56 /* LocationSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E811762213EA0827DFD2C8E /* LocationSearchService.swift */; };
+		BB4A1B6D6BE9644C74DB1B1E /* SalahWidgetInk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */; };
 		BB749F0752A4E0C20D3611A0 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0098093F6B7E49436BFA96DA /* AppLog.swift */; };
 		BC28FCA83A9826FC6B99C95C /* SettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9213152201FE010BF167CD /* SettingsTab.swift */; };
 		BC617A1806E357E5F51F6597 /* MenuBarChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E600131ED4FAF7AF7D19859 /* MenuBarChrome.swift */; };
@@ -232,6 +235,7 @@
 		E20DCCF791E19E380CF060DE /* IdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */; };
 		E313E873D22E117142CB64AD /* PrayerKind+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AFAAA3EE69676FBDF48432 /* PrayerKind+Settings.swift */; };
 		E3496061C9C503F715A1C5E4 /* SalahPlayback+Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CD928BAA1A94A472FF97BB /* SalahPlayback+Audio.swift */; };
+		E387D9BD4D48ACB4C2CBA207 /* SalahWidgetInk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */; };
 		E3C737F31AE195EC8D98C787 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B96E3F5DB244E89AA6C8AA21 /* PrivacyInfo.xcprivacy */; };
 		E4D1CC0D1F34AAF7ECC85941 /* SalahWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E61E71AFF940C3AF83D8B2 /* SalahWidgetsBundle.swift */; };
 		E81EE1CFB949A05E4182D0A6 /* SalahWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0623A8755AF9D8667A573 /* SalahWidgetModels.swift */; };
@@ -239,6 +243,7 @@
 		E992F574BE00602768045000 /* MenuBarPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D6EDF019EACB924BC6CA07 /* MenuBarPreview.swift */; };
 		EAC2A6B5A328E846263FE157 /* FailureCategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */; };
 		EB27306288986758EFDEAFBB /* SalahPrayerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28837E4AF194675AAF562303 /* SalahPrayerSource.swift */; };
+		EFCF3C1EA288DAD9BC657100 /* WidgetInkContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7347EA58EEA56FE82029605D /* WidgetInkContrastTests.swift */; };
 		F0BEA4E604B5B0DF0757F2C7 /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
 		F5EE41E3AECFAB16C863B5A2 /* LocationNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD80627E90B010963831E2FF /* LocationNotifications.swift */; };
 		F61E9732058C323293F0792E /* AppFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A855F46C7172EFE3F0658 /* AppFailure.swift */; };
@@ -338,6 +343,7 @@
 		3FD6738C76E5D3804685D784 /* DebugOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOptions.swift; sourceTree = "<group>"; };
 		44AFAAA3EE69676FBDF48432 /* PrayerKind+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrayerKind+Settings.swift"; sourceTree = "<group>"; };
 		4684DDFE610DED57ECEE7F0D /* SalahWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SalahWidgetsExtension.entitlements; sourceTree = "<group>"; };
+		488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetInk.swift; sourceTree = "<group>"; };
 		4C1C0AB68BAB5CD64A695C9A /* SalahWidgetDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetDesignSystem.swift; sourceTree = "<group>"; };
 		4D9FF051711D26787B8D5BE4 /* PreferenceStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStorageTests.swift; sourceTree = "<group>"; };
 		4E811762213EA0827DFD2C8E /* LocationSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchService.swift; sourceTree = "<group>"; };
@@ -363,6 +369,7 @@
 		6F7FDC206871EA9045D3E864 /* SoundPickerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPickerRow.swift; sourceTree = "<group>"; };
 		70354F24024F5ADE9ADBECAB /* MenuBarDropdownPreviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownPreviews.swift; sourceTree = "<group>"; };
 		7113CEB3E1FD05C888D9142A /* WidgetTimelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimelineTests.swift; sourceTree = "<group>"; };
+		7347EA58EEA56FE82029605D /* WidgetInkContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetInkContrastTests.swift; sourceTree = "<group>"; };
 		7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePicker.swift; sourceTree = "<group>"; };
 		7850779C111D56324DA71023 /* AdjustmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentRow.swift; sourceTree = "<group>"; };
 		7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Makkah.mp3"; sourceTree = "<group>"; };
@@ -545,6 +552,7 @@
 				673022020738DE0866339503 /* SmallTextContrastTests.swift */,
 				646444C8D7F539850A7433B7 /* TestEnvironmentTests.swift */,
 				2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */,
+				7347EA58EEA56FE82029605D /* WidgetInkContrastTests.swift */,
 				3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */,
 				7113CEB3E1FD05C888D9142A /* WidgetTimelineTests.swift */,
 				752322D6EA6B1EFD43229337 /* Support */,
@@ -675,6 +683,7 @@
 			children = (
 				CE99AB4EB5102E80B7DCFE94 /* SalahWidgetContentViews.swift */,
 				4C1C0AB68BAB5CD64A695C9A /* SalahWidgetDesignSystem.swift */,
+				488FAA7BC352F84CCFBA105A /* SalahWidgetInk.swift */,
 				E7C634A7268CC7285888357F /* SalahWidgetTheme.swift */,
 			);
 			path = WidgetUI;
@@ -1154,6 +1163,7 @@
 				DC35817A059EBFB80B4230D6 /* SalahWidgetConstants.swift in Sources */,
 				888285E6D7168DE65A26C975 /* SalahWidgetContentViews.swift in Sources */,
 				53C49FC44479668716284BC2 /* SalahWidgetDesignSystem.swift in Sources */,
+				18D6A35753E9DC68488F9CA0 /* SalahWidgetInk.swift in Sources */,
 				47A3837CDD3FD5BD2C7A5D39 /* SalahWidgetModels.swift in Sources */,
 				94E05F5B05233716BF42C36C /* SalahWidgetTheme.swift in Sources */,
 				17E905FE2AB6C9B06D7E0F7F /* SalahWidgetTimeline.swift in Sources */,
@@ -1240,6 +1250,7 @@
 				63C6B941776C99E334589338 /* SalahWidgetConstants.swift in Sources */,
 				28B1CC90E07E6127CC065152 /* SalahWidgetContentViews.swift in Sources */,
 				594574A8CB027F50C9A60214 /* SalahWidgetDesignSystem.swift in Sources */,
+				E387D9BD4D48ACB4C2CBA207 /* SalahWidgetInk.swift in Sources */,
 				E81EE1CFB949A05E4182D0A6 /* SalahWidgetModels.swift in Sources */,
 				85F867F39C1CE46F8A69E170 /* SalahWidgetTheme.swift in Sources */,
 				8F9BF658C95D8A27B0ABC5D8 /* SalahWidgetTimeline.swift in Sources */,
@@ -1253,6 +1264,7 @@
 				6A1A223EF0321A34611C4683 /* TestEnvironment.swift in Sources */,
 				77927B216CA942CF0F875B28 /* TestEnvironmentTests.swift in Sources */,
 				A3E9254042D4DC662FE2AAA0 /* VisualBaselineTests.swift in Sources */,
+				EFCF3C1EA288DAD9BC657100 /* WidgetInkContrastTests.swift in Sources */,
 				29F34932700B35016BA0D47C /* WidgetMirror.swift in Sources */,
 				97A4C921D7151D75E078F9F4 /* WidgetPlaybackGapTests.swift in Sources */,
 				390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */,
@@ -1323,6 +1335,7 @@
 				1842FDF77351E2D11D4887C0 /* SalahWidgetConstants.swift in Sources */,
 				17A55D6686A37ECCCFA9CBA8 /* SalahWidgetContentViews.swift in Sources */,
 				9FE75A299CEBB9AF1D5A40C9 /* SalahWidgetDesignSystem.swift in Sources */,
+				BB4A1B6D6BE9644C74DB1B1E /* SalahWidgetInk.swift in Sources */,
 				3D554C9CBF55F65F663D37E5 /* SalahWidgetModels.swift in Sources */,
 				248CAEDAF7F8C4B1F8B90109 /* SalahWidgetTheme.swift in Sources */,
 				45D577F96572ABA354F87E47 /* SalahWidgetTimeline.swift in Sources */,
@@ -1360,6 +1373,7 @@
 				A543685B721E57F245DC7FBA /* SalahWidgetConstants.swift in Sources */,
 				17A60654AB0FD41FAD07B400 /* SalahWidgetContentViews.swift in Sources */,
 				0265E172DCFC63E0FA95E567 /* SalahWidgetDesignSystem.swift in Sources */,
+				67EF2FD7FFB508A491EBFB3C /* SalahWidgetInk.swift in Sources */,
 				F7F023DA2E68D9359BD3276F /* SalahWidgetModels.swift in Sources */,
 				4EDC9E68B5854D4B221EB942 /* SalahWidgetTheme.swift in Sources */,
 				668343B350317D95134AD06E /* SalahWidgetTimeline.swift in Sources */,

@@ -125,8 +125,14 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// - contrast of text the window's edge or scrolling cuts off, which the audit measures
   ///   against whatever covers it. The test doesn't scroll, so rows below a pane's first
   ///   screen aren't measured;
-  /// - contrast in the Appearance preview, which draws the widget in the chosen theme. Its
-  ///   rows, passed ones dimmed, are #35.
+  /// - contrast of the text in the Appearance preview, which draws the widget on its themed
+  ///   gradient and glows. The audit reports every text element of the preview, upcoming rows
+  ///   included, so the test can't tell a real failure there from one it would report anyway.
+  ///   `WidgetInkContrastTests` (SalahTests) covers that text instead: it draws the same views
+  ///   in every widget state and size, for every preset and for custom themes, in light and
+  ///   dark, and measures each ink against the pixels under its glyphs. It holds text to
+  ///   4.5:1, glyphs to 3:1, and passed rows, which dim by design, to the 1.9:1 floor
+  ///   `Design/README.md` (Widgets) documents.
   @MainActor
   private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
@@ -151,7 +157,7 @@ final class SettingsAccessibilityUITests: XCTestCase {
     {
       return true
     }
-    if let preview, preview.contains(frame) { return true }
+    if let preview, type == .staticText, preview.contains(frame) { return true }
     return false
   }
 

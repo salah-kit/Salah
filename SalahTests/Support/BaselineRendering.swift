@@ -202,27 +202,23 @@ struct WidgetShellMessage: View {
 
   @Environment(\.colorScheme) private var scheme
 
-  /// `WidgetPreviewContainer`'s macOS desktop widget point sizes.
-  static func pointSize(_ size: SalahWidgetSize) -> CGSize {
-    switch size {
-    case .small: CGSize(width: 158, height: 158)
-    case .medium: CGSize(width: 338, height: 158)
-    case .large: CGSize(width: 338, height: 354)
-    }
-  }
-
   var body: some View {
     let colors = theme.colors(for: scheme)
-    let point = Self.pointSize(size)
-    let face = WidgetMessageContent(
-      systemImage: systemImage, message: Text(verbatim: message), accent: colors.accent
-    )
-    .frame(width: point.width, height: point.height)
-    .background {
-      SalahWidgetBackground(tone: tone, colors: colors)
-    }
-    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-    .salahColorScheme(theme.forcedColorScheme)
+    let point = size.desktopPointSize
+    let face = WidgetMessageContent(systemImage: systemImage, message: Text(verbatim: message))
+      .environment(
+        \.salahWidgetBackdrop,
+        SalahWidgetBackdrop(
+          colors: colors, tone: tone, size: point,
+          isRightToLeft: locale?.language.characterDirection == .rightToLeft)
+      )
+      .frame(width: point.width, height: point.height)
+      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
+      .background {
+        SalahWidgetBackground(tone: tone, colors: colors)
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+      .salahColorScheme(theme.forcedColorScheme)
     if let locale {
       face
         .environment(\.locale, locale)
@@ -272,7 +268,7 @@ enum BaselineRenderer {
   }
 
   /// ImageRenderer at a fixed scale, encoded as PNG.
-  static func png(_ view: some View) throws -> Data {
+  static func png(_ view: some View, scale: Int = scale) throws -> Data {
     let renderer = ImageRenderer(content: view)
     renderer.scale = CGFloat(scale)
     guard let image = renderer.cgImage else { throw RenderFailed() }
@@ -285,10 +281,10 @@ enum BaselineRenderer {
   /// Renders until two renders in a row are identical and returns that image. The
   /// first render of a face in a process can differ slightly while glyphs and
   /// symbols are first rasterized; every later render matches.
-  static func stablePNG(_ view: () throws -> some View) throws -> Data {
-    var previous = try png(view())
+  static func stablePNG(scale: Int = scale, _ view: () throws -> some View) throws -> Data {
+    var previous = try png(view(), scale: scale)
     for _ in 1..<4 {
-      let next = try png(view())
+      let next = try png(view(), scale: scale)
       if next == previous { return next }
       previous = next
     }

@@ -12,6 +12,20 @@ nonisolated enum SalahWidgetSize: Sendable, Hashable {
   case large
 }
 
+nonisolated extension SalahWidgetSize {
+  /// The macOS desktop widget's size in points, which the in-app preview draws at.
+  var desktopPointSize: CGSize {
+    switch self {
+    case .small: CGSize(width: 158, height: 158)
+    case .medium: CGSize(width: 338, height: 158)
+    case .large: CGSize(width: 338, height: 354)
+    }
+  }
+
+  /// The margin between a face's edge and its content, in points.
+  static let contentMargin = 14.0
+}
+
 /// A theme palette resolved to concrete SwiftUI `Color`s for one appearance.
 nonisolated struct SalahWidgetColors: Sendable {
   var accent: Color
@@ -23,6 +37,8 @@ nonisolated struct SalahWidgetColors: Sendable {
   var backgroundBottom: Color
   var glow: Color
   var isDark: Bool
+  /// The palette these colors come from, for contrast math.
+  var palette: SalahWidgetPalette
 }
 
 nonisolated extension SalahWidgetTheme {
@@ -42,7 +58,8 @@ nonisolated extension SalahWidgetTheme {
       backgroundTop: p.backgroundTop.color,
       backgroundBottom: p.backgroundBottom.color,
       glow: p.glow.color,
-      isDark: dark
+      isDark: dark,
+      palette: p
     )
   }
 
@@ -78,34 +95,84 @@ nonisolated extension SalahWidgetTone {
   // dark and a light variant so they keep contrast on every background base. The
   // dark variants are the bright night-backdrop values; the light variants are
   // deepened to stay legible on cream / sand / white.
-  static let imminentDark = Color(.sRGB, red: 1.00, green: 0.27, blue: 0.23)  // red
-  static let imminentLight = Color(.sRGB, red: 0.80, green: 0.12, blue: 0.10)
-  static let preReminderDark = Color(.sRGB, red: 1.00, green: 0.62, blue: 0.04)  // orange
-  static let preReminderLight = Color(.sRGB, red: 0.78, green: 0.42, blue: 0.00)
-  static let prayerDark = Color(.sRGB, red: 0.20, green: 0.84, blue: 0.29)  // green
-  static let prayerLight = Color(.sRGB, red: 0.10, green: 0.52, blue: 0.22)
-  static let postReminderDark = Color(.sRGB, red: 0.75, green: 0.35, blue: 0.95)  // purple
-  static let postReminderLight = Color(.sRGB, red: 0.54, green: 0.20, blue: 0.74)
+  static let imminentDark = ThemeColor(1.00, 0.27, 0.23)  // red
+  static let imminentLight = ThemeColor(0.80, 0.12, 0.10)
+  static let preReminderDark = ThemeColor(1.00, 0.62, 0.04)  // orange
+  static let preReminderLight = ThemeColor(0.78, 0.42, 0.00)
+  static let prayerDark = ThemeColor(0.20, 0.84, 0.29)  // green
+  static let prayerLight = ThemeColor(0.10, 0.52, 0.22)
+  static let postReminderDark = ThemeColor(0.75, 0.35, 0.95)  // purple
+  static let postReminderLight = ThemeColor(0.54, 0.20, 0.74)
+  /// SwiftUI's `.secondary` on macOS 27, which the silent tone draws with: white at 55% in
+  /// dark and black at 50% in light, and 70% and 76% with Increase Contrast. Only the
+  /// contrast math uses these values.
+  static let silentDark = ThemeColor(1, 1, 1, 0.55)
+  static let silentLight = ThemeColor(0, 0, 0, 0.50)
+  static let silentDarkIncreased = ThemeColor(1, 1, 1, 0.70)
+  static let silentLightIncreased = ThemeColor(0, 0, 0, 0.76)
 
   /// The adhan / count-up "now" green for the given appearance - used directly
   /// for the count-up badge and current row.
   static func prayerColor(_ colors: SalahWidgetColors) -> Color {
-    colors.isDark ? prayerDark : prayerLight
+    SalahWidgetTone.playingPrayerAudio.components(palette: colors.palette, isDark: colors.isDark)
+      .color
   }
 
   /// The render color for this tone. Only `.normal` is themeable (it is the calm
   /// "primary" / next-prayer color); the functional tones are fixed per-appearance.
+  /// Glows, tints and strokes use it as it is; text and glyphs draw it through
+  /// `SalahWidgetInk`, which keeps their contrast.
   func color(_ colors: SalahWidgetColors) -> Color {
     switch self {
     case .normal: return colors.primary
-    case .imminent: return colors.isDark ? Self.imminentDark : Self.imminentLight
-    case .playingPreReminderAudio:
-      return colors.isDark ? Self.preReminderDark : Self.preReminderLight
-    case .playingPrayerAudio: return colors.isDark ? Self.prayerDark : Self.prayerLight
-    case .playingPostReminderAudio:
-      return colors.isDark ? Self.postReminderDark : Self.postReminderLight
     case .silent: return .secondary
+    default: return components(palette: colors.palette, isDark: colors.isDark).color
     }
+  }
+
+  /// The tone's color as components, for contrast math. Only the silent tone, which is the
+  /// system's secondary ink, changes with Increase Contrast.
+  func components(
+    palette: SalahWidgetPalette, isDark: Bool, contrast: ColorSchemeContrast = .standard
+  ) -> ThemeColor {
+    switch self {
+    case .normal: palette.primary
+    case .imminent: isDark ? Self.imminentDark : Self.imminentLight
+    case .playingPreReminderAudio: isDark ? Self.preReminderDark : Self.preReminderLight
+    case .playingPrayerAudio: isDark ? Self.prayerDark : Self.prayerLight
+    case .playingPostReminderAudio: isDark ? Self.postReminderDark : Self.postReminderLight
+    case .silent:
+      switch (isDark, contrast == .increased) {
+      case (true, false): Self.silentDark
+      case (false, false): Self.silentLight
+      case (true, true): Self.silentDarkIncreased
+      case (false, true): Self.silentLightIncreased
+      }
+    }
+  }
+}
+
+// MARK: - Tints
+
+/// The opacities of the tone-colored fills text sits on. The views draw with them, and
+/// `SalahWidgetInk` checks text against them (at each gradient's strongest end).
+nonisolated enum SalahWidgetTint {
+  /// The next prayer's large row: a gradient from leading to trailing.
+  static let nextRow = 0.22
+  static let nextRowTrailing = 0.08
+  /// The playing prayer's large row.
+  static let activeRow = 0.20
+  /// The large row of the prayer that just started.
+  static let currentRow = 0.12
+  /// The large focus card: a gradient from top-leading to bottom-trailing.
+  static let card = 0.24
+  static let cardTrailing = 0.07
+  /// The Now badge's capsule.
+  static let badge = 0.16
+
+  /// The opacity of a tint at `top` over one at `bottom`, in the same color.
+  static func stacked(_ top: Double, over bottom: Double) -> Double {
+    1 - (1 - top) * (1 - bottom)
   }
 }
 
@@ -131,20 +198,27 @@ nonisolated struct SalahWidgetBackground: View {
       // the system asks to reduce transparency.
       if !reduceTransparency {
         RadialGradient(
-          colors: [tone.color(colors).opacity(dark ? 0.40 : 0.18), .clear],
+          colors: [tone.color(colors).opacity(Self.toneGlowOpacity(isDark: dark)), .clear],
           center: .bottomTrailing,
           startRadius: 0,
-          endRadius: 320
+          endRadius: Self.toneGlowRadius
         )
         RadialGradient(
-          colors: [colors.glow.opacity(dark ? 0.13 : 0.08), .clear],
+          colors: [colors.glow.opacity(Self.accentGlowOpacity(isDark: dark)), .clear],
           center: .topLeading,
           startRadius: 0,
-          endRadius: 240
+          endRadius: Self.accentGlowRadius
         )
       }
     }
   }
+
+  /// The tone glow's opacity at the bottom-trailing corner, and how far it reaches.
+  static func toneGlowOpacity(isDark: Bool) -> Double { isDark ? 0.40 : 0.18 }
+  static let toneGlowRadius = 320.0
+  /// The accent glow's opacity at the top-leading corner, and how far it reaches.
+  static func accentGlowOpacity(isDark: Bool) -> Double { isDark ? 0.13 : 0.08 }
+  static let accentGlowRadius = 240.0
 }
 
 /// Thin vertical accent hairline dividing the medium widget's two columns.
@@ -169,13 +243,19 @@ nonisolated struct EyebrowLabel: View {
   let text: String
   let accent: Color
   var muted: Bool = false
+  /// The widget's ink, in place of `accent`; the menu bar passes none.
+  var ink: SalahWidgetInk? = nil
 
   var body: some View {
-    Text(verbatim: text)
+    let label = Text(verbatim: text)
       .font(.caption2.weight(.semibold))
       .textCase(.uppercase)
-      .foregroundStyle(muted ? Color.secondary : accent)
       .lineLimit(1)
+    if let ink {
+      label.salahInk(ink)
+    } else {
+      label.foregroundStyle(muted ? Color.secondary : accent)
+    }
   }
 }
 
@@ -184,17 +264,30 @@ nonisolated struct EyebrowLabel: View {
 nonisolated struct InlineBadge: View {
   let text: String
   let tint: Color
+  /// The widget's ink for the text, in place of `tint`; the menu bar passes none.
+  var ink: SalahWidgetInk? = nil
 
   var body: some View {
-    Text(verbatim: text)
-      .font(.caption2.weight(.semibold))
-      .textCase(.uppercase)
-      .padding(.horizontal, 7)
-      .padding(.vertical, 2)
-      .background(Capsule().fill(tint.opacity(0.16)))
-      .overlay(Capsule().strokeBorder(tint.opacity(0.5), lineWidth: 0.75))
-      .foregroundStyle(tint)
-      .lineLimit(1)
+    inked(
+      Text(verbatim: text)
+        .font(.caption2.weight(.semibold))
+        .textCase(.uppercase)
+    )
+    .padding(.horizontal, 7)
+    .padding(.vertical, 2)
+    .background(Capsule().fill(tint.opacity(SalahWidgetTint.badge)))
+    .overlay(Capsule().strokeBorder(tint.opacity(0.5), lineWidth: 0.75))
+    .foregroundStyle(tint)
+    .lineLimit(1)
+  }
+
+  @ViewBuilder
+  private func inked(_ label: some View) -> some View {
+    if let ink {
+      label.salahInk(ink)
+    } else {
+      label
+    }
   }
 }
 
@@ -206,7 +299,10 @@ nonisolated extension View {
       RoundedRectangle(cornerRadius: 18, style: .continuous)
         .fill(
           LinearGradient(
-            colors: [toneColor.opacity(0.24), toneColor.opacity(0.07)],
+            colors: [
+              toneColor.opacity(SalahWidgetTint.card),
+              toneColor.opacity(SalahWidgetTint.cardTrailing),
+            ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
           )

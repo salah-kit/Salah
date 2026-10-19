@@ -96,30 +96,27 @@ struct SalahPrayerWidgetEntryView: View {
     switch entry.content {
     case .setupNeeded:
       // No settings yet, so no language or theme: the device's language, Nocturne.
-      SalahWidgetShell(theme: .nocturne, tone: .normal) { colors in
-        WidgetMessageContent(
-          systemImage: "moon.stars", message: Text("widget.openToSetUp"), accent: colors.accent
-        )
-        .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
+      SalahWidgetShell(theme: .nocturne, tone: .normal) { _ in
+        WidgetMessageContent(systemImage: "moon.stars", message: Text("widget.openToSetUp"))
+          .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
       }
     case .expired(let settings):
       // The timeline ran out before WidgetKit asked for another: no countdown that
       // would be stale. Opening the app asks WidgetKit for a new timeline.
-      SalahWidgetShell(settings: settings) { colors in
+      SalahWidgetShell(settings: settings) { _ in
         WidgetMessageContent(
           systemImage: "arrow.clockwise",
-          message: Text(verbatim: settings.labels.openToUpdate),
-          accent: colors.accent
+          message: Text(verbatim: settings.labels.openToUpdate)
         )
         .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
       }
     case .schedule(let display):
-      SalahWidgetShell(display: display) { colors in
+      SalahWidgetShell(display: display) { _ in
         switch display.widgetFace {
         case .stop:
           // While audio plays, the entire widget is the Stop control, even when
           // the surrounding schedule is incomplete. It has no Settings link.
-          if let stop = WidgetStopContent(display: display, size: size, colors: colors) {
+          if let stop = WidgetStopContent(display: display, size: size) {
             Button(intent: StopSalahAudioIntent()) { stop }
               .buttonStyle(.plain)
               .invalidatableContent()
@@ -128,7 +125,7 @@ struct SalahPrayerWidgetEntryView: View {
           // The schedule knows nothing usable at this moment.
           WidgetMessageContent(
             systemImage: "exclamationmark.triangle",
-            message: Text(verbatim: display.labels.timesUnavailable), accent: colors.accent
+            message: Text(verbatim: display.labels.timesUnavailable)
           )
           .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
         case .schedule:
@@ -151,6 +148,8 @@ private struct SalahWidgetShell<Content: View>: View {
   var isRightToLeft = false
   @ViewBuilder let content: (SalahWidgetColors) -> Content
   @Environment(\.colorScheme) private var scheme
+  /// The direction the container background is drawn in: the system's, not the face's.
+  @Environment(\.layoutDirection) private var backgroundDirection
 
   init(
     theme: SalahWidgetTheme, tone: SalahWidgetTone, locale: Locale? = nil,
@@ -183,13 +182,24 @@ private struct SalahWidgetShell<Content: View>: View {
 
   var body: some View {
     let colors = theme.colors(for: scheme)
-    localized(content(colors))
-      // Honor a pinned theme appearance (Always Dark/Light) so the system colors
-      // match the themed background; .system passes through unchanged.
-      .salahColorScheme(theme.forcedColorScheme)
-      .containerBackground(for: .widget) {
-        SalahWidgetBackground(tone: tone, colors: colors)
-      }
+    // The face's size and coordinate space, which its inks resolve against.
+    GeometryReader { proxy in
+      localized(content(colors))
+        .environment(
+          \.salahWidgetBackdrop,
+          SalahWidgetBackdrop(
+            colors: colors, tone: tone, size: proxy.size,
+            isRightToLeft: backgroundDirection == .rightToLeft)
+        )
+        .frame(width: proxy.size.width, height: proxy.size.height)
+        .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
+    }
+    // Honor a pinned theme appearance (Always Dark/Light) so the system colors
+    // match the themed background; .system passes through unchanged.
+    .salahColorScheme(theme.forcedColorScheme)
+    .containerBackground(for: .widget) {
+      SalahWidgetBackground(tone: tone, colors: colors)
+    }
   }
 
   /// The face in the user's language and direction; the setup face keeps the
