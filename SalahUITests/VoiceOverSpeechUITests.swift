@@ -233,7 +233,8 @@ final class VoiceOverSpeechUITests: XCTestCase {
     }
     // Every item, from the dropdown's first to its last, the Quit button.
     let first = try XCTUnwrap(
-      try speech.previousToTheStart(), "VoiceOver said nothing at the dropdown's first item.")
+      try speech.previousToTheStart(),
+      "VoiceOver's first move back, toward the dropdown's first item, failed.\n\(speech.log)")
     let items = [first] + (try speech.rest(limit: 60))
     let end = Date()
     XCTAssertEqual(items.last, language.quitSpoken, speech.log)
@@ -540,7 +541,7 @@ final class Speech {
   /// test restarts it if a test turned it on in the last half hour, and otherwise skips, as
   /// it's the person's, leaving it as it is. It also skips on a Mac that isn't in English,
   /// as VoiceOver's own words, such as "selected" and "dimmed", are in the Mac's language,
-  /// and when VoiceOver doesn't turn on.
+  /// and when VoiceOver doesn't turn off to restart, or doesn't turn on.
   static func start(
     in test: XCTestCase, reading place: String,
     while isInPlace: @escaping @MainActor () -> Bool
@@ -563,9 +564,10 @@ final class Speech {
       test.add(attachment)
       let service = XCUIDevice.shared.voiceOverService
       if !speech.isOn {
-        // enable() gave up, and VoiceOver may still start: it's turned off if it does now.
-        // If it doesn't, the time stays set, so a test in the next half hour turns it off
-        // should it start later.
+        // VoiceOver didn't come on for the test: a stopped run's VoiceOver didn't turn off,
+        // or enable() gave up, and VoiceOver may still start. It's turned off if it's on now
+        // or comes on within 10 seconds. If it doesn't, the time stays set, so a test in the
+        // next half hour turns it off should it start later.
         let deadline = Date().addingTimeInterval(10)
         while !service.isEnabled, Date() < deadline { Thread.sleep(forTimeInterval: 0.5) }
         guard service.isEnabled else { return }
@@ -583,8 +585,16 @@ final class Speech {
       }
     }
     // VoiceOver a test left on would stay where it was: enable() does nothing to VoiceOver
-    // that's on.
-    if service.isEnabled { try? service.disable() }
+    // that's on. So it's turned off first, and the test skips if it doesn't turn off.
+    if service.isEnabled {
+      do {
+        try service.disable()
+      } catch {
+        throw XCTSkip(
+          "VoiceOver, which a test left on, didn't turn off to start again: "
+            + error.localizedDescription)
+      }
+    }
     do {
       try service.enable()
     } catch {
@@ -641,8 +651,10 @@ final class Speech {
   /// or it moved and hasn't spoken yet. That answer isn't kept. A second later, if VoiceOver
   /// still hasn't said anything new, the move is tried once more. If it has, which may also
   /// be another app's speech, it moves `back` and as `body` again, and keeps what it says
-  /// then: the item it's on, unless that's the one before, when it hadn't moved and moves
-  /// once more. (Past a group's last item, VoiceOver says the same thing at every try.)
+  /// then: the item it's on. When that's still the one before, it moves once more, though
+  /// VoiceOver may have been late again, which would skip an item. The transcript notes each
+  /// move tried once more. (Past a group's last item, VoiceOver says the same thing at every
+  /// try.)
   private func move(
     _ move: String, _ body: () throws -> XCUIVoiceOverService.Output,
     back: () throws -> XCUIVoiceOverService.Output
@@ -656,6 +668,7 @@ final class Speech {
       let again = try answer(move, body)
       if again != before { return try keep(move, again) }
     }
+    transcript.append("\(move) (said the same again; retried)")
     return try record(move, body)
   }
 
@@ -699,7 +712,8 @@ final class Speech {
   }
 
   /// Moves back to the group's first item, the same way, at most `limit` moves, and returns
-  /// what VoiceOver says there; `nil` when it said nothing on the way.
+  /// the last item kept on the way: the first item, unless a move fails before it; `nil`
+  /// when none was kept.
   func previousToTheStart(limit: Int = 40) throws -> String? {
     var last: String?
     var repeats = 0
@@ -716,7 +730,7 @@ final class Speech {
       last = said
       if repeats == 2 { break }
     }
-    return lastSaid
+    return last
   }
 
   /// Waits up to `timeout` seconds for VoiceOver to say something `match` accepts, and

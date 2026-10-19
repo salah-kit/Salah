@@ -138,8 +138,9 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahUITests -destination 'plat
 ```
 
 VoiceOver speaks aloud while these tests run and reads whichever app is in front, so leave
-the Mac alone, with Do Not Disturb on, until they end. If VoiceOver's welcome window is
-open, close it first: VoiceOver reads it instead of Salah. A test keeps only what VoiceOver
+the Mac alone, with Do Not Disturb on, until they end. If VoiceOver Quickstart, VoiceOver's
+welcome window, is open, close it first: VoiceOver reads it instead of Salah, and the tests
+fail with "VoiceOver didn't say anything in Settings". A test keeps only what VoiceOver
 says after its own moves in the window it reads, and, after a key press, the exact words it
 waits for; it fails at the first move after Salah leaves the front or that window closes.
 Speech VoiceOver makes for another app right after a move, such as a notification it reads
@@ -147,9 +148,19 @@ out, can still be kept. Each test turns VoiceOver off at its end. A run that sto
 or whose VoiceOver didn't turn on, leaves the time it turned VoiceOver on in the test
 runner's defaults: for half an hour after that, the tests take VoiceOver that's on as
 theirs, even one you turned on meanwhile, restart it, and turn it off at their end.
-Command-F5 turns it off too. When a test fails, Xcode keeps screenshots and a screen
-recording of the whole screen in the result bundle, so share its failure message and its
-"VoiceOver" attachment, not the bundle.
+Command-F5 turns it off too.
+
+When a test fails, Xcode keeps screenshots and a screen recording of the whole screen in
+the result bundle, so share its failure message and its "VoiceOver" attachment, not the
+bundle, and read both first: they can hold speech for another app. To get the attachment
+from a run on the command line, add `-resultBundlePath VoiceOver.xcresult` to the command
+above (xcodebuild won't write over a bundle that's already there), then export each
+test's "VoiceOver" text file; `VoiceOver/manifest.json` says which test each is from:
+
+```sh
+xcrun xcresulttool export attachments --path VoiceOver.xcresult --output-path VoiceOver \
+  --filter 'VoiceOver*'
+```
 
 ### Real-app tests
 
