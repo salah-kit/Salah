@@ -661,3 +661,129 @@ struct WidgetInkFallbackTests {
     }
   }
 }
+
+/// Accented and vibrant hosts derive the visible ink from the system hierarchy, so a
+/// theme's brightness must never make its focus text quieter than another prayer's text.
+@Suite("Widget inks in system rendering modes")
+struct WidgetInkRenderingModeTests {
+  init() { TestEnvironment.configure() }
+
+  @Test func textAndMarksUseTheSystemHierarchy() throws {
+    let tones: [SalahWidgetTone] = [
+      .normal, .imminent, .playingPreReminderAudio, .playingPrayerAudio,
+      .playingPostReminderAudio, .silent,
+    ]
+    let inks: [(name: String, ink: SalahWidgetInk, style: HierarchicalShapeStyle)] =
+      [
+        ("primary", .primary, .primary), ("secondary", .secondary, .secondary),
+        ("accent", .accent, .primary),
+      ] + tones.map { ($0.rawValue, .tone($0), .primary) }
+    for mode in [WidgetRenderingMode.accented, .vibrant] {
+      for scheme in [ColorScheme.light, .dark] {
+        for (name, base, textStyle) in inks {
+          for isGlyph in [false, true] {
+            for opacity in [1.0, 0.55] {
+              let ink = (isGlyph ? base.glyph : base).dimmed(opacity)
+              let resolved = ink.resolved(
+                on: nil, in: nil, scheme: scheme, contrast: .standard, renderingMode: mode)
+              let expected: HierarchicalShapeStyle =
+                isGlyph && name != "primary" ? .secondary : textStyle
+              let expectedStyle =
+                opacity == 1
+                ? AnyShapeStyle(expected) : AnyShapeStyle(expected.opacity(opacity))
+              let label = "\(mode) \(scheme) \(name) glyph=\(isGlyph) opacity=\(opacity)"
+              #expect(resolved.color == nil, "\(label): a system ink must not carry a theme color")
+              let actual = try render(resolved.style, scheme: scheme)
+              let reference = try render(expectedStyle, scheme: scheme)
+              let difference = try #require(PixelComparison.compare(actual, to: reference))
+              #expect(difference.differingPixels == 0, "\(label): \(difference)")
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /// Exercises the modifier's environment read as well as the resolver: WidgetKit's mode
+  /// must reach the ink that is actually drawn, including the overlay's copy of the text.
+  @Test func modifierReadsTheHostRenderingMode() throws {
+    for mode in [WidgetRenderingMode.accented, .vibrant] {
+      for scheme in [ColorScheme.light, .dark] {
+        func label() -> some View {
+          Text(verbatim: "Asr")
+            .font(.title3)
+        }
+        func face(inked: Bool) -> some View {
+          Group {
+            if inked {
+              label().salahInk(.tone(.normal))
+            } else {
+              label().foregroundStyle(.primary)
+            }
+          }
+          .frame(width: 100, height: 40)
+          .background(scheme == .dark ? Color.black : Color.white)
+          .environment(\.colorScheme, scheme)
+          .environment(\.widgetRenderingMode, mode)
+        }
+        let actual = try BaselineRenderer.stablePNG { face(inked: true) }
+        let reference = try BaselineRenderer.stablePNG { face(inked: false) }
+        let difference = try #require(PixelComparison.compare(actual, to: reference))
+        #expect(difference.differingPixels == 0, "\(mode) \(scheme): \(difference)")
+      }
+    }
+  }
+
+  /// The Now badge has a decorative tint outside its inked text. A system primary ink
+  /// must remain the system label there, rather than inherit that decorative color.
+  @Test func nowBadgeKeepsSystemTextIndependentOfItsTint() throws {
+    let tints: [(String, Color)] = [
+      ("black", .black), ("white", .white),
+      ("dark-green", Color(red: 0.03, green: 0.15, blue: 0.08)),
+    ]
+    for mode in [WidgetRenderingMode.accented, .vibrant] {
+      for scheme in [ColorScheme.light, .dark] {
+        for (name, tint) in tints {
+          func face(inked: Bool) -> some View {
+            Group {
+              if inked {
+                InlineBadge(
+                  text: "Now", tint: tint,
+                  ink: SalahWidgetInk.tone(.playingPrayerAudio).on(
+                    .playingPrayerAudio, opacity: SalahWidgetTint.badge))
+              } else {
+                Text(verbatim: "Now")
+                  .font(.caption2.weight(.semibold))
+                  .textCase(.uppercase)
+                  .foregroundStyle(Color.primary)
+                  .padding(.horizontal, 7)
+                  .padding(.vertical, 2)
+                  .background(Capsule().fill(tint.opacity(SalahWidgetTint.badge)))
+                  .overlay(Capsule().strokeBorder(tint.opacity(0.5), lineWidth: 0.75))
+                  .lineLimit(1)
+              }
+            }
+            .frame(width: 120, height: 40)
+            .background(scheme == .dark ? Color.black : Color.white)
+            .environment(\.colorScheme, scheme)
+            .environment(\.widgetRenderingMode, mode)
+          }
+          let actual = try BaselineRenderer.stablePNG { face(inked: true) }
+          let reference = try BaselineRenderer.stablePNG { face(inked: false) }
+          let difference = try #require(PixelComparison.compare(actual, to: reference))
+          #expect(difference.differingPixels == 0, "\(mode) \(scheme) \(name): \(difference)")
+        }
+      }
+    }
+  }
+
+  private func render(_ style: AnyShapeStyle, scheme: ColorScheme) throws -> Data {
+    try BaselineRenderer.stablePNG {
+      Rectangle().fill(style)
+        .frame(width: 20, height: 20)
+        .foregroundStyle(Color(red: 0.7, green: 0.3, blue: 0.6))
+        .background(scheme == .dark ? Color.black : Color.white)
+        .environment(\.colorScheme, scheme)
+    }
+  }
+}

@@ -35,6 +35,9 @@ All notable changes to this project are documented here. The format follows
   keeps its hue, and lightens or darkens only as far as the sky, glow and tint under that
   text need for 4.5:1; on the presets it was as low as 2.3:1. Passed prayers stay dimmed, but
   with Increase Contrast they draw undimmed in the secondary label.
+- Keep the next prayer prominent in accented and vibrant widgets by using the system's
+  text hierarchy and making its name the accent element
+  ([#38](https://github.com/salah-kit/Salah/issues/38)).
 - Read the count-up after a prayer in each language's word order. On the small widget's
   line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish
