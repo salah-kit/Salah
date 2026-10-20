@@ -11,6 +11,7 @@ struct SmallTextContrastTests {
   init() { TestEnvironment.configure() }
 
   @Test func smallAccentInkPassesComposedSurfaces() throws {
+    let point = SalahWidgetSize.large.desktopPointSize
     for theme in SalahWidgetTheme.allPresets {
       for scheme in [ColorScheme.light, .dark] {
         // The public trait is read-only; the local SwiftUI interface exposes its
@@ -31,7 +32,7 @@ struct SmallTextContrastTests {
                   EyebrowLabel(text: "NEXT PRAYER", accent: colors.accentText)
                     .opacity(showsText ? 1 : 0)
                     .padding(12)
-                    .frame(width: 306, alignment: .leading)
+                    .frame(width: point.width - 32, alignment: .leading)
                     .background {
                       if hero {
                         Color.clear.salahHeroCard(
@@ -42,7 +43,7 @@ struct SmallTextContrastTests {
                   Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 16)
-                .frame(width: 338, height: 354)
+                .frame(width: point.width, height: point.height)
                 .background { SalahWidgetBackground(tone: tone, colors: colors) }
                 .overlay { if paintsInk { Rectangle().fill(colors.accentText) } }
                 .environment(\.colorScheme, scheme)
@@ -89,6 +90,7 @@ struct SmallTextContrastTests {
   }
 
   @Test func silentModeInkPassesItsComposedCapsule() throws {
+    let point = SalahWidgetSize.large.desktopPointSize
     for theme in SalahWidgetTheme.allPresets {
       for scheme in [ColorScheme.light, .dark] {
         for contrast in [ColorSchemeContrast.standard, .increased] {
@@ -105,7 +107,7 @@ struct SmallTextContrastTests {
               }
               .padding(16)
             }
-            .frame(width: 338, height: 354)
+            .frame(width: point.width, height: point.height)
             .background { SalahWidgetBackground(tone: .silent, colors: colors) }
             .overlay { if paintsInk { Rectangle().fill(colors.accentText) } }
             .environment(\.colorScheme, scheme)

@@ -13,6 +13,27 @@ struct VisualBaselineTests {
 
   static let mode = BaselineMode.current
 
+  /// Native normal desktop frames measured on Mac14,10, macOS 27.0.1 (#28).
+  /// Check the rendered container, independently of the reference-size constants.
+  @Test func widgetPreviewsMatchMeasuredNormalDesktopFrames() throws {
+    let references: [(family: Baseline.Family, width: Int, height: Int)] = [
+      (.small, 164, 164), (.medium, 344, 164), (.large, 344, 344),
+    ]
+    for language in [Baseline.Language.en, .ar] {
+      for reference in references {
+        let baseline = Baseline(
+          surface: .widget, state: SpecState.idle.rawValue, family: reference.family,
+          language: language, appearance: .dark)
+        let png = try AppLanguageScope.with(BaselinePipeline.appLanguage(language)) {
+          try BaselineRenderer.stablePNG { try BaselinePipeline.view(for: baseline) }
+        }
+        let pixels = try #require(PixelComparison.rgba(png))
+        #expect(pixels.width == reference.width * BaselineRenderer.scale)
+        #expect(pixels.height == reference.height * BaselineRenderer.scale)
+      }
+    }
+  }
+
   /// Each run renders its own share (`Baseline.processLanguages`): the main run
   /// everything but the Arabic menu dropdown, the `-testLanguage ar` run only that.
   @Test(

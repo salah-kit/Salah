@@ -1,6 +1,6 @@
 import XCTest
 
-/// Names the notification volume and time-zone controls in the running app's accessibility
+/// Checks Settings controls and the Appearance preview in the running app's accessibility
 /// tree, and runs Xcode's accessibility audit on Settings and the menu-bar dropdown.
 final class SettingsAccessibilityUITests: XCTestCase {
   override func setUpWithError() throws {
@@ -16,6 +16,20 @@ final class SettingsAccessibilityUITests: XCTestCase {
   func testNotificationVolumeHasArabicAccessibleName() throws {
     try assertVolumeName(
       language: "arabic", code: "ar", pane: "التنبيهات", name: "مستوى الصوت")
+  }
+
+  @MainActor
+  func testAppearancePreviewUsesMeasuredDesktopHeightsInEnglish() throws {
+    try assertAppearancePreviewSizes(
+      language: "english", code: "en", pane: "Appearance", sizeLabel: "Size",
+      names: ["Small", "Medium", "Large"])
+  }
+
+  @MainActor
+  func testAppearancePreviewUsesMeasuredDesktopHeightsInArabic() throws {
+    try assertAppearancePreviewSizes(
+      language: "arabic", code: "ar", pane: "المظهر", sizeLabel: "الحجم",
+      names: ["صغير", "متوسط", "كبير"])
   }
 
   /// Xcode's accessibility audit finds nothing in what each Settings pane shows when it opens:
@@ -168,6 +182,119 @@ final class SettingsAccessibilityUITests: XCTestCase {
     attachment.lifetime = .keepAlways
     add(attachment)
     XCTAssertTrue(issues.isEmpty, issues.joined(separator: "\n\n"))
+  }
+
+  /// Switches the running Appearance pane through all three sizes. The preview's
+  /// accessibility container fills the form's width; only its height is the widget's
+  /// measured height. The rendered regression checks the exact widget width separately.
+  @MainActor
+  private func assertAppearancePreviewSizes(
+    language: String, code: String, pane: String, sizeLabel: String, names: [String]
+  ) throws {
+    let app = XCUIApplication()
+    var arguments = SalahUITests.quietLaunch
+    let languageIndex = try XCTUnwrap(arguments.firstIndex(of: "-salah.appLanguage"))
+    let systemLanguageIndex = try XCTUnwrap(arguments.firstIndex(of: "-AppleLanguages"))
+    arguments[languageIndex + 1] = language
+    arguments[systemLanguageIndex + 1] = "(\(code))"
+    app.launchArguments = arguments + ["-salah.debug.withoutSystemPrompts", "YES"]
+    app.open(try XCTUnwrap(URL(string: "salah://settings")))
+    addTeardownBlock { @MainActor in app.terminate() }
+
+    let settings = app.windows.firstMatch
+    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
+    let appearance = settings.buttons[pane]
+    XCTAssertTrue(appearance.waitForExistence(timeout: 10), settings.debugDescription)
+    appearance.click()
+
+    let sizes = settings.radioGroups[sizeLabel]
+    XCTAssertTrue(sizes.waitForExistence(timeout: 10), settings.debugDescription)
+    XCTAssertEqual(sizes.radioButtons.count, 3, sizes.debugDescription)
+    let preview = settings.descendants(matching: .any)["appearance.preview"]
+    XCTAssertTrue(preview.waitForExistence(timeout: 10), settings.debugDescription)
+    XCTAssertEqual(Self.isSelected(sizes.radioButtons[names[1]]), true)
+    let initialTextCount = preview.staticTexts.count
+    XCTAssertGreaterThan(initialTextCount, 0, preview.debugDescription)
+
+    var smallTextCount = 0
+    for (index, name) in names.enumerated() {
+      let segment = sizes.radioButtons[name]
+      XCTAssertTrue(segment.isEnabled, segment.debugDescription)
+      XCTAssertTrue(segment.isHittable, segment.debugDescription)
+      segment.click()
+      let height: CGFloat = index == 2 ? 344 : 164
+      let updated = Self.waitForAppearanceUpdate {
+        guard Self.isSelected(segment) == true, abs(preview.frame.height - height) <= 0.5
+        else { return false }
+        switch index {
+        case 0: return preview.staticTexts.count < initialTextCount
+        case 1: return preview.staticTexts.count > smallTextCount
+        default: return true
+        }
+      }
+      attachAppearancePreview(settings: settings, preview: preview, code: code, size: name)
+      XCTAssertTrue(updated, "The \(name) selection must update the preview's content and height")
+      XCTAssertEqual(preview.frame.height, height, accuracy: 0.5, preview.debugDescription)
+      for (otherIndex, otherName) in names.enumerated() {
+        XCTAssertEqual(
+          Self.isSelected(sizes.radioButtons[otherName]), otherIndex == index,
+          sizes.debugDescription)
+      }
+
+      let windowBounds = settings.frame.insetBy(dx: -0.5, dy: -0.5)
+      let previewBounds = preview.frame.insetBy(dx: -0.5, dy: -0.5)
+      XCTAssertTrue(windowBounds.contains(preview.frame), settings.debugDescription)
+      XCTAssertTrue(windowBounds.contains(sizes.frame), sizes.debugDescription)
+      let texts = preview.staticTexts.allElementsBoundByIndex
+      XCTAssertFalse(texts.isEmpty, preview.debugDescription)
+      for text in texts {
+        let frame = text.frame
+        XCTAssertGreaterThan(frame.width, 0, text.debugDescription)
+        XCTAssertGreaterThan(frame.height, 0, text.debugDescription)
+        XCTAssertTrue(previewBounds.contains(frame), text.debugDescription)
+        XCTAssertTrue(windowBounds.contains(frame), text.debugDescription)
+      }
+      if index == 0 { smallTextCount = texts.count }
+    }
+  }
+
+  @MainActor
+  private func attachAppearancePreview(
+    settings: XCUIElement, preview: XCUIElement, code: String, size: String
+  ) {
+    let screenshot = XCTAttachment(screenshot: settings.screenshot())
+    screenshot.name = "Appearance preview: \(code), \(size)"
+    screenshot.lifetime = .keepAlways
+    add(screenshot)
+    let tree = XCTAttachment(string: settings.debugDescription + "\n\n" + preview.debugDescription)
+    tree.name = "Appearance accessibility: \(code), \(size)"
+    tree.lifetime = .keepAlways
+    add(tree)
+  }
+
+  /// Native segmented controls report selection as either a number or its string form.
+  @MainActor
+  private static func isSelected(_ segment: XCUIElement) -> Bool? {
+    switch segment.value {
+    case let number as NSNumber: return number.boolValue
+    case let text as String:
+      switch text {
+      case "1": return true
+      case "0": return false
+      default: return nil
+      }
+    default: return nil
+    }
+  }
+
+  @MainActor
+  private static func waitForAppearanceUpdate(_ condition: () -> Bool) -> Bool {
+    let deadline = Date().addingTimeInterval(5)
+    repeat {
+      if condition() { return true }
+      Thread.sleep(forTimeInterval: 0.1)
+    } while Date() < deadline
+    return condition()
   }
 
   @MainActor

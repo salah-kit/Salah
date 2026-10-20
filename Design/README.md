@@ -282,6 +282,26 @@ own shadows; the elevation tokens are for custom floating views only.
 
 ### Widgets
 
+The Appearance preview uses normal desktop reference bounds measured on Mac14,10 with
+macOS 27.0.1 (26A434). The native widget takes its actual bounds from WidgetKit, so it can
+adapt to other hosts and presentation states. The [measurements report](https://github.com/salah-kit/Salah/issues/28#issuecomment-6288113668)
+records the captures, content and display configuration:
+
+| Mac reference surface and state | Size, pt |
+| --- | --- |
+| Desktop Small, normal | 164 × 164 |
+| Desktop Medium, normal | 344 × 164 |
+| Desktop Large, normal | 344 × 344 |
+| Temporary Dhuhr notification banner, unexpanded | 344 × 58 |
+| Banner icon image-element frame, including internal padding | 39 × 39 |
+
+The expanded Medium host boundary measured 352 × 172 pt in a separate state; it does not
+replace the normal reference. Notification height can vary with content. These measurements
+exclude exterior shadows and describe the observed host, OS and state, rather than universal
+system dimensions. Phone and watch references are independent. StandBy's 330 × 330 pt
+reference remains an estimate pending the physical iPhone measurement in
+[#28](https://github.com/salah-kit/Salah/issues/28).
+
 The Rendering tokens simulate WidgetKit's rendering modes in Figma. In code, put the sky in
 `containerBackground(for: .widget)` so the system can remove it, and mark the one accent
 element `.widgetAccentable()`. On watch faces, the time-of-day marks are accentable too: they

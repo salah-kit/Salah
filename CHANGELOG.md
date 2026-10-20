@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Draw the Appearance widget preview at the normal desktop sizes measured on macOS 27.0.1
+  ([#28](https://github.com/salah-kit/Salah/issues/28)).
 - Preserve a scheduled prayer notification while macOS is delivering it, so the app's
   simultaneous alert does not replace and cancel its banner.
 - Open Settings when a sandboxed app follows a `salah://settings` link.
