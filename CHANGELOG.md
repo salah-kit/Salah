@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Draw the Appearance widget preview at the normal desktop sizes measured on macOS 27.0.1
+  ([#28](https://github.com/salah-kit/Salah/issues/28)).
 - Keep menu-bar prayer names, times and countdowns readable on their themed backgrounds,
   including passed prayers and Increase Contrast.
 - Expose the menu-bar countdown and count-up as read-only accessible text while retaining

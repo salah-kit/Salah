@@ -13,12 +13,14 @@ nonisolated enum SalahWidgetSize: Sendable, Hashable {
 }
 
 nonisolated extension SalahWidgetSize {
-  /// The macOS desktop widget's size in points, which the in-app preview draws at.
+  /// Normal desktop reference sizes measured on Mac14,10 with macOS 27.0.1.
+  /// The in-app preview uses these bounds; the extension uses its host's actual size.
+  /// See Design/README.md and https://github.com/salah-kit/Salah/issues/28.
   var desktopPointSize: CGSize {
     switch self {
-    case .small: CGSize(width: 158, height: 158)
-    case .medium: CGSize(width: 338, height: 158)
-    case .large: CGSize(width: 338, height: 354)
+    case .small: CGSize(width: 164, height: 164)
+    case .medium: CGSize(width: 344, height: 164)
+    case .large: CGSize(width: 344, height: 344)
     }
   }
 

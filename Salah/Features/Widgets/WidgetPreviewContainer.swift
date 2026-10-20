@@ -1,12 +1,11 @@
 import SalahCore
 import SwiftUI
 
-/// Renders the real shared widget content at a faithful macOS point size,
-/// reproducing the system widget container: the same `SalahWidgetBackground`
-/// the extension installs via `.containerBackground`, clipped to a rounded
-/// rectangle. Because it reuses `WidgetContentView` + the shared background and
-/// resolves the theme the same way, the in-app preview and the installed widget
-/// cannot drift. Used by the Appearance tab, design verification and SalahTests.
+/// Renders the shared widget content at the measured normal desktop reference size.
+/// It uses the same `WidgetContentView`, theme resolution and `SalahWidgetBackground`
+/// as the extension, clipped to a rounded rectangle. The extension takes its actual
+/// bounds from WidgetKit; those can vary by host and state. Used by the Appearance
+/// tab, design verification and SalahTests.
 struct WidgetPreviewContainer: View {
   let display: SalahDisplay
   let size: SalahWidgetSize

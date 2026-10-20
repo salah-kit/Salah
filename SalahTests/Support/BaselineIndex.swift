@@ -133,7 +133,7 @@ enum BaselineIndex {
       "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `SalahWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off."
     )
     add(
-      "- Widget faces render in `WidgetPreviewContainer`, the app's reproduction of the macOS widget container (158×158, 338×158 and 338×354 points). The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
+      "- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)). The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
     )
     add("- The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.")
     add(
