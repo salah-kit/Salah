@@ -17,8 +17,9 @@ All notable changes to this project are documented here. The format follows
   including passed prayers and Increase Contrast.
 - Expose the menu-bar countdown and count-up as read-only accessible text while retaining
   the full duration in the selected language.
-- Preserve a scheduled prayer notification while macOS is delivering it, so the app's
-  simultaneous alert does not replace and cancel its banner.
+- Preserve a scheduled prayer notification while macOS is delivering it, including a
+  refresh after the app reports the alert, so it is neither withdrawn nor replaced.
+  Queued fallback notifications use the updated language and sound settings.
 - Open Settings when a sandboxed app follows a `salah://settings` link.
 - Show the banner for an alert the Mac slept through even when Salah's alert timer reports
   it before macOS reports the wake. The adhan played, but the banner was skipped and its
