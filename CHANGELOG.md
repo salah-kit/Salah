@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Preserve a scheduled prayer notification while macOS is delivering it, so the app's
+  simultaneous alert does not replace and cancel its banner.
 - Open Settings when a sandboxed app follows a `salah://settings` link.
 - Show the banner for an alert the Mac slept through even when Salah's alert timer reports
   it before macOS reports the wake. The adhan played, but the banner was skipped and its

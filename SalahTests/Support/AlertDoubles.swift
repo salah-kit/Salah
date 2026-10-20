@@ -99,18 +99,30 @@ nonisolated final class FakeNotificationCenter: PrayerNotificationCenter, @unche
   private var deliveredRecords: [DeliveredNotificationRecord] = []
   private var postedRequests: [UNNotificationRequest] = []
   private var log: [Call] = []
+  private let normalizePriority: Bool
+  private let rejectCalendarAdds: Bool
+  private var storedAfterCalendarAdd: (@Sendable (String) async -> Void)?
 
   /// A center with `status`, which `requestAuthorization` turns into `statusAfterRequest`.
   /// Immediate deliveries are dated at `time`, or now without one.
   init(
     status: UNAuthorizationStatus = .authorized,
     statusAfterRequest: UNAuthorizationStatus = .authorized,
-    time: TestInstant? = nil, pending: [UNNotificationRequest] = []
+    time: TestInstant? = nil, pending: [UNNotificationRequest] = [],
+    normalizePriority: Bool = false, rejectCalendarAdds: Bool = false
   ) {
     storedStatus = status
     storedStatusAfterRequest = statusAfterRequest
     self.time = time
     pendingRequests = pending
+    self.normalizePriority = normalizePriority
+    self.rejectCalendarAdds = rejectCalendarAdds
+  }
+
+  /// A controlled system-delivery transition after accepting a calendar request.
+  var afterCalendarAdd: (@Sendable (String) async -> Void)? {
+    get { lock.withLock { storedAfterCalendarAdd } }
+    set { lock.withLock { storedAfterCalendarAdd = newValue } }
   }
 
   /// The center's delegate, held weakly.
@@ -177,20 +189,39 @@ nonisolated final class FakeNotificationCenter: PrayerNotificationCenter, @unche
   }
 
   func add(_ request: UNNotificationRequest) async throws {
+    if request.trigger is UNCalendarNotificationTrigger, rejectCalendarAdds {
+      throw CalendarAddRejected()
+    }
+    let stored: UNNotificationRequest
+    if normalizePriority,
+      let content = request.content.mutableCopy() as? UNMutableNotificationContent
+    {
+      content.interruptionLevel = .active
+      content.relevanceScore = 0
+      stored = UNNotificationRequest(
+        identifier: request.identifier, content: content, trigger: request.trigger)
+    } else {
+      stored = request
+    }
     let date = time?.value ?? Date()
     lock.withLock {
       log.append(.add(request.identifier))
       pendingRequests.removeAll { $0.identifier == request.identifier }
       if request.trigger == nil {
-        postedRequests.append(request)
+        postedRequests.append(stored)
         deliveredRecords.removeAll { $0.identifier == request.identifier }
         deliveredRecords.append(
           DeliveredNotificationRecord(identifier: request.identifier, date: date))
       } else {
-        pendingRequests.append(request)
+        pendingRequests.append(stored)
       }
     }
+    if request.trigger is UNCalendarNotificationTrigger {
+      await afterCalendarAdd?(request.identifier)
+    }
   }
+
+  private struct CalendarAddRejected: Error {}
 
   func removePendingNotificationRequests(withIdentifiers identifiers: [String]) async {
     lock.withLock {
