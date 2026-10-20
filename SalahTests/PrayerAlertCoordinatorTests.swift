@@ -37,6 +37,9 @@ struct PrayerAlertCoordinatorTests {
       status: UNAuthorizationStatus = .authorized,
       statusAfterRequest: UNAuthorizationStatus = .authorized,
       pending: [UNNotificationRequest] = [],
+      normalizePriority: Bool = false,
+      rejectCalendarAdds: Bool = false,
+      beforeDueDecision: (@Sendable () async -> Void)? = nil,
       prepare: (Preferences) -> Void = { _ in }
     ) {
       var resolved = settings
@@ -49,9 +52,12 @@ struct PrayerAlertCoordinatorTests {
       clock = ManualAlertClock(now)
       center = FakeNotificationCenter(
         status: status, statusAfterRequest: statusAfterRequest, time: clock.instant,
-        pending: pending)
+        pending: pending, normalizePriority: normalizePriority,
+        rejectCalendarAdds: rejectCalendarAdds)
+      let instant = clock.instant
       coordinator = PrayerAlertCoordinator(
-        preferences: preferences, center: center, audio: audio, clock: clock)
+        preferences: preferences, center: center, audio: audio, clock: clock,
+        schedulerNow: { instant.value }, beforeDueDecision: beforeDueDecision)
     }
 
     /// `update(schedule:)` as the app calls it, then waits for the installation and any
@@ -292,10 +298,12 @@ struct PrayerAlertCoordinatorTests {
     #expect(silent.center.pending.allSatisfy { $0.content.sound == nil })
     #expect(loud.center.pending.contains { $0.content.sound == .default })
 
-    // Asr comes due with its request gone, so the coordinator posts it itself.
+    // A refresh deliberately removes the overdue native request before posting Asr itself.
+    let identifier = Self.identifier(.asr, .atTime)
     for harness in [silent, loud] {
-      harness.center.dropPending(Self.identifier(.asr, .atTime))
-      await harness.fire()
+      harness.clock.now = Self.asr.time.adding(seconds: 0.3)
+      await harness.update()
+      #expect(harness.center.calls.contains(.removePending([identifier])))
     }
     #expect(silent.audio.plays.isEmpty)
     #expect(silent.center.posted.map(\.identifier) == [Self.identifier(.asr, .atTime)])
@@ -439,20 +447,17 @@ struct PrayerAlertCoordinatorTests {
 
   // MARK: - Due alerts
 
-  /// At a fire time the coordinator posts a due alert whose request isn't pending, and
-  /// skips one the system still holds. It plays each alert's own sound: the before-
-  /// reminder's without a du'a, the adhan's with the du'a after it.
+  /// A reminder already due when planning starts isn't handed to the system: the app
+  /// posts it, then leaves the future adhan to its native request. Each plays its own sound.
   @Test func postsWhatTheSystemWontDeliverAndPlaysTheAlertsSound() async throws {
     let harness = Harness(
-      now: Fixture.date(13, 0),
+      now: Self.asr.time.adding(minutes: -10, seconds: 0.15),
       settings: [.asr: .alert(sound: .makkah, before: 10, beforeSound: .alafasy)])
     await harness.update()
     let beforeID = Self.identifier(.asr, .before)
     let atTimeID = Self.identifier(.asr, .atTime)
-    #expect(harness.pendingIdentifiers.contains(beforeID))
-    harness.center.dropPending(beforeID)
+    #expect(!harness.pendingIdentifiers.contains(beforeID))
 
-    await harness.fire()
     #expect(Self.isNear(harness.clock.now, Self.asr.time.adding(minutes: -10, seconds: 0.15)))
     let posted = try #require(harness.center.posted.first)
     #expect(harness.center.posted.count == 1)
@@ -501,6 +506,274 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.pendingIdentifiers.contains(Self.identifier(.asr, .atTime)))
     #expect(harness.center.posted.isEmpty)
     #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// The system can consume a request before its delivered-notifications query sees it.
+  /// Reposting the identifier in that interval replaces the notification in flight.
+  /// Priority normalization leaves full verification unconfirmed, but not the handoff.
+  @Test func anAcceptedAlertIsNotRepostedDuringSystemDelivery() async throws {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    let report = try #require(await harness.update())
+    let identifier = Self.identifier(.asr, .atTime)
+    let identity = try #require(
+      NotificationIdentity(
+        requestIdentifier: identifier, prefix: PrayerAlertCoordinator.identifierPrefix))
+    let pending = try #require(harness.center.pendingRequest(identifier))
+    #expect(report.confirmed.isEmpty)
+    #expect(report.failures[identity] == .unconfirmed)
+    #expect(pending.content.interruptionLevel == .active)
+    #expect(pending.content.relevanceScore == 0)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    harness.center.dropPending(identifier)
+    #expect(harness.center.delivered.isEmpty)
+    harness.center.forgetCalls()
+
+    await harness.fire()
+
+    #expect(harness.center.posted.isEmpty)
+    #expect(!harness.center.calls.contains(.add(identifier)))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// Holds one successful add open while the native request starts delivery.
+  actor ScheduledAddGate {
+    private var arrival: CheckedContinuation<Void, Never>?
+    private var blocked: CheckedContinuation<Void, Never>?
+
+    func pause() async {
+      await withCheckedContinuation {
+        blocked = $0
+        arrival?.resume()
+        arrival = nil
+      }
+    }
+
+    func waitUntilPaused() async {
+      if blocked != nil { return }
+      await withCheckedContinuation { arrival = $0 }
+    }
+
+    func release() {
+      blocked?.resume()
+      blocked = nil
+    }
+  }
+
+  /// An accepted add can cross its deadline before either installation read-back sees it.
+  /// The due handler waits for that installation without replacing the native delivery.
+  @Test func anInstallationCrossingTheDeadlineKeepsItsAcceptedHandoff() async throws {
+    let harness = Harness(
+      now: Self.asr.time.adding(seconds: -2), settings: [.asr: .alert(sound: .makkah)],
+      othersOff: true, normalizePriority: true)
+    let identifier = Self.identifier(.asr, .atTime)
+    let instant = harness.clock.instant
+    let center = harness.center
+    let due = Self.asr.time
+    let gate = ScheduledAddGate()
+    center.afterCalendarAdd = { added in
+      guard added == identifier else { return }
+      instant.value = due.addingTimeInterval(0.3)
+      center.dropPending(identifier)
+      await gate.pause()
+    }
+    defer { center.afterCalendarAdd = nil }
+    let installation = Task { await harness.update() }
+    await gate.waitUntilPaused()
+    harness.clock.fireLate()
+    await gate.release()
+    let report = try #require(await installation.value)
+    await harness.settle()
+
+    #expect(report.verifiedAt == due.adding(seconds: 0.3))
+    #expect(report.confirmed.isEmpty)
+    #expect(!harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.center.delivered.isEmpty)
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.center.calls.filter { $0 == .add(identifier) }.count == 1)
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A failed replacement leaves the prior native request alive, even if its priority
+  /// was normalized and full content verification cannot confirm it.
+  @Test func aFailedReplacementPreservesTheSurvivingNativeHandoff() async throws {
+    let seed = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    await seed.update()
+    let identifier = Self.identifier(.asr, .atTime)
+    let existing = try #require(seed.center.pendingRequest(identifier))
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      pending: [existing], rejectCalendarAdds: true)
+    let report = try #require(await harness.update())
+    #expect(report.confirmed.isEmpty)
+    #expect(!report.failures.isEmpty)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    harness.center.dropPending(identifier)
+    #expect(harness.center.delivered.isEmpty)
+
+    await harness.fire()
+
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A failed first add has no earlier native request to protect, so it needs fallback.
+  @Test func aRejectedFirstCalendarAddStillGetsImmediateDelivery() async throws {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      rejectCalendarAdds: true)
+    let report = try #require(await harness.update())
+    let identifier = Self.identifier(.asr, .atTime)
+    #expect(report.confirmed.isEmpty)
+    #expect(!report.failures.isEmpty)
+    #expect(harness.center.pending.isEmpty)
+
+    await harness.fire()
+
+    #expect(harness.center.posted.map(\.identifier) == [identifier])
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// An ordinary refresh can report the alert while native delivery is between queries.
+  /// The preceding handoff remains valid for the same enabled, on-time occurrence.
+  @Test func anOnTimeRefreshKeepsTheNativeDeliveryInFlight() async throws {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    await harness.update()
+    let identifier = Self.identifier(.asr, .atTime)
+    harness.center.dropPending(identifier)
+    #expect(harness.center.delivered.isEmpty)
+    harness.center.forgetCalls()
+    harness.clock.now = Self.asr.time.adding(seconds: 0.3)
+
+    await harness.update()
+
+    #expect(harness.center.posted.isEmpty)
+    #expect(!harness.center.calls.contains(.add(identifier)))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A refresh that actually removes the overdue native request must revoke its handoff
+  /// and post the on-time alert itself, rather than silently lose the notification.
+  @Test func anOnTimeRefreshRepostsAfterRemovingTheNativeRequest() async throws {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    await harness.update()
+    let identifier = Self.identifier(.asr, .atTime)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    harness.center.forgetCalls()
+    harness.clock.now = Self.asr.time.adding(seconds: 0.3)
+
+    await harness.update()
+
+    #expect(harness.center.calls.contains(.removePending([identifier])))
+    #expect(harness.center.posted.map(\.identifier) == [identifier])
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+  }
+
+  /// A queued notification decision can outlive the installation that first owned it.
+  /// The barrier models its existing suspension behind previous delivery work; the refresh
+  /// completes its actual native withdrawal before the decision is allowed to continue.
+  nonisolated enum QueuedRefresh: String, Sendable, CustomTestStringConvertible {
+    case unchanged, disabled, retimed
+
+    var testDescription: String { rawValue }
+  }
+
+  @Test(arguments: [QueuedRefresh.unchanged, .disabled, .retimed])
+  func aRefreshReconcilesADeliveryAlreadyWaiting(_ refresh: QueuedRefresh) async {
+    let gate = ScheduledAddGate()
+    let due = Fixture.time(.isha)
+    let harness = Harness(
+      now: Fixture.date(19, 0), settings: [.isha: .alert(sound: .makkah)], othersOff: true,
+      beforeDueDecision: { await gate.pause() })
+    await harness.update()
+    let identifier = Self.identifier(.isha, .atTime)
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    harness.center.forgetCalls()
+    harness.clock.now = due.adding(seconds: 0.3)
+    harness.clock.fireLate()
+    await gate.waitUntilPaused()
+    let queued = harness.coordinator.delivery
+    #expect(harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.audio.plays.map(\.request.context.event?.time) == [due])
+
+    let schedule: PrayerSchedule
+    switch refresh {
+    case .unchanged:
+      schedule = Fixture.schedule()
+    case .disabled:
+      harness.preferences.setConfig(.off, for: .isha)
+      schedule = Fixture.schedule()
+    case .retimed:
+      // The replacement is beyond catch-up, so it cannot legitimately emit another due
+      // alert or conceal resurrection of the old full occurrence in this regression.
+      schedule = Fixture.schedule(ishaAdjustment: -6)
+    }
+    harness.coordinator.update(schedule: schedule)
+    let installed = await harness.coordinator.installation?.value ?? nil
+    #expect(installed?.verifiedAt == due.adding(seconds: 0.3))
+    #expect(installed?.superseded == false)
+    #expect(
+      harness.center.calls.contains {
+        if case .removePending(let identifiers) = $0 { return identifiers.contains(identifier) }
+        return false
+      })
+    #expect(!harness.pendingIdentifiers.contains(identifier))
+    #expect(harness.center.delivered.isEmpty)
+    #expect(harness.center.posted.isEmpty)
+
+    await gate.release()
+    await queued?.value
+    await harness.settle()
+
+    let expected = refresh == .unchanged ? [identifier] : []
+    #expect(harness.center.posted.map(\.identifier) == expected)
+    #expect(harness.center.calls.filter { $0 == .add(identifier) }.count == expected.count)
+    #expect(harness.clock.now == due.adding(seconds: 0.3))
+    #expect(harness.audio.plays.map(\.request.resource.url) == [Self.makkah])
+    #expect(harness.audio.plays.map(\.request.context.event?.time) == [due])
+  }
+
+  /// Disabling an alert during an on-time refresh must not preserve its playback or
+  /// future native requests just because an earlier installation accepted it.
+  @Test func anOnTimeRefreshRespectsADisabledAlert() async {
+    let harness = Harness(
+      now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    await harness.update()
+    harness.clock.now = Self.asr.time.adding(seconds: 0.3)
+    harness.preferences.setConfig(.off, for: .asr)
+
+    await harness.update()
+
+    #expect(harness.center.pending.isEmpty)
+    #expect(harness.center.posted.isEmpty)
+    #expect(harness.audio.plays.isEmpty)
+  }
+
+  /// A changed fire date is a new occurrence even though the notification ID is stable.
+  @Test func aRetimedOccurrenceDoesNotInheritAnEarlierHandoff() async throws {
+    let harness = Harness(
+      now: Fixture.date(19, 0), settings: [.isha: .alert(sound: .makkah)], othersOff: true,
+      normalizePriority: true)
+    await harness.update()
+    let identifier = Self.identifier(.isha, .atTime)
+    let old = try #require(harness.center.pendingRequest(identifier))
+    #expect(Self.fireDate(of: old) == Fixture.time(.isha))
+    let newTime = Fixture.time(.isha).adding(minutes: -5)
+    harness.clock.now = newTime.adding(seconds: 0.3)
+
+    await harness.update(Fixture.schedule(ishaAdjustment: -5))
+
+    #expect(harness.center.posted.map(\.identifier) == [identifier])
+    #expect(harness.audio.plays.count == 1)
+    #expect(harness.audio.plays.first?.request.context.event?.time == newTime)
   }
 
   /// A test launch's detached center (`-salah.debug.withoutSystemNotifications`) takes
@@ -582,8 +855,8 @@ struct PrayerAlertCoordinatorTests {
     harness.center.dropPending(Self.identifier(.isha, .before))
     await harness.fire()
 
-    // Both came due together: the reminder, not pending, is posted.
-    #expect(harness.center.posted.map(\.identifier) == [Self.identifier(.isha, .before)])
+    // Both were handed to the system, even though the reminder has left pending.
+    #expect(harness.center.posted.isEmpty)
     #expect(harness.audio.plays.count == 1)
     let play = try #require(harness.audio.plays.first)
     #expect(play.request.resource.url == Self.alafasy)

@@ -2,7 +2,9 @@ import Foundation
 import OSLog
 import SalahAlerts
 import SalahCore
-import UserNotifications
+// Requests copy their content and remain immutable across the scheduler/center boundary.
+// The wrapper never mutates either; its separate receipt state is protected by its lock.
+@preconcurrency import UserNotifications
 
 /// Salah's prayer alerts, on SalahAlerts.
 ///
@@ -43,12 +45,17 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// The clock's time for the scheduler, whose actor can't read the main-actor clock.
   private let schedulerTime: SchedulerTime
   private let scheduler: NotificationScheduler
+  private let handoffCenter: NotificationHandoffCenter
+  /// Tests can hold queued due work before it decides whether native delivery owns it.
+  private let beforeDueDecision: (@Sendable () async -> Void)?
   private let planner = AlertPlanner()
   private var engine: InProcessAlertEngine!
   private var authorizationRequest: Task<UNAuthorizationStatus, Never>?
 
   /// The latest plan's installation. Readable so tests can await it.
   private(set) var installation: Task<NotificationApplyReport?, Never>?
+  private var installationHandoff: Task<NotificationHandoff, Never>?
+  private var installationGeneration: UInt64 = 0
   /// The latest posting of due alerts. Readable so tests can await it.
   private(set) var delivery: Task<Void, Never>?
   /// The latest alert schedule, the engine's and the plan's.
@@ -65,20 +72,25 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     preferences: Preferences = .shared,
     center: any PrayerNotificationCenter = UNUserNotificationCenter.current(),
     audio: any PrayerAlertAudioPlaying,
-    clock: any AlertClock = SystemAlertClock()
+    clock: any AlertClock = SystemAlertClock(),
+    schedulerNow: (@Sendable () -> Date)? = nil,
+    beforeDueDecision: (@Sendable () async -> Void)? = nil
   ) {
     self.preferences = preferences
     self.center = center
     self.audio = audio
     self.clock = clock
+    self.beforeDueDecision = beforeDueDecision
     // The scheduler drops alerts that fired before its batch starts and dates its report by
     // its own clock, so it follows the injected clock too, not the wall clock.
     let schedulerTime = SchedulerTime()
     self.schedulerTime = schedulerTime
+    let handoffCenter = NotificationHandoffCenter(center: center)
+    self.handoffCenter = handoffCenter
     scheduler = NotificationScheduler(
       identifierPrefix: Self.identifierPrefix, namespace: Self.namespace,
-      threadIdentifier: Self.threadIdentifier, center: center,
-      now: { schedulerTime.now })
+      threadIdentifier: Self.threadIdentifier, center: handoffCenter,
+      now: schedulerNow ?? { schedulerTime.now })
     super.init()
     engine = InProcessAlertEngine(clock: clock) { [weak self] due in
       self?.handleDue(due)
@@ -119,7 +131,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     )
     // The installation first: alerts the engine reports due at once are posted after it.
     install(
-      planner.notificationPlan(alerts, from: now, excluding: engine.notificationExclusions(at: now))
+      planner.notificationPlan(
+        alerts, from: now, excluding: engine.notificationExclusions(at: now)),
+      retaining: Set(
+        alerts.alerts.filter { now.timeIntervalSince($0.fireDate) <= Self.onTimeReportDelay }
+          .map(\.occurrenceID))
     )
     engine.update(alerts)
   }
@@ -164,18 +180,31 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       afterSound: sound(config.postReminderSound))
   }
 
-  private func install(_ plan: NotificationPlan) {
+  private func install(_ plan: NotificationPlan, retaining retainable: Set<AlertOccurrenceID>) {
+    installationGeneration &+= 1
     let content = PrayerAlertContent(preferences: preferences)
     let wantsAlerts = !plan.alerts.isEmpty
-    let previous = installation
-    installation = Task { [weak self, scheduler] in
-      _ = await previous?.value
-      guard let self else { return nil }
+    let previous = installationHandoff
+    let handoffCenter = handoffCenter
+    let handoff = Task { [weak self, scheduler, handoffCenter] in
+      let preceding = await previous?.value
+      guard let self else { return NotificationHandoff(report: nil, occurrences: []) }
       if wantsAlerts {
         await self.requestAuthorizationIfUndetermined()
       }
+      // A refresh may land after the system consumed an on-time request. Keep its
+      // handoff while the occurrence is still enabled and unchanged; actual removals
+      // during this installation revoke it. Late catch-up deliberately starts afresh.
+      let carried = preceding?.occurrences.intersection(retainable) ?? []
+      let scope = handoffCenter.begin(plan, carrying: carried)
       do {
         let report = try await scheduler.apply(plan, content: content.make)
+        var occurrences = handoffCenter.finish(scope)
+        if report.superseded || report.failures.values.contains(.notAuthorized) {
+          occurrences = []
+        } else {
+          occurrences.formUnion(report.confirmed)
+        }
         AppLog.notifications.notice(
           "installed requests=\(plan.alerts.count, privacy: .public) confirmed=\(report.confirmed.count, privacy: .public) superseded=\(report.superseded, privacy: .public)"
         )
@@ -186,13 +215,16 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
             )
           }
         }
-        return report
+        return NotificationHandoff(report: report, occurrences: occurrences)
       } catch {
+        _ = handoffCenter.finish(scope)
         AppLog.notifications.error(
           "Refused plan: \(String(describing: error), privacy: .public)")
-        return nil
+        return NotificationHandoff(report: nil, occurrences: [])
       }
     }
+    installationHandoff = handoff
+    installation = Task { await handoff.value.report }
   }
 
   /// Asks once for permission when there is something to schedule and the user hasn't
@@ -247,13 +279,31 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     }
     let content = PrayerAlertContent(preferences: preferences)
     let previous = delivery
-    let installing = installation
-    delivery = Task { [scheduler] in
-      // After the installation in progress: an alert due a moment early is then pending,
-      // or delivered, and the scheduler skips it rather than post it twice.
-      _ = await installing?.value
+    let beforeDueDecision = beforeDueDecision
+    delivery = Task { [weak self, scheduler] in
       _ = await previous?.value
-      _ = try? await scheduler.deliver(due, content: content.make)
+      await beforeDueDecision?()
+      guard let self else { return }
+      // A refresh can withdraw the native request while previous delivery work or an
+      // installation is suspended. Observe the latest installation, including one that
+      // replaces it during the await, before deciding who still owns this occurrence.
+      var handoff: NotificationHandoff?
+      while true {
+        let generation = self.installationGeneration
+        handoff = await self.installationHandoff?.value
+        if generation == self.installationGeneration { break }
+      }
+      let current = Set(self.alertSchedule?.alerts.map(\.occurrenceID) ?? [])
+      // A fired request can leave pending before it appears in delivered. Reposting its
+      // identifier in that interval replaces the notification the system is processing.
+      // A disabled or retimed occurrence must not return as fallback after a withdrawal.
+      let unplanned = due.filter {
+        current.contains($0.occurrenceID)
+          && handoff?.occurrences.contains($0.occurrenceID) != true
+      }
+      if !unplanned.isEmpty {
+        _ = try? await scheduler.deliver(unplanned, content: content.make)
+      }
     }
     let played = due.filter { $0.sound.isPlayedByApp }
     if let alert = InProcessAlertEngine.preferredAlert(among: played) {
@@ -353,6 +403,151 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   nonisolated static func isPrayerAlert(_ identifier: String) -> Bool {
     NotificationIdentity(requestIdentifier: identifier, prefix: identifierPrefix)?.namespace
       == namespace
+  }
+}
+
+nonisolated private struct NotificationHandoff: Sendable {
+  var report: NotificationApplyReport?
+  var occurrences: Set<AlertOccurrenceID>
+}
+
+/// Records the native handoff separately from full content verification: macOS may
+/// rewrite interruption priority after accepting a request. Each receipt belongs to one
+/// installation and stores the original full occurrence, never just its stable identifier.
+nonisolated private final class NotificationHandoffCenter: AlertNotificationCenter,
+  @unchecked Sendable
+{
+  // @unchecked: every receipt field is protected by lock; the underlying center is Sendable.
+  private let center: any PrayerNotificationCenter
+  private let lock = NSLock()
+  private var scope: UUID?
+  private var expected: [String: PlannedAlert] = [:]
+  private var handedOff: Set<AlertOccurrenceID> = []
+  private var revoked: Set<AlertOccurrenceID> = []
+
+  init(center: any PrayerNotificationCenter) {
+    self.center = center
+  }
+
+  func begin(_ plan: NotificationPlan, carrying occurrences: Set<AlertOccurrenceID>) -> UUID {
+    lock.withLock {
+      let token = UUID()
+      scope = token
+      expected = [:]
+      handedOff = occurrences
+      revoked = []
+      for alert in plan.alerts {
+        expected[alert.id.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix)] =
+          alert
+      }
+      return token
+    }
+  }
+
+  func finish(_ token: UUID) -> Set<AlertOccurrenceID> {
+    lock.withLock {
+      guard scope == token else { return [] }
+      defer {
+        scope = nil
+        expected = [:]
+        handedOff = []
+        revoked = []
+      }
+      return handedOff
+    }
+  }
+
+  func authorizationStatus() async -> UNAuthorizationStatus {
+    await center.authorizationStatus()
+  }
+
+  func pendingNotificationRequests() async throws -> [UNNotificationRequest] {
+    let token = lock.withLock { scope }
+    let requests = try await center.pendingNotificationRequests()
+    for request in requests {
+      let identifier = request.identifier
+      let fireDate = Self.calendarFireDate(of: request)
+      record(identifier: identifier, fireDate: fireDate, in: token)
+    }
+    return requests
+  }
+
+  func add(_ request: UNNotificationRequest) async throws {
+    let identifier = request.identifier
+    let fireDate = Self.calendarFireDate(of: request)
+    let receipt = lock.withLock {
+      let token = scope
+      return (
+        token: token,
+        occurrence: occurrence(identifier: identifier, fireDate: fireDate, in: token)
+      )
+    }
+    // A failed replacement does not remove an existing native request or its receipt.
+    try await center.add(request)
+    lock.withLock {
+      guard let token = receipt.token, token == scope, let occurrence = receipt.occurrence else {
+        return
+      }
+      revoked.remove(occurrence)
+      handedOff.insert(occurrence)
+    }
+  }
+
+  func removePendingNotificationRequests(withIdentifiers identifiers: [String]) async {
+    lock.withLock {
+      let removed = handedOff.filter {
+        identifiers.contains(
+          $0.notification.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix))
+      }
+      handedOff.subtract(removed)
+      revoked.formUnion(removed)
+      for identifier in identifiers {
+        if let alert = expected[identifier] {
+          handedOff.remove(alert.occurrenceID)
+          revoked.insert(alert.occurrenceID)
+        }
+      }
+    }
+    await center.removePendingNotificationRequests(withIdentifiers: identifiers)
+  }
+
+  func deliveredNotificationRecords() async -> [DeliveredNotificationRecord] {
+    await center.deliveredNotificationRecords()
+  }
+
+  func removeDeliveredNotifications(withIdentifiers identifiers: [String]) async {
+    await center.removeDeliveredNotifications(withIdentifiers: identifiers)
+  }
+
+  private func record(identifier: String, fireDate: Date?, in token: UUID?) {
+    lock.withLock {
+      if let occurrence = occurrence(identifier: identifier, fireDate: fireDate, in: token) {
+        if !revoked.contains(occurrence) { handedOff.insert(occurrence) }
+      }
+    }
+  }
+
+  private func occurrence(identifier: String, fireDate: Date?, in token: UUID?)
+    -> AlertOccurrenceID?
+  {
+    // Called only while lock is held.
+    guard let token, token == scope, let alert = expected[identifier] else { return nil }
+    // SalahAlerts 0.4's documented request rounding preserves a whole second within 1ms.
+    let seconds = (alert.fireDate.timeIntervalSinceReferenceDate - 0.001).rounded(.up)
+    guard fireDate == Date(timeIntervalSinceReferenceDate: seconds) else { return nil }
+    return alert.occurrenceID
+  }
+
+  /// Decodes only value data before a request can cross the native center's boundary.
+  private static func calendarFireDate(of request: UNNotificationRequest) -> Date? {
+    guard let trigger = request.trigger as? UNCalendarNotificationTrigger, !trigger.repeats,
+      var calendar = trigger.dateComponents.calendar, let zone = trigger.dateComponents.timeZone
+    else { return nil }
+    calendar.timeZone = zone
+    var components = trigger.dateComponents
+    components.calendar = nil
+    components.timeZone = nil
+    return calendar.date(from: components)
   }
 }
 
