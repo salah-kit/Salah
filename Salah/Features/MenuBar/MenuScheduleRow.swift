@@ -2,10 +2,10 @@ import SwiftUI
 
 /// One collapsed prayer in the menu-bar living schedule. Mirrors the widget's
 /// (private) `ScheduleRowView` look - alert/state icon + serif name + time, with
-/// the next/active tones and the dimmed-passed treatment - but adds the menu-bar
+/// the next/active tones and a quieter passed treatment - but adds the menu-bar
 /// interactivity: the leading bell doubles as an alert toggle, and the row lifts on
 /// hover. `sinceText` keeps the most-recent-passed row (the "you are here" anchor)
-/// un-dimmed.
+/// prominent without lowering other rows below readable contrast.
 struct MenuScheduleRow: View {
   let name: Text
   let time: Text
@@ -26,13 +26,17 @@ struct MenuScheduleRow: View {
 
       name
         .font(Font.system(.subheadline, design: .serif).weight(weight))
-        .foregroundStyle(emphasisColor ?? .primary)
+        .salahInk(textInk)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: 56, alignment: .leading)
 
       if state == .current {
-        InlineBadge(text: labels.now, tint: SalahWidgetTone.prayerColor(colors))
+        InlineBadge(
+          text: labels.now, tint: SalahWidgetTone.prayerColor(colors),
+          ink: .tone(.playingPrayerAudio).on(
+            .playingPrayerAudio, opacity: SalahWidgetTint.stacked(SalahWidgetTint.badge, over: 0.12)
+          ))
       }
 
       Spacer(minLength: 6)
@@ -42,7 +46,7 @@ struct MenuScheduleRow: View {
       if let sinceText {
         Text(verbatim: sinceText)
           .font(Font.footnote.monospacedDigit())
-          .foregroundStyle(SalahWidgetTone.prayerColor(colors).opacity(0.9))
+          .salahInk(.tone(.playingPrayerAudio).on(tint, opacity: tintOpacity))
           .lineLimit(1)
           .minimumScaleFactor(0.7)
           .layoutPriority(-1)
@@ -51,7 +55,7 @@ struct MenuScheduleRow: View {
 
       time
         .font(Font.subheadline.monospacedDigit())
-        .foregroundStyle(timeColor)
+        .salahInk(timeInk)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: 70, alignment: .trailing)
@@ -60,7 +64,6 @@ struct MenuScheduleRow: View {
     .padding(.vertical, 6)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(rowBackground)
-    .opacity(state == .passed && sinceText == nil ? 0.55 : 1)
     .contentShape(Rectangle())
     .onHover { hovering = $0 }
   }
@@ -73,7 +76,10 @@ struct MenuScheduleRow: View {
       Button(action: onToggleAlert) {
         Image(systemName: alertEnabled ? "bell.fill" : "bell.slash")
           .font(.footnote)
-          .foregroundStyle(bellColor)
+          .salahInk(
+            (hovering || alertEnabled ? SalahWidgetInk.primary : .secondary).glyph.on(
+              tint, opacity: tintOpacity)
+          )
           .frame(width: 18, height: 18)
           .contentShape(Rectangle())
       }
@@ -85,7 +91,7 @@ struct MenuScheduleRow: View {
     } else {
       Image(systemName: stateIconName)
         .font(.footnote)
-        .foregroundStyle(emphasisColor ?? .secondary)
+        .salahInk(textInk.glyph)
         .frame(width: 18)
         .accessibilityHidden(true)
     }
@@ -113,26 +119,40 @@ struct MenuScheduleRow: View {
     }
   }
 
-  private var bellColor: Color {
-    if hovering { return .primary }
-    return alertEnabled ? .secondary : Color.secondary.opacity(0.6)
-  }
+  // MARK: Inks over the row's tint
 
-  // MARK: Tones (mirror ScheduleRowView)
-
-  private var emphasisColor: Color? {
+  private var tint: SalahWidgetTone? {
     switch state {
-    case .next(let tone), .active(let tone): return tone.color(colors)
-    case .current: return SalahWidgetTone.prayerColor(colors)
+    case .next(let tone), .active(let tone): return tone
+    case .current: return .playingPrayerAudio
     default: return nil
     }
   }
 
-  private var timeColor: Color {
+  private var tintOpacity: Double {
     switch state {
-    case .next(let tone): return tone.color(colors)
-    case .current: return SalahWidgetTone.prayerColor(colors)
-    default: return .primary
+    case .next: 0.22
+    case .active: 0.20
+    case .current: 0.12
+    default: 0
+    }
+  }
+
+  private var textInk: SalahWidgetInk {
+    let ink: SalahWidgetInk
+    switch state {
+    case .next(let tone), .active(let tone): ink = .tone(tone)
+    case .current: ink = .tone(.playingPrayerAudio)
+    case .passed where sinceText == nil: ink = .secondary
+    default: ink = .primary
+    }
+    return ink.on(tint, opacity: tintOpacity)
+  }
+
+  private var timeInk: SalahWidgetInk {
+    switch state {
+    case .active: return .primary.on(tint, opacity: tintOpacity)
+    default: return textInk
     }
   }
 
@@ -163,7 +183,10 @@ struct MenuScheduleRow: View {
         .fill(SalahWidgetTone.prayerColor(colors).opacity(0.12))
     default:
       if hovering {
-        RoundedRectangle(cornerRadius: 9, style: .continuous).fill(Color.primary.opacity(0.06))
+        // An outline gives hover feedback without changing the surface behind
+        // readable text.
+        RoundedRectangle(cornerRadius: 9, style: .continuous)
+          .strokeBorder(Color.primary.opacity(0.20), lineWidth: 1)
       } else {
         Color.clear
       }

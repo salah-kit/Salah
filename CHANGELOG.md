@@ -13,6 +13,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Keep menu-bar prayer names, times and countdowns readable on their themed backgrounds,
+  including passed prayers and Increase Contrast.
+- Expose the menu-bar countdown and count-up as read-only accessible text while retaining
+  the full duration in the selected language.
 - Preserve a scheduled prayer notification while macOS is delivering it, including a
   refresh after the app reports the alert, so it is neither withdrawn nor replaced.
   Queued fallback notifications use the updated language and sound settings.

@@ -100,6 +100,45 @@ final class SalahUITests: XCTestCase {
     XCTAssertTrue(app.buttons["Quit Salah"].exists, app.windows.debugDescription)
   }
 
+  /// The dropdown's measured surface still routes each action exactly once.
+  @MainActor
+  func testDropdownActionsRemainOperable() throws {
+    let app = XCUIApplication()
+    app.launchArguments =
+      Self.quietLaunch + [
+        "-salah.debug.withoutSystemPrompts", "YES",
+        "-salah.silentMode", "NO",
+      ]
+    app.launch()
+    addTeardownBlock { @MainActor in app.terminate() }
+    let status = app.statusItems.firstMatch
+    XCTAssertTrue(status.waitForExistence(timeout: 30))
+    try XCTSkipUnless(
+      Self.canClick(status.frame) && status.isHittable,
+      "The menu bar is full: Salah's status item cannot be clicked.")
+    status.click()
+    let dropdown = app.dialogs.containing(.button, identifier: "Quit Salah").firstMatch
+    XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.debugDescription)
+    let silent = dropdown.buttons["Mute sounds"]
+    XCTAssertEqual(dropdown.buttons.matching(identifier: "Mute sounds").count, 1)
+    XCTAssertFalse(silent.isSelected)
+    silent.click()
+    XCTAssertTrue(silent.isSelected)
+    silent.click()
+    XCTAssertFalse(silent.isSelected)
+
+    let alert = dropdown.buttons["Fajr · Play at prayer time"]
+    XCTAssertEqual(dropdown.buttons.matching(identifier: "Fajr · Play at prayer time").count, 1)
+    XCTAssertEqual(alert.value as? String, "Alert off")
+    alert.click()
+    XCTAssertEqual(alert.value as? String, "Alert on")
+    alert.click()
+    XCTAssertEqual(alert.value as? String, "Alert off")
+
+    app.typeKey(",", modifierFlags: .command)
+    XCTAssertTrue(app.windows["Salah Settings"].waitForExistence(timeout: 10))
+  }
+
   /// The link a widget tap opens brings up Settings, which carries Salah's name: the
   /// window title, the sidebar's help and about rows and the version.
   @MainActor
