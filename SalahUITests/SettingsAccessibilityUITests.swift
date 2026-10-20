@@ -100,6 +100,83 @@ final class SettingsAccessibilityUITests: XCTestCase {
     report(try audit(app, in: "the menu-bar dropdown", window: dropdown, preview: nil))
   }
 
+  @MainActor
+  func testDropdownDurationHasEnglishTextSemantics() throws {
+    try assertDurationTextSemantics(language: VoiceOverSpeechUITests.english)
+  }
+
+  @MainActor
+  func testDropdownDurationHasArabicTextSemantics() throws {
+    try assertDurationTextSemantics(language: VoiceOverSpeechUITests.arabic)
+  }
+
+  /// Uses only the existing pure schedule/language fixtures. It never creates a
+  /// speech service or changes screen-reader state.
+  @MainActor
+  private func assertDurationTextSemantics(language: VoiceOverSpeechUITests.Language) throws {
+    let app = XCUIApplication()
+    app.launchArguments = VoiceOverSpeechUITests.launch([
+      "-salah.appLanguage": language.setting,
+      "-AppleLanguages": "(\(language.code))",
+    ])
+    let start = Date()
+    app.launch()
+    addTeardownBlock { @MainActor in app.terminate() }
+    let status = app.statusItems.firstMatch
+    XCTAssertTrue(status.waitForExistence(timeout: 30))
+    try XCTSkipUnless(
+      SalahUITests.canClick(status.frame) && status.isHittable,
+      "The menu bar is full: Salah's status item cannot be clicked.")
+
+    var issues: [String] = []
+    for opening in 1...2 {
+      status.click()
+      let dropdown = app.dialogs.containing(.button, identifier: language.quit).firstMatch
+      XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.debugDescription)
+      let query = dropdown.descendants(matching: .any).matching(identifier: "menu.hero.duration")
+      XCTAssertTrue(query.firstMatch.waitForExistence(timeout: 10), dropdown.debugDescription)
+      XCTAssertEqual(query.count, 1, dropdown.debugDescription)
+      let duration = query.firstMatch
+      XCTAssertEqual(duration.elementType, .staticText, duration.debugDescription)
+      XCTAssertEqual(dropdown.staticTexts.matching(identifier: "menu.hero.duration").count, 1)
+      XCTAssertEqual(duration.descendants(matching: .any).count, 0)
+      // AppKit exposes a static text element's content as AXValue.
+      let text = try XCTUnwrap(duration.value as? String, duration.debugDescription)
+      let expected = VoiceOverSpeechUITests.countdowns(
+        from: start.addingTimeInterval(-60), to: Date(), in: language)
+      XCTAssertTrue(expected.contains(text), "\(text)\nExpected: \(expected)")
+      // The duration still follows the focus name visually; its element remains
+      // in the hero rather than moving to the bottom of the dialog.
+      let prayer = try XCTUnwrap(text.components(separatedBy: " · ").first)
+      let name = dropdown.staticTexts[prayer].firstMatch
+      XCTAssertTrue(name.exists, dropdown.debugDescription)
+      XCTAssertGreaterThanOrEqual(duration.frame.minY, name.frame.maxY - 1)
+      XCTAssertLessThan(duration.frame.maxY, dropdown.buttons[language.quit].frame.minY)
+      let elements = dropdown.descendants(matching: .any).allElementsBoundByAccessibilityElement
+      let nameIndex = try XCTUnwrap(
+        elements.firstIndex { $0.elementType == .staticText && $0.value as? String == prayer })
+      let durationIndex = try XCTUnwrap(
+        elements.firstIndex { $0.identifier == "menu.hero.duration" })
+      let quitIndex = try XCTUnwrap(
+        elements.firstIndex { $0.elementType == .button && $0.label == language.quit })
+      XCTAssertLessThan(nameIndex, durationIndex)
+      XCTAssertLessThan(durationIndex, quitIndex)
+      let attachment = XCTAttachment(string: dropdown.debugDescription)
+      attachment.name = "Dropdown text semantics \(language.code), opening \(opening)"
+      attachment.lifetime = .keepAlways
+      add(attachment)
+      let screenshot = XCTAttachment(screenshot: dropdown.screenshot())
+      screenshot.name = "Dropdown \(language.code), opening \(opening)"
+      screenshot.lifetime = .keepAlways
+      add(screenshot)
+      issues += try audit(app, in: "dropdown \(language.code)", window: dropdown, preview: nil)
+      status.click()
+      XCTAssertTrue(
+        dropdown.waitForNonExistence(timeout: 5), "Closing the dropdown must remove its duration")
+    }
+    report(issues)
+  }
+
   /// The Settings panes, by their English names.
   static let panes = [
     "General", "Location", "Calculation", "Adjustments", "Notifications", "Appearance",

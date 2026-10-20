@@ -37,6 +37,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// wakes within 0.75 seconds of that. A later report catches up, after a sleep or a busy
   /// moment. A sleep that ends within this second looks like an on-time report.
   static let onTimeReportDelay: TimeInterval = 1
+  private static let catchUpPolicy = CatchUpPolicy()
 
   private let preferences: Preferences
   private let center: any PrayerNotificationCenter
@@ -65,6 +66,10 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Set while `update(schedule:)` or `catchUp(schedule:)` runs: an alert reported then is
   /// posted after the installation they start, which is planned from the current instant.
   private var replanning = false
+  /// An on-time engine report may finish while its accepted native request is still
+  /// pending. Keep that request's responsibility across later unchanged refreshes, while
+  /// the exact enabled occurrence remains in the schedule's catch-up range.
+  private var onTimeReports: Set<AlertOccurrenceID> = []
 
   /// The defaults are the app's wiring; tests inject the preferences, a fake
   /// notification center, a recording audio player and a manual clock.
@@ -92,7 +97,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       threadIdentifier: Self.threadIdentifier, center: handoffCenter,
       now: schedulerNow ?? { schedulerTime.now })
     super.init()
-    engine = InProcessAlertEngine(clock: clock) { [weak self] due in
+    engine = InProcessAlertEngine(catchUp: Self.catchUpPolicy, clock: clock) { [weak self] due in
       self?.handleDue(due)
     }
     center.delegate = self
@@ -129,20 +134,26 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     AppLog.notifications.notice(
       "planned alerts=\(alerts.alerts.count, privacy: .public) gaps=\(alerts.gaps.count, privacy: .public)"
     )
+    let exclusions = engine.notificationExclusions(at: now)
+    onTimeReports.formIntersection(
+      alerts.alerts.filter { Self.isWithinCatchUpRange($0, at: now) }.map(\.occurrenceID))
+    onTimeReports.subtract(exclusions)
     // The installation first: alerts the engine reports due at once are posted after it.
     install(
       planner.notificationPlan(
-        alerts, from: now, excluding: engine.notificationExclusions(at: now)),
-      retaining: Set(
-        alerts.alerts.filter { now.timeIntervalSince($0.fireDate) <= Self.onTimeReportDelay }
-          .map(\.occurrenceID))
+        alerts, from: now, excluding: exclusions),
+      retaining: alerts.alerts.filter {
+        !exclusions.contains($0.occurrenceID)
+          && (now.timeIntervalSince($0.fireDate) <= Self.onTimeReportDelay
+            || onTimeReports.contains($0.occurrenceID))
+      }
     )
     engine.update(alerts)
   }
 
   /// After a wake, a clock change or the app becoming active: replans from the clock's
-  /// instant, then reports what's due. The replan drops an overdue request first, so an
-  /// alert caught up is posted rather than skipped as still pending and then removed.
+  /// instant, then reports what's due. A first late report withdraws its overdue request
+  /// before fallback; an on-time report's unchanged native handoff stays with the system.
   func catchUp(schedule: PrayerSchedule, afterClockChange: Bool = false) {
     // A clock-change event can land after an early report but before its fire date.
     // Retain exclusions before checking for newly due alerts; those keep pending requests.
@@ -180,7 +191,13 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       afterSound: sound(config.postReminderSound))
   }
 
-  private func install(_ plan: NotificationPlan, retaining retainable: Set<AlertOccurrenceID>) {
+  private static func isWithinCatchUpRange(_ alert: PlannedAlert, at now: Date) -> Bool {
+    let grace = alert.kind == .atTime ? catchUpPolicy.atTimeGrace : catchUpPolicy.reminderGrace
+    return Duration.seconds(now.timeIntervalSince(alert.fireDate)) <= max(.zero, grace)
+      && (alert.kind != .before || now < alert.event.time)
+  }
+
+  private func install(_ plan: NotificationPlan, retaining retainable: [PlannedAlert]) {
     installationGeneration &+= 1
     let content = PrayerAlertContent(preferences: preferences)
     let wantsAlerts = !plan.alerts.isEmpty
@@ -192,11 +209,22 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       if wantsAlerts {
         await self.requestAuthorizationIfUndetermined()
       }
-      // A refresh may land after the system consumed an on-time request. Keep its
-      // handoff while the occurrence is still enabled and unchanged; actual removals
-      // during this installation revoke it. Late catch-up deliberately starts afresh.
-      let carried = preceding?.occurrences.intersection(retainable) ?? []
-      let scope = handoffCenter.begin(plan, carrying: carried)
+      // update() queues this task before the engine can make its first early report.
+      // Observe reports after that update and any wait, without retaining unreported
+      // future requests that the budget dropped or reports whose grace has expired.
+      let retentionNow = self.clock.now
+      let exclusions = self.engine.notificationExclusions(at: retentionNow)
+      let retained = retainable.filter {
+        Self.isWithinCatchUpRange($0, at: retentionNow)
+          && !exclusions.contains($0.occurrenceID)
+          && ($0.fireDate <= plan.effectiveRange.start
+            || self.onTimeReports.contains($0.occurrenceID))
+      }
+      // A refresh may land before or after the on-time report's task finishes. Keep
+      // native ownership for an unchanged request; a first late report starts afresh.
+      let carried = preceding?.occurrences.intersection(retainable.map(\.occurrenceID)) ?? []
+      let scope = handoffCenter.begin(
+        plan, carrying: carried, retaining: retained, content: content)
       do {
         let report = try await scheduler.apply(plan, content: content.make)
         var occurrences = handoffCenter.finish(scope)
@@ -260,6 +288,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// app-played sound among them.
   private func handleDue(_ due: [PlannedAlert]) {
     let now = clock.now
+    onTimeReports.formUnion(
+      due.filter { now.timeIntervalSince($0.fireDate) <= Self.onTimeReportDelay }
+        .map(\.occurrenceID))
     for alert in due {
       AppLog.notifications.notice(
         "due \(alert.id.requestIdentifier(prefix: ""), privacy: .public) late=\(Int(now.timeIntervalSince(alert.fireDate)), privacy: .public)s"
@@ -277,7 +308,6 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       AppLog.notifications.notice("replanning before a late report")
       update(schedule: plannedSchedule)
     }
-    let content = PrayerAlertContent(preferences: preferences)
     let previous = delivery
     let beforeDueDecision = beforeDueDecision
     delivery = Task { [weak self, scheduler] in
@@ -293,15 +323,18 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
         handoff = await self.installationHandoff?.value
         if generation == self.installationGeneration { break }
       }
-      let current = Set(self.alertSchedule?.alerts.map(\.occurrenceID) ?? [])
+      let current = self.alertSchedule?.alerts ?? []
       // A fired request can leave pending before it appears in delivered. Reposting its
       // identifier in that interval replaces the notification the system is processing.
       // A disabled or retimed occurrence must not return as fallback after a withdrawal.
-      let unplanned = due.filter {
-        current.contains($0.occurrenceID)
-          && handoff?.occurrences.contains($0.occurrenceID) != true
+      let unplanned = due.compactMap { reported -> PlannedAlert? in
+        guard handoff?.occurrences.contains(reported.occurrenceID) != true else { return nil }
+        return current.first { $0.occurrenceID == reported.occurrenceID }
       }
       if !unplanned.isEmpty {
+        // Both wording and sound can change while this decision waits. Resolve the
+        // latest exact occurrence and content together, immediately before submission.
+        let content = PrayerAlertContent(preferences: self.preferences)
         _ = try? await scheduler.deliver(unplanned, content: content.make)
       }
     }
@@ -424,21 +457,45 @@ nonisolated private final class NotificationHandoffCenter: AlertNotificationCent
   private var expected: [String: PlannedAlert] = [:]
   private var handedOff: Set<AlertOccurrenceID> = []
   private var revoked: Set<AlertOccurrenceID> = []
+  private var retainableRequests: [String: RetainedRequest] = [:]
+  private var retainedPending: Set<String> = []
+  private var retentionAuthorized = false
+
+  /// Content is copied and immutable, like the requests crossing the scheduler boundary.
+  private struct RetainedRequest {
+    var occurrence: AlertOccurrenceID
+    var content: UNNotificationContent
+  }
 
   init(center: any PrayerNotificationCenter) {
     self.center = center
   }
 
-  func begin(_ plan: NotificationPlan, carrying occurrences: Set<AlertOccurrenceID>) -> UUID {
+  func begin(
+    _ plan: NotificationPlan, carrying occurrences: Set<AlertOccurrenceID>,
+    retaining alerts: [PlannedAlert], content: PrayerAlertContent
+  ) -> UUID {
     lock.withLock {
       let token = UUID()
       scope = token
       expected = [:]
       handedOff = occurrences
       revoked = []
+      retainableRequests = [:]
+      retainedPending = []
+      retentionAuthorized = false
       for alert in plan.alerts {
         expected[alert.id.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix)] =
           alert
+      }
+      for alert in alerts where occurrences.contains(alert.occurrenceID) {
+        let identifier = alert.id.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix)
+        let body = content.make(alert)
+        body.threadIdentifier = PrayerAlertCoordinator.threadIdentifier
+        retainableRequests[identifier] = RetainedRequest(
+          occurrence: alert.occurrenceID,
+          content: UNNotificationRequest(identifier: identifier, content: body, trigger: nil)
+            .content)
       }
       return token
     }
@@ -452,13 +509,23 @@ nonisolated private final class NotificationHandoffCenter: AlertNotificationCent
         expected = [:]
         handedOff = []
         revoked = []
+        retainableRequests = [:]
+        retainedPending = []
+        retentionAuthorized = false
       }
       return handedOff
     }
   }
 
   func authorizationStatus() async -> UNAuthorizationStatus {
-    await center.authorizationStatus()
+    let token = lock.withLock { scope }
+    let status = await center.authorizationStatus()
+    lock.withLock {
+      if let token, token == scope {
+        retentionAuthorized = status == .authorized || status == .provisional
+      }
+    }
+    return status
   }
 
   func pendingNotificationRequests() async throws -> [UNNotificationRequest] {
@@ -468,6 +535,13 @@ nonisolated private final class NotificationHandoffCenter: AlertNotificationCent
       let identifier = request.identifier
       let fireDate = Self.calendarFireDate(of: request)
       record(identifier: identifier, fireDate: fireDate, in: token)
+      lock.withLock {
+        if let token, token == scope, let retained = retainableRequests[identifier],
+          Self.matches(request, fireDate: fireDate, retained: retained)
+        {
+          retainedPending.insert(identifier)
+        }
+      }
     }
     return requests
   }
@@ -494,21 +568,48 @@ nonisolated private final class NotificationHandoffCenter: AlertNotificationCent
   }
 
   func removePendingNotificationRequests(withIdentifiers identifiers: [String]) async {
-    lock.withLock {
+    let withdrawn = lock.withLock {
+      // Applying the future-only plan must not cancel a matching on-time request the
+      // system still owns, even after its engine callback has already completed.
+      let withdrawn = identifiers.filter { !retentionAuthorized || !retainedPending.contains($0) }
       let removed = handedOff.filter {
-        identifiers.contains(
+        withdrawn.contains(
           $0.notification.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix))
       }
       handedOff.subtract(removed)
       revoked.formUnion(removed)
-      for identifier in identifiers {
+      for identifier in withdrawn {
         if let alert = expected[identifier] {
           handedOff.remove(alert.occurrenceID)
           revoked.insert(alert.occurrenceID)
         }
       }
+      return withdrawn
     }
-    await center.removePendingNotificationRequests(withIdentifiers: identifiers)
+    if !withdrawn.isEmpty {
+      await center.removePendingNotificationRequests(withIdentifiers: withdrawn)
+    }
+  }
+
+  /// The same comparison as the scheduler's content contract, except the two priority
+  /// fields macOS may normalize after acceptance. That exception preserves a native
+  /// handoff; it never adds an occurrence to the scheduler's confirmed coverage.
+  private static func matches(
+    _ request: UNNotificationRequest, fireDate: Date?, retained: RetainedRequest
+  ) -> Bool {
+    let seconds = (retained.occurrence.fireDate.timeIntervalSinceReferenceDate - 0.001).rounded(.up)
+    guard fireDate == Date(timeIntervalSinceReferenceDate: seconds) else { return false }
+    let a = request.content
+    let b = retained.content
+    let priorityMatches =
+      (a.interruptionLevel == b.interruptionLevel && a.relevanceScore == b.relevanceScore)
+      || (a.interruptionLevel == .active && a.relevanceScore == 0)
+    return priorityMatches && a.title == b.title && a.subtitle == b.subtitle && a.body == b.body
+      && a.sound == b.sound && a.badge == b.badge && a.threadIdentifier == b.threadIdentifier
+      && a.categoryIdentifier == b.categoryIdentifier && a.attachments.isEmpty
+      && NSDictionary(dictionary: a.userInfo).isEqual(to: b.userInfo)
+      && a.targetContentIdentifier == b.targetContentIdentifier
+      && a.filterCriteria == b.filterCriteria
   }
 
   func deliveredNotificationRecords() async -> [DeliveredNotificationRecord] {

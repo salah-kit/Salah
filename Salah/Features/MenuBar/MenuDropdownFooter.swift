@@ -28,7 +28,9 @@ struct MenuDropdownFooter: View {
     Button(action: onToggleSilent) {
       HStack(spacing: 5) {
         Image(systemName: silentMode ? "bell.slash.fill" : "bell")
+          .salahInk(silentInk.glyph)
         Text(verbatim: display.labels.silent)
+          .salahInk(silentInk)
       }
       .font(.caption.weight(.medium))
       .padding(.horizontal, 8)
@@ -43,7 +45,6 @@ struct MenuDropdownFooter: View {
           Capsule().strokeBorder(colors.accent.opacity(0.45), lineWidth: 0.75)
         }
       }
-      .foregroundStyle(silentMode ? colors.accentText : Color.secondary)
       .contentShape(Capsule())
     }
     .buttonStyle(.plain)
@@ -53,15 +54,19 @@ struct MenuDropdownFooter: View {
     .accessibilityAddTraits(silentMode ? .isSelected : [])
   }
 
+  private var silentInk: SalahWidgetInk {
+    silentMode ? .primary.onAccent(opacity: 0.18) : .secondary
+  }
+
   private func iconButton(system: String, help: String, action: @escaping () -> Void) -> some View {
     Button(action: action) {
       Image(systemName: system)
         .font(.system(size: 13))
+        .salahInk(.secondary.glyph)
         .frame(width: 24, height: 24)
         .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .foregroundStyle(.secondary)
     .menuPointerCursor()
     .help(Text(verbatim: help))
     .accessibilityLabel(Text(verbatim: help))
