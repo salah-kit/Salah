@@ -106,13 +106,64 @@ final class SalahUITests: XCTestCase {
   func testSettingsLinkOpensSalahSettings() throws {
     let app = launchQuietly()
     let link = try XCTUnwrap(URL(string: "salah://settings"))
-    app.open(link)
+    let running = NSRunningApplication.runningApplications(
+      withBundleIdentifier: "io.github.salah-kit.Salah"
+    )
+    .filter { !$0.isTerminated }
+    XCTAssertEqual(running.count, 1)
+    let original = try XCTUnwrap(running.first)
+    let originalPID = original.processIdentifier
+    let applicationURL = try XCTUnwrap(original.bundleURL)
+
+    // Check the processed app bundle, not just the source plist. XCUIApplication.open
+    // launches the app directly and does not prove that LaunchServices accepts its scheme.
+    let bundle = try XCTUnwrap(Bundle(url: applicationURL))
+    XCTAssertEqual(bundle.bundleIdentifier, "io.github.salah-kit.Salah")
+    let urlTypes = try XCTUnwrap(
+      bundle.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]])
+    let claim = try XCTUnwrap(
+      urlTypes.first {
+        ($0["CFBundleURLSchemes"] as? [String])?.contains(link.scheme ?? "") == true
+      })
+    XCTAssertEqual(claim["CFBundleURLName"] as? String, bundle.bundleIdentifier)
+    XCTAssertEqual(claim["CFBundleTypeRole"] as? String, "Editor")
+
+    let configuration = NSWorkspace.OpenConfiguration()
+    configuration.createsNewApplicationInstance = false
+    configuration.allowsRunningApplicationSubstitution = false
+    configuration.activates = true
+    configuration.addsToRecentItems = false
+    configuration.promptsUserIfNeeded = false
+    let completed = expectation(description: "LaunchServices opens the Settings link")
+    let receipt = SettingsLinkReceiptBox()
+    XCTAssertFalse(original.isTerminated)
+    NSWorkspace.shared.open([link], withApplicationAt: applicationURL, configuration: configuration)
+    {
+      opened, error in
+      receipt.store(
+        SettingsLinkReceipt(
+          pid: opened?.processIdentifier, applicationURL: opened?.bundleURL,
+          error: error.map { String(describing: $0) }))
+      completed.fulfill()
+    }
+    wait(for: [completed], timeout: 15)
+    let result = try XCTUnwrap(receipt.read())
+    XCTAssertNil(result.error)
+    XCTAssertEqual(try XCTUnwrap(result.pid), originalPID)
+    XCTAssertEqual(
+      try XCTUnwrap(result.applicationURL).standardizedFileURL.resolvingSymlinksInPath(),
+      applicationURL.standardizedFileURL.resolvingSymlinksInPath())
+    XCTAssertFalse(original.isTerminated)
 
     let settings = app.windows["Salah Settings"]
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
     XCTAssertTrue(settings.buttons["Salah Help"].exists, settings.debugDescription)
     XCTAssertTrue(settings.buttons["About Salah"].exists, settings.debugDescription)
     XCTAssertTrue(settings.staticTexts["Salah 1.1.2"].exists, settings.debugDescription)
+    XCTAssertFalse(original.isTerminated)
+    XCTAssertEqual(
+      NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
+        .filter { !$0.isTerminated }.map(\.processIdentifier), [originalPID])
   }
 
   /// The About panel names Salah and credits its authors.
@@ -134,4 +185,19 @@ final class SalahUITests: XCTestCase {
     XCTAssertTrue(text.contains("The Salah Kit Authors"), text)
     XCTAssertFalse(text.contains("Batoul"), text)
   }
+}
+
+private struct SettingsLinkReceipt: Sendable {
+  let pid: pid_t?
+  let applicationURL: URL?
+  let error: String?
+}
+
+/// NSWorkspace invokes its completion on a concurrent queue; keep only value observations.
+private final class SettingsLinkReceiptBox: @unchecked Sendable {
+  private let lock = NSLock()
+  private var value: SettingsLinkReceipt?
+
+  func store(_ receipt: SettingsLinkReceipt) { lock.withLock { value = receipt } }
+  func read() -> SettingsLinkReceipt? { lock.withLock { value } }
 }

@@ -13,6 +13,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Open Settings when a sandboxed app follows a `salah://settings` link.
 - Show the banner for an alert the Mac slept through even when Salah's alert timer reports
   it before macOS reports the wake. The adhan played, but the banner was skipped and its
   request removed.

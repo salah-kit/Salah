@@ -39,6 +39,23 @@ struct IdentityTests {
     #expect(SalahWidgetConstants.settingsDeepLinkURL.scheme == SalahWidgetConstants.deepLinkScheme)
   }
 
+  /// LaunchServices checks the app's declared schemes before delivering a widget's
+  /// Settings link from a sandboxed caller, even when the app is already running.
+  @Test func appClaimsTheWidgetsSettingsURLScheme() throws {
+    let url = BaselineStore.repositoryRoot.appending(path: "Salah/Info.plist")
+    let info = try #require(
+      PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil)
+        as? [String: Any])
+    let urlTypes = try #require(info["CFBundleURLTypes"] as? [[String: Any]])
+    let claims = urlTypes.filter {
+      ($0["CFBundleURLSchemes"] as? [String])?.contains(SalahWidgetConstants.deepLinkScheme) == true
+    }
+    #expect(claims.count == 1)
+    let claim = try #require(claims.first)
+    #expect(claim["CFBundleURLName"] as? String == "io.github.salah-kit.Salah")
+    #expect(claim["CFBundleTypeRole"] as? String == "Editor")
+  }
+
   /// Prayer alerts are requested under the app's bundle identifier, in one namespace and
   /// one notification thread.
   @Test func alertIdentifiersAreSalahs() {
