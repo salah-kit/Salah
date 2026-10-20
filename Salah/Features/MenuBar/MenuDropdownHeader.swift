@@ -15,10 +15,11 @@ struct MenuDropdownHeader: View {
       HStack(spacing: 6) {
         Image(systemName: silentMode ? "bell.slash.fill" : "moon.stars.fill")
           .font(.subheadline)
-          .foregroundStyle(silentMode ? Color.secondary : colors.accent)
+          .salahInk((silentMode ? SalahWidgetInk.secondary : .accent).glyph)
           .accessibilityHidden(true)
         Text(verbatim: hijriText)
           .font(.system(.headline, design: .serif, weight: .semibold))
+          .salahInk(.primary)
           .lineLimit(1)
           .minimumScaleFactor(0.7)
         Spacer(minLength: 8)
@@ -28,12 +29,12 @@ struct MenuDropdownHeader: View {
           Image(systemName: "location.fill")
         }
         .font(.caption)
-        .foregroundStyle(.secondary)
+        .salahInk(.secondary)
         .labelStyle(.titleAndIcon)
       }
       Text(verbatim: header.gregorianDate)
         .font(.caption2)
-        .foregroundStyle(.secondary)
+        .salahInk(.secondary)
         .lineLimit(1)
         .minimumScaleFactor(0.8)
     }

@@ -93,9 +93,12 @@ nonisolated struct SalahWidgetBackdrop: Equatable, Sendable {
   /// holds anywhere.
   func limit(
     in frame: CGRect?, tint: SalahWidgetTone?, tintOpacity: Double,
-    contrast: ColorSchemeContrast
+    contrast: ColorSchemeContrast, tintIsAccent: Bool = false
   ) -> ThemeColor {
-    let tintColor = tint?.components(palette: palette, isDark: isDark, contrast: contrast)
+    let tintColor =
+      tintIsAccent
+      ? palette.accent
+      : tint?.components(palette: palette, isDark: isDark, contrast: contrast)
     var regions: [(face: CGSize, area: CGRect)] = []
     if let frame {
       let face = CGRect(origin: .zero, size: size)
@@ -202,6 +205,8 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
   var isGlyph = false
   /// The tone of the tint the ink sits on, or `nil` on the bare backdrop.
   var tint: SalahWidgetTone?
+  /// An accent-colored surface, such as the menu's selected Silent capsule.
+  var tintIsAccent = false
   /// The opacity of that tint, with any tints stacked under it (`SalahWidgetTint`).
   var tintOpacity = 0.0
   var opacity = 1.0
@@ -228,7 +233,17 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
   func on(_ tone: SalahWidgetTone?, opacity: Double) -> SalahWidgetInk {
     var ink = self
     ink.tint = tone
+    ink.tintIsAccent = false
     ink.tintOpacity = tone == nil ? 0 : opacity
+    return ink
+  }
+
+  /// The same ink over a theme-accent surface.
+  func onAccent(opacity: Double) -> SalahWidgetInk {
+    var ink = self
+    ink.tint = nil
+    ink.tintIsAccent = true
+    ink.tintOpacity = opacity
     return ink
   }
 
@@ -287,7 +302,8 @@ nonisolated struct SalahWidgetInk: Hashable, Sendable {
     }
     func limit() -> ThemeColor {
       backdrop.limit(
-        in: frame, tint: tint, tintOpacity: tintOpacity, contrast: contrast)
+        in: frame, tint: tint, tintOpacity: tintOpacity, contrast: contrast,
+        tintIsAccent: tintIsAccent)
     }
     switch source {
     case .primary:
@@ -338,6 +354,7 @@ nonisolated extension View {
 
 private nonisolated struct SalahInkModifier: ViewModifier {
   let ink: SalahWidgetInk
+  @Namespace private var probeIdentity
   @Environment(\.salahWidgetBackdrop) private var backdrop
   @Environment(\.colorScheme) private var scheme
   @Environment(\.colorSchemeContrast) private var contrast
@@ -364,7 +381,9 @@ private nonisolated struct SalahInkModifier: ViewModifier {
         .overlay {
           GeometryReader { proxy in
             let frame = proxy.frame(in: .named(SalahWidgetBackdrop.coordinateSpace))
-            if probe.record(ink, in: frame, color: resolved.color) == .paint {
+            if probe.record(ink, identity: probeIdentity, in: frame, color: resolved.color)
+              == .paint
+            {
               Rectangle().fill(resolved.style).padding(-SalahWidgetInkProbe.paintMargin)
             }
           }
@@ -398,7 +417,7 @@ private nonisolated struct SalahInkModifier: ViewModifier {
   private func drawn(_ content: Content, _ resolved: SalahWidgetInk.Resolved, frame: CGRect)
     -> some View
   {
-    switch probe?.record(ink, in: frame, color: resolved.color) {
+    switch probe?.record(ink, identity: probeIdentity, in: frame, color: resolved.color) {
     case nil, .show?:
       content.foregroundStyle(resolved.style)
     case .hide?:
@@ -435,6 +454,7 @@ nonisolated final class SalahWidgetInkProbe: @unchecked Sendable {
   let mode: Mode
   private let lock = NSLock()
   private var recorded: [Element] = []
+  private var indices: [Namespace.ID: Int] = [:]
 
   init(_ mode: Mode) {
     self.mode = mode
@@ -445,11 +465,20 @@ nonisolated final class SalahWidgetInkProbe: @unchecked Sendable {
     lock.withLock { recorded }
   }
 
-  /// Notes an element the face draws, and says how to draw it.
-  func record(_ ink: SalahWidgetInk, in frame: CGRect, color: ThemeColor?) -> Mode {
+  /// Notes an element the face draws, and says how to draw it. SwiftUI can lay the
+  /// same view out at provisional positions before drawing its final frame. Its
+  /// namespace keeps one record at the last position, including within one render.
+  func record(
+    _ ink: SalahWidgetInk, identity: Namespace.ID, in frame: CGRect, color: ThemeColor?
+  ) -> Mode {
     let element = Element(ink: ink, frame: frame, color: color)
     lock.withLock {
-      if !recorded.contains(element) { recorded.append(element) }
+      if let index = indices[identity] {
+        recorded[index] = element
+      } else {
+        indices[identity] = recorded.count
+        recorded.append(element)
+      }
     }
     return mode
   }

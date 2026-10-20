@@ -13,6 +13,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Keep menu-bar prayer names, times and countdowns readable on their themed backgrounds,
+  including passed prayers and Increase Contrast.
+- Expose the menu-bar countdown and count-up as read-only accessible text while retaining
+  the full duration in the selected language.
 - Preserve a scheduled prayer notification while macOS is delivering it, so the app's
   simultaneous alert does not replace and cancel its banner.
 - Open Settings when a sandboxed app follows a `salah://settings` link.

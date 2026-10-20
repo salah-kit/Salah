@@ -35,8 +35,7 @@ struct MenuDropdownContent: View {
   var body: some View {
     let theme = display.theme
     let colors = theme.colors(for: scheme)
-    ZStack {
-      SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
+    MenuDropdownSurface(display: display, colors: colors) {
       VStack(alignment: .leading, spacing: 10) {
         MenuDropdownHeader(display: display, colors: colors)
         schedule(colors: colors)
@@ -125,8 +124,40 @@ struct MenuDropdownContent: View {
         .fixedSize(horizontal: false, vertical: true)
       Spacer(minLength: 0)
     }
-    .foregroundStyle(.secondary)
+    .salahInk(.secondary.wrapping)
     .padding(.horizontal, 4)
+  }
+}
+
+/// Measures the intrinsic menu before drawing it, so its inks see the actual sky
+/// and their positions in the same render pass, including in ImageRenderer.
+private struct MenuDropdownSurface<Content: View>: View {
+  let display: SalahDisplay
+  let colors: SalahWidgetColors
+  @ViewBuilder let content: Content
+
+  var body: some View {
+    ZStack {
+      SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
+      content
+        .environment(\.salahWidgetInkProbe, nil)
+        .hidden()
+        .accessibilityHidden(true)
+        .allowsHitTesting(false)
+        .overlay {
+          GeometryReader { proxy in
+            content
+              .environment(
+                \.salahWidgetBackdrop,
+                SalahWidgetBackdrop(
+                  colors: colors, tone: display.backgroundTone, size: proxy.size,
+                  isRightToLeft: display.isRightToLeft)
+              )
+              .frame(width: proxy.size.width, height: proxy.size.height)
+          }
+        }
+    }
+    .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
   }
 }
 
@@ -212,24 +243,25 @@ private struct MenuMissingRow: View {
     HStack(spacing: 10) {
       Image(systemName: "questionmark.circle")
         .font(.footnote)
-        .foregroundStyle(.secondary)
+        .salahInk(.secondary.glyph)
         .frame(width: 18)
         .accessibilityHidden(true)
       name
         .font(Font.system(.subheadline, design: .serif))
+        .salahInk(.secondary)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(minWidth: 56, alignment: .leading)
       Spacer(minLength: 6)
       Text(verbatim: "–")
         .font(Font.subheadline.monospacedDigit())
+        .salahInk(.secondary)
         .frame(minWidth: 70, alignment: .trailing)
         .accessibilityLabel(Text(verbatim: labels.notAvailable))
     }
     .padding(.horizontal, 10)
     .padding(.vertical, 6)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .opacity(0.55)
     .accessibilityElement(children: .combine)
   }
 }
@@ -255,7 +287,7 @@ private struct MenuLastKnownCaption: View {
       Image(systemName: "clock.badge.questionmark")
     }
     .font(.caption.weight(.medium))
-    .foregroundStyle(.secondary)
+    .salahInk(.secondary)
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 4)
   }
@@ -273,7 +305,7 @@ private struct MenuNoticeCard: View {
       Image(systemName: "questionmark.circle")
     }
     .font(.subheadline)
-    .foregroundStyle(.secondary)
+    .salahInk(.secondary.on(.normal, opacity: SalahWidgetTint.card).wrapping)
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(12)
     .salahHeroCard(toneColor: colors.primary, accent: colors.accent)
