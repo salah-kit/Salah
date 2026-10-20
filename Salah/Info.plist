@@ -4,6 +4,19 @@
 <dict>
 	<key>CFBundleDisplayName</key>
 	<string>Salah</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>io.github.salah-kit.Salah</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>salah</string>
+			</array>
+		</dict>
+	</array>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSUIElement</key>
