@@ -15,7 +15,6 @@ struct MenuLiveCountdown: View {
   let target: Date
   /// "Now": the dropdown's timeline date, advanced each minute.
   let reference: Date
-  let color: Color
   let font: Font
   var bold: Bool = false
   var countingUp: Bool = false
@@ -49,7 +48,6 @@ struct MenuLiveCountdown: View {
     }
     .font(bold ? font.weight(.bold) : font)
     .monospacedDigit()
-    .foregroundStyle(color)
     .lineLimit(1)
     .minimumScaleFactor(0.6)
   }

@@ -19,11 +19,12 @@ struct MenuStopCard: View {
       VStack(alignment: .leading, spacing: 3) {
         Text(verbatim: title)
           .font(.system(.subheadline, design: .serif, weight: .semibold))
+          .salahInk(.primary.on(tone, opacity: SalahWidgetTint.card))
           .lineLimit(1)
           .minimumScaleFactor(0.6)
         Text(verbatim: subtitle)
           .font(.caption2)
-          .foregroundStyle(.secondary)
+          .salahInk(.secondary.on(tone, opacity: SalahWidgetTint.card))
           .lineLimit(1)
           .minimumScaleFactor(0.7)
       }
@@ -31,14 +32,15 @@ struct MenuStopCard: View {
       Button(action: onStop) {
         HStack(spacing: 5) {
           Image(systemName: "stop.fill")
+            .salahInk(stopInk.glyph)
           Text(verbatim: labels.stopShort)
+            .salahInk(stopInk)
         }
         .font(.caption.weight(.semibold))
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
         .background(Capsule().fill(toneColor.opacity(0.18)))
         .overlay(Capsule().strokeBorder(toneColor.opacity(0.55), lineWidth: 1))
-        .foregroundStyle(toneColor)
         .contentShape(Capsule())
       }
       .buttonStyle(.plain)
@@ -48,5 +50,9 @@ struct MenuStopCard: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(12)
     .salahHeroCard(toneColor: toneColor, accent: colors.accent)
+  }
+
+  private var stopInk: SalahWidgetInk {
+    .tone(tone).on(tone, opacity: SalahWidgetTint.stacked(0.18, over: SalahWidgetTint.card))
   }
 }

@@ -68,17 +68,25 @@ struct MenuHeroCard: View {
   private var statusLine: some View {
     HStack(spacing: 6) {
       if isCountUp {
-        InlineBadge(text: labels.now, tint: SalahWidgetTone.prayerColor(colors))
+        InlineBadge(
+          text: labels.now, tint: SalahWidgetTone.prayerColor(colors),
+          ink: .tone(.playingPrayerAudio).on(
+            tone,
+            opacity: SalahWidgetTint.stacked(SalahWidgetTint.badge, over: SalahWidgetTint.card)))
       } else {
         EyebrowLabel(
-          text: isTomorrow ? labels.tomorrow : labels.nextPrayer, accent: colors.accentText)
+          text: isTomorrow ? labels.tomorrow : labels.nextPrayer, accent: colors.accentText,
+          ink: .accent.on(tone, opacity: SalahWidgetTint.card))
       }
       Spacer(minLength: 8)
       if let onToggleAlert, !isTomorrow {
         Button(action: onToggleAlert) {
           Image(systemName: alertEnabled ? "bell.fill" : "bell.slash")
             .font(.caption)
-            .foregroundStyle(alertEnabled ? colors.accent : Color.secondary)
+            .salahInk(
+              (alertEnabled ? SalahWidgetInk.accent : .secondary).glyph.on(
+                tone, opacity: SalahWidgetTint.card)
+            )
             .frame(width: 22, height: 22)
             .contentShape(Rectangle())
         }
@@ -95,6 +103,7 @@ struct MenuHeroCard: View {
     HStack(alignment: .firstTextBaseline, spacing: 6) {
       (name ?? Text(verbatim: "–"))
         .font(.system(.title2, design: .serif, weight: .bold))
+        .salahInk(.primary.on(tone, opacity: SalahWidgetTint.card))
         .lineLimit(1)
         .minimumScaleFactor(0.6)
       Spacer(minLength: 6)
@@ -104,7 +113,7 @@ struct MenuHeroCard: View {
         Image(systemName: "clock")
       }
       .font(.caption2)
-      .foregroundStyle(.secondary)
+      .salahInk(.secondary.on(tone, opacity: SalahWidgetTint.card))
       .labelStyle(.titleAndIcon)
       .layoutPriority(-1)
     }
@@ -115,15 +124,19 @@ struct MenuHeroCard: View {
       if isImminent {
         Image(systemName: "exclamationmark.circle.fill")
           .font(.title3)
-          .foregroundStyle(toneColor)
+          .salahInk(.tone(tone).glyph.on(tone, opacity: SalahWidgetTint.card))
           .accessibilityHidden(true)
       }
       MenuLiveCountdown(
-        target: event.time, reference: date, color: toneColor,
-        font: .system(size: 30, weight: .semibold), bold: isImminent, countingUp: isCountUp)
+        target: event.time, reference: date,
+        font: .system(size: 30, weight: .semibold), bold: isImminent, countingUp: isCountUp
+      )
+      .accessibilityElement(children: .ignore)
+      .accessibilityLabel(Text(verbatim: countdownAccessibilityLabel))
+      .accessibilityAddTraits(.isStaticText)
+      .accessibilityIdentifier("menu.hero.duration")
+      .salahInk(.tone(tone).on(tone, opacity: SalahWidgetTint.card))
     }
-    .accessibilityElement(children: .ignore)
-    .accessibilityLabel(Text(verbatim: countdownAccessibilityLabel))
   }
 
   @ViewBuilder
@@ -135,7 +148,7 @@ struct MenuHeroCard: View {
         Image(systemName: "alarm")
       }
       .font(.caption2)
-      .foregroundStyle(.secondary)
+      .salahInk(.secondary.on(tone, opacity: SalahWidgetTint.card))
       .labelStyle(.titleAndIcon)
     }
   }
