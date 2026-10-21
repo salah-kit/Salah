@@ -40,6 +40,11 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   static let strategy = RefreshStrategy.steps(
     fine: .seconds(60), coarse: .seconds(5 * 60), window: .seconds(15 * 60))
 
+  /// WidgetKit archives the entries for every installed size before publishing a
+  /// replacement. Bound that work so an interactive refresh reaches the display
+  /// promptly; the builder ends at the first omitted change and reloads halfway.
+  static let entryLimit = 48
+
   /// The entries, in date order.
   var entries: [SalahWidgetEntry]
   /// When to ask for the next timeline.
@@ -52,8 +57,9 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   ///
   /// Without settings, one setup entry and no reload until the app saves its settings.
   /// With settings, the extension builds its own schedule and SalahWidgets' steps
-  /// timeline over the default 48-hour horizon: an entry wherever the state changes,
-  /// the steps between them, the expired entry at its end, and a reload halfway there.
+  /// timeline over the default 48-hour horizon, capped at `entryLimit`: an entry
+  /// wherever the state changes, the steps between them, an expired entry where the
+  /// archive ends, and a reload halfway there.
   /// What's playing shows in the entries while it can still be playing.
   /// The builder includes civil-day boundaries so the listed day turns over with the date.
   static func make(settings: SalahSettings?, playback: SalahPlayback?, now: Date)
@@ -80,7 +86,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     do {
       planned = try PrayerTimelineBuilder(
         schedule: schedule, policy: SalahDisplay.policy, strategy: strategy,
-        includeDayBoundaries: true
+        includeDayBoundaries: true, limit: entryLimit
       ).timeline(from: now)
     } catch {
       // Only an invalid horizon or strategy fails; show that the times need refreshing

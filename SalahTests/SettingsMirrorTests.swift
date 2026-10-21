@@ -1,3 +1,4 @@
+import AppIntents
 import Foundation
 import SalahCalculation
 import SalahCore
@@ -294,6 +295,37 @@ struct SettingsMirrorTests {
     #expect(mirror.publish(playback: nil))
     #expect(group.playback.load() == nil)
     #expect(group.reloads.kinds.count == 2)
+  }
+
+  /// The discoverable intent also works outside widget interactions, so a changed
+  /// value still requests a reload. Exercise the actual intent with its own suite
+  /// and signal, including publication before Stop, never touching the app's data.
+  @Test func theStopIntentPublishesBeforeSignallingAndReloadsWidgets() async throws {
+    let group = MirrorGroup()
+    let playback = SalahPlayback(event: Fixture.event(.asr), slot: .alert)
+    try group.playback.save(playback)
+    let signal = DarwinSignal(name: "io.github.salah-kit.Salah.tests.stop.\(UUID().uuidString)")
+    var observed = false
+    var clearedBeforeSignal = false
+    let observation = signal.observe {
+      observed = true
+      clearedBeforeSignal = group.playback.load() == nil
+    }
+    defer { observation.cancel() }
+    #expect(observation.isActive)
+    #expect(StopSalahAudioIntent.isDiscoverable)
+
+    let intent = StopSalahAudioIntent(playback: group.playback, stopAudio: signal)
+    _ = try await intent.perform()
+    #expect(group.playback.load() == nil)
+    #expect(group.reloads.kinds == [[SalahWidgetConstants.prayerTimesWidgetKind]])
+
+    let deadline = ContinuousClock.now.advanced(by: .seconds(5))
+    while !observed && ContinuousClock.now < deadline {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    #expect(observed)
+    #expect(clearedBeforeSignal)
   }
 }
 

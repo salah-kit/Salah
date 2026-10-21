@@ -41,6 +41,29 @@ struct WidgetTimelineTests {
     #expect(timeline.reload == .never)
   }
 
+  /// WidgetKit archives every entry for each installed size before publishing the
+  /// replacement batch. A 96-entry batch across all three sizes took over 13
+  /// seconds to publish after the click. Keep each archive bounded;
+  /// actual host redraw latency is verified separately on the installed widgets.
+  @Test func interactiveRefreshHasABoundedArchiveWorkload() throws {
+    let start = Fixture.time(.asr).adding(seconds: 27)
+    let playing = SalahPlayback(event: Fixture.event(.asr), slot: .alert)
+    for playback in [nil, playing] as [SalahPlayback?] {
+      let timeline = SalahWidgetTimeline.make(
+        settings: Self.settings, playback: playback, now: start)
+      let planned = try #require(timeline.planned)
+      #expect(timeline.entries.count <= 48)
+      #expect(timeline.entries.first?.date == start)
+      #expect(planned.horizon == DateInterval(start: start, duration: 48 * 3_600))
+      #expect(Self.displays(timeline).first?.1.playback == playback)
+      guard case .expired = try #require(timeline.entries.last).content else {
+        Issue.record("the bounded archive must still end with expiry")
+        return
+      }
+      #expect(timeline.entries.last?.date == planned.validUntil)
+    }
+  }
+
   /// Salah's cadence for its static countdowns: an entry every five minutes, and every
   /// minute within 15 minutes of a prayer, so the imminent red and the count-up advance
   /// minute by minute; a minute before the prayer the live timer takes over.
@@ -48,12 +71,13 @@ struct WidgetTimelineTests {
     let start = Fixture.date(13, 0)
     let timeline = SalahWidgetTimeline.make(settings: Self.settings, playback: nil, now: start)
     let asr = Fixture.time(.asr)
-    let dates = timeline.entries.map(\.date).filter { $0 <= Fixture.date(16, 0) }
+    let validUntil = try #require(timeline.planned).validUntil
+    let dates = Self.displays(timeline).map(\.0).filter { $0 <= Fixture.date(16, 0) }
     let expected =
       stride(from: 0, through: 135, by: 5).map { start.adding(minutes: Double($0)) }
       + (-15...15).map { asr.adding(minutes: Double($0)) }
       + [Fixture.date(15, 55), Fixture.date(16, 0)]
-    #expect(dates == expected)
+    #expect(dates == expected.filter { $0 < validUntil })
   }
 
   /// Every timeline ends with the expired entry at its validity's end, and asks for the
@@ -99,7 +123,11 @@ struct WidgetTimelineTests {
     var now = Fixture.date(13, 0)
     let end = now.addingTimeInterval(7 * 86_400)
     var timelines = 0
+    var reloadsPerDay: [CivilDay: Int] = [:]
+    var midnightEntries: Set<CivilDay> = []
     while now < end {
+      let reloadDay = CivilDay(containing: now, in: Fixture.timeZone)
+      reloadsPerDay[reloadDay, default: 0] += 1
       let timeline = SalahWidgetTimeline.make(settings: settings, playback: nil, now: now)
       guard case .after(let reload) = timeline.reload else {
         Issue.record("a timeline without a reload date")
@@ -108,18 +136,24 @@ struct WidgetTimelineTests {
       let planned = try #require(timeline.planned)
       #expect(reload <= planned.validUntil && reload > now)
       for (date, display) in Self.displays(timeline) {
+        let day = CivilDay(containing: date, in: Fixture.timeZone)
+        if date == day.start(in: Fixture.timeZone) { midnightEntries.insert(day) }
         let fresh = schedule.state(
           at: date, through: date.addingTimeInterval(SalahDisplay.lookahead),
           policy: SalahDisplay.policy)
         #expect(display.prayerState?.next == fresh.prayerState?.next, "\(date)")
         #expect(display.prayerState?.justStarted == fresh.prayerState?.justStarted, "\(date)")
         #expect(display.prayerState?.isApproaching == fresh.prayerState?.isApproaching, "\(date)")
-        #expect(display.listedDay?.day == CivilDay(containing: date, in: Fixture.timeZone))
+        #expect(display.listedDay?.day == day)
       }
       now = reload
       timelines += 1
     }
     #expect(timelines > 7)
+    #expect(Set((1...7).map { Fixture.civilDay(offset: $0) }).isSubset(of: midnightEntries))
+    // Apple's typical daily allowance is 40–70 refreshes, varying with usage.
+    // This is a planning ceiling, not an assumption that the host grants 70.
+    #expect(reloadsPerDay.values.allSatisfy { $0 <= 70 })
   }
 
   /// What's playing reaches every entry while it can still be playing, so the widget
