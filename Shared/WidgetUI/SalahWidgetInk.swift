@@ -66,13 +66,19 @@ nonisolated struct SalahWidgetBackdrop: Equatable, Sendable {
   var size: CGSize
   /// Whether `SalahWidgetBackground` is drawn right to left, which mirrors its glows.
   var isRightToLeft: Bool
+  /// A flat theme surface, used by the menu with Increase Contrast.
+  var isSolid: Bool
 
-  init(colors: SalahWidgetColors, tone: SalahWidgetTone, size: CGSize, isRightToLeft: Bool) {
+  init(
+    colors: SalahWidgetColors, tone: SalahWidgetTone, size: CGSize, isRightToLeft: Bool,
+    isSolid: Bool = false
+  ) {
     self.palette = colors.palette
     self.isDark = colors.isDark
     self.tone = tone
     self.size = size
     self.isRightToLeft = isRightToLeft
+    self.isSolid = isSolid
   }
 
   /// The coordinate space of the face that `SalahWidgetBackground` fills.
@@ -140,6 +146,7 @@ nonisolated struct SalahWidgetBackdrop: Equatable, Sendable {
   private func surface(at point: CGPoint, face: CGSize, contrast: ColorSchemeContrast)
     -> ThemeColor
   {
+    if isSolid { return palette.backgroundTop }
     let toneColor = tone.components(palette: palette, isDark: isDark, contrast: contrast)
     let toneCenter = CGPoint(x: isRightToLeft ? 0 : face.width, y: face.height)
     let accentCenter = CGPoint(x: isRightToLeft ? face.width : 0, y: 0)

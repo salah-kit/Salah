@@ -95,6 +95,56 @@ struct MenuPassedRowContrastTests {
 struct MenuContrastTests {
   init() { TestEnvironment.configure() }
 
+  /// Increase Contrast removes the atmospheric variation behind the menu's text.
+  /// Sample the real menu's clear outer margins, beyond its cards and controls,
+  /// against a separately rendered swatch of the selected theme's base surface.
+  @Test func increasedContrastUsesASolidMenuBackdrop() throws {
+    for theme in SalahWidgetTheme.allPresets {
+      for scheme in [ColorScheme.light, .dark] {
+        var display = BaselinePipeline.display(for: .idle, language: .en)
+        display.settings.theme = theme
+        let colors = theme.colors(for: scheme)
+        let reference = try #require(
+          PixelComparison.rgba(
+            BaselineRenderer.stablePNG {
+              Rectangle().fill(colors.backgroundTop).frame(width: 1, height: 1)
+            }))
+        try #require(reference.width == 1 && reference.height == 1)
+        for contrast in [ColorSchemeContrast.standard, .increased] {
+          let pixels = try #require(
+            PixelComparison.rgba(
+              BaselineRenderer.stablePNG {
+                MenuDropdownContent(display: display)
+                  .environment(\.colorScheme, scheme)
+                  .environment(\._colorSchemeContrast, contrast)
+              }))
+          try #require(pixels.width == 300 && pixels.height > 20)
+          var samples = Set<[UInt8]>()
+          for x in [2, pixels.width - 3] {
+            for y in [
+              2, pixels.height / 4, pixels.height / 2,
+              pixels.height * 3 / 4, pixels.height - 3,
+            ] {
+              let offset = (y * pixels.width + x) * 4
+              let sample = Array(pixels.bytes[offset..<(offset + 4)])
+              samples.insert(sample)
+              #expect(sample[3] == 255, "\(theme.id) \(scheme): opaque menu margin")
+              if contrast == .increased {
+                #expect(
+                  sample == reference.bytes,
+                  "\(theme.id) \(scheme): increased-contrast margin at \(x),\(y) differs from the theme base"
+                )
+              }
+            }
+          }
+          if contrast == .standard {
+            #expect(samples.count > 1, "\(theme.id) \(scheme): standard appearance keeps its sky")
+          }
+        }
+      }
+    }
+  }
+
   nonisolated struct Run: Sendable, CustomTestStringConvertible {
     var name: String
     var theme: SalahWidgetTheme

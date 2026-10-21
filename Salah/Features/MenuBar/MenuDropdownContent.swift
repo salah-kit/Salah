@@ -135,10 +135,12 @@ private struct MenuDropdownSurface<Content: View>: View {
   let display: SalahDisplay
   let colors: SalahWidgetColors
   @ViewBuilder let content: Content
+  @Environment(\.colorSchemeContrast) private var contrast
 
   var body: some View {
+    let isSolid = contrast == .increased
     ZStack {
-      SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
+      SalahWidgetBackground(tone: display.backgroundTone, colors: colors, isSolid: isSolid)
       content
         .environment(\.salahWidgetInkProbe, nil)
         .hidden()
@@ -151,7 +153,7 @@ private struct MenuDropdownSurface<Content: View>: View {
                 \.salahWidgetBackdrop,
                 SalahWidgetBackdrop(
                   colors: colors, tone: display.backgroundTone, size: proxy.size,
-                  isRightToLeft: display.isRightToLeft)
+                  isRightToLeft: display.isRightToLeft, isSolid: isSolid)
               )
               .frame(width: proxy.size.width, height: proxy.size.height)
           }

@@ -186,31 +186,37 @@ nonisolated enum SalahWidgetTint {
 nonisolated struct SalahWidgetBackground: View {
   let tone: SalahWidgetTone
   let colors: SalahWidgetColors
+  /// Flatten the atmosphere only when the owning surface requests it.
+  var isSolid = false
   @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
   var body: some View {
-    let dark = colors.isDark
-    ZStack {
-      LinearGradient(
-        colors: [colors.backgroundTop, colors.backgroundBottom],
-        startPoint: .top,
-        endPoint: .bottom
-      )
-      // The soft glows are the "transparency"; flatten to the base gradient when
-      // the system asks to reduce transparency.
-      if !reduceTransparency {
-        RadialGradient(
-          colors: [tone.color(colors).opacity(Self.toneGlowOpacity(isDark: dark)), .clear],
-          center: .bottomTrailing,
-          startRadius: 0,
-          endRadius: Self.toneGlowRadius
+    if isSolid {
+      colors.backgroundTop
+    } else {
+      let dark = colors.isDark
+      ZStack {
+        LinearGradient(
+          colors: [colors.backgroundTop, colors.backgroundBottom],
+          startPoint: .top,
+          endPoint: .bottom
         )
-        RadialGradient(
-          colors: [colors.glow.opacity(Self.accentGlowOpacity(isDark: dark)), .clear],
-          center: .topLeading,
-          startRadius: 0,
-          endRadius: Self.accentGlowRadius
-        )
+        // The soft glows are the "transparency"; flatten to the base gradient when
+        // the system asks to reduce transparency.
+        if !reduceTransparency {
+          RadialGradient(
+            colors: [tone.color(colors).opacity(Self.toneGlowOpacity(isDark: dark)), .clear],
+            center: .bottomTrailing,
+            startRadius: 0,
+            endRadius: Self.toneGlowRadius
+          )
+          RadialGradient(
+            colors: [colors.glow.opacity(Self.accentGlowOpacity(isDark: dark)), .clear],
+            center: .topLeading,
+            startRadius: 0,
+            endRadius: Self.accentGlowRadius
+          )
+        }
       }
     }
   }

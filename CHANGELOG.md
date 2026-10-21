@@ -15,10 +15,13 @@ All notable changes to this project are documented here. The format follows
 
 - Refresh the widget promptly after stopping audio, including when small, medium and
   large widgets are installed together ([#52](https://github.com/salah-kit/Salah/issues/52)).
+  Recheck playback after planning a refresh, archive the static Stop face only once, and
+  return to the schedule at its exact playback expiry.
 - Draw the Appearance widget preview at the normal desktop sizes measured on macOS 27.0.1
   ([#28](https://github.com/salah-kit/Salah/issues/28)).
 - Keep menu-bar prayer names, times and countdowns readable on their themed backgrounds,
-  including passed prayers and Increase Contrast.
+  including passed prayers and Increase Contrast. With Increase Contrast enabled, use a
+  solid themed menu background instead of decorative gradients and glows.
 - Expose the menu-bar countdown and count-up as read-only accessible text while retaining
   the full duration in the selected language.
 - Preserve a scheduled prayer notification while macOS is delivering it, including a

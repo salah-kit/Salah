@@ -188,6 +188,109 @@ struct WidgetTimelineTests {
     #expect(reminder.playing(at: Fixture.time(.maghrib).adding(minutes: 20)) == nil)
   }
 
+  /// Stop is a static face for one playback. Re-archiving it at every countdown
+  /// step delays a newer stopped timeline without changing any visible content.
+  @Test func playbackArchivesOneStopFaceAndClearsAtItsExactBound() throws {
+    let settings = Self.settings
+    let playback = SalahPlayback(event: Fixture.event(.maghrib), slot: .alert)
+    let start = playback.alertDate.addingTimeInterval(60)
+    let end = playback.alertDate.addingTimeInterval(SalahPlayback.longestPlay)
+    let normal = SalahWidgetTimeline.make(settings: settings, playback: nil, now: start)
+    let timeline = SalahWidgetTimeline.make(settings: settings, playback: playback, now: start)
+    let displays = Self.displays(timeline)
+    let stop = displays.filter { $0.1.widgetFace == .stop }
+    #expect(stop.count == 1)
+    #expect(stop.first?.0 == start)
+    #expect(stop.first?.1.playback == playback)
+    let firstNormal = try #require(displays.first { $0.1.playback == nil })
+    #expect(firstNormal.0 == end)
+    let originalNormalDates = Self.displays(normal).map(\.0).filter { $0 >= end }
+    #expect(Set(originalNormalDates).isSubset(of: Set(displays.map(\.0))))
+    #expect(timeline.entries.count < normal.entries.count)
+    #expect(timeline.entries.last?.date == normal.entries.last?.date)
+    #expect(timeline.reload == normal.reload)
+  }
+
+  /// The provider plans the normal schedule first, then reads playback once. The
+  /// same interleaving covers both a Quit and a replacement sound during planning.
+  @Test(arguments: [false, true])
+  func publicationReadsPlaybackAfterPlanning(replacementStarts: Bool) throws {
+    let settings = Self.settings
+    let start = Fixture.time(.maghrib).adding(seconds: 27)
+    let original = SalahPlayback(event: Fixture.event(.maghrib), slot: .alert)
+    let replacement = SalahPlayback(event: original.event, slot: .alert, isDua: true)
+    var current: SalahPlayback? = original
+    var order: [String] = []
+    let normal = SalahWidgetTimeline.make(settings: settings, playback: nil, now: start)
+    let actual = SalahWidgetTimeline.makeForPublication(
+      settings: settings, now: start,
+      loadPlayback: {
+        order.append("playback")
+        return current
+      },
+      planSchedule: { settings, date in
+        order.append("plan")
+        let timeline = SalahWidgetTimeline.make(settings: settings, playback: nil, now: date)
+        current = replacementStarts ? replacement : nil
+        return timeline
+      })
+    #expect(order == ["plan", "playback"])
+    if replacementStarts {
+      let stop = Self.displays(actual).filter { $0.1.widgetFace == .stop }
+      #expect(stop.count == 1)
+      #expect(stop.first?.1.playback == replacement)
+      #expect(stop.first?.1.playingTitle == settings.labels.playingDua)
+    } else {
+      #expect(Self.displays(actual).allSatisfy { $0.1.playback == nil })
+      #expect(actual.entries.map(\.date) == normal.entries.map(\.date))
+      #expect(actual.planned == normal.planned)
+      #expect(actual.reload == normal.reload)
+    }
+  }
+
+  /// With only one Stop step before expiry, inserting the exact transition must
+  /// still respect the archive cap and honestly end at the first omitted change.
+  @Test func anImminentPlaybackBoundKeepsTheArchiveBounded() throws {
+    let settings = Self.settings
+    let playback = SalahPlayback(event: Fixture.event(.maghrib), slot: .alert)
+    let end = playback.alertDate.addingTimeInterval(SalahPlayback.longestPlay)
+    let start = end.addingTimeInterval(-1)
+    let normal = SalahWidgetTimeline.make(settings: settings, playback: nil, now: start)
+    let timeline = SalahWidgetTimeline.make(settings: settings, playback: playback, now: start)
+    let planned = try #require(timeline.planned)
+    let dates = timeline.entries.map(\.date)
+    let displays = Self.displays(timeline)
+    #expect(timeline.entries.count <= SalahWidgetTimeline.entryLimit)
+    #expect(dates == Array(Set(dates)).sorted())
+    #expect(displays.filter { $0.1.widgetFace == .stop }.count == 1)
+    #expect(displays.first { $0.1.playback == nil }?.0 == end)
+    let expectedNormalDates = Self.displays(normal).map(\.0).filter {
+      $0 >= end && $0 < planned.validUntil
+    }
+    #expect(Set(expectedNormalDates).isSubset(of: Set(displays.map(\.0))))
+    #expect(timeline.entries.last?.date == planned.validUntil)
+    guard case .expired = try #require(timeline.entries.last).content else {
+      Issue.record("A bounded playback plan must end expired")
+      return
+    }
+    #expect(planned.entries.map(\.date) == dates)
+    #expect(
+      timeline.reload
+        == .after(start.addingTimeInterval(planned.validUntil.timeIntervalSince(start) / 2)))
+  }
+
+  @Test func anUnconfiguredPublicationDoesNotReadPlayback() {
+    var reads = 0
+    let timeline = SalahWidgetTimeline.makeForPublication(
+      settings: nil, now: Fixture.date(13, 0),
+      loadPlayback: {
+        reads += 1
+        return nil
+      })
+    #expect(reads == 0)
+    #expect(timeline.reload == .never)
+  }
+
   /// A timeline built long after the alert, from a value a crashed app left, shows no
   /// Stop control at all.
   @Test func aLeftoverPlaybackShowsNoStop() {

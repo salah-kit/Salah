@@ -77,9 +77,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       let civilDay = CivilDay(containing: date, in: zone)
       let day = days[civilDay] ?? schedule.day(civilDay)
       days[civilDay] = day
-      return SalahDisplay(
-        date: date, settings: settings, day: day, state: state,
-        playback: playback?.playing(at: date))
+      return SalahDisplay(date: date, settings: settings, day: day, state: state)
     }
 
     let planned: PrayerTimeline
@@ -108,7 +106,71 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       }
     }
     return SalahWidgetTimeline(
-      entries: entries, reload: .after(planned.reloadDate), planned: planned)
+      entries: entries, reload: .after(planned.reloadDate), planned: planned
+    ).applyingPlayback(playback)
+  }
+
+  /// Plan the normal schedule before reading the transient playback value. A Stop
+  /// or Quit during planning must not publish the playback captured before it.
+  /// The injectable planner observes that ordering without WidgetKit or a clock wait.
+  static func makeForPublication(
+    settings: SalahSettings?, now: Date, loadPlayback: () -> SalahPlayback?,
+    planSchedule: (SalahSettings?, Date) -> SalahWidgetTimeline = {
+      SalahWidgetTimeline.make(settings: $0, playback: nil, now: $1)
+    }
+  ) -> SalahWidgetTimeline {
+    let timeline = planSchedule(settings, now)
+    guard timeline.planned != nil else { return timeline }
+    return timeline.applyingPlayback(loadPlayback())
+  }
+
+  /// Applies playback to a complete normal plan. The Stop face has no countdown
+  /// or day header: its title, subtitle and tone stay identical for one playback.
+  /// Keep only its first entry, then resume the original schedule at the exact
+  /// playback bound. Never derive a cleared plan from an already compacted one.
+  private func applyingPlayback(_ playback: SalahPlayback?) -> SalahWidgetTimeline {
+    guard var planned, let first = entries.first,
+      case .schedule(var firstDisplay) = first.content,
+      let playback = playback?.playing(at: first.date)
+    else { return self }
+    let settings = firstDisplay.settings
+    let end = playback.alertDate.addingTimeInterval(SalahPlayback.longestPlay)
+    firstDisplay.playback = playback
+    var published = [SalahWidgetEntry(date: first.date, content: .schedule(firstDisplay))]
+    published += entries.filter { $0.date >= end }
+    // If validity ends first, its expired entry must still end the Stop face.
+    if end >= planned.validUntil {
+      published = [published[0], entries[entries.count - 1]]
+    } else if !published.contains(where: { $0.date == end }) {
+      published.insert(
+        SalahWidgetEntry(
+          date: end,
+          content: .schedule(
+            SalahDisplay(date: end, settings: settings, schedule: settings.schedule))), at: 1)
+    }
+    // An expiry between cadence dates can add one entry when there were no
+    // duplicate Stop entries to remove. End at the first omitted change rather
+    // than exceeding the archive bound or hiding a missing schedule update.
+    if published.count > Self.entryLimit {
+      let cutoff = published[Self.entryLimit - 1].date
+      published =
+        Array(published.prefix(Self.entryLimit - 1))
+        + [SalahWidgetEntry(date: cutoff, content: .expired(settings))]
+      planned.validUntil = cutoff
+      planned.reloadDate = first.date.addingTimeInterval(cutoff.timeIntervalSince(first.date) / 2)
+    }
+    planned.entries = published.compactMap { entry in
+      switch entry.content {
+      case .schedule(let display):
+        PrayerTimeline.Entry(date: entry.date, state: .schedule(display.state))
+      case .expired:
+        PrayerTimeline.Entry(date: entry.date, state: .expired(knownThrough: entry.date))
+      case .setupNeeded:
+        nil
+      }
+    }
+    return SalahWidgetTimeline(
+      entries: published, reload: .after(planned.reloadDate), planned: planned)
   }
 }
 

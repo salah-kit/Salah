@@ -38,8 +38,9 @@ struct SalahPrayerWidgetProvider: TimelineProvider {
   func getTimeline(
     in context: Context, completion: @escaping @Sendable (Timeline<SalahWidgetEntry>) -> Void
   ) {
-    let timeline = SalahWidgetTimeline.make(
-      settings: SharedValue.settings.load(), playback: SharedValue.playback.load(), now: Date())
+    let timeline = SalahWidgetTimeline.makeForPublication(
+      settings: SharedValue.settings.load(), now: Date(),
+      loadPlayback: { SharedValue.playback.load() })
     switch timeline.reload {
     case .never:
       completion(Timeline(entries: timeline.entries, policy: .never))
