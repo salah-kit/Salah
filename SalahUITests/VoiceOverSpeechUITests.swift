@@ -131,7 +131,7 @@ final class VoiceOverSpeechUITests: XCTestCase {
       "Notifications", heading: "Sound",
       arguments: Launch.arguments(alerts: [.fajr: ["alertEnabled": true]])
     ).speech
-    // The picker is drawn by Salah: a group named "Prayer" of seven radio buttons.
+    // The picker is macOS's segmented control, named "Prayer", with seven segments.
     try speech.next { $0.hasPrefix("Prayer") }
     let opening = try speech.enter()
     XCTAssertTrue(opening.contains("Fajr selected radio button"), speech.log)

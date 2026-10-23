@@ -121,7 +121,8 @@ final class AlertSettingsUITests: XCTestCase {
     settings.selectPane("Notifications")
 
     let name = PrayerNames(locale: Locale(identifier: "en")).name(of: kind)
-    let segment = settings.groups["Prayer"].radioButtons[name]
+    // The picker's segments, macOS's own: radio buttons named for their prayers.
+    let segment = settings.radioButtons[name]
     XCTAssertTrue(segment.waitForExistence(timeout: 10), settings.debugDescription)
     segment.click()
     XCTAssertTrue(Self.wait(timeout: 5) { Self.isOn(segment) == true }, segment.debugDescription)

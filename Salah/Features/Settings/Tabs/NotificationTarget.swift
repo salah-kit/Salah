@@ -39,15 +39,6 @@ enum NotificationTarget: Hashable, Identifiable {
     }
   }
 
-  /// The segment after `target` in `order`, or before it; `nil` at either end.
-  static func neighbor(
-    of target: NotificationTarget, in order: [NotificationTarget], forward: Bool
-  ) -> NotificationTarget? {
-    guard let index = order.firstIndex(of: target) else { return nil }
-    let next = index + (forward ? 1 : -1)
-    return order.indices.contains(next) ? order[next] : nil
-  }
-
   /// Whether nothing alerts for this target, which its segment shows with a muted bell.
   /// Jumu'ah without alerts of its own is as quiet as Dhuhr.
   func isMuted(in preferences: Preferences) -> Bool {

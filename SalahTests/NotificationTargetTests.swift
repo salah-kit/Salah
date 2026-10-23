@@ -84,17 +84,4 @@ struct NotificationTargetTests {
     preferences.jumuahOverrideEnabled = true
     #expect(preferences.jumuahConfig == .alert(before: 10))
   }
-
-  /// The arrow keys step through the picker and stop at either end.
-  @Test func theArrowKeysStepAndStopAtTheEnds() {
-    let order = NotificationTarget.all
-    #expect(
-      NotificationTarget.neighbor(of: .prayer(.fajr), in: order, forward: true)
-        == .prayer(.sunrise))
-    #expect(
-      NotificationTarget.neighbor(of: .prayer(.sunrise), in: order, forward: false)
-        == .prayer(.fajr))
-    #expect(NotificationTarget.neighbor(of: .prayer(.fajr), in: order, forward: false) == nil)
-    #expect(NotificationTarget.neighbor(of: .jumuah, in: order, forward: true) == nil)
-  }
 }
