@@ -55,4 +55,21 @@ struct NotificationTargetTests {
     #expect(NotificationTarget.jumuah.isMuted(in: preferences))
     #expect(!NotificationTarget.prayer(.dhuhr).isMuted(in: preferences))
   }
+
+  /// The pane saves what it edits where that target keeps it: a prayer's own alerts, or
+  /// Jumu'ah's, never Dhuhr's for Jumu'ah.
+  @Test func editsLandInTheTargetsOwnAlerts() {
+    let scratch = ScratchDefaults()
+    let preferences = Preferences(defaults: scratch.defaults)
+    preferences.setConfig(.alert(), for: .dhuhr)
+    preferences.jumuahOverrideEnabled = true
+
+    NotificationTarget.jumuah.setConfig(.alert(false, before: 20), in: preferences)
+    #expect(preferences.jumuahConfig == .alert(false, before: 20))
+    #expect(preferences.config(for: .dhuhr) == .alert())
+
+    NotificationTarget.prayer(.asr).setConfig(.alert(after: 5), in: preferences)
+    #expect(preferences.config(for: .asr) == .alert(after: 5))
+    #expect(preferences.jumuahConfig == .alert(false, before: 20))
+  }
 }

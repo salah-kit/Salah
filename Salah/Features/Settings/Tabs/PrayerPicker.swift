@@ -11,6 +11,7 @@ struct PrayerPicker: View {
   /// Each segment's target, name and whether it's muted, in order.
   let segments: [(target: NotificationTarget, name: String, isMuted: Bool)]
 
+  @Environment(\.layoutDirection) private var layoutDirection
   @Environment(\.colorScheme) private var scheme
   @Environment(\.colorSchemeContrast) private var contrast
 
@@ -32,6 +33,19 @@ struct PrayerPicker: View {
     }
     .padding(2)
     .frame(height: 24)
+    // The arrow keys move the selection, as in macOS's own segmented control.
+    .focusable()
+    .onMoveCommand { direction in
+      let forward: Bool
+      switch direction {
+      case .right: forward = layoutDirection == .leftToRight
+      case .left: forward = layoutDirection == .rightToLeft
+      default: return
+      }
+      guard let index = segments.firstIndex(where: { $0.target == selection }) else { return }
+      let next = index + (forward ? 1 : -1)
+      if segments.indices.contains(next) { selection = segments[next].target }
+    }
     .background(
       palette.fillTertiary.color, in: RoundedRectangle(cornerRadius: 8, style: .continuous)
     )
@@ -65,6 +79,7 @@ struct PrayerPicker: View {
         }
         Text(verbatim: segment.name)
           .lineLimit(1)
+          .minimumScaleFactor(0.75)
       }
       .font(.body)
       .foregroundStyle((isSelected ? palette.labelOnAccent : palette.labelPrimary).color)
@@ -79,5 +94,6 @@ struct PrayerPicker: View {
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
+    .focusable(false)
   }
 }

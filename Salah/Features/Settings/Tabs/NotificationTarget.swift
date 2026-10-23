@@ -28,6 +28,14 @@ enum NotificationTarget: Hashable, Identifiable {
     }
   }
 
+  /// Saves the alerts the pane edits: a prayer's own, or Jumu'ah's.
+  func setConfig(_ config: PrayerNotificationConfig, in preferences: Preferences) {
+    switch self {
+    case .prayer(let kind): preferences.setConfig(config, for: kind)
+    case .jumuah: preferences.setJumuahConfig(config)
+    }
+  }
+
   /// Whether nothing alerts for this target, which its segment shows with a muted bell.
   /// Jumu'ah without alerts of its own is as quiet as Dhuhr.
   func isMuted(in preferences: Preferences) -> Bool {

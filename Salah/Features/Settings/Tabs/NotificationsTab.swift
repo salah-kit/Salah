@@ -28,16 +28,8 @@ struct NotificationsContent: View {
   /// Friday's alerts differ.
   private var config: Binding<PrayerNotificationConfig> {
     Binding(
-      get: {
-        target == .jumuah ? prefs.jumuahConfig : prefs.config(for: selectedPrayer)
-      },
-      set: {
-        if target == .jumuah {
-          prefs.setJumuahConfig($0)
-        } else {
-          prefs.setConfig($0, for: selectedPrayer)
-        }
-      }
+      get: { target.config(in: prefs) ?? prefs.config(for: selectedPrayer) },
+      set: { target.setConfig($0, in: prefs) }
     )
   }
 
@@ -65,7 +57,11 @@ struct NotificationsContent: View {
           .accessibilityLabel(
             Text(verbatim: localizedString("settings.notif.volume", locale: .app))
           )
-          .accessibilityValue(Text(verbatim: "\(prefs.alertVolume.localizedDigits())%"))
+          .accessibilityValue(
+            Text(
+              verbatim: (Double(prefs.alertVolume) / 100).formatted(
+                .percent.locale(Locale.app)))
+          )
           .frame(maxWidth: 164)
           .disabled(prefs.silentMode)
       }
@@ -80,6 +76,21 @@ struct NotificationsContent: View {
     .onChange(of: prefs.alertVolume) {
       previewController.setVolume(Float(prefs.alertVolume) / 100.0)
     }
+    // On the one section that's always there, so each fires once whatever the pane shows.
+    .onChange(of: prefs.notificationSettings) {
+      // The `notificationSettings` didSet emits the reschedule + republish; here
+      // we only (re)request authorization if a newly-enabled alert needs it.
+      Task {
+        await requestAuthorizationIfNeeded()
+      }
+    }
+    .onChange(of: prefs.jumuahOverrideEnabled) {
+      previewController.stop()
+      Task { await requestAuthorizationIfNeeded() }
+    }
+    .onChange(of: target) {
+      previewController.stop()
+    }
     .task {
       await requestAuthorizationIfNeeded()
     }
@@ -91,52 +102,35 @@ struct NotificationsContent: View {
       }
     }
 
-    Group {
+    // One section always follows Sound, so the picker in its header keeps its place (and
+    // its focus) whichever prayer it selects: Jumu'ah's Friday switch, or a prayer's alert.
+    Section {
       if target == .jumuah {
-        Section {
-          Toggle("settings.notif.differentOnFriday", isOn: $prefs.jumuahOverrideEnabled)
-        } header: {
-          prayerPicker
-            .padding(.bottom, 12)
-        } footer: {
-          Text("settings.notif.differentOnFriday.footer")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        }
-        .onChange(of: prefs.jumuahOverrideEnabled) {
-          previewController.stop()
-          Task { await requestAuthorizationIfNeeded() }
+        Toggle("settings.notif.differentOnFriday", isOn: $prefs.jumuahOverrideEnabled)
+      } else {
+        alertRows
+      }
+    } header: {
+      // The picker stands on the window above the first group it edits, not in a group.
+      VStack(alignment: .leading, spacing: 18) {
+        prayerPicker
+        if target != .jumuah {
+          Text("settings.notif.section.atPrayerTime")
         }
       }
+      .padding(.bottom, target == .jumuah ? 12 : 0)
+    } footer: {
+      if target == .jumuah {
+        Text("settings.notif.differentOnFriday.footer")
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+      }
+    }
 
-      if editsAlerts {
-        Section {
-          Toggle("settings.notif.playAdhan", isOn: config.alertEnabled)
-          if config.alertEnabled.wrappedValue {
-            soundRow(config.alertSound, slot: .alert)
-          }
-        } header: {
-          // The picker stands on the window above the first group it edits, not in a group.
-          if target == .jumuah {
-            Text("settings.notif.section.atPrayerTime")
-          } else {
-            VStack(alignment: .leading, spacing: 18) {
-              prayerPicker
-              Text("settings.notif.section.atPrayerTime")
-            }
-          }
-        }
+    if target == .jumuah, prefs.jumuahOverrideEnabled {
+      Section("settings.notif.section.atPrayerTime") {
+        alertRows
       }
-    }
-    .onChange(of: prefs.notificationSettings) {
-      // The `notificationSettings` didSet emits the reschedule + republish; here
-      // we only (re)request authorization if a newly-enabled alert needs it.
-      Task {
-        await requestAuthorizationIfNeeded()
-      }
-    }
-    .onChange(of: target) {
-      previewController.stop()
     }
 
     if editsAlerts {
@@ -185,6 +179,19 @@ struct NotificationsContent: View {
     )
     // A header is inset like its title; the picker spans the groups' full width.
     .padding(.horizontal, -10)
+  }
+
+  /// The alert at the prayer's time, and its sound while it's on. Sunrise, which has no
+  /// adhan, says only that it plays at its time.
+  @ViewBuilder
+  private var alertRows: some View {
+    Toggle(
+      selectedPrayer == .sunrise && target != .jumuah
+        ? "settings.notif.alert.toggle" : "settings.notif.playAdhan",
+      isOn: config.alertEnabled)
+    if config.alertEnabled.wrappedValue {
+      soundRow(config.alertSound, slot: .alert)
+    }
   }
 
   /// A reminder's offset: its minutes, and a stepper from 1 to 120.
