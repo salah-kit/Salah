@@ -409,6 +409,40 @@ struct AppWindowCoordinatorTests {
     #expect(offers.count == 1)
   }
 
+  /// A link that launches Salah with the welcome done opens the window, which the launch
+  /// finishing afterwards leaves open.
+  @Test func aLinkBeforeTheLaunchFinishesKeepsItsWindow() {
+    let coordinator = makeCoordinator()
+    let opener = OpenCounter()
+    coordinator.register { opener.count += 1 }
+    coordinator.open()
+    coordinator.didFinishLaunching(asLoginItem: false)
+    #expect(opener.count == 1)
+    let window = makeWindow()
+    defer { window.close() }
+    coordinator.attach(window)
+    #expect(window.isVisible)
+  }
+
+  /// The same with the welcome decided later: the window opens once it's decided.
+  @Test func aLinkBeforeTheLaunchFinishesOpensTheWindowOnceDecided() {
+    let decision = PendingDecision()
+    let coordinator = makeCoordinator(startOnboarding: { decision.otherwise = $0 })
+    let opener = OpenCounter()
+    coordinator.register { opener.count += 1 }
+    coordinator.open()
+    coordinator.didFinishLaunching(asLoginItem: false)
+    let early = makeWindow()
+    coordinator.attach(early)
+    #expect(!early.isVisible, "SwiftUI's own window closes while the welcome is decided")
+    decision.otherwise?()
+    #expect(opener.count == 1)
+    let window = makeWindow()
+    defer { window.close() }
+    coordinator.attach(window)
+    #expect(window.isVisible)
+  }
+
   /// With the welcome done (or nothing to ask), the first open goes straight to the window.
   @Test func aFinishedWelcomeOpensTheWindowAtOnce() {
     let offers = OpenCounter()
@@ -489,6 +523,12 @@ private final class NoteCounter {
 @MainActor
 private final class OpenCounter {
   var count = 0
+}
+
+/// The welcome's decision, held until the test makes it.
+@MainActor
+private final class PendingDecision {
+  var otherwise: (@MainActor () -> Void)?
 }
 
 /// Quit Salah waits for its alerts' withdrawal two seconds at most.

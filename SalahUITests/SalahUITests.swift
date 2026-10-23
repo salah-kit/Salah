@@ -156,6 +156,37 @@ final class SalahUITests: XCTestCase {
     XCTAssertEqual(app.salahWindow.title, "General")
   }
 
+  /// A widget tap while Salah isn't running launches it with the link: its window opens and
+  /// stays open.
+  @MainActor
+  func testALinkThatLaunchesSalahOpensItsWindow() throws {
+    // The build under test, found by launching it once: LaunchServices could pick another
+    // copy of Salah by its identifier.
+    let app = launchQuietly()
+    let running = try XCTUnwrap(
+      NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
+        .first { !$0.isTerminated })
+    let applicationURL = try XCTUnwrap(running.bundleURL)
+    app.terminate()
+    XCTAssertTrue(app.wait(for: .notRunning, timeout: 15))
+
+    let configuration = NSWorkspace.OpenConfiguration()
+    configuration.arguments = Self.quietLaunch
+    configuration.activates = true
+    configuration.addsToRecentItems = false
+    configuration.promptsUserIfNeeded = false
+    let link = try XCTUnwrap(URL(string: "salah://settings"))
+    let launched = expectation(description: "LaunchServices launches Salah with the link")
+    NSWorkspace.shared.open([link], withApplicationAt: applicationURL, configuration: configuration)
+    { _, _ in launched.fulfill() }
+    wait(for: [launched], timeout: 15)
+
+    XCTAssertTrue(app.salahWindow.waitForExistence(timeout: 30), app.debugDescription)
+    // The window isn't closed again as the launch finishes.
+    Thread.sleep(forTimeInterval: 3)
+    XCTAssertTrue(app.salahWindow.exists, app.debugDescription)
+  }
+
   /// The link a widget tap opens brings up Salah's window in the running app, with Salah's
   /// own About and Help in its menus.
   @MainActor

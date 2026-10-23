@@ -80,7 +80,7 @@ final class AppWindowCoordinator {
   /// time Salah's window is asked for. A welcome closed early comes back in a later run.
   private var hasOfferedOnboarding = false
   private var closeObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
-  /// A login launch or the first launch's welcome, until Salah's window is asked for: a
+  /// A login launch or an unfinished welcome, until Salah's window is asked for: a
   /// window SwiftUI opens by itself meanwhile closes again (macOS 14 opens the window scene
   /// at launch).
   private var isQuietLaunch = false
@@ -124,9 +124,7 @@ final class AppWindowCoordinator {
       MainActor.assumeIsolated { self?.sessionEndingSince = Date() }
     }
     if AppLifecycle.opensWindowAtLaunch(asLoginItem: asLoginItem) {
-      // An unfinished welcome comes first; the window opens when it ends. Until
-      // then, a window SwiftUI opens by itself closes again, as on a login launch.
-      isQuietLaunch = true
+      // Unless a widget's link already asked for the window.
       offerOnboarding(then: nil)
     } else {
       isQuietLaunch = true
@@ -180,6 +178,9 @@ final class AppWindowCoordinator {
     guard !hasOfferedOnboarding else { return }
     hasOfferedOnboarding = true
     isDecidingOnboarding = true
+    // An unfinished welcome comes first; the window opens when it ends. Until then, a
+    // window SwiftUI opens by itself closes again, as on a login launch.
+    isQuietLaunch = true
     startOnboarding { [weak self] in
       self?.isDecidingOnboarding = false
       self?.open(pane)

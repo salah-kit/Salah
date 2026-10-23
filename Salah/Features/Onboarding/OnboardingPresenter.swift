@@ -110,6 +110,7 @@ final class OnboardingPresenter {
 
   /// Makes `window` the welcome's: Salah's window waits for it, and closing it ends it early.
   func adopt(_ window: NSWindow) {
+    if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) }
     closeObserver = NotificationCenter.default.addObserver(
       forName: NSWindow.willCloseNotification, object: window, queue: .main
     ) { [weak self] _ in
