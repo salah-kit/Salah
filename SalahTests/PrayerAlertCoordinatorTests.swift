@@ -55,9 +55,20 @@ struct PrayerAlertCoordinatorTests {
         pending: pending, normalizePriority: normalizePriority,
         rejectCalendarAdds: rejectCalendarAdds)
       let instant = clock.instant
+      let todayOpened = Counter()
+      self.todayOpened = todayOpened
       coordinator = PrayerAlertCoordinator(
-        preferences: preferences, center: center, audio: audio, clock: clock,
+        preferences: preferences, center: center, audio: audio,
+        openToday: { todayOpened.count += 1 }, clock: clock,
         schedulerNow: { instant.value }, beforeDueDecision: beforeDueDecision)
+    }
+
+    private let todayOpened: Counter
+    /// How many times a tap opened Today.
+    var todayOpenCount: Int { todayOpened.count }
+
+    final class Counter {
+      var count = 0
     }
 
     /// `update(schedule:)` as the app calls it, then waits for the installation and any
@@ -131,6 +142,12 @@ struct PrayerAlertCoordinatorTests {
     text.replacing("\u{2068}", with: "").replacing("\u{2069}", with: "")
   }
 
+  /// Text as Figma writes it: without bidi isolates, and with the clock's narrow
+  /// no-break space (U+202F) as a plain space.
+  static func plain(_ text: String) -> String {
+    withoutIsolates(text).replacing("\u{202F}", with: " ").replacing("\u{00A0}", with: " ")
+  }
+
   static let asr = Fixture.event(.asr)
   static let maghrib = Fixture.event(.maghrib)
   static let alafasy = BuiltInAdhanSound.alafasy.bundledURL
@@ -166,7 +183,8 @@ struct PrayerAlertCoordinatorTests {
           requestIdentifier: request.identifier, prefix: "io.github.salah-kit.Salah.")
           == alert.id)
       #expect(alert.id.namespace == "prayers")
-      #expect(request.content.threadIdentifier == "salah-prayers")
+      #expect(request.content.threadIdentifier == "salah-prayers-\(alert.id.scheduleDay)")
+      #expect(request.content.categoryIdentifier == "salah-prayer")
       let trigger = try #require(request.trigger as? UNCalendarNotificationTrigger)
       #expect(!trigger.repeats)
       #expect(trigger.dateComponents.calendar?.identifier == .gregorian)
@@ -219,9 +237,12 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.audio.plays.isEmpty)
   }
 
-  /// The English content: the prayer's name as the title; the at-time body with Salah's
-  /// clock text; the reminders' bodies with their offsets; Salah's interruption levels,
-  /// relevance and `userInfo`; and a notification sound only for the system sound.
+  /// The English content, as Figma's notification stack shows it: the prayer's name as the
+  /// title; the place as the subtitle; the at-time body with Salah's clock text; the
+  /// reminders' bodies with their minutes and, before the prayer, its time; Salah's
+  /// interruption levels (only the prayer time is time-sensitive), relevance and
+  /// `userInfo`; the prayer day's thread and Salah's category; and a notification sound
+  /// only for the system sound.
   @Test func buildsSalahsContentInEnglish() async throws {
     let harness = Harness(
       now: Fixture.date(13, 0),
@@ -236,8 +257,12 @@ struct PrayerAlertCoordinatorTests {
 
     let atTime = try #require(center.pendingRequest(Self.identifier(.asr, .atTime))).content
     #expect(atTime.title == "Asr")
-    #expect(atTime.body == "It's time for Asr (\(text.time(Self.asr.time)))")
-    #expect(text.time(Self.asr.time).contains("3:35"))
+    #expect(atTime.subtitle == "Makkah")
+    #expect(Self.plain(atTime.body) == "It’s time for Asr (3:35 PM).")
+    #expect(
+      atTime.body == "It’s time for Asr (\(text.timeFormatter().string(from: Self.asr.time))).")
+    #expect(atTime.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(atTime.categoryIdentifier == "salah-prayer")
     #expect(atTime.interruptionLevel == .timeSensitive)
     #expect(atTime.relevanceScore == 1.0)
     #expect(atTime.userInfo["prayer"] as? String == "asr")
@@ -248,8 +273,11 @@ struct PrayerAlertCoordinatorTests {
 
     let before = try #require(center.pendingRequest(Self.identifier(.maghrib, .before))).content
     #expect(before.title == "Maghrib")
-    #expect(before.body == "Pre-reminder for Maghrib (\u{2068}10\u{2069} min before).")
-    #expect(before.interruptionLevel == .timeSensitive)
+    #expect(before.subtitle == "Makkah")
+    #expect(Self.plain(before.body) == "Maghrib in 10 minutes, at 7:00 PM.")
+    #expect(before.interruptionLevel == .active)
+    #expect(before.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(before.categoryIdentifier == "salah-prayer")
     #expect(before.relevanceScore == 0.7)
     #expect(before.userInfo["kind"] as? String == "preReminder")
     #expect(before.userInfo["offsetMinutes"] as? Int == 10)
@@ -257,7 +285,10 @@ struct PrayerAlertCoordinatorTests {
 
     let after = try #require(center.pendingRequest(Self.identifier(.maghrib, .after))).content
     #expect(after.title == "Maghrib")
-    #expect(after.body == "Post-reminder for Maghrib (\u{2068}5\u{2069} min after).")
+    #expect(after.subtitle == "Makkah")
+    #expect(after.body == "Maghrib began 5 minutes ago.")
+    #expect(after.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(after.categoryIdentifier == "salah-prayer")
     #expect(after.interruptionLevel == .active)
     #expect(after.relevanceScore == 0.5)
     #expect(after.userInfo["prayer"] as? String == "maghrib")
@@ -267,40 +298,208 @@ struct PrayerAlertCoordinatorTests {
 
     let system = try #require(center.pendingRequest(Self.identifier(.dhuhr, .atTime, dayOffset: 1)))
     #expect(system.content.sound == .default)
+    #expect(system.content.threadIdentifier == "salah-prayers-2026-06-03")
     let silent = try #require(center.pendingRequest(Self.identifier(.isha, .atTime)))
     #expect(silent.content.sound == nil)
   }
 
-  /// The content follows the app's language: Arabic, with its own digits, and French.
-  /// Foundation's formatting in a right-to-left locale isolates each argument once more,
-  /// so the Arabic bodies are compared without their isolates, and the digits' isolation
-  /// is checked on its own.
+  /// The content follows the app's language: Arabic, with its own digits and plural
+  /// forms, as Figma's Arabic stack shows it, and French. Foundation's formatting in a
+  /// right-to-left locale isolates each argument, so the Arabic bodies are compared
+  /// without their isolates, and the isolation is checked on its own.
   @Test func buildsTheContentInTheAppsLanguage() async throws {
-    let settings: [PrayerKind: PrayerNotificationConfig] = [.maghrib: .alert(before: 10)]
+    let settings: [PrayerKind: PrayerNotificationConfig] = [
+      .maghrib: .alert(before: 10, after: 5), .isha: .alert(before: 1, after: 2),
+      .asr: .alert(before: 11),
+    ]
     let arabic = Harness(now: Fixture.date(13, 0), settings: settings, language: .arabic)
     await arabic.update()
-    let arabicText = SalahText(locale: AppLanguage.arabic.locale, timeZone: Fixture.timeZone)
+    func arabicBody(_ prayer: PrayerKind, _ kind: AlertKind) throws -> String {
+      let request = try #require(arabic.center.pendingRequest(Self.identifier(prayer, kind)))
+      return Self.plain(request.content.body)
+    }
     let arabicAsr = try #require(arabic.center.pendingRequest(Self.identifier(.asr, .atTime)))
     #expect(arabicAsr.content.title == "العصر")
-    #expect(
-      Self.withoutIsolates(arabicAsr.content.body)
-        == "حان وقت العصر (\(Self.withoutIsolates(arabicText.time(Self.asr.time))))")
-    #expect(arabicAsr.content.body.contains(arabicText.time(Self.asr.time)))
-    #expect(arabicText.time(Self.asr.time).contains("٣:٣٥"))
+    #expect(arabicAsr.content.subtitle == "Makkah")
+    #expect(try arabicBody(.asr, .atTime) == "حان وقت العصر (٣:٣٥ م).")
+    #expect(arabicAsr.content.body.contains("\u{2068}العصر\u{2069}"))
+    #expect(arabicAsr.content.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(try arabicBody(.maghrib, .atTime) == "حان وقت المغرب (٧:٠٠ م).")
     let arabicBefore = try #require(
       arabic.center.pendingRequest(Self.identifier(.maghrib, .before)))
     #expect(arabicBefore.content.title == "المغرب")
-    #expect(Self.withoutIsolates(arabicBefore.content.body) == "تذكير قبل المغرب (١٠ د).")
-    #expect(arabicBefore.content.body.contains("\u{2068}١٠\u{2069}"))
+    #expect(try arabicBody(.maghrib, .before) == "المغرب بعد ١٠ دقائق، الساعة ٧:٠٠ م.")
+    #expect(try arabicBody(.maghrib, .after) == "دخل وقت المغرب منذ ٥ دقائق.")
+    // Arabic's other plural forms: one, two and many.
+    #expect(try arabicBody(.isha, .before) == "العشاء بعد دقيقة، الساعة ٨:٣٠ م.")
+    #expect(try arabicBody(.isha, .after) == "دخل وقت العشاء منذ دقيقتين.")
+    #expect(try arabicBody(.asr, .before) == "العصر بعد ١١ دقيقة، الساعة ٣:٣٥ م.")
+
+    let english = Harness(now: Fixture.date(13, 0), settings: settings)
+    await english.update()
+    let englishOne = try #require(english.center.pendingRequest(Self.identifier(.isha, .before)))
+    #expect(Self.plain(englishOne.content.body) == "Isha in 1 minute, at 8:30 PM.")
+    let englishTwo = try #require(english.center.pendingRequest(Self.identifier(.isha, .after)))
+    #expect(englishTwo.content.body == "Isha began 2 minutes ago.")
 
     let french = Harness(now: Fixture.date(13, 0), settings: settings, language: .french)
     await french.update()
     let frenchText = SalahText(locale: Locale(identifier: "fr"), timeZone: Fixture.timeZone)
     let frenchAsr = try #require(french.center.pendingRequest(Self.identifier(.asr, .atTime)))
-    #expect(frenchAsr.content.body == "C'est l'heure : Asr (\(frenchText.time(Self.asr.time)))")
+    #expect(
+      frenchAsr.content.body
+        == "C’est l’heure de Asr (\(frenchText.timeFormatter().string(from: Self.asr.time))).")
     let frenchBefore = try #require(
       french.center.pendingRequest(Self.identifier(.maghrib, .before)))
-    #expect(frenchBefore.content.body == "Rappel avant Maghrib (\u{2068}10\u{2069} min avant).")
+    #expect(
+      frenchBefore.content.body
+        == "Maghrib dans 10 minutes, à \(frenchText.timeFormatter().string(from: Self.maghrib.time))."
+    )
+    let frenchOne = try #require(french.center.pendingRequest(Self.identifier(.isha, .before)))
+    #expect(frenchOne.content.body.hasPrefix("Isha dans 1 minute, à "))
+  }
+
+  // MARK: - Threads, category and convergence
+
+  /// Each prayer day has its own thread, named by the day the prayer belongs to in the
+  /// location's time zone. Around midnight a prayer's alerts stay together: an Isha after
+  /// midnight and its reminders join the day the Isha belongs to, and a Fajr reminder
+  /// before midnight joins Fajr's day.
+  @Test func eachPrayerDaysAlertsShareOneThreadAcrossMidnight() throws {
+    let scratch = ScratchDefaults()
+    let content = PrayerAlertContent(preferences: .scratch(scratch, settings: [:]))
+    let tuesday = Fixture.civilDay()
+    let wednesday = Fixture.civilDay(offset: 1)
+    func alert(
+      _ prayer: PrayerKind, _ kind: AlertKind, day: CivilDay, at time: Date, offset: Int = 0
+    ) -> PlannedAlert {
+      let event = PrayerEvent(scheduleDay: day, kind: prayer, time: time)
+      return PlannedAlert(
+        id: NotificationIdentity(
+          namespace: "prayers", scheduleDay: day, prayer: prayer, kind: kind),
+        event: event, fireDate: time.adding(minutes: Double(offset)), sound: .none)
+    }
+    // Tuesday's Isha at 00:15 on Wednesday, with reminders at 00:05 and 00:20.
+    let isha = Fixture.date(0, 15, dayOffset: 1)
+    for (kind, offset) in [(AlertKind.before, -10), (.atTime, 0), (.after, 5)] {
+      let made = content.make(alert(.isha, kind, day: tuesday, at: isha, offset: offset))
+      #expect(made.threadIdentifier == "salah-prayers-2026-06-02", "\(kind)")
+    }
+    // Wednesday's Fajr at 00:05, with its reminder at 23:50 on Tuesday.
+    let fajr = Fixture.date(0, 5, dayOffset: 1)
+    let reminder = content.make(alert(.fajr, .before, day: wednesday, at: fajr, offset: -15))
+    #expect(reminder.threadIdentifier == "salah-prayers-2026-06-03")
+    let adhan = content.make(alert(.fajr, .atTime, day: wednesday, at: fajr))
+    #expect(adhan.threadIdentifier == "salah-prayers-2026-06-03")
+  }
+
+  /// The thread follows the location's day, not the Mac's: in New York, Tuesday's Isha
+  /// falls on Wednesday in Riyadh, the tests' process time zone, and still joins
+  /// Tuesday's thread. The subtitle names the place.
+  @Test func theThreadFollowsTheLocationsDayNotTheMacs() async throws {
+    let harness = Harness(
+      now: Fixture.date(16, 0), settings: [.isha: .alert(before: 10)], othersOff: true,
+      prepare: {
+        $0.updateLocation(
+          latitude: 40.7128, longitude: -74.0060, city: "New York", state: "NY",
+          country: "US", countryName: "United States", timeZone: "America/New_York")
+      })
+    await harness.update(harness.preferences.mirroredSettings.schedule)
+    let identifier = NotificationIdentity(
+      namespace: "prayers", scheduleDay: Fixture.civilDay(), prayer: .isha, kind: .atTime
+    ).requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix)
+    let request = try #require(harness.center.pendingRequest(identifier))
+    let fireDate = try #require(Self.fireDate(of: request))
+    #expect(CivilDay(containing: fireDate, in: Fixture.timeZone) == Fixture.civilDay(offset: 1))
+    #expect(request.content.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(request.content.subtitle == "New York")
+    let before = try #require(
+      harness.center.pendingRequest(
+        identifier.replacing("/isha/atTime", with: "/isha/before")))
+    #expect(before.content.threadIdentifier == "salah-prayers-2026-06-02")
+  }
+
+  /// Salah registers its one category on the center it holds: no actions, and the
+  /// prayer's name stays visible when previews are hidden.
+  @Test func registersSalahsCategory() throws {
+    let harness = Harness(now: Fixture.date(13, 0))
+    let category = try #require(harness.center.categories.first)
+    #expect(harness.center.categories.count == 1)
+    #expect(category.identifier == PrayerAlertCoordinator.categoryIdentifier)
+    #expect(category.actions.isEmpty)
+    #expect(category.intentIdentifiers.isEmpty)
+    #expect(category.options == .hiddenPreviewsShowTitle)
+  }
+
+  /// Replanning unchanged settings, as every wake, tick and setting change does, leaves
+  /// the requests alone: the per-day thread, the place and the category are the same
+  /// each time, so nothing is removed or added again.
+  @Test func replanningUnchangedSettingsChurnsNothing() async {
+    let settings: [PrayerKind: PrayerNotificationConfig] = [
+      .maghrib: .alert(before: 10, after: 5), .isha: .alert(before: 15),
+    ]
+    let harness = Harness(now: Fixture.date(13, 0), settings: settings)
+    await harness.update()
+    let installed = harness.pendingIdentifiers
+    #expect(installed.count == 60)
+    harness.center.forgetCalls()
+    harness.clock.now = Fixture.date(13, 5)
+
+    await harness.update()
+
+    #expect(!harness.center.calls.contains { if case .add = $0 { true } else { false } })
+    #expect(harness.removedPendingIdentifiers.isEmpty)
+    #expect(harness.pendingIdentifiers == installed)
+  }
+
+  /// A Mac upgrading from a Salah that wrote the old content (one shared thread, no
+  /// subtitle or category, the old wording, a time-sensitive before-reminder) converges
+  /// in one replan: each request is replaced once, in place, and the next replan adds
+  /// nothing.
+  @Test func requestsFromAnEarlierVersionConvergeInOneReplan() async throws {
+    let settings: [PrayerKind: PrayerNotificationConfig] = [.maghrib: .alert(before: 10, after: 5)]
+    let current = Harness(now: Fixture.date(13, 0), settings: settings)
+    await current.update()
+    let fresh = current.center.pending
+    let legacy = fresh.map { request -> UNNotificationRequest in
+      let content = UNMutableNotificationContent()
+      content.title = request.content.title
+      content.body = "Pre-reminder for \(request.content.title) (10 min before)."
+      content.threadIdentifier = "salah-prayers"
+      content.userInfo = request.content.userInfo
+      content.sound = request.content.sound
+      content.interruptionLevel = .timeSensitive
+      content.relevanceScore = request.content.relevanceScore
+      return UNNotificationRequest(
+        identifier: request.identifier, content: content, trigger: request.trigger)
+    }
+
+    let upgraded = Harness(now: Fixture.date(13, 0), settings: settings, pending: legacy)
+    await upgraded.update()
+    let adds = upgraded.center.calls.compactMap { call -> String? in
+      if case .add(let identifier) = call { return identifier }
+      return nil
+    }
+    #expect(adds.sorted() == fresh.map(\.identifier).sorted())
+    #expect(upgraded.removedPendingIdentifiers.isEmpty)
+    #expect(Set(upgraded.pendingIdentifiers) == Set(fresh.map(\.identifier)))
+    for request in upgraded.center.pending {
+      let expected = try #require(fresh.first { $0.identifier == request.identifier })
+      #expect(request.content.threadIdentifier == expected.content.threadIdentifier)
+      let identity = try #require(
+        NotificationIdentity(
+          requestIdentifier: request.identifier, prefix: PrayerAlertCoordinator.identifierPrefix))
+      #expect(request.content.threadIdentifier == "salah-prayers-\(identity.scheduleDay)")
+      #expect(request.content.subtitle == "Makkah")
+      #expect(request.content.categoryIdentifier == "salah-prayer")
+      #expect(request.content.body == expected.content.body)
+      #expect(request.content.interruptionLevel == expected.content.interruptionLevel)
+    }
+
+    upgraded.center.forgetCalls()
+    await upgraded.update()
+    #expect(!upgraded.center.calls.contains { if case .add = $0 { true } else { false } })
+    #expect(upgraded.removedPendingIdentifiers.isEmpty)
   }
 
   // MARK: - Silent mode
@@ -376,7 +575,8 @@ struct PrayerAlertCoordinatorTests {
     let posted = try #require(harness.center.posted.first)
     #expect(posted.identifier == Self.identifier(.dhuhr, .before, dayOffset: 3))
     #expect(posted.content.title == "Jumuah")
-    #expect(posted.content.body == "Pre-reminder for Jumuah (\u{2068}20\u{2069} min before).")
+    #expect(Self.plain(posted.content.body) == "Jumuah in 20 minutes, at 12:19 PM.")
+    #expect(posted.content.threadIdentifier == "salah-prayers-2026-06-05")
   }
 
   /// With the override off, Friday's Dhuhr uses Dhuhr's own settings, even with Jumu'ah
@@ -492,9 +692,11 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.center.posted.count == 1)
     #expect(posted.identifier == beforeID)
     #expect(posted.trigger == nil)
-    #expect(posted.content.threadIdentifier == "salah-prayers")
+    #expect(posted.content.threadIdentifier == "salah-prayers-2026-06-02")
+    #expect(posted.content.categoryIdentifier == "salah-prayer")
     #expect(posted.content.title == "Asr")
-    #expect(posted.content.body == "Pre-reminder for Asr (\u{2068}10\u{2069} min before).")
+    #expect(posted.content.subtitle == "Makkah")
+    #expect(Self.plain(posted.content.body) == "Asr in 10 minutes, at 3:35 PM.")
 
     let reminder = try #require(harness.audio.plays.first)
     #expect(reminder.request.resource.url == Self.alafasy)
@@ -1098,7 +1300,8 @@ struct PrayerAlertCoordinatorTests {
     #expect(posted.content.title == expected.title)
     #expect(posted.content.body == expected.body)
     #expect(posted.content.sound == (change == .language ? .default : nil))
-    #expect(posted.content.threadIdentifier == PrayerAlertCoordinator.threadIdentifier)
+    #expect(posted.content.threadIdentifier == expected.threadIdentifier)
+    #expect(posted.content.threadIdentifier == "salah-prayers-2026-06-02")
     #expect(NSDictionary(dictionary: posted.content.userInfo).isEqual(to: expected.userInfo))
     if change == .language || change == .languageAndSilentMode {
       #expect(posted.content.title == "العصر")
@@ -1502,6 +1705,33 @@ struct PrayerAlertCoordinatorTests {
       !PrayerAlertCoordinator.isPrayerAlert("io.github.salah-kit.Salah.prayers/2026-06-02/asr"))
     #expect(!PrayerAlertCoordinator.isPrayerAlert("salah.prayer.asr.prayerTime.1780400100"))
     #expect(!PrayerAlertCoordinator.isPrayerAlert(""))
+  }
+
+  /// Tapping a prayer alert while nothing plays opens Today, and stops nothing; the
+  /// notification leaves Notification Center.
+  @Test func tappingAnAlertWhileNothingPlaysOpensToday() async {
+    let harness = Harness(now: Fixture.date(13, 0))
+    harness.audio.isPlaying = false
+    let identifier = Self.identifier(.maghrib, .atTime)
+
+    await harness.coordinator.didTapAlert(identifier)
+
+    #expect(harness.todayOpenCount == 1)
+    #expect(harness.audio.stopCount == 0)
+    #expect(harness.center.calls.contains(.removeDelivered([identifier])))
+  }
+
+  /// Tapping a prayer alert while its adhan plays stops it, and doesn't open the window.
+  @Test func tappingAnAlertWhileItsAdhanPlaysStopsIt() async {
+    let harness = Harness(now: Fixture.date(13, 0))
+    harness.audio.isPlaying = true
+    let identifier = Self.identifier(.maghrib, .atTime)
+
+    await harness.coordinator.didTapAlert(identifier)
+
+    #expect(harness.audio.stopCount == 1)
+    #expect(harness.todayOpenCount == 0)
+    #expect(harness.center.calls.contains(.removeDelivered([identifier])))
   }
 
   // MARK: - The fake center

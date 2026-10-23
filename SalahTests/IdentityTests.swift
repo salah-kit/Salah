@@ -1,4 +1,5 @@
 import Foundation
+import SalahCore
 import SalahWidgets
 import Testing
 
@@ -56,12 +57,15 @@ struct IdentityTests {
     #expect(claim["CFBundleTypeRole"] as? String == "Editor")
   }
 
-  /// Prayer alerts are requested under the app's bundle identifier, in one namespace and
-  /// one notification thread.
+  /// Prayer alerts are requested under the app's bundle identifier, in one namespace, a
+  /// notification thread per prayer day and one category.
   @Test func alertIdentifiersAreSalahs() {
     #expect(PrayerAlertCoordinator.identifierPrefix == "io.github.salah-kit.Salah.")
     #expect(PrayerAlertCoordinator.namespace == "prayers")
-    #expect(PrayerAlertCoordinator.threadIdentifier == "salah-prayers")
+    #expect(
+      PrayerAlertCoordinator.threadIdentifier(for: CivilDay(year: 2026, month: 6, day: 2))
+        == "salah-prayers-2026-06-02")
+    #expect(PrayerAlertCoordinator.categoryIdentifier == "salah-prayer")
     #expect(
       PrayerAlertCoordinator.isPrayerAlert(
         "io.github.salah-kit.Salah.prayers/2026-06-02/dhuhr/before"))

@@ -1225,292 +1225,608 @@
         }
       }
     },
+    "notification.after": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دخل وقت %1$@ منذ %2$#@minutes@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقائق"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  },
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "دقيقة"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  },
+                  "two": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "دقيقتين"
+                    }
+                  },
+                  "zero": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ শুরু হয়েছে %2$#@minutes@ আগে।"
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg মিনিট"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg মিনিট"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ began %2$#@minutes@ ago."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg minute"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg minutes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وقت %1$@ %2$#@minutes@ پیش شروع شد."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg دقیقه"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg دقیقه"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ a commencé il y a %2$#@minutes@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minute"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minutes"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minutes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ dimulai %2$#@minutes@ yang lalu."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg menit"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ bermula %2$#@minutes@ yang lalu."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minit"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ vakti %2$#@minutes@ önce girdi."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg dakika"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg dakika"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ کو شروع ہوئے %2$#@minutes@ ہو گئے۔"
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg منٹ"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg منٹ"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "notification.atTime": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حان وقت %1$@ (%2$@)"
+            "value": "حان وقت %1$@ (%2$@)."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@-এর সময় হয়েছে (%2$@)।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "It's time for %1$@ (%2$@)"
+            "value": "It’s time for %1$@ (%2$@)."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وقت %1$@ است (%2$@)."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "C'est l'heure : %1$@ (%2$@)"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ کا وقت ہو گیا (%2$@)"
+            "value": "C’est l’heure de %1$@ (%2$@)."
           }
         },
         "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saatnya %1$@ (%2$@)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ vakti geldi (%2$@)"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "وقت %1$@ است (%2$@)"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@-এর সময় হয়েছে (%2$@)"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sudah masuk waktu %1$@ (%2$@)"
-          }
-        }
-      }
-    },
-    "notification.postReminder": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ منذ %2$@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ was %2$@ minutes ago"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ il y a %2$@ minutes"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ کو %2$@ منٹ گزر چکے ہیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ %2$@ menit yang lalu"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ %2$@ dakika önceydi"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%2$@ دقیقه از %1$@ گذشت"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ হয়েছে %2$@ মিনিট আগে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ %2$@ minit yang lalu"
-          }
-        }
-      }
-    },
-    "notification.postReminder.offset": {
-      "localizations": {
-        "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تذكير بعد %@ (%@ د)."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Post-reminder for %@ (%@ min after)."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rappel après %@ (%@ min après)."
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ کے بعد یاددہانی (%@ منٹ بعد)۔"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pengingat setelah %@ (%@ mnt setelahnya)."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ sonrası hatırlatma (%@ dk sonra)."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "یادآور پس از %@ (%@ دقیقه بعد)."
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@-এর পরে অনুস্মারক (%@ মিনিট পরে)।"
+            "value": "Saatnya %1$@ (%2$@)."
           }
         },
         "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan selepas %@ (%@ minit selepas)."
-          }
-        }
-      }
-    },
-    "notification.preReminder": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ بعد %2$@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ is in %2$@ minutes"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ dans %2$@ minutes"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ میں %2$@ منٹ باقی ہیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ dalam %2$@ menit"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ vaktine %2$@ dakika var"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%2$@ دقیقه تا %1$@ مانده"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ আর %2$@ মিনিট পরে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ dalam %2$@ minit"
-          }
-        }
-      }
-    },
-    "notification.preReminder.offset": {
-      "localizations": {
-        "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تذكير قبل %@ (%@ د)."
+            "value": "Sudah masuk waktu %1$@ (%2$@)."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ vakti geldi (%2$@)."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ کا وقت ہو گیا (%2$@)۔"
+          }
+        }
+      }
+    },
+    "notification.before": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ بعد %2$#@minutes@، الساعة %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقائق"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  },
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "دقيقة"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  },
+                  "two": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "دقيقتين"
+                    }
+                  },
+                  "zero": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg دقيقة"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ আর %2$#@minutes@ পরে, %3$@-এ।"
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg মিনিট"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg মিনিট"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pre-reminder for %@ (%@ min before)."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rappel avant %@ (%@ min avant)."
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ سے پہلے یاددہانی (%@ منٹ پہلے)۔"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pengingat sebelum %@ (%@ mnt sebelumnya)."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ öncesi hatırlatma (%@ dk önce)."
+            "value": "%1$@ in %2$#@minutes@, at %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg minute"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg minutes"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "یادآور پیش از %@ (%@ دقیقه قبل)."
+            "state": "needs_review",
+            "value": "%2$#@minutes@ تا %1$@ مانده، ساعت %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg دقیقه"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg دقیقه"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
-        "bn": {
+        "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@-এর আগে অনুস্মারক (%@ মিনিট আগে)।"
+            "state": "needs_review",
+            "value": "%1$@ dans %2$#@minutes@, à %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minute"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minutes"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minutes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ dalam %2$#@minutes@, pukul %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg menit"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan sebelum %@ (%@ minit sebelum)."
+            "state": "needs_review",
+            "value": "%1$@ dalam %2$#@minutes@, pada %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg minit"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ vaktine %2$#@minutes@ var, saat %3$@."
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg dakika"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg dakika"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ میں %2$#@minutes@ باقی ہیں، %3$@ پر۔"
+          },
+          "substitutions": {
+            "minutes": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg منٹ"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "needs_review",
+                      "value": "%arg منٹ"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
