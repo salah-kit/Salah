@@ -53,12 +53,7 @@ struct SalahApp: App {
         .environment(\.layoutDirection, appLayoutDirection)
     } label: {
       MenuBarLabel(
-        text: prayerManager.menuBarText,
-        showIcon: prayerManager.preferences.displayIcon || hasLocationAttention,
-        glyph: prayerManager.menuBarGlyph,
-        isPlaying: prayerManager.menuBarIsPlaying,
-        isApproaching: prayerManager.menuBarStatusTone == .imminent,
-        attention: hasLocationAttention,
+        item: prayerManager.menuBarItem(appName: appName, needsAttention: hasLocationAttention),
         layoutDirection: appLayoutDirection
       )
       .background(WindowOpenerBridge())
@@ -151,89 +146,111 @@ private struct SalahCommands: Commands {
   }
 }
 
-/// The menu-bar label: the next prayer's glyph (the one that just began, while it counts
-/// up) and the status text, in the system's menu-bar font.
+/// The menu-bar label (`MenuBarItem`): the glyph or the speaker, and the status text, in the
+/// system's menu-bar font.
 ///
-/// It's a template, so it follows the menu bar's light or dark appearance, except while a
-/// prayer approaches: then it sits on a gold capsule with dark ink, legible on any wallpaper.
-/// `MenuBarExtra` draws its label as a template and drops colors, so that state is drawn to a
-/// non-template image. While audio plays, a speaker stands in for the glyph. A permission
-/// that's off adds a small dot.
+/// It's a template, so it follows the menu bar's light or dark appearance. Two states carry
+/// color, which a template drops, so they're drawn to a non-template image: the approaching
+/// capsule, `label/on-accent` ink on `accent/fill`, legible on any wallpaper; and the
+/// attention dot, `status/warning` in the glyph's top-trailing corner, with ink in the menu
+/// bar's appearance.
 private struct MenuBarLabel: View {
-  let text: String
-  let showIcon: Bool
-  let glyph: PrayerKind?
-  let isPlaying: Bool
-  let isApproaching: Bool
-  let attention: Bool
+  let item: MenuBarItem
   let layoutDirection: LayoutDirection
 
-  var body: some View {
-    if isApproaching {
-      approachingImage
-    } else {
-      content(font: nil, ink: .primary)
-    }
+  @Environment(\.colorScheme) private var menuBarScheme
+
+  /// The item's height, and the glyph's and the speaker's frames, as Figma draws them.
+  private enum Metrics {
+    static let height: CGFloat = 24
+    static let padding: CGFloat = 7
+    static let spacing: CGFloat = 5
+    static let glyph: CGFloat = 20
+    static let glyphSize: CGFloat = 11
+    static let speaker: CGFloat = 17
+    static let speakerSize: CGFloat = 15
+    static let dot: CGFloat = 6
+    /// The dot's offset inside the glyph's frame, from its top-trailing corner.
+    static let dotInset = CGSize(width: 0, height: 2)
   }
 
-  @ViewBuilder
-  private func content(font: Font?, ink: Color) -> some View {
-    HStack(spacing: 5) {
-      if showIcon || isPlaying {
-        icon
-          .overlay(alignment: .topTrailing) {
-            if attention {
-              Circle()
-                .fill(.orange)
-                .frame(width: 6, height: 6)
-                .offset(x: 3, y: -2)
-            }
-          }
-      }
-      if !text.isEmpty {
-        Text(text).monospacedDigit()
+  var body: some View {
+    Group {
+      if item.approaching || item.attention {
+        coloredImage
+      } else {
+        content(ink: .primary, dot: nil)
       }
     }
-    .font(font)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(Text(verbatim: item.accessibilityLabel))
+  }
+
+  private func content(ink: Color, dot: Color?) -> some View {
+    HStack(spacing: Metrics.spacing) {
+      switch item.icon {
+      case .none:
+        EmptyView()
+      case .speaker:
+        Image(systemName: "speaker.wave.2.fill")
+          .font(.system(size: Metrics.speakerSize))
+          .frame(width: Metrics.speaker, height: Metrics.speaker)
+          .overlay(alignment: .topTrailing) { attentionDot(dot) }
+      case .glyph(let kind):
+        Group {
+          if let kind {
+            PrayerGlyph(kind: kind)
+          } else {
+            Image(systemName: "moon.stars")
+          }
+        }
+        .font(.system(size: Metrics.glyphSize))
+        .frame(width: Metrics.glyph, height: Metrics.glyph)
+        .overlay(alignment: .topTrailing) { attentionDot(dot) }
+      }
+      if !item.text.isEmpty {
+        Text(verbatim: item.text).monospacedDigit()
+      }
+    }
     .foregroundStyle(ink)
     .environment(\.layoutDirection, layoutDirection)
   }
 
   @ViewBuilder
-  private var icon: some View {
-    if isPlaying {
-      Image(systemName: "speaker.wave.2.fill")
-    } else if let glyph {
-      PrayerGlyph(kind: glyph)
-    } else {
-      Image(systemName: "moon.stars")
+  private func attentionDot(_ color: Color?) -> some View {
+    if let color {
+      Circle()
+        .fill(color)
+        .frame(width: Metrics.dot, height: Metrics.dot)
+        .offset(x: -Metrics.dotInset.width, y: Metrics.dotInset.height)
     }
   }
 
-  /// The approaching state as a non-template image: the label in `label/on-accent` on an
-  /// `accent/fill` capsule.
-  private var approachingImage: some View {
-    let palette = SalahPalette(isDark: false)
+  /// The label as a non-template image: on the approaching capsule, or with the attention
+  /// dot in its color.
+  private var coloredImage: some View {
+    let isDark = menuBarScheme == .dark && !item.approaching
+    let palette = SalahPalette(isDark: isDark)
+    let ink = item.approaching ? palette.labelOnAccent.color : (isDark ? Color.white : .black)
     let renderer = ImageRenderer(
-      content: content(
-        font: .system(size: NSFont.menuBarFont(ofSize: 0).pointSize),
-        ink: palette.labelOnAccent.color
-      )
-      .padding(.horizontal, 7)
-      .padding(.vertical, 2)
-      .background(
-        RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.accentFill.color))
+      content: content(ink: ink, dot: item.attention ? palette.warning.color : nil)
+        .font(.system(size: NSFont.menuBarFont(ofSize: 0).pointSize))
+        .padding(.horizontal, Metrics.padding)
+        .frame(height: Metrics.height)
+        .background {
+          if item.approaching {
+            RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.accentFill.color)
+          }
+        }
     )
     renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
     let nsImage = renderer.nsImage
     nsImage?.isTemplate = false
     return Group {
       if let nsImage {
-        // The image carries the text as pixels only; VoiceOver reads it from here.
         Image(nsImage: nsImage).renderingMode(.original)
-          .accessibilityLabel(Text(verbatim: text))
       } else {
-        content(font: nil, ink: .primary)
+        content(ink: .primary, dot: nil)
       }
     }
   }

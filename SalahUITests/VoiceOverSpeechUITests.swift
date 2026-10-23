@@ -228,9 +228,11 @@ final class VoiceOverSpeechUITests: XCTestCase {
 
     let speech = try Speech.start(in: self, reading: "the dropdown", while: isOpen)
     let names = today.map { language.names.name(of: $0) }
-    // A row reads "Fajr", a toggle and the countdown "Fajr · …", and the last item "Quit Salah".
+    // A row reads "Fajr", a toggle "… Alert for Fajr …", the countdown "Fajr · …", and the
+    // last item "Quit Salah".
     try speech.confirm { said in
       names.contains(said) || names.contains { said.contains("\($0) · ") }
+        || names.contains { said.contains(language.alertFor($0)) }
         || said.contains(language.quit)
     }
     // Every item, from the dropdown's first to its last, the Quit button.
@@ -256,14 +258,17 @@ final class VoiceOverSpeechUITests: XCTestCase {
     // The next event's row shows its state instead while a prayer counts up.
     let stateRows = Self.nextWhileCountingUp(from: start.addingTimeInterval(-120), to: end)
     for event in today where event.kind.isPrayer && !stateRows.contains(event.time) {
-      let toggle = language.alertOff(language.names.name(of: event))
+      let toggle = language.alertOff(language.alertFor(language.names.name(of: event)))
       XCTAssertTrue(items.contains(toggle), "\(toggle)\n\(speech.log)")
     }
     // After Isha, tomorrow's Fajr has its own toggle, named with its day.
-    let tomorrowsFajr = "\(language.tomorrow) · \(language.names.name(of: .fajr))"
-    for toggle in items.filter({ $0.contains(language.playAtPrayerTime) }) {
+    let tomorrowsFajr =
+      "\(language.tomorrow) · \(language.alertFor(language.names.name(of: .fajr)))"
+    for toggle in items.filter({ $0.contains(language.toggleMarker) }) {
       XCTAssertTrue(
-        (names + [tomorrowsFajr]).contains { toggle == language.alertOff($0) },
+        (names.map(language.alertFor) + [tomorrowsFajr]).contains {
+          toggle == language.alertOff($0)
+        },
         "\(toggle)\n\(speech.log)")
     }
     let countdowns = Self.countdowns(from: start.addingTimeInterval(-120), to: end, in: language)
@@ -359,10 +364,11 @@ extension VoiceOverSpeechUITests {
     /// `SalahWidgetLabels`' words for the countdown and the count-up.
     var remaining: String
     var since: @Sendable (_ duration: String) -> String
-    /// What VoiceOver says for a prayer's alert toggle while the alert is off, and the
-    /// toggle's name after the prayer's.
-    var alertOff: @Sendable (_ prayer: String) -> String
-    var playAtPrayerTime: String
+    /// What VoiceOver says for an alert toggle, by its name, while the alert is off; the
+    /// toggle's name for a prayer ("Alert for Fajr"); and the words every toggle's name holds.
+    var alertOff: @Sendable (_ toggle: String) -> String
+    var alertFor: @Sendable (_ prayer: String) -> String
+    var toggleMarker: String
     /// `SalahWidgetLabels.tomorrow`, which names tomorrow's Fajr row after Isha.
     var tomorrow: String
 
@@ -372,8 +378,8 @@ extension VoiceOverSpeechUITests {
   static let english = Language(
     setting: "english", code: "en", locale: Locale(identifier: "en"), quit: "Quit Salah",
     quitSpoken: "Quit Salah button", remaining: "remaining", since: { "started \($0) ago" },
-    alertOff: { "Alert off \($0) · Play at prayer time button" },
-    playAtPrayerTime: "Play at prayer time", tomorrow: "Tomorrow")
+    alertOff: { "off \($0) button" }, alertFor: { "Alert for \($0)" },
+    toggleMarker: "Alert for", tomorrow: "Tomorrow")
 
   static let arabic: Language = {
     // Salah's Arabic: Arabic-Indic digits, which `Locale(identifier: "ar")` doesn't use.
@@ -382,8 +388,8 @@ extension VoiceOverSpeechUITests {
     return Language(
       setting: "arabic", code: "ar", locale: Locale(components: components), quit: "إنهاء صلاة",
       quitSpoken: "إنهاء صلاة زر", remaining: "متبقّية", since: { "منذ \($0)" },
-      alertOff: { "تنبيه مُعطّل \($0) · تشغيل عند وقت الصلاة زر" },
-      playAtPrayerTime: "تشغيل عند وقت الصلاة", tomorrow: "غدًا")
+      alertOff: { "مُعطّل \($0) زر" }, alertFor: { "تنبيه \($0)" },
+      toggleMarker: "تنبيه", tomorrow: "غدًا")
   }()
 
   static let makkah = TimeZone(identifier: "Asia/Riyadh") ?? .gmt

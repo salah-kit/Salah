@@ -37,7 +37,9 @@ final class PrayerManager {
   /// The last listed day the schedule could give. While today's isn't available the
   /// dropdown shows it marked as last known, never as today's.
   private(set) var lastKnownDay: PrayerDayAvailability?
-  var statusBarText: String = ""
+  /// When the status item was last brought up to date: each minute, and each second while
+  /// it shows seconds. Reading it ties the status item to those refreshes.
+  private(set) var statusMoment = Date.distantPast
 
   let preferences = Preferences.shared
   let locationManager = LocationManager()
@@ -450,60 +452,7 @@ final class PrayerManager {
   // MARK: - Status Bar
 
   private func updateStatusBarText() {
-    guard preferences.displayNextPrayer else {
-      statusBarText = ""
-      return
-    }
-
-    let now = AppClock.now
-    let names = PrayerNames(locale: .app)
-
-    // Iqama count-up: for 15 minutes after a prayer starts, lead with that prayer's
-    // elapsed time ("Dhuhr +12m") before handing back to the next prayer's
-    // countdown - matching the widgets. Countdown style only; Sunrise excluded (see
-    // `menuBarCountUp`).
-    if let countUp = menuBarCountUp {
-      let name = nameComponent(for: countUp, names: names)
-      let elapsed = displayFormatter.countUp(from: countUp.time, to: now)
-      statusBarText = joinStatus(name, elapsed)
-      return
-    }
-
-    // The schedule doesn't know what comes next (a time the calculation can't give
-    // here today): say so rather than invent one.
-    guard let next = state.prayerState?.next else {
-      statusBarText = "–"
-      return
-    }
-
-    let name = nameComponent(for: next, names: names)
-    let timeComponent: String = {
-      switch preferences.nextPrayerDisplayType {
-      case .timeUntil:
-        return displayFormatter.countdown(from: now, to: next.time)
-      case .timeOfPrayer:
-        return displayFormatter.compactTime(for: next.time)
-      case .none:
-        return ""
-      }
-    }()
-
-    statusBarText = joinStatus(name, timeComponent)
-  }
-
-  private func nameComponent(for event: PrayerEvent, names: PrayerNames) -> String {
-    switch preferences.nextPrayerDisplayName {
-    case .full: return names.name(of: event)
-    case .abbreviation: return names.abbreviation(of: event)
-    case .none: return ""
-    }
-  }
-
-  private func joinStatus(_ name: String, _ time: String) -> String {
-    if name.isEmpty && time.isEmpty { return "" }
-    if name.isEmpty { return time }
-    if time.isEmpty { return name }
-    return "\(name) \(time)"
+    statusMoment = AppClock.now
   }
 
   // MARK: - Formatting
@@ -517,91 +466,37 @@ final class PrayerManager {
   }
 }
 
-enum MenuBarStatusTone {
-  case normal
-  case imminent
-  case playingPreReminderAudio
-  case playingPrayerAudio
-  case playingPostReminderAudio
-}
-
 extension PrayerManager {
-  /// What the status item shows besides its text's countdown.
-  var menuBarStatus: MenuBarStatus {
-    MenuBarStatus(
-      audio: audioPlaybackController.state, countUp: menuBarCountUp,
-      next: state.prayerState?.next)
+  /// What the status item shows now, from the menu-bar settings, what plays and the
+  /// schedule's state.
+  func menuBarItem(appName: String, needsAttention: Bool) -> MenuBarItem {
+    // Reading the refresh moment ties the item to the minute and second refreshes.
+    _ = statusMoment
+    let now = AppClock.now
+    let playing: PrayerEvent? = {
+      if case .playing(let context) = audioPlaybackController.state { return context.event }
+      return nil
+    }()
+    let playingTitle = playing == nil ? nil : display(at: now).playingTitle
+    return MenuBarItem(
+      display: MenuBarItem.Display(
+        showsIcon: preferences.displayIcon, showsNextPrayer: preferences.displayNextPrayer,
+        name: preferences.nextPrayerDisplayName, time: preferences.nextPrayerDisplayType),
+      moment: MenuBarItem.Moment(
+        now: now, playing: playing, playingTitle: playingTitle ?? "",
+        justStarted: state.prayerState?.justStarted, next: state.prayerState?.next,
+        isApproaching: state.prayerState?.isApproaching == true, needsAttention: needsAttention),
+      text: SalahText(locale: .app, timeZone: settings.location.timeZone),
+      names: PrayerNames(locale: .app), appName: appName)
   }
 
-  /// The glyph the status item shows: the prayer whose count-up the text shows, else the
-  /// next event's, so the glyph and the text name the same prayer.
-  var menuBarGlyph: PrayerKind? { menuBarStatus.glyph }
-
-  /// Whether adhan, du'a or a reminder is playing: the status item shows the speaker.
-  var menuBarIsPlaying: Bool { menuBarStatus.isPlaying }
-
-  /// The status item's text: while a prayer's audio plays, only that prayer's name.
-  var menuBarText: String {
-    guard preferences.displayNextPrayer, let event = menuBarStatus.playingEvent else {
-      return statusBarText
-    }
-    return nameComponent(for: event, names: PrayerNames(locale: .app))
-  }
-
-  var menuBarStatusTone: MenuBarStatusTone {
-    if case .playing(let context) = audioPlaybackController.state {
-      switch context.slot {
-      case .preReminder:
-        return .playingPreReminderAudio
-      case .alert:
-        return .playingPrayerAudio
-      case .postReminder:
-        return .playingPostReminderAudio
-      case nil:
-        return .playingPrayerAudio
-      }
-    }
-
-    // Iqama count-up window: the playing-adhan tone, so the menu
-    // bar matches the widget. Countdown style only (see `menuBarCountUp`).
-    if menuBarCountUp != nil { return .playingPrayerAudio }
-
-    // The approach in the 15 min before the next prayer - never before Sunrise,
-    // which is not one.
-    return state.prayerState?.isApproaching == true ? .imminent : .normal
-  }
-
-  /// The prayer that just started, leading the 15-minute count-up, or nil. Countdown
-  /// style only (clock-time style is unaffected); Sunrise is never one, since it isn't
-  /// a prayer.
+  /// The prayer that just started while the status item counts up from it, or nil: the
+  /// countdown style only, whose first minute ticks each second. Sunrise is never one,
+  /// since it isn't a prayer.
   var menuBarCountUp: PrayerEvent? {
     guard preferences.nextPrayerDisplayType == .timeUntil else { return nil }
     return state.prayerState?.justStarted
   }
-}
-
-/// The status item's glyph and speaker, from what plays and the schedule's state.
-struct MenuBarStatus: Equatable {
-  var audio: AudioPlaybackState
-  /// The prayer whose count-up the text shows (`menuBarCountUp`), or `nil`.
-  var countUp: PrayerEvent?
-  var next: PrayerEvent?
-
-  /// The speaker shows while audio plays, and only then: not during a count-up.
-  var isPlaying: Bool {
-    if case .playing = audio { return true }
-    return false
-  }
-
-  /// The prayer any audio plays for, a reminder before it included, whose name the text
-  /// shows alone.
-  var playingEvent: PrayerEvent? {
-    if case .playing(let context) = audio { return context.event }
-    return nil
-  }
-
-  /// The prayer the text names: the count-up's, else the next event's.
-  var glyph: PrayerKind? { (countUp ?? next)?.kind }
 }
 
 /// Where and why the schedule couldn't give today: one log line and notice per cause.

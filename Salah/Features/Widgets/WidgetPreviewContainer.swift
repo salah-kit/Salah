@@ -81,7 +81,7 @@ enum PreviewLang: CaseIterable {
   }
   var location: String { self == .ar ? "مكة" : "Makkah" }
   var hijri: (day: String, month: String, year: String) {
-    self == .ar ? ("١٢", "رمضان", "١٤٤٧ هـ") : ("12", "Ramadan", "1447 AH")
+    self == .ar ? ("١٢", "رمضان", "١٤٤٧") : ("12", "Ramadan", "1447")
   }
 
   func name(_ kind: PrayerKind) -> String {

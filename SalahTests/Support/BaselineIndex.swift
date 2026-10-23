@@ -145,7 +145,7 @@ enum BaselineIndex {
     add("## Fixture")
     add()
     add(
-      "The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):"
+      "The app's default settings: Makkah (21.4167, 39.8167; named مكة المكرمة in Arabic), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):"
     )
     add()
     add("| Day | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |")
@@ -159,7 +159,7 @@ enum BaselineIndex {
     add("## Widget and menu states: `widget/` and `menu/`")
     add()
     add(
-      "The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
+      "The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget, and the needs-attention state only in the dropdown."
     )
     add()
     add("| State | Shows | Moment (Riyadh) | Setup |")

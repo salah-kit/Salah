@@ -38,7 +38,8 @@ struct MenuDropdownFooter: View {
     Button(action: onToggleSilent) {
       HStack(spacing: 5) {
         Image(systemName: silentMode ? "bell.slash.fill" : "bell")
-          .font(.system(size: 10))
+          .font(.system(size: 11))
+          .frame(width: 12, height: 12)
         Text(verbatim: display.labels.silent)
           .font(.caption)
       }
@@ -46,6 +47,8 @@ struct MenuDropdownFooter: View {
       .padding(.leading, 9)
       .padding(.trailing, 10)
       .padding(.vertical, 4)
+      // Off, the 1 pt border lies outside the padding, as Figma lays it out.
+      .padding(silentMode ? 0 : 1)
       .background {
         if silentMode {
           Capsule().fill(palette.accentSubtle.color)
@@ -68,6 +71,7 @@ struct MenuDropdownFooter: View {
       HStack(spacing: 5) {
         Image(systemName: "macwindow")
           .font(.system(size: 10))
+          .frame(width: 12, height: 12)
         Text(verbatim: title)
           .font(.caption)
       }
@@ -89,7 +93,8 @@ struct MenuDropdownFooter: View {
     let title = localizedString("menu.quit", locale: display.locale)
     return Button(action: onQuit) {
       Image(systemName: "power")
-        .font(.system(size: 13))
+        .font(.system(size: 11))
+        .frame(width: 13, height: 13)
         .foregroundStyle(palette.labelSecondary.color)
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

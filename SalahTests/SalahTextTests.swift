@@ -81,4 +81,23 @@ struct SalahTextTests {
         == "Extends Isha interval to \u{2068}120\u{2069} minutes during Ramadan for methods that"
         + " use a fixed interval.")
   }
+
+  /// The header's dates follow Figma: the Hijri year has no era, in every language, and
+  /// the Arabic Gregorian date has no comma before its year.
+  @Test func theHeaderDatesHaveNoEraAndArabicHasNoCommaBeforeTheYear() {
+    let date = Fixture.date(13, 19)
+    let englishHijri = english.hijri(date, dayOffset: 0)
+    #expect(
+      [englishHijri.day, englishHijri.month, englishHijri.year] == ["16", "Dhuʻl-Hijjah", "1447"])
+    let arabicHijri = arabic.hijri(date, dayOffset: 0)
+    #expect([arabicHijri.day, arabicHijri.month, arabicHijri.year] == ["١٦", "ذو الحجة", "١٤٤٧"])
+    for language in AppLanguage.allCases where language != .system {
+      let text = SalahText(locale: language.locale, timeZone: Fixture.timeZone)
+      let year = text.hijri(date, dayOffset: 0).year
+      #expect(year == text.digits(1447), "\(language): \(year)")
+    }
+    #expect(english.gregorianDate(date) == "Tuesday, June 2, 2026")
+    #expect(arabic.gregorianDate(date) == "الثلاثاء، ٢ يونيو ٢٠٢٦")
+    #expect(french.gregorianDate(date) == "mardi 2 juin 2026")
+  }
 }

@@ -50,8 +50,10 @@ struct MenuLiveCountdown: View {
   }
 }
 
-/// The dropdown's durations: hours and minutes from an hour on ("2:16"), minutes in words
-/// under an hour ("10 min"), with a "+" while a prayer counts up.
+/// The dropdown's durations: hours and minutes from an hour on ("2:16"), minutes under an
+/// hour ("10 min"), with a "+" while a prayer counts up. The approaching hero's countdown
+/// keeps the short unit ("10 min", "١٠ د"); the count-up, the rows and the reminders say
+/// the minutes in the language's words, with its plural forms ("+٤ دقائق", "بعد ١٠ دقائق").
 enum MenuDuration {
   static func string(_ seconds: TimeInterval, countingUp: Bool = false, locale: Locale) -> String {
     let magnitude = abs(seconds)
@@ -59,14 +61,62 @@ enum MenuDuration {
       return PrayerDurationFormat.string(
         magnitude, direction: countingUp ? .elapsed : .remaining, locale: locale)
     }
+    if countingUp {
+      return "+\(minutes(wholeMinutes(magnitude), locale: locale))"
+    }
     let formatter = DateComponentsFormatter()
     formatter.unitsStyle = .short
     formatter.allowedUnits = [.minute]
     var calendar = Calendar(identifier: .gregorian)
     calendar.locale = locale
     formatter.calendar = calendar
-    let minutes = formatter.string(from: max(60, (magnitude / 60).rounded(.down) * 60)) ?? ""
-    return countingUp ? "+\(minutes)" : minutes
+    return formatter.string(from: TimeInterval(wholeMinutes(magnitude) * 60)) ?? ""
+  }
+
+  /// How long until a row's prayer: "2:16" from an hour on, else the minutes in words
+  /// ("10 min", "١٠ دقائق").
+  static func until(_ seconds: TimeInterval, locale: Locale) -> String {
+    let magnitude = abs(seconds)
+    guard magnitude < 3_600 else {
+      return PrayerDurationFormat.string(magnitude, direction: .remaining, locale: locale)
+    }
+    return minutes(wholeMinutes(magnitude), locale: locale)
+  }
+
+  /// How long ago a prayer began, in whole hours from an hour on, else in minutes: "1 hr
+  /// ago", "4 min ago", "منذ ساعة", "منذ دقيقتين".
+  static func ago(_ seconds: TimeInterval, locale: Locale) -> String {
+    let magnitude = abs(seconds)
+    let duration =
+      magnitude < 3_600
+      ? minutes(wholeMinutes(magnitude), locale: locale)
+      : hours(Int(magnitude / 3_600), locale: locale)
+    return String(
+      format: localizedString("menu.row.ago", locale: locale), locale: locale,
+      duration.bidiIsolated)
+  }
+
+  /// A reminder's lead in words: "10 min", "٣٠ دقيقة"; whole hours as hours; any other
+  /// lead from an hour on as hours and minutes ("1 hr, 30 min").
+  static func reminder(minutes value: Int, locale: Locale) -> String {
+    if value < 60 { return minutes(value, locale: locale) }
+    if value.isMultiple(of: 60) { return hours(value / 60, locale: locale) }
+    return lead(minutes: value, locale: locale)
+  }
+
+  /// A number of minutes in the language's words and plural form: "10 min", "دقيقتين".
+  static func minutes(_ count: Int, locale: Locale) -> String {
+    localizedString("menu.duration.minutes \(count)", locale: locale)
+  }
+
+  /// A number of whole hours in the language's words and plural form: "3 hr", "ساعة".
+  static func hours(_ count: Int, locale: Locale) -> String {
+    localizedString("menu.duration.hours \(count)", locale: locale)
+  }
+
+  /// Whole minutes, at least one: a prayer that began this minute began a minute ago.
+  private static func wholeMinutes(_ seconds: TimeInterval) -> Int {
+    max(1, Int(seconds / 60))
   }
 
   /// A reminder's lead: "10 min", "1 hr, 30 min", in the locale's words and digits.

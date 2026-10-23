@@ -6,6 +6,15 @@ import SwiftUI
 enum MenuDropdownMetrics {
   /// The dropdown's width.
   static let width: CGFloat = 300
+  /// The rim's corner radius and width.
+  static let radius: CGFloat = 16
+  static let rim: CGFloat = 1
+  /// The content's inset inside the rim.
+  static let padding = EdgeInsets(top: 12, leading: 12, bottom: 10, trailing: 12)
+  /// The width the rows take: the dropdown's, less the rim and the padding.
+  static var contentWidth: CGFloat { width - 2 * rim - padding.leading - padding.trailing }
+  /// Figma draws the day's timeline 2 pt wider than the rows, past their trailing edge.
+  static var timelineWidth: CGFloat { contentWidth + 2 }
 }
 
 /// The rendered dropdown for a display: the dates and the place, the next prayer on the
@@ -21,6 +30,8 @@ struct MenuDropdownContent: View {
   let display: SalahDisplay
   /// The last listed day the schedule could give, shown while the listed day isn't.
   var lastKnownDay: PrayerDayAvailability? = nil
+  /// What needs attention, such as location access being off: the banner's title.
+  var attention: String? = nil
   /// Flip a prayer's alert. The root writes the (Jumu'ah-aware) config; previews pass a
   /// no-op.
   var onToggleAlert: (PrayerEvent) -> Void = { _ in }
@@ -37,24 +48,35 @@ struct MenuDropdownContent: View {
     let colors = SalahColors(phase: display.phase, scheme: scheme, contrast: contrast)
     VStack(alignment: .leading, spacing: 10) {
       MenuHeader(display: display, colors: colors)
-      if let notice = FailureReporter.shared.currentNotice, notice.category == .terminal {
-        MenuAttentionBanner(message: notice.message, colors: colors)
+      if let attention {
+        MenuAttentionBanner(title: attention, locale: display.locale, colors: colors)
       }
       MenuHero(display: display, colors: colors, onStop: onStop)
       if let day = display.listedDay {
         SalahDayTimeline(
-          day: day, date: display.date, followsTimeOfDay: display.settings.followsTimeOfDay)
+          day: day, date: display.date, followsTimeOfDay: display.settings.followsTimeOfDay
+        )
+        .frame(width: MenuDropdownMetrics.timelineWidth)
+        .frame(width: MenuDropdownMetrics.contentWidth, alignment: .leading)
       }
       schedule(colors: colors)
       MenuDropdownFooter(
         display: display, colors: colors, onToggleSilent: onToggleSilent,
         onOpenSalah: onOpenSalah, onOpenSettings: onOpenSettings, onQuit: onQuit)
     }
-    .padding(.horizontal, 12)
-    .padding(.top, 12)
-    .padding(.bottom, 10)
+    // The menu-bar window sizes itself to the content's smallest height, which text that
+    // may shrink to fit (`minimumScaleFactor`) would lower: keep every line at full size.
+    .fixedSize(horizontal: false, vertical: true)
+    .padding(MenuDropdownMetrics.padding)
+    .padding(MenuDropdownMetrics.rim)
     .frame(width: MenuDropdownMetrics.width)
-    .background(colors.palette.elevated.color)
+    .background {
+      // The rim: `glass/stroke` inside the edge of the `bg/elevated` panel.
+      let shape = RoundedRectangle(cornerRadius: MenuDropdownMetrics.radius, style: .continuous)
+      shape.fill(colors.palette.elevated.color)
+        .overlay(
+          shape.strokeBorder(colors.palette.glassStroke.color, lineWidth: MenuDropdownMetrics.rim))
+    }
     .environment(\.locale, display.locale)
     .environment(\.layoutDirection, display.isRightToLeft ? .rightToLeft : .leftToRight)
   }
@@ -100,7 +122,6 @@ struct MenuDropdownContent: View {
       Text(verbatim: display.labels.tomorrow)
         .font(.subheadline.weight(.semibold))
         .foregroundStyle(colors.palette.labelSecondary.color)
-        .padding(.horizontal, 8)
       MenuPrayerRow(
         event: fajr, name: Text(verbatim: display.name(of: fajr)),
         time: Text(verbatim: display.timeText(of: fajr)), role: .next, display: display,
@@ -132,25 +153,30 @@ struct MenuHeader: View {
       .minimumScaleFactor(0.8)
       .frame(maxWidth: .infinity, alignment: .leading)
       if display.settings.silentMode {
-        Label {
-          Text(verbatim: localizedString("menu.soundsOff", locale: display.locale))
-        } icon: {
+        // The Sounds off chip: Figma's status chip, 13 semibold on `fill/tertiary`.
+        HStack(spacing: 5) {
           Image(systemName: "bell.slash.fill")
+            .font(.system(size: 12))
+            .foregroundStyle(palette.labelSecondary.color)
+            .frame(width: 14, height: 14)
+          Text(verbatim: localizedString("menu.soundsOff", locale: display.locale))
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(palette.labelPrimary.color)
+            .frame(height: 18)
         }
-        .labelStyle(.titleAndIcon)
-        .font(.subheadline.weight(.semibold))
-        .foregroundStyle(palette.labelPrimary.color)
+        .lineLimit(1)
         .padding(.horizontal, 10)
         .padding(.vertical, 4)
         .background(Capsule().fill(palette.fillTertiary.color))
+        .padding(.top, 2)
       } else {
-        Label {
-          Text(verbatim: header.location).privacySensitive()
-        } icon: {
+        HStack(spacing: 4) {
           Image(systemName: "location.fill")
+            .font(.caption)
+            .frame(width: 11, height: 11)
+          Text(verbatim: header.location).privacySensitive()
+            .font(.caption)
         }
-        .labelStyle(.titleAndIcon)
-        .font(.caption)
         .foregroundStyle(palette.labelSecondary.color)
         .lineLimit(1)
         .padding(.top, 2)
@@ -161,8 +187,11 @@ struct MenuHeader: View {
 }
 
 /// Something needs attention, such as location access being off: what, and the way to it.
+/// Figma's banner: a 22 pt symbol in `status/warning`, the title at 17 semibold, the action
+/// at 13 semibold, and a chevron, on `bg/grouped-secondary`.
 private struct MenuAttentionBanner: View {
-  let message: String
+  let title: String
+  let locale: Locale
   let colors: SalahColors
 
   var body: some View {
@@ -176,27 +205,34 @@ private struct MenuAttentionBanner: View {
     } label: {
       HStack(spacing: 12) {
         Image(systemName: "location.slash.fill")
-          .font(.system(size: 18))
+          .font(.system(size: 19))
           .foregroundStyle(palette.warning.color)
+          .frame(width: 22, height: 22)
           .accessibilityHidden(true)
         VStack(alignment: .leading, spacing: 2) {
-          Text(verbatim: message)
-            .font(.body.weight(.semibold))
+          Text(verbatim: title)
+            .font(.system(size: 17, weight: .semibold))
+            .lineSpacing(2)
+            .padding(.vertical, 1)
             .foregroundStyle(palette.labelPrimary.color)
             .fixedSize(horizontal: false, vertical: true)
-          Text("menu.openSettings")
-            .font(.subheadline.weight(.semibold))
+          Text(verbatim: localizedString("menu.openSettings", locale: locale))
+            .font(.system(size: 13, weight: .semibold))
             .foregroundStyle(palette.accentText.color)
+            .frame(height: 18)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         Image(systemName: "chevron.forward")
           .font(.system(size: 12, weight: .semibold))
           .foregroundStyle(palette.labelTertiary.color)
+          .frame(width: 14, height: 14)
           .accessibilityHidden(true)
       }
-      .padding(12)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
       .background(
-        palette.formGroup.color, in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+        palette.groupedSecondary.color,
+        in: RoundedRectangle(cornerRadius: 20, style: .continuous)
       )
       .contentShape(Rectangle())
     }
@@ -258,6 +294,8 @@ struct MenuHero: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 14)
     .padding(.vertical, 12)
+    // The approaching rim lies inside the card's edge, and the content inside the rim.
+    .padding(approaching ? MenuBreathingRim.width : 0)
     .background(colors.sky, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     .overlay {
       if approaching {
@@ -271,6 +309,17 @@ struct MenuHero: View {
       && display.prayerState?.isApproaching == true && !display.focusIsTomorrow
   }
 
+  /// The "Now" badge: 12 semibold `label/on-accent` in a 20 pt `accent/fill` capsule.
+  static func nowBadge(_ text: String, palette: SalahPalette) -> some View {
+    Text(verbatim: text)
+      .font(.system(size: 12, weight: .semibold))
+      .foregroundStyle(palette.labelOnAccent.color)
+      .lineLimit(1)
+      .padding(.horizontal, 8)
+      .frame(height: 20)
+      .background(Capsule().fill(palette.accentFill.color))
+  }
+
   // MARK: Pieces
 
   private func top(eyebrow: some View, glyph: PrayerKind?) -> some View {
@@ -279,7 +328,7 @@ struct MenuHero: View {
       Spacer(minLength: 6)
       if let glyph {
         PrayerGlyph(kind: glyph)
-          .font(.system(size: 19))
+          .font(.system(size: MenuGlyphMetrics.hero))
           .foregroundStyle(colors.phase.tint.color)
           .frame(width: 24, height: 24)
           .accessibilityHidden(true)
@@ -313,7 +362,8 @@ struct MenuHero: View {
   private func footer(symbol: String, text: String) -> some View {
     HStack(spacing: 5) {
       Image(systemName: symbol)
-        .font(.system(size: 10))
+        .font(.system(size: 11))
+        .frame(width: 12, height: 12)
         .accessibilityHidden(true)
       Text(verbatim: text)
         .font(.footnote)
@@ -340,14 +390,7 @@ struct MenuHero: View {
     let event = focus.event
     let labels = display.labels
     if focus.isCountUp {
-      top(
-        eyebrow: Text(verbatim: labels.now)
-          .font(.caption.weight(.semibold))
-          .foregroundStyle(palette.labelOnAccent.color)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 2)
-          .background(Capsule().fill(palette.accentFill.color)),
-        glyph: event.kind)
+      top(eyebrow: Self.nowBadge(labels.now, palette: palette), glyph: event.kind)
       nameLine(display.name(of: event), when: format("today.began", time(event)))
       countdown(event, countingUp: true, color: colors.phase.text)
       if let next = display.prayerState?.nextPrayer {
@@ -362,19 +405,20 @@ struct MenuHero: View {
       nameLine(display.name(of: event), when: format("today.begins", time(event)))
       countdown(
         event, countingUp: false, color: isApproaching ? palette.accentText : palette.labelPrimary)
-      let alerts = display.alerts(for: event)
-      // In silent mode nothing sounds, so the hero promises no adhan or reminder.
-      if display.settings.silentMode {
-        EmptyView()
-      } else if isApproaching, alerts.alert {
+      switch MenuHeroFooter(
+        alerts: display.alerts(for: event), isPrayer: event.kind.isPrayer,
+        isApproaching: isApproaching, silentMode: display.settings.silentMode)
+      {
+      case .adhan:
         footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
-      } else if let before = alerts.beforeMinutes, !isApproaching {
+      case .reminder(let before):
         footer(
           symbol: "alarm",
           text: format(
-            "menu.hero.reminderBefore", MenuDuration.lead(minutes: before, locale: display.locale)))
-      } else if alerts.alert, event.kind.isPrayer {
-        footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
+            "menu.hero.reminderBefore",
+            MenuDuration.reminder(minutes: before, locale: display.locale)))
+      case .none:
+        EmptyView()
       }
     }
   }
@@ -405,29 +449,27 @@ struct MenuHero: View {
   private func playing(_ playback: SalahPlayback) -> some View {
     let event = playback.event
     top(
-      eyebrow: Label {
-        Text(verbatim: display.playingTitle ?? "")
-      } icon: {
+      eyebrow: HStack(spacing: 6) {
         Image(systemName: "speaker.wave.2.fill")
+          .font(.system(size: 10))
+          .frame(width: 13, height: 13)
+        Text(verbatim: display.playingTitle ?? "")
+          .font(.subheadline.weight(.semibold))
       }
-      .labelStyle(.titleAndIcon)
-      .font(.subheadline.weight(.semibold))
       .foregroundStyle(colors.phase.text.color),
       glyph: event.kind)
     nameLine(display.name(of: event), when: time(event))
+    // Stop: the native prominent push button, 28 pt tall, in `accent/fill`.
     Button(action: onStop) {
       Text(verbatim: display.labels.stopShort)
         .font(.body.weight(.medium))
         .foregroundStyle(palette.labelOnAccent.color)
-        .padding(.horizontal, 16)
-        .frame(height: 28)
-        .background(Capsule().fill(palette.accentFill.color))
-        .contentShape(Capsule())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(.borderedProminent)
+    .controlSize(.large)
+    .tint(palette.accentFill.color)
     .keyboardShortcut(.defaultAction)
     .menuPointerCursor()
-    .padding(.vertical, 4)
     .accessibilityLabel(Text(verbatim: display.labels.stopAudio))
     // The adhan, not yet its du'a: the du'a follows it when it's on.
     if playback.slot == .alert, !playback.isDua, Preferences.shared.duaEnabled {
@@ -442,13 +484,58 @@ struct MenuHero: View {
     }
   }
 
+  /// The next prayer's time isn't known: a dash, and why, when the day says.
+  @ViewBuilder
   private var unknown: some View {
-    VStack(alignment: .leading, spacing: 2) {
-      eyebrowText(display.labels.nextPrayer)
+    let next = unknownNext
+    top(eyebrow: eyebrowText(display.labels.nextPrayer), glyph: next?.kind)
+    HStack(alignment: .firstTextBaseline, spacing: 8) {
+      Text(verbatim: "—")
+        .font(.title)
+        .foregroundStyle(palette.labelPrimary.color)
+      Spacer(minLength: 6)
       Text(verbatim: display.labels.nextUnknown)
         .font(.body.weight(.semibold))
         .foregroundStyle(palette.labelPrimary.color)
-        .fixedSize(horizontal: false, vertical: true)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+    }
+    if next?.reason == .calculationUnavailable {
+      footer(
+        symbol: "questionmark.circle",
+        text: localizedString("menu.row.missing", locale: display.locale))
+    }
+  }
+
+  /// The prayer the schedule couldn't give that comes next today, and why.
+  private var unknownNext: (kind: PrayerKind, reason: ScheduleGapReason)? {
+    guard case .available(let day, .partial(let missing)) = display.day else { return nil }
+    let passed = day.events.filter { $0.time <= display.date }.map(\.kind).max()
+    return
+      missing
+      .filter { kind, _ in passed.map { kind > $0 } ?? true }
+      .min { $0.key < $1.key }
+      .map { ($0.key, $0.value) }
+  }
+}
+
+/// The footer beneath the next prayer's countdown: the adhan's time while it approaches, a
+/// before-reminder otherwise, else the adhan's time. Silent mode drops the adhan, which
+/// doesn't sound, and keeps the reminder, whose banner still shows.
+enum MenuHeroFooter: Equatable {
+  case adhan
+  case reminder(minutes: Int)
+  case none
+
+  init(alerts: PrayerAlerts, isPrayer: Bool, isApproaching: Bool, silentMode: Bool) {
+    if isApproaching {
+      self = alerts.alert && !silentMode ? .adhan : .none
+    } else if let before = alerts.beforeMinutes {
+      self = .reminder(minutes: before)
+    } else if alerts.alert, isPrayer, !silentMode {
+      self = .adhan
+    } else {
+      self = .none
     }
   }
 }
@@ -456,6 +543,7 @@ struct MenuHero: View {
 /// The approaching card's rim, breathing in the accent. Each approach inserts a new rim,
 /// whose own state starts the breath again.
 private struct MenuBreathingRim: View {
+  static let width: CGFloat = 1.5
   let color: ThemeColor
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var breathing = false
@@ -463,7 +551,7 @@ private struct MenuBreathingRim: View {
   var body: some View {
     RoundedRectangle(cornerRadius: 14, style: .continuous)
       .strokeBorder(
-        color.color.opacity(reduceMotion ? 1 : (breathing ? 1 : 0.45)), lineWidth: 1.5
+        color.color.opacity(reduceMotion ? 1 : (breathing ? 1 : 0.45)), lineWidth: Self.width
       )
       .animation(
         reduceMotion ? nil : .easeInOut(duration: 1.2).repeatForever(autoreverses: true),
@@ -475,6 +563,13 @@ private struct MenuBreathingRim: View {
 }
 
 // MARK: - Rows
+
+/// The prayer glyphs' point sizes, which draw them as large as Figma does inside their
+/// frames: 18 pt in a row, 24 pt on the card.
+enum MenuGlyphMetrics {
+  static let row: CGFloat = 10
+  static let hero: CGFloat = 13.5
+}
 
 /// A prayer's role in the list, which sets its look.
 enum MenuRowRole { case passed, current, next, upcoming }
@@ -493,7 +588,8 @@ struct MenuRowStyle: PrayerRowStyle {
         role: isLastKnown ? .passed : role(of: event, status: configuration.status),
         display: display, colors: colors, onToggleAlert: { onToggleAlert(event) })
     } else {
-      MenuMissingRow(name: configuration.name, display: display, colors: colors)
+      MenuMissingRow(
+        kind: configuration.kind, name: configuration.name, display: display, colors: colors)
     }
   }
 
@@ -521,39 +617,40 @@ struct MenuPrayerRow: View {
   /// alert toggle apart from the same prayer's today.
   var day: String? = nil
 
-  @State private var hovering = false
+  @FocusState private var bellFocused: Bool
+  /// Whether the toggle's focus came from the keyboard (Tab), which shows the ring; the focus
+  /// a window gives its first control as it opens doesn't.
+  @State private var keyboardFocused = false
 
   private var palette: SalahPalette { colors.palette }
 
   var body: some View {
     HStack(spacing: 8) {
       PrayerGlyph(kind: event.kind)
-        .font(.system(size: 14))
+        .font(.system(size: MenuGlyphMetrics.row))
         .foregroundStyle(glyphColor.color)
         .frame(width: 18, height: 18)
         .accessibilityHidden(true)
       HStack(spacing: 6) {
+        // Figma lets a long detail run under the badge's edge rather than end in "…".
         name
           .font(.body.weight(isStrong ? .semibold : .regular))
           .foregroundStyle((role == .passed ? palette.labelSecondary : palette.labelPrimary).color)
           .lineLimit(1)
-          .minimumScaleFactor(0.8)
+          .fixedSize()
         if let detail {
           Text(verbatim: detail)
             .font(.subheadline)
             .foregroundStyle(detailColor.color)
             .lineLimit(1)
-            .layoutPriority(-1)
+            .fixedSize()
         }
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      // A set minimum keeps the frame at the space the row gives it, whatever the text.
+      .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+      .clipped()
       if role == .current {
-        Text(verbatim: display.labels.now)
-          .font(.caption.weight(.semibold))
-          .foregroundStyle(palette.labelOnAccent.color)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 2)
-          .background(Capsule().fill(palette.accentFill.color))
+        MenuHero.nowBadge(display.labels.now, palette: palette)
       }
       time
         .font(.body.weight(isStrong ? .semibold : .regular).monospacedDigit())
@@ -567,7 +664,10 @@ struct MenuPrayerRow: View {
     .background {
       RoundedRectangle(cornerRadius: 8, style: .continuous).fill(background)
     }
-    .onHover { hovering = $0 }
+    .modifier(MenuRowInteraction(palette: palette, focused: keyboardFocused))
+    .onChange(of: bellFocused) { _, focused in
+      keyboardFocused = focused && NSApp.currentEvent?.type == .keyDown
+    }
   }
 
   private var isStrong: Bool { role == .current || role == .next }
@@ -576,7 +676,7 @@ struct MenuPrayerRow: View {
     switch role {
     case .current: colors.phase.tintSubtle.color
     case .next: palette.accentSubtle.color
-    case .passed, .upcoming: hovering ? palette.fillQuaternary.color : .clear
+    case .passed, .upcoming: .clear
     }
   }
 
@@ -601,18 +701,15 @@ struct MenuPrayerRow: View {
   private var detail: String? {
     switch role {
     case .next:
-      let duration = MenuDuration.string(
-        event.time.timeIntervalSince(display.date), locale: display.locale)
       return String(
         format: localizedString("today.row.in", locale: display.locale), locale: display.locale,
-        duration.bidiIsolated)
+        MenuDuration.until(event.time.timeIntervalSince(display.date), locale: display.locale)
+          .bidiIsolated)
     case .current, .passed:
       guard role == .current || display.prayerState?.previous?.id == event.id else { return nil }
-      let formatter = RelativeDateTimeFormatter()
-      formatter.locale = display.locale
-      formatter.unitsStyle = .short
       // An adhan can start a moment before its time; it has begun all the same.
-      return formatter.localizedString(for: min(event.time, display.date), relativeTo: display.date)
+      return MenuDuration.ago(
+        max(display.date.timeIntervalSince(event.time), 0), locale: display.locale)
     case .upcoming:
       return nil
     }
@@ -623,18 +720,19 @@ struct MenuPrayerRow: View {
     if event.kind.isPrayer {
       // Silent mode draws every bell off: nothing sounds.
       let isOn = display.alerts(for: event).alert && !display.settings.silentMode
-      let label =
-        ([day, display.name(of: event)].compactMap { $0 } + [
-          localizedString("settings.notif.alert.toggle")
-        ]).joined(separator: " · ")
+      let label = MenuBellLabel.name(
+        prayer: display.name(of: event), day: day, locale: display.locale)
       Button(action: onToggleAlert) {
         Image(systemName: isOn ? "bell.fill" : "bell.slash")
-          .font(.system(size: 12))
+          .font(.system(size: MenuBellLabel.symbolSize))
           .foregroundStyle(bellColor(isOn: isOn).color)
-          .frame(width: 18, height: 18)
+          .frame(width: MenuBellLabel.size, height: MenuBellLabel.size)
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
+      // The row draws the focus ring, in the accent.
+      .focusEffectDisabled()
+      .focused($bellFocused)
       // In silent mode the bells draw off and turn nothing on or off.
       .disabled(display.settings.silentMode)
       .menuPointerCursor()
@@ -642,13 +740,13 @@ struct MenuPrayerRow: View {
       .accessibilityLabel(Text(verbatim: label))
       .accessibilityValue(
         Text(
-          verbatim: display.alerts(for: event).alert
-            ? display.labels.alertOn : display.labels.alertOff))
+          verbatim: MenuBellLabel.value(
+            isOn: display.alerts(for: event).alert, locale: display.locale)))
     } else {
       Image(systemName: "bell.slash")
-        .font(.system(size: 12))
+        .font(.system(size: MenuBellLabel.symbolSize))
         .foregroundStyle(palette.labelTertiary.color)
-        .frame(width: 18, height: 18)
+        .frame(width: MenuBellLabel.size, height: MenuBellLabel.size)
         .accessibilityHidden(true)
     }
   }
@@ -659,23 +757,80 @@ struct MenuPrayerRow: View {
   }
 }
 
-/// A row for a prayer the calculation can't give today: its name and a dash.
+/// A row's alert toggle: its 15 pt frame, and what VoiceOver says, "Alert for Asr, on".
+enum MenuBellLabel {
+  static let size: CGFloat = 15
+  /// The bell's point size, which draws it as large as Figma's.
+  static let symbolSize: CGFloat = 13.5
+
+  /// "Alert for Asr"; a row of another day leads with it: "Tomorrow · Alert for Fajr".
+  static func name(prayer: String, day: String?, locale: Locale) -> String {
+    let name = String(
+      format: localizedString("menu.row.alertFor", locale: locale), locale: locale, prayer)
+    return [day, name].compactMap { $0 }.joined(separator: " · ")
+  }
+
+  static func value(isOn: Bool, locale: Locale) -> String {
+    localizedString(isOn ? "menu.row.alert.on" : "menu.row.alert.off", locale: locale)
+  }
+}
+
+/// Figma's row interaction: `fill/quaternary` while hovered, `fill/tertiary` while pressed,
+/// and the accent focus ring while the row's toggle has keyboard focus.
+private struct MenuRowInteraction: ViewModifier {
+  let palette: SalahPalette
+  let focused: Bool
+
+  @State private var hovering = false
+  @State private var pressed = false
+
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+    content
+      .overlay {
+        shape.fill(
+          pressed
+            ? palette.fillTertiary.color : hovering ? palette.fillQuaternary.color : .clear
+        )
+        .allowsHitTesting(false)
+      }
+      .overlay {
+        if focused {
+          shape.strokeBorder(palette.accent.color, lineWidth: 2.5).allowsHitTesting(false)
+        }
+      }
+      .contentShape(shape)
+      .onHover { hovering = $0 }
+      .simultaneousGesture(
+        DragGesture(minimumDistance: 0)
+          .onChanged { _ in pressed = true }
+          .onEnded { _ in pressed = false })
+  }
+}
+
+/// A row for a prayer the calculation can't give today: its glyph and name, "Doesn't occur
+/// today", a dash, and its alert setting.
 struct MenuMissingRow: View {
+  let kind: PrayerKind
   let name: Text
   let display: SalahDisplay
   let colors: SalahColors
 
   var body: some View {
     let palette = colors.palette
+    let isOn =
+      kind.isPrayer && display.settings.alerts[kind]?.alert == true
+      && !display.settings.silentMode
     HStack(spacing: 8) {
-      Image(systemName: "questionmark.circle")
-        .font(.system(size: 13))
+      PrayerGlyph(kind: kind)
+        .font(.system(size: MenuGlyphMetrics.row))
         .foregroundStyle(palette.labelTertiary.color)
         .frame(width: 18, height: 18)
         .accessibilityHidden(true)
       HStack(spacing: 6) {
         name.font(.body)
-        Text("menu.row.missing").font(.subheadline)
+        Text(verbatim: localizedString("menu.row.missing", locale: display.locale))
+          .font(.subheadline)
       }
       .foregroundStyle(palette.labelSecondary.color)
       .lineLimit(1)
@@ -684,6 +839,11 @@ struct MenuMissingRow: View {
         .font(.body.monospacedDigit())
         .foregroundStyle(palette.labelSecondary.color)
         .accessibilityLabel(Text(verbatim: display.labels.notAvailable))
+      Image(systemName: isOn ? "bell.fill" : "bell.slash")
+        .font(.system(size: MenuBellLabel.symbolSize))
+        .foregroundStyle((isOn ? palette.labelSecondary : palette.labelTertiary).color)
+        .frame(width: MenuBellLabel.size, height: MenuBellLabel.size)
+        .accessibilityHidden(true)
     }
     .padding(.horizontal, 8)
     .padding(.vertical, 5)

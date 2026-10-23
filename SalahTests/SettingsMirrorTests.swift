@@ -113,7 +113,7 @@ struct SettingsMirrorTests {
     #expect(days == ["15", "16", "17"])
     let header = SalahHeader(
       date: Fixture.date(13, 0), settings: try #require(group.settings.load()))
-    #expect(header.hijriMonth == "Dhuʻl-Hijjah" && header.hijriYear == "1447 H")
+    #expect(header.hijriMonth == "Dhuʻl-Hijjah" && header.hijriYear == "1447")
   }
 
   /// The location's name and the appearance come from the preferences.

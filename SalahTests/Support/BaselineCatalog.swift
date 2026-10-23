@@ -64,6 +64,7 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
   case playingPreReminder
   case playingPostReminder
   case silent
+  case needsAttention
   case setupNeeded
   case stale
 
@@ -82,6 +83,7 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
     case .playingPreReminder: "playing audio (stop control): before-reminder"
     case .playingPostReminder: "playing audio (stop control): after-reminder"
     case .silent: "silent mode"
+    case .needsAttention: "needs attention (the location-off banner)"
     case .setupNeeded: "setup-needed"
     case .stale: "stale"
     }
@@ -100,6 +102,7 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
     case .playingPreReminder: "Maghrib − 10 min, Maghrib's 10-min before-reminder playing"
     case .playingPostReminder: "Maghrib + 5 min, Maghrib's 5-min after-reminder playing"
     case .silent: "Dhuhr + 60 min, silent mode on"
+    case .needsAttention: "Dhuhr + 60 min, location access denied (dropdown only)"
     case .setupNeeded:
       "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min"
     case .stale: "the expired entry of a timeline that ran out, at 00:10 the next day"
@@ -108,6 +111,8 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
 
   /// The extension-only states have no menu-bar counterpart.
   var onMenu: Bool { self != .setupNeeded && self != .stale }
+  /// The banner for a permission that's off is the dropdown's alone.
+  var onWidget: Bool { self != .needsAttention }
 
   var silentMode: Bool { self == .countUpSilent || self == .silent }
   var ishaAdjustment: Int { self == .countUpImminent ? -78 : 0 }
@@ -138,7 +143,7 @@ nonisolated enum BaselineCatalog {
     for language in Baseline.Language.allCases {
       for appearance in Baseline.Appearance.allCases {
         for state in SpecState.allCases {
-          for family in Baseline.Family.allCases {
+          for family in Baseline.Family.allCases where state.onWidget {
             baselines.append(
               Baseline(
                 surface: .widget, state: state.rawValue, family: family, language: language,

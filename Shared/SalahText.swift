@@ -106,24 +106,28 @@ nonisolated struct SalahText: Sendable {
 
   // MARK: - Dates
 
-  /// The Hijri date's day, month name and year with its era suffix, after the user's
-  /// day offset: ("16", "Dhuʻl-Hijjah", "1447 H").
+  /// The Hijri date's day, month name and year, after the user's day offset, without an
+  /// era: ("16", "Dhuʻl-Hijjah", "1447").
   func hijri(_ date: Date, dayOffset: Int) -> (day: String, month: String, year: String) {
     let format = HijriDateFormat(locale: locale, timeZone: timeZone, dayOffset: dayOffset)
     let components = format.components(of: date)
     return (
       digits(components.day), format.string(from: date, template: "MMMM"),
-      "\(digits(components.year)) \(labels.hijriSuffix)"
+      digits(components.year)
     )
   }
 
-  /// The Gregorian date in full: "Tuesday, June 2, 2026".
+  /// The Gregorian date in full: "Tuesday, June 2, 2026". Arabic has no comma before the
+  /// year: "الثلاثاء، ٢ يونيو ٢٠٢٦".
   func gregorianDate(_ date: Date) -> String {
     let formatter = DateFormatter()
     formatter.locale = locale
     formatter.timeZone = timeZone
     formatter.dateStyle = .full
     formatter.timeStyle = .none
+    if languageCode == "ar", let format = formatter.dateFormat {
+      formatter.dateFormat = format.replacingOccurrences(of: "\u{060C} y", with: " y")
+    }
     return formatter.string(from: date)
   }
 }

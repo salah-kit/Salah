@@ -1,7 +1,6 @@
 import Foundation
 
-/// Mirrors `MenuBarStatusTone` from the app so the widget speaks the same state
-/// language the menu bar already uses.
+/// The widget's state: the menu bar's states (normal, approaching, playing), plus silent.
 nonisolated enum SalahWidgetTone: String, Codable, Equatable, Sendable {
   case normal
   case imminent
@@ -58,8 +57,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
   var alertOff: String
   var before: String
   var after: String
-  /// The era after a Hijri year ("1447 H").
-  var hijriSuffix: String
   /// Shown when the schedule has no times to show for the place.
   var timesUnavailable: String
   /// The time of a prayer the calculation can't give today, for VoiceOver.
@@ -91,7 +88,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "Alert off",
     before: "before",
     after: "after",
-    hijriSuffix: "H",
     timesUnavailable: "Prayer times aren't available for this location.",
     notAvailable: "Not available",
     nextUnknown: "Next prayer time not available",
@@ -119,7 +115,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "تنبيه مُعطّل",
     before: "قبل",
     after: "بعد",
-    hijriSuffix: "هـ",
     timesUnavailable: "أوقات الصلاة غير متوفرة لهذا الموقع.",
     notAvailable: "غير متاح",
     nextUnknown: "وقت الصلاة القادمة غير متاح",
@@ -147,7 +142,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "Alerte désactivée",
     before: "avant",
     after: "après",
-    hijriSuffix: "H",
     timesUnavailable: "Les horaires de prière ne sont pas disponibles pour ce lieu.",
     notAvailable: "Non disponible",
     nextUnknown: "Heure de la prochaine prière indisponible",
@@ -175,7 +169,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "الرٹ غیر فعال",
     before: "پہلے",
     after: "بعد",
-    hijriSuffix: "ھ",
     timesUnavailable: "اس مقام کے لیے اوقاتِ نماز دستیاب نہیں ہیں۔",
     notAvailable: "دستیاب نہیں",
     nextUnknown: "اگلی نماز کا وقت دستیاب نہیں",
@@ -203,7 +196,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "Peringatan nonaktif",
     before: "sebelum",
     after: "setelah",
-    hijriSuffix: "H",
     timesUnavailable: "Waktu salat tidak tersedia untuk lokasi ini.",
     notAvailable: "Tidak tersedia",
     nextUnknown: "Waktu salat berikutnya tidak tersedia",
@@ -231,7 +223,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "Uyarı kapalı",
     before: "önce",
     after: "sonra",
-    hijriSuffix: "H",
     timesUnavailable: "Bu konum için namaz vakitleri kullanılamıyor.",
     notAvailable: "Kullanılamıyor",
     nextUnknown: "Sonraki namaz vakti kullanılamıyor",
@@ -259,7 +250,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "هشدار خاموش",
     before: "قبل",
     after: "بعد",
-    hijriSuffix: "ه\u{200D}.ق",
     timesUnavailable: "اوقات شرعی برای این موقعیت در دسترس نیست.",
     notAvailable: "در دسترس نیست",
     nextUnknown: "زمان نماز بعدی در دسترس نیست",
@@ -287,7 +277,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "সতর্কতা বন্ধ",
     before: "আগে",
     after: "পরে",
-    hijriSuffix: "হি.",
     timesUnavailable: "এই অবস্থানের জন্য নামাজের সময় পাওয়া যাচ্ছে না।",
     notAvailable: "পাওয়া যাচ্ছে না",
     nextUnknown: "পরবর্তী নামাজের সময় পাওয়া যাচ্ছে না",
@@ -315,7 +304,6 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     alertOff: "Amaran mati",
     before: "sebelum",
     after: "selepas",
-    hijriSuffix: "H",
     timesUnavailable: "Waktu solat tidak tersedia untuk lokasi ini.",
     notAvailable: "Tidak tersedia",
     nextUnknown: "Waktu solat seterusnya tidak tersedia",

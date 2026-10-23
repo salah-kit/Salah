@@ -9,9 +9,22 @@ struct FailureNotice: Identifiable, Sendable {
   let domain: NoticeDomain
   let category: FailureCategory
   let messageKey: String.LocalizationValue
+  /// The dropdown banner's title (`AppFailure.bannerTitleKey`).
+  var bannerTitleKey: String.LocalizationValue
+
+  init(
+    domain: NoticeDomain, category: FailureCategory, messageKey: String.LocalizationValue,
+    bannerTitleKey: String.LocalizationValue? = nil
+  ) {
+    self.domain = domain
+    self.category = category
+    self.messageKey = messageKey
+    self.bannerTitleKey = bannerTitleKey ?? messageKey
+  }
 
   /// Re-resolved on each access so it follows live app-language changes.
   @MainActor var message: String { localizedString(messageKey, locale: .app) }
+  @MainActor var bannerTitle: String { localizedString(bannerTitleKey, locale: .app) }
 }
 
 /// Which UI surface a notice belongs to, so a settings tab can show only its own
@@ -53,7 +66,8 @@ final class FailureReporter {
       guard key != currentCauseKey else { return }
       currentCauseKey = key
       currentNotice = FailureNotice(
-        domain: domain, category: failure.category, messageKey: failure.messageKey)
+        domain: domain, category: failure.category, messageKey: failure.messageKey,
+        bannerTitleKey: failure.bannerTitleKey)
     }
   }
 

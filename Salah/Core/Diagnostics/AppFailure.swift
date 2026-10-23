@@ -35,10 +35,16 @@ protocol AppFailure: Error, Sendable {
 
   /// Optional underlying OS/framework error appended to the diagnostic line.
   var underlyingError: (any Error)? { get }
+
+  /// The title of the dropdown's banner for the failure: its message, unless the failure
+  /// has a shorter title of its own.
+  var bannerTitleKey: String.LocalizationValue { get }
 }
 
 extension AppFailure {
   var underlyingError: (any Error)? { nil }
+
+  var bannerTitleKey: String.LocalizationValue { messageKey }
 
   /// Resolved on demand, on the main actor (`Locale.app` reads `Preferences.shared`).
   @MainActor var localizedMessage: String {

@@ -22,6 +22,7 @@ struct MenuBarDropdownView: View {
       MenuDropdownContent(
         display: prayerManager.display(at: AppClock.shifted(context.date)),
         lastKnownDay: prayerManager.lastKnownDay,
+        attention: attention,
         onToggleAlert: toggleAlert,
         onToggleSilent: toggleSilent,
         onStop: stopAudio,
@@ -30,6 +31,14 @@ struct MenuBarDropdownView: View {
         onQuit: { prayerManager.quitSalah() })
     }
     .background(WindowOpenerBridge())
+  }
+
+  /// A terminal failure, such as location access denied: the banner's title.
+  private var attention: String? {
+    guard let notice = FailureReporter.shared.currentNotice, notice.category == .terminal else {
+      return nil
+    }
+    return notice.bannerTitle
   }
 
   // MARK: - Actions

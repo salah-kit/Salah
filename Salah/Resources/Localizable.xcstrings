@@ -234,6 +234,267 @@
         }
       }
     },
+    "menu.attention.locationOff": {
+      "comment": "Menu-bar dropdown banner title while location access for Salah is denied.",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الموقع متوقف لتطبيق صلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location is off for Salah"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La localisation est désactivée pour Salah"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah کے لیے مقام بند ہے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lokasi nonaktif untuk Salah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah için konum kapalı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "موقعیت مکانی برای Salah خاموش است"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah-এর জন্য লোকেশন বন্ধ আছে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lokasi dimatikan untuk Salah"
+          }
+        }
+      }
+    },
+    "menu.duration.hours %lld": {
+      "comment": "Menu-bar dropdown: a number of whole hours, for how long ago a prayer began (\"1 hr ago\").",
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ساعة"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "ساعة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "ساعتين"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ساعات"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ساعة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ساعة"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hr"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld h"
+          }
+        },
+        "ur": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld گھنٹہ"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld گھنٹے"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld jam"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld sa."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld ساعت"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld ঘণ্টা"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld jam"
+          }
+        }
+      }
+    },
+    "menu.duration.minutes %lld": {
+      "comment": "Menu-bar dropdown: a number of minutes, in words where the language uses them (\"in 10 min\", \"Reminder 10 min before\", \"+4 min\").",
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld دقيقة"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "دقيقة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "دقيقتين"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld دقائق"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld دقيقة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld دقيقة"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld min"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld منٹ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld mnt"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld dk."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld دقیقه"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld মিনিট"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
     "menu.help.help": {
       "localizations": {
         "ar": {
@@ -818,6 +1079,242 @@
         }
       }
     },
+    "menu.row.ago": {
+      "comment": "Menu-bar dropdown row: how long ago the prayer began. %@ is a duration such as \"4 min\" or \"1 hr\".",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منذ %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ago"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "il y a %@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ پہلے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ lalu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ önce"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ پیش"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ আগে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ lalu"
+          }
+        }
+      }
+    },
+    "menu.row.alert.off": {
+      "comment": "Accessible value of a prayer row's alert toggle while the alert is off (\"Alert for Asr, off\").",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مُعطّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "off"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "désactivée"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "غیر فعال"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "nonaktif"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "kapalı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "خاموش"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধ"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "mati"
+          }
+        }
+      }
+    },
+    "menu.row.alert.on": {
+      "comment": "Accessible value of a prayer row's alert toggle while the alert is on (\"Alert for Asr, on\").",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مُفعّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "on"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "activée"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "فعال"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "aktif"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "açık"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "روشن"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "চালু"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "hidup"
+          }
+        }
+      }
+    },
+    "menu.row.alertFor": {
+      "comment": "Accessible name of a prayer row's alert toggle. %@ is the prayer's name.",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنبيه %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alert for %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alerte pour %@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ کا الرٹ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan untuk %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ uyarısı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هشدار %@"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-এর সতর্কতা"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Amaran untuk %@"
+          }
+        }
+      }
+    },
     "menu.row.missing": {
       "localizations": {
         "ar": {
@@ -1047,6 +1544,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Bunyi dimatikan"
+          }
+        }
+      }
+    },
+    "menu.status.label": {
+      "comment": "Accessible name of the menu-bar status item: %1$@ is the app's name, %2$@ what it shows (\"Salah, Asr in 2 hours, 16 minutes\").",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@، %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@, %2$@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@، %2$@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@, %2$@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@, %2$@"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@، %2$@"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@, %2$@"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@, %2$@"
           }
         }
       }

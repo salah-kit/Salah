@@ -177,7 +177,9 @@ struct VisualBaselineTests {
   @Test func catalogCoversEveryStateFamilyLanguageAndAppearance() {
     let all = BaselineCatalog.all
     #expect(Set(all.map(\.path)).count == all.count)
-    #expect(all.filter { $0.surface == .widget }.count == SpecState.allCases.count * 4 * 3 * 2)
+    #expect(
+      all.filter { $0.surface == .widget }.count
+        == SpecState.allCases.filter(\.onWidget).count * 4 * 3 * 2)
     #expect(
       all.filter { $0.surface == .menu }.count == SpecState.allCases.filter(\.onMenu).count * 3 * 2)
     #expect(

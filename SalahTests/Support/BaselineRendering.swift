@@ -69,7 +69,7 @@ enum BaselinePipeline {
       Fixture.time(kind, ishaAdjustment: state.ishaAdjustment)
     }
     switch state {
-    case .idle, .silent, .setupNeeded: return time(.dhuhr).adding(minutes: 60)
+    case .idle, .silent, .needsAttention, .setupNeeded: return time(.dhuhr).adding(minutes: 60)
     case .imminent: return time(.asr).adding(minutes: -10)
     case .countUp, .countUpSilent: return time(.dhuhr).adding(minutes: 4)
     case .countUpImminent: return time(.maghrib).adding(minutes: 4)
@@ -96,11 +96,13 @@ enum BaselinePipeline {
 
   /// The fixture's settings: the app's defaults, plus Fajr's 30-minute before-reminder
   /// and Maghrib's 10-minute before and 5-minute after reminders, so reminder text
-  /// shows.
+  /// shows. The place is named in the language, as the geocoder names it: Makkah, or
+  /// مكة المكرمة in Arabic.
   static func configure(
     _ preferences: Preferences, for state: SpecState, language: Baseline.Language
   ) {
     preferences.appLanguage = appLanguage(language)
+    if language == .ar { preferences.city = "مكة المكرمة" }
     var fajr = preferences.config(for: .fajr)
     fajr.preReminderEnabled = true
     fajr.preReminderOffset = 30
@@ -182,8 +184,12 @@ enum BaselinePipeline {
       }
     case .menu:
       let state = SpecState(rawValue: baseline.state)!
-      content = AnyView(
-        MenuDropdownContent(display: display(for: state, language: baseline.language)))
+      let display = display(for: state, language: baseline.language)
+      // Location access denied: the banner the root shows for that notice.
+      let attention =
+        state == .needsAttention
+        ? localizedString(LocationFailure.denied.bannerTitleKey, locale: display.locale) : nil
+      content = AnyView(MenuDropdownContent(display: display, attention: attention))
     case .preview:
       let scenario = PreviewScenario(rawValue: baseline.state)!
       let display = previewDisplay(scenario, baseline.language)

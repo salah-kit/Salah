@@ -143,13 +143,13 @@ final class SalahUITests: XCTestCase {
     silent.click()
     XCTAssertFalse(silent.isSelected)
 
-    let alert = dropdown.buttons["Fajr · Play at prayer time"]
-    XCTAssertEqual(dropdown.buttons.matching(identifier: "Fajr · Play at prayer time").count, 1)
-    XCTAssertEqual(alert.value as? String, "Alert off")
+    let alert = dropdown.buttons["Alert for Fajr"]
+    XCTAssertEqual(dropdown.buttons.matching(identifier: "Alert for Fajr").count, 1)
+    XCTAssertEqual(alert.value as? String, "off")
     alert.click()
-    XCTAssertEqual(alert.value as? String, "Alert on")
+    XCTAssertEqual(alert.value as? String, "on")
     alert.click()
-    XCTAssertEqual(alert.value as? String, "Alert off")
+    XCTAssertEqual(alert.value as? String, "off")
 
     app.typeKey(",", modifierFlags: .command)
     XCTAssertTrue(app.salahWindow.waitForExistence(timeout: 10), app.debugDescription)

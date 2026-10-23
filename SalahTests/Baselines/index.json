@@ -642,6 +642,18 @@
     },
     {
       "appearance" : "light",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
@@ -1876,6 +1888,18 @@
       ],
       "setup" : "Dhuhr + 60 min, silent mode on",
       "state" : "silent",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "dark",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
       "surface" : "menu"
     },
     {
@@ -3118,6 +3142,18 @@
     },
     {
       "appearance" : "light",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-ar-light.png",
+      "processLanguages" : [
+        "ar"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
@@ -4352,6 +4388,18 @@
       ],
       "setup" : "Dhuhr + 60 min, silent mode on",
       "state" : "silent",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "dark",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-ar-dark.png",
+      "processLanguages" : [
+        "ar"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
       "surface" : "menu"
     },
     {
@@ -5594,6 +5642,18 @@
     },
     {
       "appearance" : "light",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
@@ -6828,6 +6888,18 @@
       ],
       "setup" : "Dhuhr + 60 min, silent mode on",
       "state" : "silent",
+      "surface" : "menu"
+    },
+    {
+      "appearance" : "dark",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "menu/needsAttention-dropdown-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, location access denied (dropdown only)",
+      "state" : "needsAttention",
       "surface" : "menu"
     },
     {

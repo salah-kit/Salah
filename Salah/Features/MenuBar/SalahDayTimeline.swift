@@ -27,11 +27,11 @@ struct SalahDayTimeline: View {
 
     return GeometryReader { proxy in
       let width = proxy.size.width
-      let knob: CGFloat = 12
-      let track = max(width - knob, 1)
       let x = { (time: Date) -> CGFloat in
-        CGFloat(time.timeIntervalSince(start) / length) * track
+        CGFloat(time.timeIntervalSince(start) / length) * width
       }
+      // The knob stays whole at the day's ends.
+      let knobCenter = min(max(x(now), Metrics.knob / 2), width - Metrics.knob / 2)
       ZStack(alignment: .leading) {
         ZStack(alignment: .leading) {
           ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
@@ -45,21 +45,28 @@ struct SalahDayTimeline: View {
             }
           }
         }
-        .frame(width: track, height: 5, alignment: .leading)
+        .frame(width: width, height: Metrics.bar, alignment: .leading)
         .clipShape(Capsule())
-        .offset(x: knob / 2)
         Circle()
           .fill(palette.groupedSecondary.color)
-          .overlay(Circle().strokeBorder(palette.labelPrimary.color, lineWidth: 1.75))
-          .frame(width: knob, height: knob)
-          .offset(x: x(now))
+          .overlay(Circle().strokeBorder(palette.labelPrimary.color, lineWidth: Metrics.stroke))
+          .frame(width: Metrics.knob, height: Metrics.knob)
+          .offset(x: knobCenter - Metrics.knob / 2)
       }
       .frame(width: width, height: proxy.size.height, alignment: .leading)
     }
-    .frame(height: 20)
+    .frame(height: Metrics.height)
     .environment(\.layoutDirection, .leftToRight)
     .scaleEffect(x: layoutDirection == .rightToLeft ? -1 : 1, y: 1)
     .accessibilityHidden(true)
+  }
+
+  /// Figma's Day Timeline: the ribbon across the whole width, and the knob centered on now.
+  private enum Metrics {
+    static let height: CGFloat = 20.7
+    static let bar: CGFloat = 5.175
+    static let knob: CGFloat = 12.075
+    static let stroke: CGFloat = 1.725
   }
 
   private func bar(_ phase: SalahPhase, from: CGFloat, to: CGFloat) -> some View {
@@ -67,7 +74,7 @@ struct SalahDayTimeline: View {
       .colors(isDark: scheme == .dark, increasedContrast: contrast == .increased).tint
     return Rectangle()
       .fill(tint.color)
-      .frame(width: max(to - from, 0), height: 5)
+      .frame(width: max(to - from, 0), height: Metrics.bar)
       .offset(x: from)
   }
 }

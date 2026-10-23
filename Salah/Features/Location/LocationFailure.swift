@@ -29,6 +29,14 @@ enum LocationFailure: AppFailure {
     }
   }
 
+  /// Location access denied: "Location is off for Salah".
+  var bannerTitleKey: String.LocalizationValue {
+    switch self {
+    case .denied: "menu.attention.locationOff"
+    default: messageKey
+    }
+  }
+
   var logMessage: String {
     switch self {
     case .denied: "Location authorization denied"
