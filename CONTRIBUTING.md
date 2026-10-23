@@ -227,17 +227,25 @@ The designs show Makkah on Tuesday 2 June 2026 at a given time. Debug builds tak
 launch options that put the running app in that state, for a screenshot next to the
 design:
 
-- `-salah.debug.now 2026-06-02T13:19:00+03:00` starts the window and the dropdown at
-  that moment, running on from there. Alerts and the widget keep the real time.
-- `-salah.debug.windowSize 888x411` opens the window at that size in points, title bar
-  included.
+- `-salah.debug.now 2026-06-02T13:19:00+03:00` starts the window, the dropdown and the
+  menu bar item at that minute, running on from there. Alerts and the widget keep the
+  real time.
+- `-salah.debug.windowSize 888x520` opens the window at that size in points, title bar
+  included, within the window's minimum size.
+
+Build into `.derived`, then launch the build with scratch preferences, no prompts and its
+alerts kept from this Mac's notification center:
 
 ```sh
+xcodebuild build -project Salah.xcodeproj -scheme Salah -destination 'platform=macOS' \
+  -derivedDataPath .derived -allowProvisioningUpdates
 open -n .derived/Build/Products/Debug/Salah.app --args \
   -salah.debug.scratchPreferences YES -salah.debug.withoutSystemPrompts YES \
-  -salah.alertVolume 0 -salah.debug.now 2026-06-02T13:19:00+03:00 \
-  -salah.debug.windowSize 888x411
+  -salah.debug.withoutSystemNotifications YES -salah.alertVolume 0 \
+  -salah.debug.now 2026-06-02T13:19:00+03:00 -salah.debug.windowSize 888x520
 ```
+
+A placed widget then shows the scratch settings until this Mac's Salah runs again.
 
 ## Formatting
 

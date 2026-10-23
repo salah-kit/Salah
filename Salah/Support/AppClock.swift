@@ -1,7 +1,7 @@
 import Foundation
 
-/// The moment Salah's window and dropdown show: now, or in Debug builds the moment a launch
-/// asks for with `-salah.debug.now`, running on from there, so a screen can be compared
+/// The moment Salah's window, dropdown and menu bar item show: now, or in Debug builds the
+/// minute a launch asks for with `-salah.debug.now`, running on from there, so a screen can be compared
 /// with a design at the design's time. The alerts, the widget extension and the system's
 /// own live timers keep the real time.
 nonisolated enum AppClock {
@@ -23,7 +23,7 @@ nonisolated enum AppClock {
     return minute(start) - minute(now)
   }
 
-  /// Whether a launch asked for a moment other than now.
+  /// Whether a launch asked for a minute other than the one it started in.
   static var isShifted: Bool { offset != 0 }
 
   /// The moment to show now.

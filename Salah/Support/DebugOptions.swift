@@ -27,11 +27,11 @@ import UserNotifications
     /// replace this Mac's own Salah preferences.
     static let scratchPreferencesKey = "salah.debug.scratchPreferences"
 
-    /// `-salah.debug.now 2026-06-02T13:19:00+03:00`: the moment Salah shows at launch,
+    /// `-salah.debug.now 2026-06-02T13:19:00+03:00`: the minute Salah shows at launch,
     /// running on from there (`AppClock`). The alerts keep the real time.
     nonisolated static let nowKey = "salah.debug.now"
 
-    /// `-salah.debug.windowSize 888x411`: the size Salah's window opens at, in points, its
+    /// `-salah.debug.windowSize 888x520`: the size Salah's window opens at, in points, its
     /// title bar included. The window's minimum size still applies.
     nonisolated static let windowSizeKey = "salah.debug.windowSize"
 

@@ -17,7 +17,7 @@ struct DebugLaunchOptionsTests {
     let scratch = ScratchDefaults()
     scratch.defaults.set("noon", forKey: DebugOptions.nowKey)
     #expect(DebugOptions.now(defaults: scratch.defaults) == nil)
-    for size in ["888", "888x", "x411", "888xax411", "0x411", "-888x411", "infx411"] {
+    for size in ["888", "888x", "x411", "888xx411", "888xax411", "0x411", "-888x411", "infx411"] {
       scratch.defaults.set(size, forKey: DebugOptions.windowSizeKey)
       #expect(DebugOptions.windowSize(defaults: scratch.defaults) == nil, "\(size)")
     }
@@ -27,18 +27,23 @@ struct DebugLaunchOptionsTests {
   /// a shown minute: launched at 10:07:23, 13:19 shows from then until 10:08, then 13:20.
   @Test func theShownMomentStartsWhereItWasAskedForAndRunsOnInWholeMinutes() {
     let start = Fixture.date(13, 19)
-    let launch = Fixture.date(10, 7).addingTimeInterval(23.4)
+    let launch = Fixture.date(10, 7).addingTimeInterval(45.6)
     let offset = AppClock.offset(showing: start, at: launch)
     #expect(offset.truncatingRemainder(dividingBy: 60) == 0)
-    #expect(launch.addingTimeInterval(offset) == start.addingTimeInterval(23.4))
+    #expect(launch.addingTimeInterval(offset) == start.addingTimeInterval(45.6))
     #expect(Fixture.date(10, 8).addingTimeInterval(offset) == Fixture.date(13, 20))
     #expect(AppClock.offset(showing: launch, at: start) == -offset, "Back in time too")
+    let before2001 = Date(timeIntervalSinceReferenceDate: -90)
+    #expect(
+      AppClock.offset(showing: before2001, at: Date(timeIntervalSinceReferenceDate: 30)) == -120)
   }
 
   /// Without the option the shown moment is the real one.
   @Test func theClockIsRealWithoutTheOption() {
     #expect(abs(AppClock.now.timeIntervalSinceNow) < 1)
+    #expect(!AppClock.isShifted)
     let date = Date(timeIntervalSince1970: 1_000_000)
     #expect(AppClock.shifted(date) == date)
+    #expect(AppClock.unshifted(date) == date)
   }
 }
