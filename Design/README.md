@@ -3,8 +3,9 @@
 Salah's design system: one visual language for the macOS app and for future iPhone, iPad
 and Apple Watch apps, their widgets and the system surfaces they appear on.
 
-The look is calm and follows the time of day. Five time-of-day themes tint the sky behind
-the next prayer, its marks and its widgets. Everything else is native: system backgrounds,
+The look is calm and follows the time of day. Five time-of-day phases, from dawn at Fajr
+to night at Isha, tint the sky behind the next prayer, its marks and its widgets; a
+neutral sky stands in when the user turns that off. Everything else is native: system backgrounds,
 labels and materials, plus one gold accent.
 
 | Folder | What it holds |
@@ -323,51 +324,17 @@ private var secondary: AnyShapeStyle {
 }
 ```
 
-The macOS widget and its Settings → Appearance preview draw their themed skies, with a
-glow in the state's color from the bottom-trailing corner, and draw every text and glyph
-through `SalahWidgetInk` (`Shared/WidgetUI/SalahWidgetInk.swift`). In full color:
+The macOS app draws these tokens through `SalahPalette` and `SalahPhase`
+(`Shared/WidgetUI/SalahPalette.swift`): the widgets, their Settings → Appearance preview,
+the dropdown and Today. The sky is the phase's pair, top to bottom, or Neutral when the
+user turns off Follow the time of day; the prayer one is in carries the phase's mark, and
+the next prayer the accent on its wash.
 
-- Each ink is checked against the hardest point of the sky, its glows and the tint under it,
-  within the ink's own frame and 4 pt around it. Text that can wrap onto more lines (a
-  face's message, the unknown next prayer) is checked against the whole face instead, so
-  it's drawn once and wraps as styled text does. The tints are a large row's state fill, the
-  large focus card and the Now badge's capsule, at each fill's strongest end, stacked where
-  they overlap (`SalahWidgetTint`; the badge on the large count-up card is 36%). The bare sky
-  counts too, since a gradient fill fades and a light tint lightens.
-- Primary text is the system's primary label. Only on a glow as light as the text, from a
-  custom primary near white in dark, does it get more opaque or lighter.
-- Secondary text is `SalahColor.labelSecondary`, made more opaque where its surface needs it.
-  On the presets in light, that's most secondary text, idle faces included: 78–83% on the bare
-  sky and up to 91% on the large focus card's tint. In dark it's 64–71% on calm faces, up to
-  76% near a bright glow such as the green count-up's, and up to 89% on a tint.
-- Text in the theme's primary color or a state's color (the next prayer's row, the countdown,
-  the count-up, the Now badge, Tap to Stop) keeps its hue, and moves toward white in dark or
-  black in light only as far as its surface needs. Glyphs in those colors, and in the
-  theme's accent, do the same for 3:1. Text aims at 4.6:1 and glyphs at 3.1:1, so rounding can't
-  take them below 4.5:1 and 3:1.
-- A custom theme gets the same treatment, so a primary that only just passes the Appearance
-  tab's 3:1 check, or one near white or black, still draws readable text.
-- Glows, tints, strokes and hairlines draw the theme's colors unchanged.
-- Passed prayers dim to 50% (55% on the large widget) in standard contrast. That's a
-  deliberate exception to 4.5:1, so the day's remaining prayers stand out. On the presets,
-  the medium widget's passed names measure 2.9–4.0:1 and their times 1.95–2.6:1; the large
-  widget's passed names and times 3.2–4.8:1, and their bells 2.2–2.9:1. The floor is 1.9:1:
-  `WidgetInkContrastTests` fails below it, and the lowest it measures, on the presets and on
-  custom themes, is 1.95:1. With Increase Contrast, passed rows draw undimmed in
-  `labelSecondary`, at 5.2:1 or more.
-
-`WidgetInkContrastTests` in SalahTests measures each ink against the pixels under its
-glyphs. It draws every widget state the visual baselines draw, the times-unavailable face,
-the focus when the next prayer is unknown and a day with missing prayers, in every size, for
-the presets in light and dark, custom themes at the edge of the Appearance tab's check and
-with near-white and near-black primaries, with and without Increase Contrast, in English;
-and the medium and large sizes of the presets in Arabic, right to left, in standard
-contrast; and the presets' faces over a backdrop drawn in the other direction, as the
-widget extension's container background can be. It fails on text drawn without an ink, and,
-rendering Nocturne at three pixels per point, on any glyph whose fullest pixel doesn't reach
-90% of its ink in every channel the ink moves, such as one dimmed or recolored inside the
-inked view. It also checks that the count-up, the Now badge, the next prayer and an imminent
-prayer keep their hue on the dark large count-up faces.
+`PaletteContrastTests` in SalahTests holds the tokens to their promises in light and dark,
+with and without Increase Contrast: primary, secondary and accent text and each phase's
+text at 4.5:1, and tertiary text (passed prayers), the accent mark and each phase's tint at
+3:1, on both ends of every sky, on the dropdown's and the window's surfaces and on the
+washes under the current and next rows, and the on-accent label at 4.5:1 on the gold fill.
 
 ## Symbols
 

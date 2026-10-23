@@ -142,8 +142,7 @@ final class VoiceOverSpeechUITests: XCTestCase {
   }
 
   /// Settings → Appearance: the preview is one group named "Preview", in which VoiceOver
-  /// reads each of today's prayers by its name, then its time; the preview's size is a
-  /// radio group that says which size is selected.
+  /// reads each of today's prayers by its name, then its time.
   @MainActor
   func testAppearancePreviewIsOneGroupNamedPreview() throws {
     guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
@@ -159,11 +158,6 @@ final class VoiceOverSpeechUITests: XCTestCase {
         items.contains { $0.hasPrefix("\(name), ") && $0.hasSuffix(", \(time)") },
         "\(name) at \(time)\n\(speech.log)")
     }
-    try speech.leave()
-    try speech.next { $0 == "Size radio group" }
-    XCTAssertEqual(
-      try speech.enter(), "In Size radio group 3 items Small radio button, 1 of 3", speech.log)
-    XCTAssertEqual(try speech.next(), "Medium selected radio button, 2 of 3", speech.log)
   }
 
   // MARK: - Dropdown

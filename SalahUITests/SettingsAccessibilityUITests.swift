@@ -19,17 +19,13 @@ final class SettingsAccessibilityUITests: XCTestCase {
   }
 
   @MainActor
-  func testAppearancePreviewUsesMeasuredDesktopHeightsInEnglish() throws {
-    try assertAppearancePreviewSizes(
-      language: "english", code: "en", pane: "Appearance", sizeLabel: "Size",
-      names: ["Small", "Medium", "Large"])
+  func testAppearancePreviewShowsTheMediumWidgetInEnglish() throws {
+    try assertAppearancePreview(language: "english", code: "en", pane: "Appearance")
   }
 
   @MainActor
-  func testAppearancePreviewUsesMeasuredDesktopHeightsInArabic() throws {
-    try assertAppearancePreviewSizes(
-      language: "arabic", code: "ar", pane: "المظهر", sizeLabel: "الحجم",
-      names: ["صغير", "متوسط", "كبير"])
+  func testAppearancePreviewShowsTheMediumWidgetInArabic() throws {
+    try assertAppearancePreview(language: "arabic", code: "ar", pane: "المظهر")
   }
 
   /// Xcode's accessibility audit finds nothing in what each pane of the window, Today and the
@@ -219,14 +215,13 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// - contrast of text the window's edge or scrolling cuts off, which the audit measures
   ///   against whatever covers it. The test doesn't scroll, so rows below a pane's first
   ///   screen aren't measured;
-  /// - contrast of the text in the Appearance preview, which draws the widget on its themed
-  ///   gradient and glows. The audit reports every text element of the preview, upcoming rows
-  ///   included, so the test can't tell a real failure there from one it would report anyway.
-  ///   `WidgetInkContrastTests` (SalahTests) covers that text instead: it draws the same views
-  ///   in every widget state and size, for every preset and for custom themes, in light and
-  ///   dark, and measures each ink against the pixels under its glyphs. It holds text to
-  ///   4.5:1, glyphs to 3:1, and passed rows, which dim by design, to the 1.9:1 floor
-  ///   `Design/README.md` (Widgets) documents.
+  /// - contrast of the text in the Appearance preview, which draws the widget on its sky.
+  ///   The audit reports every text element of the preview, passed rows included, so the
+  ///   test can't tell a real failure there from one it would report anyway.
+  ///   `PaletteContrastTests` (SalahTests) covers that text instead: it measures every text
+  ///   and mark color the widget draws against each time of day's sky, in light and dark,
+  ///   with and without Increase Contrast, holding text to 4.5:1 and marks and passed rows
+  ///   to 3:1.
   @MainActor
   private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
@@ -272,20 +267,22 @@ final class SettingsAccessibilityUITests: XCTestCase {
     XCTAssertTrue(issues.isEmpty, issues.joined(separator: "\n\n"))
   }
 
-  /// Switches the running Appearance pane through all three sizes. The preview's
-  /// accessibility container fills the form's width; only its height is the widget's
-  /// measured height. The rendered regression checks the exact widget width separately.
+  /// The running Appearance pane: the appearance pop-up, the time-of-day switch, and the
+  /// medium widget's preview at its measured desktop height, its text inside it. Turning the
+  /// switch off and on keeps the preview whole. The preview's accessibility container fills
+  /// the form's width; the rendered baselines check the widget's exact width and colors.
   @MainActor
-  private func assertAppearancePreviewSizes(
-    language: String, code: String, pane: String, sizeLabel: String, names: [String]
-  ) throws {
+  private func assertAppearancePreview(language: String, code: String, pane: String) throws {
     let app = XCUIApplication()
     var arguments = SalahUITests.quietLaunch
     let languageIndex = try XCTUnwrap(arguments.firstIndex(of: "-salah.appLanguage"))
     let systemLanguageIndex = try XCTUnwrap(arguments.firstIndex(of: "-AppleLanguages"))
     arguments[languageIndex + 1] = language
     arguments[systemLanguageIndex + 1] = "(\(code))"
-    app.launchArguments = arguments + ["-salah.debug.withoutSystemPrompts", "YES"]
+    app.launchArguments =
+      arguments + [
+        "-salah.debug.withoutSystemPrompts", "YES", "-salah.followsTimeOfDay", "YES",
+      ]
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
 
@@ -293,44 +290,26 @@ final class SettingsAccessibilityUITests: XCTestCase {
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
     settings.selectPane(pane)
 
-    let sizes = settings.radioGroups[sizeLabel]
-    XCTAssertTrue(sizes.waitForExistence(timeout: 10), settings.debugDescription)
-    XCTAssertEqual(sizes.radioButtons.count, 3, sizes.debugDescription)
+    XCTAssertTrue(
+      settings.popUpButtons.firstMatch.waitForExistence(timeout: 10), settings.debugDescription)
+    let followsTimeOfDay = settings.switches.firstMatch
+    XCTAssertTrue(followsTimeOfDay.waitForExistence(timeout: 10), settings.debugDescription)
     let preview = settings.descendants(matching: .any)["appearance.preview"]
     XCTAssertTrue(preview.waitForExistence(timeout: 10), settings.debugDescription)
-    XCTAssertEqual(Self.isSelected(sizes.radioButtons[names[1]]), true)
-    let initialTextCount = preview.staticTexts.count
-    XCTAssertGreaterThan(initialTextCount, 0, preview.debugDescription)
 
-    var smallTextCount = 0
-    for (index, name) in names.enumerated() {
-      let segment = sizes.radioButtons[name]
-      XCTAssertTrue(segment.isEnabled, segment.debugDescription)
-      XCTAssertTrue(segment.isHittable, segment.debugDescription)
-      segment.click()
-      let height: CGFloat = index == 2 ? 344 : 164
-      let updated = Self.waitForAppearanceUpdate {
-        guard Self.isSelected(segment) == true, abs(preview.frame.height - height) <= 0.5
-        else { return false }
-        switch index {
-        case 0: return preview.staticTexts.count < initialTextCount
-        case 1: return preview.staticTexts.count > smallTextCount
-        default: return true
-        }
+    for step in ["on", "off", "on again"] {
+      if step != "on" {
+        let before = followsTimeOfDay.value as? NSNumber
+        followsTimeOfDay.click()
+        XCTAssertTrue(
+          Self.waitForAppearanceUpdate { followsTimeOfDay.value as? NSNumber != before },
+          followsTimeOfDay.debugDescription)
       }
-      attachAppearancePreview(settings: settings, preview: preview, code: code, size: name)
-      XCTAssertTrue(updated, "The \(name) selection must update the preview's content and height")
-      XCTAssertEqual(preview.frame.height, height, accuracy: 0.5, preview.debugDescription)
-      for (otherIndex, otherName) in names.enumerated() {
-        XCTAssertEqual(
-          Self.isSelected(sizes.radioButtons[otherName]), otherIndex == index,
-          sizes.debugDescription)
-      }
-
+      attachAppearancePreview(settings: settings, preview: preview, code: code, step: step)
+      XCTAssertEqual(preview.frame.height, 164, accuracy: 0.5, preview.debugDescription)
       let windowBounds = settings.frame.insetBy(dx: -0.5, dy: -0.5)
       let previewBounds = preview.frame.insetBy(dx: -0.5, dy: -0.5)
       XCTAssertTrue(windowBounds.contains(preview.frame), settings.debugDescription)
-      XCTAssertTrue(windowBounds.contains(sizes.frame), sizes.debugDescription)
       let texts = preview.staticTexts.allElementsBoundByIndex
       XCTAssertFalse(texts.isEmpty, preview.debugDescription)
       for text in texts {
@@ -338,39 +317,22 @@ final class SettingsAccessibilityUITests: XCTestCase {
         XCTAssertGreaterThan(frame.width, 0, text.debugDescription)
         XCTAssertGreaterThan(frame.height, 0, text.debugDescription)
         XCTAssertTrue(previewBounds.contains(frame), text.debugDescription)
-        XCTAssertTrue(windowBounds.contains(frame), text.debugDescription)
       }
-      if index == 0 { smallTextCount = texts.count }
     }
   }
 
   @MainActor
   private func attachAppearancePreview(
-    settings: XCUIElement, preview: XCUIElement, code: String, size: String
+    settings: XCUIElement, preview: XCUIElement, code: String, step: String
   ) {
     let screenshot = XCTAttachment(screenshot: settings.screenshot())
-    screenshot.name = "Appearance preview: \(code), \(size)"
+    screenshot.name = "Appearance preview: \(code), \(step)"
     screenshot.lifetime = .keepAlways
     add(screenshot)
     let tree = XCTAttachment(string: settings.debugDescription + "\n\n" + preview.debugDescription)
-    tree.name = "Appearance accessibility: \(code), \(size)"
+    tree.name = "Appearance accessibility: \(code), \(step)"
     tree.lifetime = .keepAlways
     add(tree)
-  }
-
-  /// Native segmented controls report selection as either a number or its string form.
-  @MainActor
-  private static func isSelected(_ segment: XCUIElement) -> Bool? {
-    switch segment.value {
-    case let number as NSNumber: return number.boolValue
-    case let text as String:
-      switch text {
-      case "1": return true
-      case "0": return false
-      default: return nil
-      }
-    default: return nil
-    }
   }
 
   @MainActor

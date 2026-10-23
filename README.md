@@ -22,16 +22,21 @@ settings, gives it a Dock icon while it's open.
 These images are the test suite's own renders ([`SalahTests/Baselines`](SalahTests/Baselines/README.md)),
 checked on every change, so they show what the app draws today.
 
-- **The menu bar.** A countdown or the next prayer's time, which turns red in the last
-  15 minutes and green for a 15-minute count-up after the adhan. The dropdown shows the
-  Hijri date, the six times, per-prayer alert toggles, silent mode and a stop button.
+- **The menu bar.** The next prayer's symbol and a countdown or its time, on a gold
+  capsule in the last 15 minutes, then a 15-minute count-up after the adhan. The dropdown
+  shows the Hijri date, the next prayer on the sky of the time of day, the day's timeline,
+  the six times with per-prayer alert toggles, silent mode and a stop button.
 - **One window.** Open Salah shows Today (the next prayer, the day's timeline and its
   prayers) and the settings in a sidebar. While the window is open Salah has a Dock
   icon, a place in ⌘-Tab and its own menus. Closing it, ⌘Q included, keeps Salah in the
   menu bar; Quit Salah, in the dropdown and on Today, turns it off, scheduled alerts
   included.
-- **Widgets** in small, medium and large sizes, with a stop button while audio plays.
-  The widget calculates its own times, so it stays right on days Salah isn't running.
+- **Widgets** in small, medium and large sizes, with a live countdown and a stop button
+  while audio plays. The widget calculates its own times, so it stays right on days Salah
+  isn't running.
+- **Appearance.** Light, dark or the system's, for the window, the dropdown and the
+  widgets. The sky follows the prayer period you're in, from dawn at Fajr to night at
+  Isha, or stays neutral.
 - **Alerts.** Per-prayer adhan alerts with before and after reminders, a Jumu'ah
   override, six built-in recordings or your own audio, a du'a after the adhan, and a
   catch-up when the Mac wakes from sleep.

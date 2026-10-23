@@ -31,7 +31,7 @@ match `project.yml`.
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
 (`SalahPlayback`), Salah's prayer source, the display model the widget and the menu bar
-draw from (`SalahDisplay`), the widget's timeline, and the theme and views. The two share
+draw from (`SalahDisplay`), the widget's timeline, and the palette and views. The two share
 the App Group `group.io.github.salah-kit.Salah`. Prayer times, the schedule, widget
 timelines, alerts and the UI components come from
 [SalahKit](https://github.com/salah-kit/SalahKit), through its public API only.

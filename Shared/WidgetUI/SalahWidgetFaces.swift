@@ -461,6 +461,9 @@ nonisolated struct WidgetTimes: View {
           Text(verbatim: display.text.compactTime(row.event.time))
             .font(.system(size: 13).monospacedDigit())
             .lineLimit(1)
+            // The row drops the day period; VoiceOver says it: "5:03 AM".
+            .accessibilityLabel(
+              Text(verbatim: display.text.timeFormatter().string(from: row.event.time)))
         }
         .foregroundStyle(color(row.role))
         .padding(.horizontal, 6)

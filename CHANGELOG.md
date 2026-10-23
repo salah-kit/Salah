@@ -23,6 +23,16 @@ All notable changes to this project are documented here. The format follows
   Salah opens again, and quits. Logout, restart and shutdown quit and keep the alerts.
 - The dropdown's footer is Silent, Open Salah and Quit Salah. The window replaces the
   Settings window, so Help and About are in its menus.
+- New look for the widgets, the dropdown, Today and the status item. The next prayer sits
+  on a sky that follows the prayer period you're in: dawn from Fajr, day from sunrise,
+  afternoon from Asr, dusk from Maghrib and night from Isha. Widgets count down live to
+  the second, the large one shows the progress to the next prayer, and after Isha they
+  show tomorrow's times. The status item shows the next prayer's symbol, and a gold
+  capsule in the last 15 minutes.
+- Settings → Appearance is now Light, Dark or System, for the window, the dropdown and the
+  widgets, with a switch to keep the sky neutral instead of following the time of day,
+  and a preview of the medium widget. It replaces the widget themes, sizes and colors; a
+  theme set to always light or always dark carries over.
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.
