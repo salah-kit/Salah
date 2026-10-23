@@ -1,6 +1,6 @@
 # Salah
 
-<img src="Salah/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png" alt="" width="96" align="right">
+<img src="Design/Previews/app-icon.png" alt="" width="96" align="right">
 
 A calm macOS menu-bar app for the five daily prayers, with desktop widgets and adhan alerts.
 

@@ -17,6 +17,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The app icon is the design system's: a gold arch and crescent on the evening sky, with
+  dark and tinted versions for macOS's icon styles.
 - Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first
   time a note says so. Quit Salah, the power button in the dropdown and the button on
   Today, turns Salah off: it removes the alerts Salah scheduled, so nothing alerts until
