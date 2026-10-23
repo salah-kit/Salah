@@ -33,6 +33,12 @@ All notable changes to this project are documented here. The format follows
   widgets, with a switch to keep the sky neutral instead of following the time of day,
   and a preview of the medium widget. It replaces the widget themes, sizes and colors; a
   custom theme set to always light or always dark carries over.
+- Settings → Notifications follows the new look: Sound (mute, the du’a, volume), a prayer
+  picker across the pane whose segments show a muted bell when every alert of that prayer
+  is off, then At prayer time, Before and After, each with its sound, and System
+  notification settings last. Jumu’ah is the picker’s last segment, with a switch for
+  different alerts on Friday; with it off, Fridays use Dhuhr’s alerts. Reminder offsets
+  read "10 min" beside their stepper.
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.

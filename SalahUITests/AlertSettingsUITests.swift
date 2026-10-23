@@ -121,7 +121,7 @@ final class AlertSettingsUITests: XCTestCase {
     settings.selectPane("Notifications")
 
     let name = PrayerNames(locale: Locale(identifier: "en")).name(of: kind)
-    let segment = settings.radioGroups["Prayer"].radioButtons[name]
+    let segment = settings.groups["Prayer"].radioButtons[name]
     XCTAssertTrue(segment.waitForExistence(timeout: 10), settings.debugDescription)
     segment.click()
     XCTAssertTrue(Self.wait(timeout: 5) { Self.isOn(segment) == true }, segment.debugDescription)
@@ -129,7 +129,7 @@ final class AlertSettingsUITests: XCTestCase {
     // The form's switch has no label of its own: the row's text is its sibling.
     let label = NSPredicate(
       format: "elementType == %lu AND value == %@", XCUIElement.ElementType.staticText.rawValue,
-      "Play at prayer time")
+      "Play the adhan")
     let toggle = settings.groups.containing(label).children(matching: .switch).firstMatch
     XCTAssertTrue(toggle.waitForExistence(timeout: 10), settings.debugDescription)
     return toggle

@@ -3,17 +3,14 @@ import SalahCore
 import SwiftUI
 import UserNotifications
 
-private enum DhuhrNotificationScope: String, Hashable {
-  case otherDays
-  case friday
-}
-
+/// Settings → Notifications: the sound of every alert, then, for the prayer the picker
+/// selects, its alert at the prayer's time and its reminders before and after. Jumu'ah has
+/// alerts of its own only while Friday's differ from Dhuhr's.
 struct NotificationsContent: View {
   @Bindable var prefs = Preferences.shared
-  @State private var selectedPrayer: PrayerKind = .fajr
+  @State private var target: NotificationTarget = .prayer(.fajr)
   @State private var previewController = AudioPlaybackController()
   @State private var notificationSettings: UNNotificationSettings?
-  @State private var dhuhrNotificationScope: DhuhrNotificationScope = .otherDays
   @State private var permissionRequestInFlight = false
   @State private var permissionRequestFailed = false
 
@@ -21,16 +18,21 @@ struct NotificationsContent: View {
     notificationSettings?.authorizationStatus
   }
 
+  /// The prayer the selected target's previews and alerts belong to: Dhuhr for Jumu'ah.
+  private var selectedPrayer: PrayerKind {
+    if case .prayer(let kind) = target { return kind }
+    return .dhuhr
+  }
+
+  /// The selected target's alerts. Jumu'ah's are its own; the pane shows them only while
+  /// Friday's alerts differ.
   private var config: Binding<PrayerNotificationConfig> {
     Binding(
       get: {
-        if isEditingJumuahConfig {
-          return prefs.jumuahConfig
-        }
-        return prefs.config(for: selectedPrayer)
+        target == .jumuah ? prefs.jumuahConfig : prefs.config(for: selectedPrayer)
       },
       set: {
-        if isEditingJumuahConfig {
+        if target == .jumuah {
           prefs.setJumuahConfig($0)
         } else {
           prefs.setConfig($0, for: selectedPrayer)
@@ -39,8 +41,10 @@ struct NotificationsContent: View {
     )
   }
 
-  private var isEditingJumuahConfig: Bool {
-    selectedPrayer == .dhuhr && prefs.jumuahOverrideEnabled && dhuhrNotificationScope == .friday
+  /// Whether the selected target has alerts to edit: every prayer does; Jumu'ah only while
+  /// Friday's alerts differ.
+  private var editsAlerts: Bool {
+    target != .jumuah || prefs.jumuahOverrideEnabled
   }
 
   private var volume: Binding<Double> {
@@ -51,40 +55,19 @@ struct NotificationsContent: View {
   }
 
   var body: some View {
-    Section("settings.notif.global") {
+    Section("settings.notif.section.sound") {
       Toggle("settings.notif.silent", isOn: $prefs.silentMode)
-      Toggle("settings.notif.dua", isOn: $prefs.duaEnabled)
+      Toggle("settings.notif.duaAfterAdhan", isOn: $prefs.duaEnabled)
         .disabled(prefs.silentMode)
-
-      HStack {
+      LabeledContent("settings.notif.volume") {
         Slider(value: volume, in: 0...100, step: 1)
+          .labelsHidden()
           .accessibilityLabel(
             Text(verbatim: localizedString("settings.notif.volume", locale: .app))
           )
+          .accessibilityValue(Text(verbatim: "\(prefs.alertVolume.localizedDigits())%"))
+          .frame(maxWidth: 164)
           .disabled(prefs.silentMode)
-        Text(
-          String(
-            format: localizedString("settings.notif.volume.label", locale: .app),
-            locale: .app,
-            prefs.alertVolume.localizedDigits().bidiIsolated
-          )
-        )
-        .foregroundStyle(.secondary)
-        .monospacedDigit()
-        .frame(width: 44, alignment: .trailing)
-      }
-
-      Button("settings.notif.openSystemSettings") {
-        openNotificationSettings()
-      }
-
-      if let permissionMessage {
-        Label {
-          Text(localizedString(permissionMessage, locale: .app))
-        } icon: {
-          Image(systemName: "exclamationmark.triangle.fill")
-        }
-        .foregroundStyle(.secondary)
       }
     }
     .onChange(of: prefs.silentMode) {
@@ -108,14 +91,42 @@ struct NotificationsContent: View {
       }
     }
 
-    Section {
-      Picker("settings.notif.prayer", selection: $selectedPrayer) {
-        ForEach(PrayerKind.allCases, id: \.self) { prayer in
-          Text(prayer.settingsLocalizedName).tag(prayer)
+    Group {
+      if target == .jumuah {
+        Section {
+          Toggle("settings.notif.differentOnFriday", isOn: $prefs.jumuahOverrideEnabled)
+        } header: {
+          prayerPicker
+            .padding(.bottom, 12)
+        } footer: {
+          Text("settings.notif.differentOnFriday.footer")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+        }
+        .onChange(of: prefs.jumuahOverrideEnabled) {
+          previewController.stop()
+          Task { await requestAuthorizationIfNeeded() }
         }
       }
-      .pickerStyle(.segmented)
-      .labelsHidden()
+
+      if editsAlerts {
+        Section {
+          Toggle("settings.notif.playAdhan", isOn: config.alertEnabled)
+          if config.alertEnabled.wrappedValue {
+            soundRow(config.alertSound, slot: .alert)
+          }
+        } header: {
+          // The picker stands on the window above the first group it edits, not in a group.
+          if target == .jumuah {
+            Text("settings.notif.section.atPrayerTime")
+          } else {
+            VStack(alignment: .leading, spacing: 18) {
+              prayerPicker
+              Text("settings.notif.section.atPrayerTime")
+            }
+          }
+        }
+      }
     }
     .onChange(of: prefs.notificationSettings) {
       // The `notificationSettings` didSet emits the reschedule + republish; here
@@ -124,108 +135,80 @@ struct NotificationsContent: View {
         await requestAuthorizationIfNeeded()
       }
     }
-
-    if selectedPrayer == .dhuhr {
-      Section("settings.notif.jumuah.section") {
-        Toggle("settings.notif.jumuah.toggle", isOn: $prefs.jumuahOverrideEnabled)
-
-        if prefs.jumuahOverrideEnabled {
-          Picker("settings.notif.jumuah.section", selection: $dhuhrNotificationScope) {
-            Text("settings.notif.jumuah.switch.otherDays")
-              .tag(DhuhrNotificationScope.otherDays)
-            Text("settings.notif.jumuah.switch.friday")
-              .tag(DhuhrNotificationScope.friday)
-          }
-          .pickerStyle(.segmented)
-          .labelsHidden()
-        }
-      }
-      .onChange(of: prefs.jumuahOverrideEnabled) {
-        if prefs.jumuahOverrideEnabled {
-          dhuhrNotificationScope = .friday
-        } else {
-          dhuhrNotificationScope = .otherDays
-        }
-        previewController.stop()
-        Task { await requestAuthorizationIfNeeded() }
-      }
-      .onChange(of: dhuhrNotificationScope) {
-        previewController.stop()
-      }
-    }
-
-    Section("settings.notif.alert") {
-      Toggle("settings.notif.alert.toggle", isOn: config.alertEnabled)
-      if config.alertEnabled.wrappedValue {
-        SoundPickerRow(
-          sound: config.alertSound,
-          isPreviewing: isPreviewing(slot: .alert),
-          isSilentMode: prefs.silentMode,
-          onPreviewToggle: { togglePreview(sound: config.alertSound.wrappedValue, slot: .alert) },
-          onSoundChanged: { stopPreviewIfNeeded(slot: .alert) }
-        )
-      }
-    }
-    .onChange(of: selectedPrayer) {
+    .onChange(of: target) {
       previewController.stop()
-      if selectedPrayer != .dhuhr {
-        dhuhrNotificationScope = .otherDays
+    }
+
+    if editsAlerts {
+      Section("settings.notif.section.before") {
+        Toggle("settings.notif.remindBefore", isOn: config.preReminderEnabled)
+        if config.preReminderEnabled.wrappedValue {
+          minutesRow("settings.notif.minutesBefore", value: config.preReminderOffset)
+          soundRow(config.preReminderSound, slot: .preReminder)
+        }
+      }
+
+      Section("settings.notif.section.after") {
+        Toggle("settings.notif.remindAfter", isOn: config.postReminderEnabled)
+        if config.postReminderEnabled.wrappedValue {
+          minutesRow("settings.notif.minutesAfter", value: config.postReminderOffset)
+          soundRow(config.postReminderSound, slot: .postReminder)
+        }
       }
     }
 
-    Section("settings.notif.pre") {
-      Toggle("settings.notif.pre.toggle", isOn: config.preReminderEnabled)
-      if config.preReminderEnabled.wrappedValue {
-        Stepper(
-          value: config.preReminderOffset,
-          in: 1...120
-        ) {
-          Text(
-            String(
-              format: localizedString("settings.notif.pre.stepper", locale: .app),
-              locale: .app,
-              config.preReminderOffset.wrappedValue.localizedDigits().bidiIsolated
-            )
-          )
+    Section {
+      LabeledContent {
+        Button("settings.notif.systemSettings.open") {
+          openNotificationSettings()
         }
-        SoundPickerRow(
-          sound: config.preReminderSound,
-          isPreviewing: isPreviewing(slot: .preReminder),
-          isSilentMode: prefs.silentMode,
-          onPreviewToggle: {
-            togglePreview(sound: config.preReminderSound.wrappedValue, slot: .preReminder)
-          },
-          onSoundChanged: { stopPreviewIfNeeded(slot: .preReminder) }
-        )
+      } label: {
+        Text("settings.notif.systemSettings")
+        if let permissionMessage {
+          Label {
+            Text(localizedString(permissionMessage, locale: .app))
+          } icon: {
+            Image(systemName: "exclamationmark.triangle.fill")
+          }
+        }
       }
     }
+  }
 
-    Section("settings.notif.post") {
-      Toggle("settings.notif.post.toggle", isOn: config.postReminderEnabled)
-      if config.postReminderEnabled.wrappedValue {
-        Stepper(
-          value: config.postReminderOffset,
-          in: 1...120
-        ) {
-          Text(
-            String(
-              format: localizedString("settings.notif.post.stepper", locale: .app),
-              locale: .app,
-              config.postReminderOffset.wrappedValue.localizedDigits().bidiIsolated
-            )
-          )
-        }
-        SoundPickerRow(
-          sound: config.postReminderSound,
-          isPreviewing: isPreviewing(slot: .postReminder),
-          isSilentMode: prefs.silentMode,
-          onPreviewToggle: {
-            togglePreview(sound: config.postReminderSound.wrappedValue, slot: .postReminder)
-          },
-          onSoundChanged: { stopPreviewIfNeeded(slot: .postReminder) }
-        )
+  /// The five prayers, Sunrise and Jumu'ah. A target with every alert off shows a muted
+  /// bell.
+  private var prayerPicker: some View {
+    let names = PrayerNames(locale: .app)
+    return PrayerPicker(
+      selection: $target,
+      segments: NotificationTarget.all.map { ($0, $0.name(names), $0.isMuted(in: prefs)) }
+    )
+    // A header is inset like its title; the picker spans the groups' full width.
+    .padding(.horizontal, -10)
+  }
+
+  /// A reminder's offset: its minutes, and a stepper from 1 to 120.
+  private func minutesRow(_ title: LocalizedStringKey, value: Binding<Int>) -> some View {
+    LabeledContent(title) {
+      HStack(spacing: 6) {
+        Text(verbatim: MenuDuration.lead(minutes: value.wrappedValue, locale: .app))
+          .monospacedDigit()
+        Stepper(title, value: value, in: 1...120)
+          .labelsHidden()
       }
     }
+  }
+
+  private func soundRow(_ sound: Binding<AdhanSound>, slot: PrayerNotificationSoundSlot)
+    -> some View
+  {
+    SoundPickerRow(
+      sound: sound,
+      isPreviewing: isPreviewing(slot: slot),
+      isSilentMode: prefs.silentMode,
+      onPreviewToggle: { togglePreview(sound: sound.wrappedValue, slot: slot) },
+      onSoundChanged: { stopPreviewIfNeeded(slot: slot) }
+    )
   }
 
   private var permissionMessage: String.LocalizationValue? {

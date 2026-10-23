@@ -69,4 +69,15 @@ enum MenuDuration {
     let minutes = formatter.string(from: max(60, (magnitude / 60).rounded(.down) * 60)) ?? ""
     return countingUp ? "+\(minutes)" : minutes
   }
+
+  /// A reminder's lead: "10 min", "1 hr, 30 min", in the locale's words and digits.
+  static func lead(minutes: Int, locale: Locale) -> String {
+    let formatter = DateComponentsFormatter()
+    formatter.unitsStyle = .short
+    formatter.allowedUnits = [.hour, .minute]
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.locale = locale
+    formatter.calendar = calendar
+    return formatter.string(from: TimeInterval(minutes * 60)) ?? ""
+  }
 }

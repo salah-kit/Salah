@@ -50,6 +50,7 @@ struct SoundPickerRow: View {
         }
         .buttonStyle(.borderless)
         .help(Text(localizedString(customButtonHelpKey, locale: .app)))
+        .accessibilityLabel(Text(localizedString(customButtonHelpKey, locale: .app)))
 
         Button {
           onPreviewToggle()
@@ -59,6 +60,7 @@ struct SoundPickerRow: View {
         .buttonStyle(.borderless)
         .disabled(!sound.canPreview && !isPreviewing)
         .help(Text(localizedString(previewHelpKey, locale: .app)))
+        .accessibilityLabel(Text(localizedString(previewHelpKey, locale: .app)))
       }
       .disabled(isSilentMode)
 

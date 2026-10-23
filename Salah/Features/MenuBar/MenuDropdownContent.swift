@@ -370,22 +370,13 @@ struct MenuHero: View {
         footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
       } else if let before = alerts.beforeMinutes, !isApproaching {
         footer(
-          symbol: "alarm", text: format("menu.hero.reminderBefore", reminderLength(before)))
+          symbol: "alarm",
+          text: format(
+            "menu.hero.reminderBefore", MenuDuration.lead(minutes: before, locale: display.locale)))
       } else if alerts.alert, event.kind.isPrayer {
         footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
       }
     }
-  }
-
-  /// A reminder's lead: "10 min", "1 hr, 30 min".
-  private func reminderLength(_ minutes: Int) -> String {
-    let formatter = DateComponentsFormatter()
-    formatter.unitsStyle = .short
-    formatter.allowedUnits = [.hour, .minute]
-    var calendar = Calendar(identifier: .gregorian)
-    calendar.locale = display.locale
-    formatter.calendar = calendar
-    return formatter.string(from: TimeInterval(minutes * 60)) ?? ""
   }
 
   private func countdown(_ event: PrayerEvent, countingUp: Bool, color: ThemeColor) -> some View {

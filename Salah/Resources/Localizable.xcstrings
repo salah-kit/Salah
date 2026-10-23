@@ -7956,64 +7956,6 @@
         }
       }
     },
-    "settings.notif.alert": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تنبيه الصلاة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prayer Alert"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alerte de prière"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز کا الرٹ"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan Salat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namaz Uyarısı"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هشدار نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের সতর্কতা"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Amaran Solat"
-          }
-        }
-      }
-    },
     "settings.notif.alert.toggle": {
       "localizations": {
         "ar": {
@@ -8072,7 +8014,123 @@
         }
       }
     },
-    "settings.notif.dua": {
+    "settings.notif.differentOnFriday": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنبيهات مختلفة يوم الجمعة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Different alerts on Friday"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alertes différentes le vendredi"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "جمعہ کو الگ الرٹس"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan berbeda pada hari Jumat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cuma günü farklı uyarılar"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هشدارهای متفاوت در روز جمعه"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুক্রবারে আলাদা সতর্কতা"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Amaran berbeza pada hari Jumaat"
+          }
+        }
+      }
+    },
+    "settings.notif.differentOnFriday.footer": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند إيقافه، تُطبَّق تنبيهات الظهر يوم الجمعة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When this is off, Fridays use Dhuhr’s alerts."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Désactivé, le vendredi utilise les alertes de Dhuhr."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بند ہونے پر جمعہ کو ظہر کے الرٹس استعمال ہوتے ہیں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jika nonaktif, hari Jumat memakai peringatan Zuhur."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kapalıyken Cuma günleri öğle uyarıları kullanılır."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اگر خاموش باشد، روزهای جمعه از هشدارهای ظهر استفاده می‌شود."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধ থাকলে শুক্রবারে যোহরের সতর্কতা ব্যবহৃত হয়।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jika dimatikan, hari Jumaat menggunakan amaran Zohor."
+          }
+        }
+      }
+    },
+    "settings.notif.duaAfterAdhan": {
       "localizations": {
         "ar": {
           "stringUnit": {
@@ -8083,397 +8141,165 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Play dua after adhan"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lire la dua après l'adhan"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اذان کے بعد دعا چلائیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Putar doa setelah azan"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ezandan sonra dua çal"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "پخش دعا پس از اذان"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "আজানের পরে দোয়া বাজান"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mainkan doa selepas azan"
-          }
-        }
-      }
-    },
-    "settings.notif.global": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "التنبيهات العامة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Global Alerts"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alertes générales"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "عمومی الرٹس"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan Global"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Genel Uyarılar"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هشدارهای سراسری"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "সামগ্রিক সতর্কতা"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Amaran Sejagat"
-          }
-        }
-      }
-    },
-    "settings.notif.jumuah.section": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الجمعة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jumu'ah (Friday)"
+            "value": "Play the du’a after the adhan"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Joumouah (vendredi)"
+            "value": "Jouer la douʿā après l’adhan"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "جمعہ"
+            "state": "needs_review",
+            "value": "اذان کے بعد دعا چلائیں"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Jumat"
+            "state": "needs_review",
+            "value": "Putar doa setelah azan"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Cuma"
+            "state": "needs_review",
+            "value": "Ezandan sonra duayı çal"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "جمعه"
+            "state": "needs_review",
+            "value": "پخش دعا پس از اذان"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "জুমা (শুক্রবার)"
+            "state": "needs_review",
+            "value": "আজানের পরে দোয়া চালান"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Jumaat"
+            "state": "needs_review",
+            "value": "Mainkan doa selepas azan"
           }
         }
       }
     },
-    "settings.notif.jumuah.switch.friday": {
+    "settings.notif.minutesAfter": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الجمعة"
+            "value": "الدقائق بعدها"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Friday"
+            "value": "Minutes after"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Vendredi"
+            "state": "needs_review",
+            "value": "Minutes après"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "جمعہ"
+            "state": "needs_review",
+            "value": "کتنے منٹ بعد"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Jumat"
+            "state": "needs_review",
+            "value": "Menit sesudahnya"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Cuma"
+            "state": "needs_review",
+            "value": "Kaç dakika sonra"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "جمعه"
+            "state": "needs_review",
+            "value": "دقیقه پس از آن"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "শুক্রবার"
+            "state": "needs_review",
+            "value": "কত মিনিট পরে"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Jumaat"
+            "state": "needs_review",
+            "value": "Minit selepas"
           }
         }
       }
     },
-    "settings.notif.jumuah.switch.otherDays": {
+    "settings.notif.minutesBefore": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الأيام الأخرى"
+            "value": "الدقائق قبلها"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Other days"
+            "value": "Minutes before"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Autres jours"
+            "state": "needs_review",
+            "value": "Minutes avant"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "دیگر دن"
+            "state": "needs_review",
+            "value": "کتنے منٹ پہلے"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Hari lain"
+            "state": "needs_review",
+            "value": "Menit sebelumnya"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Diğer günler"
+            "state": "needs_review",
+            "value": "Kaç dakika önce"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "روزهای دیگر"
+            "state": "needs_review",
+            "value": "دقیقه پیش از آن"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "অন্যান্য দিন"
+            "state": "needs_review",
+            "value": "কত মিনিট আগে"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Hari lain"
-          }
-        }
-      }
-    },
-    "settings.notif.jumuah.toggle": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استخدم إعدادات منفصلة يوم الجمعة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Use separate settings on Friday"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Utiliser des réglages séparés le vendredi"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "جمعہ کے دن الگ ترتیبات استعمال کریں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gunakan pengaturan terpisah pada hari Jumat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cuma günü ayrı ayarlar kullan"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استفاده از تنظیمات جداگانه در روز جمعه"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "শুক্রবারে আলাদা সেটিংস ব্যবহার করুন"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guna tetapan berasingan pada hari Jumaat"
-          }
-        }
-      }
-    },
-    "settings.notif.openSystemSettings": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ضبط في إعدادات النظام"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Configure in System Settings"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Configurer dans les Réglages Système"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سسٹم کی ترتیبات میں ترتیب دیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Atur di Pengaturan Sistem"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sistem Ayarları'nda yapılandır"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "پیکربندی در تنظیمات سیستم"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "সিস্টেম সেটিংসে কনফিগার করুন"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Konfigurasi dalam Tetapan Sistem"
+            "state": "needs_review",
+            "value": "Minit sebelum"
           }
         }
       }
@@ -8652,176 +8478,60 @@
         }
       }
     },
-    "settings.notif.post": {
+    "settings.notif.playAdhan": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تذكير بعد الصلاة"
+            "value": "تشغيل الأذان"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Post-Reminder"
+            "value": "Play the adhan"
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rappel après"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز کے بعد یاددہانی"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pengingat Sesudah"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namaz sonrası hatırlatma"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "یادآور پس از نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের পরে অনুস্মারক"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan Selepas"
-          }
-        }
-      }
-    },
-    "settings.notif.post.stepper": {
-      "localizations": {
-        "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "بعد %@ د"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min after"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min après"
+            "value": "Jouer l’adhan"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ بعد"
+            "state": "needs_review",
+            "value": "اذان چلائیں"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt setelah"
+            "state": "needs_review",
+            "value": "Putar azan"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ dk sonra"
+            "state": "needs_review",
+            "value": "Ezanı çal"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه بعد"
+            "state": "needs_review",
+            "value": "پخش اذان"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট পরে"
+            "state": "needs_review",
+            "value": "আজান চালান"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit selepas"
-          }
-        }
-      }
-    },
-    "settings.notif.post.toggle": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تنبيه بعد وقت الصلاة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alert after prayer time"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alerter après l'heure de la prière"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز کے وقت کے بعد الرٹ کریں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan setelah waktu salat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namaz vaktinden sonra uyar"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هشدار پس از وقت نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের সময়ের পরে সতর্ক করুন"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beri amaran selepas waktu solat"
+            "state": "needs_review",
+            "value": "Mainkan azan"
           }
         }
       }
@@ -8884,180 +8594,6 @@
         }
       }
     },
-    "settings.notif.pre": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تذكير قبل الصلاة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pre-Reminder"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rappel avant"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز سے پہلے یاددہانی"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pengingat Sebelum"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namaz öncesi hatırlatma"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "یادآور پیش از نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের আগে অনুস্মারক"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan Sebelum"
-          }
-        }
-      }
-    },
-    "settings.notif.pre.stepper": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "قبل %@ د"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min before"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min avant"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ پہلے"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt sebelum"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dk önce"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه قبل"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট আগে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit sebelum"
-          }
-        }
-      }
-    },
-    "settings.notif.pre.toggle": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تنبيه قبل الصلاة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alert before prayer"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alerter avant la prière"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز سے پہلے الرٹ کریں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peringatan sebelum salat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namazdan önce uyar"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هشدار پیش از نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের আগে সতর্ক করুন"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beri amaran sebelum solat"
-          }
-        }
-      }
-    },
     "settings.notif.preview.play": {
       "localizations": {
         "ar": {
@@ -9069,7 +8605,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Play sound preview"
+            "value": "Play preview"
           }
         },
         "fr": {
@@ -9127,7 +8663,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Stop sound preview"
+            "value": "Stop preview"
           }
         },
         "fr": {
@@ -9170,6 +8706,354 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hentikan pratonton bunyi"
+          }
+        }
+      }
+    },
+    "settings.notif.remindAfter": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التذكير بعد الصلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remind me after"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Me rappeler après"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بعد میں یاد دلائیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ingatkan sesudahnya"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sonradan hatırlat"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآوری پس از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে মনে করিয়ে দিন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ingatkan selepas"
+          }
+        }
+      }
+    },
+    "settings.notif.remindBefore": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التذكير قبل الصلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remind me before"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Me rappeler avant"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پہلے یاد دلائیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ingatkan sebelumnya"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Önceden hatırlat"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآوری پیش از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগে মনে করিয়ে দিন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ingatkan sebelum"
+          }
+        }
+      }
+    },
+    "settings.notif.section.after": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد الصلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Après"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بعد"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sesudah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sonra"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پس از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selepas"
+          }
+        }
+      }
+    },
+    "settings.notif.section.atPrayerTime": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند دخول الوقت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At prayer time"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "À l’heure de la prière"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز کے وقت"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Saat waktu salat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namaz vaktinde"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هنگام نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের সময়ে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pada waktu solat"
+          }
+        }
+      }
+    },
+    "settings.notif.section.before": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قبل الصلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avant"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پہلے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sebelum"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Önce"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پیش از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sebelum"
+          }
+        }
+      }
+    },
+    "settings.notif.section.sound": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصوت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Son"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آواز"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Suara"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ses"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صدا"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শব্দ"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bunyi"
           }
         }
       }
@@ -9475,7 +9359,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose custom sound file"
+            "value": "Choose a sound file"
           }
         },
         "fr": {
@@ -9580,6 +9464,122 @@
         }
       }
     },
+    "settings.notif.systemSettings": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الإشعارات في النظام"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System notification settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réglages des notifications du système"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "سسٹم کی اطلاعات کی ترتیبات"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pengaturan notifikasi sistem"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sistem bildirim ayarları"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تنظیمات اعلان سیستم"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সিস্টেমের বিজ্ঞপ্তি সেটিংস"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tetapan pemberitahuan sistem"
+          }
+        }
+      }
+    },
+    "settings.notif.systemSettings.open": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrir…"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "کھولیں…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Buka…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aç…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "باز کردن…"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খুলুন…"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Buka…"
+          }
+        }
+      }
+    },
     "settings.notif.volume": {
       "comment": "Accessible name of the notification sound volume slider. Non-English translations need native-speaker review.",
       "localizations": {
@@ -9635,64 +9635,6 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Kelantangan"
-          }
-        }
-      }
-    },
-    "settings.notif.volume.label": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@٪"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%%"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ %%"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@٪"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%%"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%%%@"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@٪"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%%"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%%"
           }
         }
       }

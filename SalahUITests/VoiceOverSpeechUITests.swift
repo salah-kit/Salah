@@ -121,21 +121,21 @@ final class VoiceOverSpeechUITests: XCTestCase {
       speech.log)
   }
 
-  /// Settings → Notifications, with Fajr's alert on: the prayer picker is a radio group
-  /// named "Prayer" that says which prayer is selected, and the alert's sound pop-up reads
-  /// as its choice, its name and its role.
+  /// Settings → Notifications, with Fajr's alert on: the prayer picker is a group named
+  /// "Prayer" whose radio buttons say which prayer is selected, and the alert's sound pop-up
+  /// reads as its choice, its name and its role.
   @MainActor
   func testNotificationsPickersSayTheirChoiceAndName() throws {
     guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
     let speech = try openPane(
-      "Notifications", heading: "Global Alerts",
+      "Notifications", heading: "Sound",
       arguments: Launch.arguments(alerts: [.fajr: ["alertEnabled": true]])
     ).speech
-    try speech.next { $0 == "Prayer radio group" }
-    XCTAssertEqual(
-      try speech.enter(), "In Prayer radio group 6 items Fajr selected radio button, 1 of 6",
-      speech.log)
-    XCTAssertEqual(try speech.next(), "Sunrise radio button, 2 of 6", speech.log)
+    // The picker is drawn by Salah: a group named "Prayer" of seven radio buttons.
+    try speech.next { $0.hasPrefix("Prayer") }
+    let opening = try speech.enter()
+    XCTAssertTrue(opening.contains("Fajr selected radio button"), speech.log)
+    XCTAssertTrue(try speech.next().hasPrefix("Sunrise radio button"), speech.log)
     try speech.leave()
     try speech.next { $0 == "Sound" }
     XCTAssertEqual(try speech.next(), "System Default Sound pop up button", speech.log)

@@ -46,6 +46,7 @@
 		2A20AD19ED373DE32CDB19FC /* AlertDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D50070CA708AA392086771 /* AlertDoubles.swift */; };
 		2AAA42EA9ADDB619859BAD04 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C27B824CF1B9C5D41E580EA /* LocationManager.swift */; };
 		2BC5FBDBEDD16CABB6E2C07D /* SalahText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BAFE950109CD5DEE9FEF68 /* SalahText.swift */; };
+		2EAD108C48A09318D6560231 /* NotificationTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */; };
 		2FB00A193A448BC0993FC6A2 /* AlertSettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */; };
 		31B29FA1F787E113B8AD65DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE641A6772CFF2B5D29315E8 /* Assets.xcassets */; };
 		327DA4BF5B48C803FD1C6389 /* NotificationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BEF191A1AC3CC459F76A3F /* NotificationsTab.swift */; };
@@ -146,6 +147,7 @@
 		8CE5762B1999995BF1733793 /* SalahWidgets in Frameworks */ = {isa = PBXBuildFile; productRef = 363766575D95CE17A4A7BBBE /* SalahWidgets */; };
 		8E6A5CB7C168A52333C8FAF8 /* SalahDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EFE7DDA9A724FDF705576 /* SalahDisplay.swift */; };
 		8F2C5BE29B77924DE98A27BD /* MenuBarDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */; };
+		8F30A9FDC3D2DA279F1FF5FF /* PrayerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921D39EAD7CCEB866D7139E0 /* PrayerPicker.swift */; };
 		8F8B24FB009A1E0DA69ADE15 /* DebugOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD6738C76E5D3804685D784 /* DebugOptions.swift */; };
 		8F9BF658C95D8A27B0ABC5D8 /* SalahWidgetTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEF13225DB44C5D49BC5229 /* SalahWidgetTimeline.swift */; };
 		8FBA5B79D96A6051CF2A7517 /* Adhan-Aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 08F3510F20456EFE4FCBB6F6 /* Adhan-Aqsa.mp3 */; };
@@ -162,6 +164,7 @@
 		97A4C921D7151D75E078F9F4 /* WidgetPlaybackGapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */; };
 		984EE32F12C684FE2E5834A2 /* WindowPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47F84AE910533EB7EF97CEF /* WindowPalette.swift */; };
 		99D4FBE2E966BBDBA6FAE696 /* PrayerDisplayFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4277E55F1E41EE26B5D8D1 /* PrayerDisplayFormatter.swift */; };
+		9A5B62D37C901EE42AFFF617 /* NotificationTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A4DC47073A66A3254478106 /* NotificationTargetTests.swift */; };
 		9AC56DD8075D437A87556322 /* Preferences+Mirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */; };
 		9CF98F420175260DB8D9E1AD /* AppFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A855F46C7172EFE3F0658 /* AppFailure.swift */; };
 		9DE4D23CAE89EA4F8FB89B14 /* PreferenceEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EC32D7FCEE7E9AAFD7F809 /* PreferenceEnums.swift */; };
@@ -171,6 +174,7 @@
 		9FAB6761DB299AB07874A079 /* SalahApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCDC01270443ADA8787FCBF /* SalahApp.swift */; };
 		9FBDB1A96EF9FD00020A9049 /* SalahPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91709727D4888850F7EFB668 /* SalahPalette.swift */; };
 		9FF067D08453E879704EF09B /* Dua.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 0506C1BDDA91DA7A586CB0F3 /* Dua.m4a */; };
+		A13A138A9D35E6F9F0BEDFA5 /* NotificationTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */; };
 		A16D80F3F08582CC03177370 /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462BA70D21091BA0537CE7F8 /* AppResources.swift */; };
 		A2A804D1034A8C5EFB9CD123 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34963BC2BCF87B5CD9AF6DA4 /* SwiftUI.framework */; };
 		A2F681D4D7CA42CCF99F629E /* NotificationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE9FAAEFB4B160776C283E6 /* NotificationModels.swift */; };
@@ -185,6 +189,7 @@
 		A8B3326B21E457B02951E17F /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B849420454154D1237E8E434 /* InfoPlist.xcstrings */; };
 		A9700FF1EC1EB2DCF2AA0A0B /* SalahWidgets in Frameworks */ = {isa = PBXBuildFile; productRef = CD283303230CD150F44B95D5 /* SalahWidgets */; };
 		AAD43096020BE38B99CB148F /* Adhan-Istanbul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EE983C97E1004EDA58316CBC /* Adhan-Istanbul.mp3 */; };
+		AAE06F0F398AFD61B3958CC0 /* PrayerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921D39EAD7CCEB866D7139E0 /* PrayerPicker.swift */; };
 		AB91D945FA328DE911F67F9A /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0098093F6B7E49436BFA96DA /* AppLog.swift */; };
 		B009D6E46C8FE97C9CDF8668 /* SalahTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEA3764D4D7E768A26D5396 /* SalahTextTests.swift */; };
 		B051FBB95232D30C4B04D21D /* GeneralTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2E519F24E6DB17B28FCADB /* GeneralTab.swift */; };
@@ -368,6 +373,7 @@
 		66C4D45ACF670852D66F36C6 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		66E9C3E3F5BB9E4176A0FDD3 /* LocationTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTab.swift; sourceTree = "<group>"; };
 		69BAFE950109CD5DEE9FEF68 /* SalahText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahText.swift; sourceTree = "<group>"; };
+		6A4DC47073A66A3254478106 /* NotificationTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTargetTests.swift; sourceTree = "<group>"; };
 		6BCDE19086B3CDEBEFA27020 /* CalculationChoices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculationChoices.swift; sourceTree = "<group>"; };
 		6E600131ED4FAF7AF7D19859 /* MenuBarChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarChrome.swift; sourceTree = "<group>"; };
 		6E991D181F4950B6713318C2 /* PrayerCalcFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerCalcFailure.swift; sourceTree = "<group>"; };
@@ -385,9 +391,11 @@
 		8C27B824CF1B9C5D41E580EA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		901BC06F79694AC2FE791FFF /* LifecycleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifecycleUITests.swift; sourceTree = "<group>"; };
 		91709727D4888850F7EFB668 /* SalahPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPalette.swift; sourceTree = "<group>"; };
+		921D39EAD7CCEB866D7139E0 /* PrayerPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerPicker.swift; sourceTree = "<group>"; };
 		9DEA3764D4D7E768A26D5396 /* SalahTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahTextTests.swift; sourceTree = "<group>"; };
 		A183980407A89E299C89A68B /* LegacyTimeAssertionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyTimeAssertionAdapter.swift; sourceTree = "<group>"; };
 		A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
+		A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTarget.swift; sourceTree = "<group>"; };
 		A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownView.swift; sourceTree = "<group>"; };
 		A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityUITests.swift; sourceTree = "<group>"; };
 		A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowTitleSetter.swift; sourceTree = "<group>"; };
@@ -554,6 +562,7 @@
 				FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */,
 				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
 				846F5E4C18EBD81CF9FEE997 /* MenuBarStatusTests.swift */,
+				6A4DC47073A66A3254478106 /* NotificationTargetTests.swift */,
 				80DD5264ACADB60FA57577BD /* PaletteContrastTests.swift */,
 				D3A61B56AAC43F94A7A72972 /* PrayerAlertCoordinatorTests.swift */,
 				65ED69414083ED778314A8E0 /* PreferenceEffectsTests.swift */,
@@ -808,6 +817,8 @@
 				0D2E519F24E6DB17B28FCADB /* GeneralTab.swift */,
 				66E9C3E3F5BB9E4176A0FDD3 /* LocationTab.swift */,
 				00BEF191A1AC3CC459F76A3F /* NotificationsTab.swift */,
+				A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */,
+				921D39EAD7CCEB866D7139E0 /* PrayerPicker.swift */,
 			);
 			path = Tabs;
 			sourceTree = "<group>";
@@ -1262,6 +1273,8 @@
 				5FC3437E70FAD313FBD06F7C /* MenuDropdownFooter.swift in Sources */,
 				5BB6B368DD7D09598F975312 /* MenuLiveCountdown.swift in Sources */,
 				9F1BE3E4A3851A905BBACE74 /* NotificationModels.swift in Sources */,
+				A13A138A9D35E6F9F0BEDFA5 /* NotificationTarget.swift in Sources */,
+				9A5B62D37C901EE42AFFF617 /* NotificationTargetTests.swift in Sources */,
 				1BD3A6E4834851F2E4C72CF1 /* NotificationsTab.swift in Sources */,
 				17613525B1FF65E9375A5ED9 /* Numbers+Localized.swift in Sources */,
 				FA2B17EE37BC8AA395313693 /* PaletteContrastTests.swift in Sources */,
@@ -1271,6 +1284,7 @@
 				DEB70C999379A833EABE4E26 /* PrayerDisplayFormatter.swift in Sources */,
 				E313E873D22E117142CB64AD /* PrayerKind+Settings.swift in Sources */,
 				0B49448DDC43B4F7173BF173 /* PrayerManager.swift in Sources */,
+				8F30A9FDC3D2DA279F1FF5FF /* PrayerPicker.swift in Sources */,
 				265DD7F82C046058B7528A00 /* PreferenceEffectsTests.swift in Sources */,
 				8A2D554ACE146BBE8A8BD248 /* PreferenceEnums.swift in Sources */,
 				38282006C00E5F58947A6CB0 /* PreferenceKeys.swift in Sources */,
@@ -1352,6 +1366,7 @@
 				B238E6C67FEAA05E11D35618 /* MenuDropdownFooter.swift in Sources */,
 				BDB9D83992FC73E1687F3954 /* MenuLiveCountdown.swift in Sources */,
 				A2F681D4D7CA42CCF99F629E /* NotificationModels.swift in Sources */,
+				2EAD108C48A09318D6560231 /* NotificationTarget.swift in Sources */,
 				327DA4BF5B48C803FD1C6389 /* NotificationsTab.swift in Sources */,
 				013A014D8B961982DBCAFA99 /* Numbers+Localized.swift in Sources */,
 				79C6B30F084601994FD45D99 /* PrayerAlertCoordinator.swift in Sources */,
@@ -1359,6 +1374,7 @@
 				99D4FBE2E966BBDBA6FAE696 /* PrayerDisplayFormatter.swift in Sources */,
 				7D51AB15550B702608E0D29C /* PrayerKind+Settings.swift in Sources */,
 				29D98E5E66C43F822BEF3DB1 /* PrayerManager.swift in Sources */,
+				AAE06F0F398AFD61B3958CC0 /* PrayerPicker.swift in Sources */,
 				9DE4D23CAE89EA4F8FB89B14 /* PreferenceEnums.swift in Sources */,
 				C94AADC3006FD5BF2F3F6963 /* PreferenceKeys.swift in Sources */,
 				90AD373674A7F16173F1A778 /* Preferences+API.swift in Sources */,
