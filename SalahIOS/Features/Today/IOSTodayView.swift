@@ -34,7 +34,7 @@ struct IOSTodayView: View {
             }
             .frame(width: max(0, geometry.size.width - 96))
             .padding(.horizontal, 48)
-            .padding(.top, 24)
+            .padding(.top, 8)
             .padding(.bottom, 32)
           } else {
             VStack(alignment: .leading, spacing: 16) {

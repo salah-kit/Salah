@@ -115,7 +115,11 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug 
 To run on a physical device, configure your team in `Config/Local.xcconfig` and use
 `-allowProvisioningUpdates`. Enable the existing App Group for the app and extension.
 App Store distribution needs a paid membership; device notification delivery, compass
-accuracy and system scheduling should also be checked on the intended device.
+accuracy and system scheduling should also be checked on the intended device. Follow
+the steps in [#65](https://github.com/salah-kit/Salah/issues/65) and record the commit,
+device, OS version and observed results. The [iOS validation notes](docs/ios-validation.md)
+also link VoiceOver and native-language review; leave checks that require hardware,
+elapsed time or another person open until their evidence is recorded.
 
 iOS includes licensed regular and Fajr adhan recordings, a synthesized tone and system
 sounds, and accepts imported audio. [NOTICE](NOTICE) records the licenses; Audio credits

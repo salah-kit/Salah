@@ -116,3 +116,5 @@ real permission alerts. Each permission case requires a fresh app installation.
 [CONTRIBUTING.md](../CONTRIBUTING.md#ios-and-ipados) defines the build and journey commands.
 These source boundaries describe what the tests target; a passing run does not establish
 physical compass accuracy, eventual background scheduling or App Store availability.
+The [iOS validation notes](ios-validation.md) describe the reproducible checks,
+remaining contributor reviews and system limitations.

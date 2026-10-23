@@ -53,11 +53,47 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
     let query = "London, United Kingdom"
     searchCity(query, matching: "London", in: app)
     XCTAssertEqual(value("location.searchField", in: app), query)
+    func processIdentifier() -> Int? {
+      let description = app.debugDescription
+      guard let range = description.range(of: #"\bpid: [0-9]+"#, options: .regularExpression) else {
+        return nil
+      }
+      return description[range].split(separator: " ").last.flatMap { Int($0) }
+    }
+    let originalProcess = processIdentifier()
+    let beforeHome = app.state.rawValue
     XCUIDevice.shared.press(.home)
-    XCTAssertTrue(
-      waitUntil { [.runningBackground, .runningBackgroundSuspended].contains(app.state) },
-      "The same process must enter the background")
+    let immediatelyAfterHome = app.state.rawValue
+    // Application state is passively monitored. XCTest's waiter services its
+    // updates; a main-thread sleep loop can keep returning the cached foreground state.
+    let background = XCTNSPredicateExpectation(
+      predicate: NSPredicate(
+        format: "state == %lu OR state == %lu",
+        XCUIApplication.State.runningBackground.rawValue,
+        XCUIApplication.State.runningBackgroundSuspended.rawValue),
+      object: app)
+    let backgroundResult = XCTWaiter.wait(for: [background], timeout: 10)
+    XCTAssertEqual(
+      backgroundResult, .completed,
+      "Expected live background state; raw state before Home=\(beforeHome), immediately after=\(immediatelyAfterHome), after wait=\(app.state.rawValue)"
+    )
+    captureSystem("iPhone-Home-City-Search-In-Background")
     app.activate()
+    let returnedProcess = processIdentifier()
+    // activate() preserves an already running app by its documented contract.
+    // Compare observed PIDs when available without making the diagnostic text
+    // format itself a requirement of the app or this journey.
+    if let originalProcess, let returnedProcess {
+      XCTAssertEqual(returnedProcess, originalProcess, "Returning must reactivate the same process")
+    }
+    XCTContext.runActivity(named: "Background round-trip process identity") { activity in
+      let attachment = XCTAttachment(
+        string:
+          "Observed PID before=\(String(describing: originalProcess)), after=\(String(describing: returnedProcess)); state after activation=\(app.state.rawValue)"
+      )
+      attachment.lifetime = .keepAlways
+      activity.add(attachment)
+    }
     XCTAssertEqual(value("location.searchField", in: app), query)
     requireCityResult("London", in: app).tap()
     tap("tab.today", in: app)
@@ -157,6 +193,7 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
   @MainActor
   func testMissingLocationRecoverySelectsACityAndRestoresQibla() {
     let journey = IOSJourneyApp(fixture: false)
+    journey.app.resetAuthorizationStatus(for: .location)
     journey.launch()
     let app = journey.app
     defer { app.terminate() }
@@ -165,6 +202,26 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
     require("qibla.chooseCity", in: app)
     require("qibla.placeholder", in: app)
     XCTAssertFalse(element("qibla.heading", in: app).exists)
+    let allowLocation = require("qibla.allowLocation", in: app)
+    XCTAssertTrue(allowLocation.isHittable)
+    XCTAssertEqual(
+      allowLocation.frame.width, app.windows.firstMatch.frame.width - 32, accuracy: 1,
+      "The primary location action fills the content width with 16-point side insets")
+    XCTAssertGreaterThanOrEqual(allowLocation.frame.height, 44)
+    capture("iPhone-English-Qibla-First-Location-Permission", in: app)
+    allowLocation.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
+    let permission = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts.firstMatch
+    XCTAssertTrue(
+      permission.exists || permission.waitForExistence(timeout: 15),
+      "Tapping the action near its trailing edge must request real location permission")
+    captureSystem("System-Qibla-First-Location-Permission")
+    let deny = permission.buttons.matching(
+      NSPredicate(format: "label BEGINSWITH[c] %@ AND label CONTAINS[c] %@", "Don", "Allow")
+    ).firstMatch
+    XCTAssertTrue(deny.exists, permission.debugDescription)
+    deny.tap()
+    XCTAssertTrue(permission.waitForNonExistence(timeout: 10))
+    require("qibla.openSettings", in: app)
     capture("iPhone-English-Qibla-Location-Recovery", in: app)
     tap("qibla.chooseCity", in: app)
     selectCity("Makkah, Saudi Arabia", matching: "Makkah", in: app)

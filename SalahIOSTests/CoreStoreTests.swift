@@ -122,6 +122,39 @@ struct CoreStoreTests {
     #expect(store.selectedTab == .times)
   }
 
+  @Test func regularWidthSettingsSelectCalculationOnlyWhenNoCategoryIsSelected() {
+    let store = IOSAppStore(repository: CoreMemoryPreferences())
+    #expect(store.selectedSettingsDestination == nil)
+    store.prepareSettingsForRegularWidth()
+    #expect(store.settingsPath == [.calculation])
+    store.handle(url: URL(string: "salah://settings/sound")!)
+    store.prepareSettingsForRegularWidth()
+    #expect(store.selectedSettingsDestination == .sound)
+    store.handle(url: URL(string: "salah://location")!)
+    store.prepareSettingsForRegularWidth()
+    #expect(store.settingsPath == [.location])
+  }
+
+  @Test func settingsSidebarSelectionReplacesAndClearsTheCompactNavigationPath() {
+    let store = IOSAppStore(repository: CoreMemoryPreferences())
+    store.settingsPath = [.location, .sound]
+    #expect(store.selectedSettingsDestination == .location)
+    store.selectedSettingsDestination = .language
+    #expect(store.settingsPath == [.language])
+    store.selectedSettingsDestination = nil
+    #expect(store.settingsPath.isEmpty)
+  }
+
+  @Test func eachSettingsCategoryResolvesThroughItsTypedDeepLink() throws {
+    let store = IOSAppStore(repository: CoreMemoryPreferences())
+    for destination in IOSSettingsDestination.allCases {
+      let url = try #require(URL(string: "salah://settings/\(destination.rawValue)"))
+      store.handle(url: url)
+      #expect(store.selectedTab == .settings)
+      #expect(store.selectedSettingsDestination == destination)
+    }
+  }
+
   @Test func selectingCitiesKeepsFiveDistinctRecentPlaces() {
     let store = IOSAppStore(repository: CoreMemoryPreferences())
     for index in 0..<7 {

@@ -15,8 +15,9 @@ nonisolated enum IOSPermissionStatus: String, Sendable {
   case notDetermined, authorized, denied, restricted
 }
 
-nonisolated enum IOSSettingsDestination: String, Hashable, Sendable {
-  case location, calculation, alerts, sound, appearance
+nonisolated enum IOSSettingsDestination: String, CaseIterable, Hashable, Sendable {
+  case location, calculation, madhab, highLatitude, adjustments, hijri
+  case alerts, sound, appearance, language, about
 }
 
 /// The application state. Feature views depend on this value boundary, never platform globals.
@@ -35,6 +36,18 @@ final class IOSAppStore {
   var selectedDay: CivilDay
   var onboardingStep: IOSOnboardingStep = .welcome
   var settingsPath: [IOSSettingsDestination] = []
+
+  /// Compact navigation and the regular-width sidebar select the same category.
+  var selectedSettingsDestination: IOSSettingsDestination? {
+    get { settingsPath.first }
+    set { settingsPath = newValue.map { [$0] } ?? [] }
+  }
+
+  /// An empty detail column starts at Calculation; an incoming route keeps its selection.
+  func prepareSettingsForRegularWidth() {
+    guard settingsPath.isEmpty else { return }
+    settingsPath = [.calculation]
+  }
   /// Composition connects side effects after constructing the store and platform services.
   @ObservationIgnored var onPreferencesChanged: (@MainActor (IOSPreferences) -> Void)?
   @ObservationIgnored var onStopPlayback: (@MainActor () -> Void)?
@@ -233,12 +246,14 @@ final class IOSAppStore {
     case "today", "prayer", "play": selectedTab = .today
     case "times": selectedTab = .times
     case "qibla": selectedTab = .qibla
-    case "settings", "location", "notifications", "alerts", "calculation", "sound", "appearance":
+    case "settings", "location", "notifications", "alerts", "calculation", "sound", "appearance",
+      "madhab", "highlatitude", "high-latitude", "adjustments", "hijri", "language", "about":
       selectedTab = .settings
       let route: IOSSettingsDestination? =
         switch destination {
         case "notifications", "alerts": .alerts
-        default: IOSSettingsDestination(rawValue: destination)
+        case "high-latitude": .highLatitude
+        default: IOSSettingsDestination.allCases.first { $0.rawValue.lowercased() == destination }
         }
       settingsPath = route.map { [$0] } ?? []
     default: return

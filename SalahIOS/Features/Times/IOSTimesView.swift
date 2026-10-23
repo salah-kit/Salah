@@ -56,7 +56,7 @@ struct IOSTimesView: View {
       }
       .frame(maxWidth: 1_200)
       .padding(.horizontal, wideLayout ? 48 : 16)
-      .padding(.top, wideLayout ? 24 : 8)
+      .padding(.top, 8)
       .padding(.bottom, 24)
       .frame(maxWidth: .infinity)
     }

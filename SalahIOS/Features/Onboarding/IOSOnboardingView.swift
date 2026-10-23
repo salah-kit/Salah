@@ -16,7 +16,6 @@ struct IOSOnboardingView: View {
   @Environment(IOSAppStore.self) private var store
   @Environment(IOSLocationService.self) private var locationService
   @Environment(IOSNotificationService.self) private var notifications
-  @Environment(\.openURL) private var openURL
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.dynamicTypeSize) private var typeSize
   @ScaledMetric(relativeTo: .body) private var methodRowHeight: CGFloat = 66
@@ -191,7 +190,7 @@ struct IOSOnboardingView: View {
       if notificationDenied {
         primary(text("Open Settings", "فتح الإعدادات"), id: "onboarding.notification.openSettings")
         {
-          openSystemSettings()
+          openNotificationSettings()
         }
         secondary(
           text("Continue without notifications", "المتابعة دون تنبيهات"),
@@ -314,9 +313,9 @@ struct IOSOnboardingView: View {
     }
   }
 
-  private func openSystemSettings() {
-    guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-    openURL(url)
+  private func openNotificationSettings() {
+    guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
+    Task { _ = await UIApplication.shared.open(url) }
   }
 
   private func text(_ english: String, _ arabic: String) -> String {

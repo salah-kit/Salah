@@ -239,10 +239,13 @@ struct IOSQiblaView: View {
       .foregroundStyle(IOSTheme.labelSecondary)
       .frame(maxWidth: .infinity, alignment: .leading)
       if location.authorizationStatus == .notDetermined {
-        Button(copy("Allow Location Access", "السماح بالوصول إلى الموقع")) {
+        Button {
           requestLocation()
+        } label: {
+          Text(verbatim: copy("Allow Location Access", "السماح بالوصول إلى الموقع"))
+            .foregroundStyle(IOSTheme.labelOnAccent)
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
         .buttonStyle(.glassProminent)
         .controlSize(.large)
         .tint(IOSTheme.accentFill)

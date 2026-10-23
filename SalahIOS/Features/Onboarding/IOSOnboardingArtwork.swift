@@ -1,3 +1,4 @@
+import Foundation
 import SalahCore
 import SwiftUI
 
@@ -5,15 +6,16 @@ import SwiftUI
 struct IOSOnboardingArtwork: View {
   let step: IOSOnboardingStep
   var readyKind: PrayerKind?
+  var resourceBundle: Bundle? = nil
 
   var body: some View {
     ZStack {
-      Image("OnboardingGeometry")
+      Image("OnboardingGeometry", bundle: resourceBundle)
         .resizable()
         .frame(width: 220, height: 220)
       switch step {
       case .welcome:
-        Image("OnboardingIcon")
+        Image("OnboardingIcon", bundle: resourceBundle)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: 112, height: 112)
@@ -27,14 +29,17 @@ struct IOSOnboardingArtwork: View {
       case .ready:
         Circle().fill(
           LinearGradient(
-            colors: [Color("IOSPhaseDhuhrSkyTop"), Color("IOSPhaseDhuhrSkyBottom")],
+            colors: [
+              Color("IOSPhaseDhuhrSkyTop", bundle: resourceBundle),
+              Color("IOSPhaseDhuhrSkyBottom", bundle: resourceBundle),
+            ],
             startPoint: .top, endPoint: .bottom)
         )
         .frame(width: 120, height: 120)
-        Image("salah.\((readyKind ?? .asr).rawValue)")
-          .symbolRenderingMode(.hierarchical)
-          .font(.system(size: 84))
-          .foregroundStyle(Color("IOSPhaseDhuhrTint"))
+        IOSPrayerGlyph(
+          name: "salah.\((readyKind ?? .asr).rawValue)", size: 84, resourceBundle: resourceBundle
+        )
+        .foregroundStyle(Color("IOSPhaseDhuhrTint", bundle: resourceBundle))
       }
     }
     .frame(width: 220, height: 220)
