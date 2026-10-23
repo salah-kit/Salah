@@ -1,4 +1,5 @@
 import SalahUI
+import SwiftUI
 import Testing
 
 /// Salah's color tokens keep the contrast the design promises on the surfaces the widgets,
@@ -16,11 +17,7 @@ struct PaletteContrastTests {
 
   /// `color` composited over the opaque `surface`.
   private static func over(_ color: ThemeColor, _ surface: ThemeColor) -> ThemeColor {
-    let alpha = color.opacity
-    return ThemeColor(
-      red: color.red * alpha + surface.red * (1 - alpha),
-      green: color.green * alpha + surface.green * (1 - alpha),
-      blue: color.blue * alpha + surface.blue * (1 - alpha))
+    color.composited(over: surface)
   }
 
   private static func ratio(_ ink: ThemeColor, on surface: ThemeColor) -> Double {
@@ -93,5 +90,23 @@ struct PaletteContrastTests {
     #expect(light.labelPrimary != dark.labelPrimary)
     #expect(
       SalahPhase.dhuhr.colors(isDark: false).skyTop != SalahPhase.asr.colors(isDark: false).skyTop)
+  }
+
+  /// The next-prayer card draws its secondary text as one opaque color over the sky's
+  /// nearer end: the same color `labelSecondary` makes there, with the same contrast.
+  @Test(arguments: SalahPhase.allCases)
+  func theCardsSecondaryTextIsOpaqueAndHoldsItsContrast(_ phase: SalahPhase) {
+    for (isDark, increased) in Self.appearances {
+      let colors = SalahColors(
+        phase: phase, scheme: isDark ? .dark : .light,
+        contrast: increased ? .increased : .standard)
+      for atTop in [true, false] {
+        let sky = atTop ? colors.phase.skyTop : colors.phase.skyBottom
+        let ink = colors.secondaryOnSky(atTop: atTop)
+        #expect(ink.opacity == 1)
+        #expect(ink == Self.over(colors.palette.labelSecondary, sky))
+        #expect(ThemeColor.contrastRatio(ink, sky) >= 4.5, "\(phase) dark=\(isDark)")
+      }
+    }
   }
 }

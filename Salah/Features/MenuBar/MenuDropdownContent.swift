@@ -290,7 +290,7 @@ struct MenuHero: View {
   private func eyebrowText(_ text: String) -> some View {
     Text(verbatim: text)
       .font(.subheadline.weight(.semibold))
-      .foregroundStyle(palette.labelSecondary.color)
+      .foregroundStyle(colors.secondaryOnSky(atTop: true).color)
   }
 
   private func nameLine(_ name: String, when: String) -> some View {
@@ -303,7 +303,7 @@ struct MenuHero: View {
       Spacer(minLength: 6)
       Text(verbatim: when)
         .font(.callout)
-        .foregroundStyle(palette.labelSecondary.color)
+        .foregroundStyle(colors.secondaryOnSky(atTop: true).color)
         .lineLimit(1)
         .minimumScaleFactor(0.8)
         .layoutPriority(-1)
@@ -321,7 +321,7 @@ struct MenuHero: View {
         .minimumScaleFactor(0.7)
       Spacer(minLength: 0)
     }
-    .foregroundStyle(palette.labelSecondary.color)
+    .foregroundStyle(colors.secondaryOnSky(atTop: false).color)
     .padding(.top, 4)
   }
 
