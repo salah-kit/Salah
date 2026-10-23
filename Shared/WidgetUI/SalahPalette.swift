@@ -247,6 +247,13 @@ nonisolated struct SalahColors {
     self.phase = phase.colors(isDark: isDark, increasedContrast: increased)
   }
 
+  /// Secondary text on the sky, as one opaque color: `labelSecondary` composited over the
+  /// sky's end it sits nearest. It looks the same, and reads the same to contrast checks
+  /// that measure the drawn color against the gradient under small text.
+  func secondaryOnSky(atTop: Bool) -> ThemeColor {
+    palette.labelSecondary.composited(over: atTop ? phase.skyTop : phase.skyBottom)
+  }
+
   /// The sky gradient, top to bottom.
   var sky: LinearGradient {
     LinearGradient(
@@ -264,5 +271,16 @@ nonisolated extension View {
     } else {
       self
     }
+  }
+}
+
+nonisolated extension ThemeColor {
+  /// This color drawn over the opaque `surface`, as one opaque color.
+  func composited(over surface: ThemeColor) -> ThemeColor {
+    let alpha = opacity
+    return ThemeColor(
+      red: red * alpha + surface.red * (1 - alpha),
+      green: green * alpha + surface.green * (1 - alpha),
+      blue: blue * alpha + surface.blue * (1 - alpha))
   }
 }
