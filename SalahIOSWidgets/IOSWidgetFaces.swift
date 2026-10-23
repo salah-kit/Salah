@@ -523,7 +523,7 @@ private struct ExtraLargeHeader: View {
 
   var body: some View {
     let header = display.header
-    let year = header.hijriYear.replacingOccurrences(of: " \(display.labels.hijriSuffix)", with: "")
+    let year = header.hijriYear
     // One line that scales as one, as the design sets it; a redacted widget hides it whole.
     Text(
       verbatim: "\(header.hijriDay) \(header.hijriMonth) \(year) · \(header.location)"
@@ -544,7 +544,7 @@ private struct WidgetHeader: View {
 
   var body: some View {
     let header = display.header
-    let year = header.hijriYear.replacingOccurrences(of: " \(display.labels.hijriSuffix)", with: "")
+    let year = header.hijriYear
     HStack(spacing: 6) {
       Text(verbatim: "\(header.hijriDay) \(header.hijriMonth) \(year)")
         .font(.system(size: 15, weight: .semibold))
