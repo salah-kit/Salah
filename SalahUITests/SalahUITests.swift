@@ -72,14 +72,15 @@ final class SalahUITests: XCTestCase {
     return frame.maxX <= housing.lowerBound || frame.minX >= housing.upperBound
   }
 
-  /// The status item shows the next prayer's full name, as the default menu-bar format does.
+  /// The status item names Salah and the next prayer's full name, as the default menu-bar
+  /// format shows it: "Salah, Asr in 2 hours, 16 minutes".
   @MainActor
   func testStatusItemShowsTheNextPrayer() {
     let app = launchQuietly()
     let statusItem = app.statusItems.firstMatch
     XCTAssertTrue(statusItem.waitForExistence(timeout: 30))
     let title = statusItem.title
-    XCTAssertTrue(Self.prayerNames.contains { title.hasPrefix($0 + " ") }, title)
+    XCTAssertTrue(Self.prayerNames.contains { title.hasPrefix("Salah, \($0) ") }, title)
   }
 
   /// The status item opens the dropdown with the day's six prayers and Salah's controls.
