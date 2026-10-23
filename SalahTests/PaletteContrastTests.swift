@@ -5,7 +5,7 @@ import Testing
 /// Salah's color tokens keep the contrast the design promises on the surfaces the widgets,
 /// the dropdown and Today draw them on, in light and dark, with and without Increase
 /// Contrast: text tokens 4.5:1; marks, glyphs and passed rows (`labelTertiary`) 3:1. The
-/// faces draw text only in text tokens; the time of day's mark (`tint`) only in glyphs
+/// faces draw text only in text tokens, or in one composited over the sky they sit on; the time of day's mark (`tint`) only in glyphs
 /// and bars, and its text in `Phase/text`. The baselines show which token each element
 /// draws in.
 @Suite("Palette contrast")
@@ -92,8 +92,9 @@ struct PaletteContrastTests {
       SalahPhase.dhuhr.colors(isDark: false).skyTop != SalahPhase.asr.colors(isDark: false).skyTop)
   }
 
-  /// The next-prayer card draws its secondary text as one opaque color over the sky's
-  /// nearer end: the same color `labelSecondary` makes there, with the same contrast.
+  /// The next-prayer card's secondary text is one opaque color: `labelSecondary` over the
+  /// sky's nearer end, the top for the eyebrow and time, the bottom for the footer, holding
+  /// 4.5:1 there. Dhuhr's dark sky pins the values themselves.
   @Test(arguments: SalahPhase.allCases)
   func theCardsSecondaryTextIsOpaqueAndHoldsItsContrast(_ phase: SalahPhase) {
     for (isDark, increased) in Self.appearances {
@@ -101,12 +102,17 @@ struct PaletteContrastTests {
         phase: phase, scheme: isDark ? .dark : .light,
         contrast: increased ? .increased : .standard)
       for atTop in [true, false] {
+        let label = "\(phase) dark=\(isDark) increased=\(increased) top=\(atTop)"
         let sky = atTop ? colors.phase.skyTop : colors.phase.skyBottom
         let ink = colors.secondaryOnSky(atTop: atTop)
-        #expect(ink.opacity == 1)
-        #expect(ink == Self.over(colors.palette.labelSecondary, sky))
-        #expect(ThemeColor.contrastRatio(ink, sky) >= 4.5, "\(phase) dark=\(isDark)")
+        #expect(ink.opacity == 1, "\(label)")
+        #expect(ThemeColor.contrastRatio(ink, sky) >= 4.5, "\(label)")
       }
     }
+    let dhuhrDark = SalahColors(phase: .dhuhr, scheme: .dark, contrast: .standard)
+    let top = dhuhrDark.secondaryOnSky(atTop: true)
+    // #EBEBF5 at 0xA3/255 over #011F2E.
+    #expect(abs(top.red - 0.5905) < 0.001 && abs(top.green - 0.6329) < 0.001)
+    #expect(abs(top.blue - 0.6792) < 0.001)
   }
 }
