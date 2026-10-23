@@ -45,4 +45,25 @@ struct OnboardingFlowTests {
     #expect(OnboardingFlow.isNeeded(asksForLocation: true, asksForNotifications: false))
     #expect(!OnboardingFlow.isNeeded(asksForLocation: false, asksForNotifications: false))
   }
+
+  /// Finishing marks the welcome done. Choose a City… ends on the Location pane with Salah
+  /// no longer following the location, so its city search shows and nothing asks later; a
+  /// refused location ends there too; otherwise Today.
+  @Test @MainActor func finishingSetsWhereSalahOpens() {
+    let scratch = ScratchDefaults()
+    let preferences = Preferences(defaults: scratch.defaults)
+    preferences.useCurrentLocation = true
+    #expect(
+      OnboardingFlow.complete(at: .today, locationWasDenied: false, preferences: preferences)
+        == .today)
+    #expect(preferences.onboardingCompleted)
+    #expect(preferences.useCurrentLocation, "Allowing keeps following the location")
+    #expect(
+      OnboardingFlow.complete(at: .today, locationWasDenied: true, preferences: preferences)
+        == .location)
+    #expect(
+      OnboardingFlow.complete(at: .location, locationWasDenied: false, preferences: preferences)
+        == .location)
+    #expect(!preferences.useCurrentLocation, "Choose a City… stops following the location")
+  }
 }

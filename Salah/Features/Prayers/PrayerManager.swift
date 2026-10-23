@@ -98,7 +98,9 @@ final class PrayerManager {
     // city label (from a failed geocode while offline) self-heals. Prayer times
     // are unaffected either way - they come from stored coordinates.
     reachability.onBecameSatisfied = { [weak self] in
-      self?.locationManager.retryPendingGeocodeOnReconnect()
+      // Not during a first launch's welcome: the retry can ask macOS for the location.
+      guard let self, self.preferences.onboardingCompleted else { return }
+      self.locationManager.retryPendingGeocodeOnReconnect()
     }
     reachability.start()
 
