@@ -70,6 +70,11 @@ final class AppWindowCoordinator {
   /// The first launch's welcome while it's open: asking for Salah's window brings it
   /// forward instead, until it ends.
   private var onboardingWindow: NSWindow?
+  /// The welcome once it has ended, until Salah's window is up: then it closes, so Salah
+  /// keeps its Dock icon from one to the other.
+  private var welcomeAwaitingWindow: NSWindow?
+  /// From launch until the welcome shows or isn't needed: asking for Salah's window waits.
+  private var isDecidingOnboarding = false
   private var closeObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
   /// A login launch or the first launch's welcome, until Salah's window is asked for: a
   /// window SwiftUI opens by itself meanwhile closes again (macOS 14 opens the window scene
@@ -118,7 +123,11 @@ final class AppWindowCoordinator {
       // The first launch welcomes first; the window opens when the welcome ends. Until
       // then, a window SwiftUI opens by itself closes again, as on a login launch.
       isQuietLaunch = true
-      startOnboarding { [weak self] in self?.open() }
+      isDecidingOnboarding = true
+      startOnboarding { [weak self] in
+        self?.isDecidingOnboarding = false
+        self?.open()
+      }
     } else {
       isQuietLaunch = true
     }
@@ -138,8 +147,10 @@ final class AppWindowCoordinator {
   /// Opens the window, or brings it forward and restores it if it's minimized; never a
   /// second one. It shows `pane`, or the last pane without one (Today the first time).
   func open(_ pane: WindowPane? = nil) {
+    if isDecidingOnboarding { return }
     if let onboardingWindow {
       presence.bringForward()
+      if onboardingWindow.isMiniaturized { onboardingWindow.deminiaturize(nil) }
       onboardingWindow.makeKeyAndOrderFront(nil)
       return
     }
@@ -182,6 +193,10 @@ final class AppWindowCoordinator {
     }
     lifecycle.windowOpened(id)
     presence.setPresence(lifecycle.presence)
+    if let welcome = welcomeAwaitingWindow {
+      welcomeAwaitingWindow = nil
+      welcome.close()
+    }
     AppLog.lifecycle.notice("window opened windows=\(self.windows.count, privacy: .public)")
   }
 
@@ -198,13 +213,21 @@ final class AppWindowCoordinator {
       MainActor.assumeIsolated { self?.onboardingWillClose(id) }
     }
     onboardingWindow = window
+    isDecidingOnboarding = false
     lifecycle.windowOpened(id)
     presence.setPresence(lifecycle.presence)
   }
 
-  /// The welcome is ending: from now on, asking for Salah's window opens it.
+  /// The welcome is ending: from now on, asking for Salah's window opens it, and the
+  /// welcome closes once that window is up.
   func endOnboarding() {
+    guard let welcome = onboardingWindow else { return }
     onboardingWindow = nil
+    if windows.isEmpty {
+      welcomeAwaitingWindow = welcome
+    } else {
+      welcome.close()
+    }
   }
 
   private func onboardingWillClose(_ id: ObjectIdentifier) {
@@ -260,6 +283,8 @@ final class AppWindowCoordinator {
       return .terminateNow
     case .closeWindows:
       for window in Array(windows.values) { window.close() }
+      onboardingWindow?.close()
+      welcomeAwaitingWindow?.close()
       return .terminateCancel
     }
   }

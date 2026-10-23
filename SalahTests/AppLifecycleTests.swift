@@ -322,10 +322,10 @@ struct AppWindowCoordinatorTests {
     #expect(presence.bringForwards == 1)
   }
 
-  /// A first launch shows the welcome instead of the window. Meanwhile a window SwiftUI
-  /// opens by itself closes again, and asking for Salah (the Dock, Open Salah) brings the
-  /// welcome forward; once it ends, Salah's window opens, and closing the welcome shows no
-  /// note.
+  /// A first launch shows the welcome instead of the window. Until it shows, asking for
+  /// Salah waits; meanwhile a window SwiftUI opens by itself closes again, and asking for
+  /// Salah brings the welcome forward. When it ends, Salah's window opens and the welcome
+  /// closes once it's up, so the Dock icon never goes; closing it shows no note.
   @Test func theFirstLaunchWelcomesBeforeTheWindow() {
     let notes = NoteCounter()
     let coordinator = makeCoordinator(notes: notes, startOnboarding: { _ in })
@@ -333,6 +333,8 @@ struct AppWindowCoordinatorTests {
     coordinator.register { opener.count += 1 }
     coordinator.didFinishLaunching(asLoginItem: false)
     #expect(opener.count == 0, "The welcome comes first")
+    coordinator.open()
+    #expect(opener.count == 0, "Asking for Salah waits while the welcome is decided")
 
     let welcome = makeWindow()
     coordinator.attachOnboarding(welcome)
@@ -344,17 +346,29 @@ struct AppWindowCoordinatorTests {
 
     coordinator.open()
     #expect(opener.count == 0, "Asking for Salah brings the welcome forward")
-    #expect(presence.bringForwards == 1)
+    #expect(welcome.isVisible)
 
     coordinator.endOnboarding()
     coordinator.open()
     #expect(opener.count == 1)
+    #expect(welcome.isVisible, "The welcome waits for Salah's window")
     let opened = makeWindow()
     defer { opened.close() }
     coordinator.attach(opened)
-    welcome.close()
+    #expect(!welcome.isVisible, "The welcome closes once the window is up")
     #expect(notes.count == 0, "No note for the welcome")
-    #expect(presence.presences.last == .regular, "The window keeps the Dock icon")
+    #expect(presence.presences == [.regular], "The Dock icon never goes")
+  }
+
+  /// ⌘Q while the welcome is open closes it to the menu bar, as it does Salah's window.
+  @Test func commandQClosesTheWelcome() {
+    let coordinator = makeCoordinator(startOnboarding: { _ in })
+    coordinator.didFinishLaunching(asLoginItem: false)
+    let welcome = makeWindow()
+    coordinator.attachOnboarding(welcome)
+    #expect(coordinator.shouldTerminate(appleEvent: nil) == .terminateCancel)
+    #expect(!welcome.isVisible)
+    #expect(presence.presences == [.regular, .menuBar])
   }
 
   @Test func readsALoginItemLaunch() {

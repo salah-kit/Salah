@@ -43,9 +43,10 @@ final class OnboardingUITests: XCTestCase {
     XCTAssertFalse(welcome.exists)
   }
 
-  /// A text of the welcome, which macOS reports by its value.
+  /// A text of the welcome by its words, a page's title (a heading) included.
   @MainActor
   private func text(_ value: String, in window: XCUIElement) -> XCUIElement {
-    window.staticTexts.matching(NSPredicate(format: "value == %@", value)).firstMatch
+    window.descendants(matching: .any)
+      .matching(NSPredicate(format: "value == %@ OR label == %@", value, value)).firstMatch
   }
 }
