@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- A welcome on the first launch, in a small window of its own: what Salah does, then why it
+  wants the location (Allow Location Access, or Choose a City…) and to alert (Allow
+  Notifications, or Not Now). Each asks macOS only from its own page, and only while macOS
+  hasn't asked before; finishing opens Today, or the Location pane after Choose a City….
+  Salah no longer asks for either at launch.
 - Salah's window: Today, an overview with the next prayer, the day's timeline and its
   prayers, and the six settings panes in a sidebar. Open Salah in the dropdown, ⌘, (at
   General), Finder, Spotlight, the Dock icon and a widget's tap open it, or bring it

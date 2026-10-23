@@ -27,6 +27,11 @@ import UserNotifications
     /// replace this Mac's own Salah preferences.
     static let scratchPreferencesKey = "salah.debug.scratchPreferences"
 
+    /// `-salah.debug.showsOnboarding YES`: show the first launch's welcome with all its
+    /// pages, whatever was asked before, so a test can walk through it. With
+    /// `withoutSystemPromptsKey` its Allow buttons move on without asking.
+    static let showsOnboardingKey = "salah.debug.showsOnboarding"
+
     /// The scratch store's suite.
     static let scratchSuiteName = "io.github.salah-kit.Salah.debug.scratch"
 

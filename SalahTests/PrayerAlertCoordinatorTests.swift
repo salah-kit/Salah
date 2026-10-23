@@ -48,6 +48,8 @@ struct PrayerAlertCoordinatorTests {
       }
       preferences = .scratch(scratch, settings: resolved)
       preferences.appLanguage = language
+      // An app past its first launch's welcome, as every test but the welcome's assumes.
+      preferences.onboardingCompleted = true
       prepare(preferences)
       clock = ManualAlertClock(now)
       center = FakeNotificationCenter(
@@ -422,6 +424,25 @@ struct PrayerAlertCoordinatorTests {
     await harness.update()
     #expect(harness.center.calls.filter { $0 == .requestAuthorization }.count == 1)
     #expect(harness.center.pending.isEmpty)
+  }
+
+  /// Before the first launch's welcome is over the coordinator never asks: the welcome
+  /// asks on its own page.
+  @Test func neverAsksBeforeTheWelcomeIsOver() async {
+    let harness = Harness(
+      now: Fixture.date(13, 0), status: .notDetermined, prepare: { $0.onboardingCompleted = false })
+    await harness.update()
+    #expect(!harness.center.calls.contains(.requestAuthorization))
+  }
+
+  /// After the welcome's Not Now the coordinator doesn't ask either; the Notifications
+  /// pane asks when it's opened.
+  @Test func neverAsksAfterTheWelcomesNotNow() async {
+    let harness = Harness(
+      now: Fixture.date(13, 0), status: .notDetermined,
+      prepare: { $0.notificationPromptDeferred = true })
+    await harness.update()
+    #expect(!harness.center.calls.contains(.requestAuthorization))
   }
 
   /// With every alert off there is nothing to schedule, so the coordinator never asks.

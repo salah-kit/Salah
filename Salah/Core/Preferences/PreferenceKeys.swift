@@ -37,6 +37,8 @@ extension Preferences {
     static let appLanguage = "salah.appLanguage"
     static let appearance = "salah.appearance"
     static let followsTimeOfDay = "salah.followsTimeOfDay"
+    static let onboardingCompleted = "salah.onboardingCompleted"
+    static let notificationPromptDeferred = "salah.notificationPromptDeferred"
     /// The retired widget theme's appearance, read once to carry an Always Dark or Always
     /// Light choice over to `appearance`. Only the custom theme drew it.
     static let retiredWidgetAppearance = "salah.widgetAppearance"

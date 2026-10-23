@@ -61,13 +61,19 @@ final class AppWindowCoordinator {
   private let showCloseNote: @MainActor () -> Bool
   /// Closes the note if it's showing.
   private let dismissCloseNote: @MainActor () -> Void
+  /// Shows the first launch's welcome, or calls its argument when there's none to show.
+  private let startOnboarding: @MainActor (_ otherwise: @escaping @MainActor () -> Void) -> Void
 
   private var openWindow: (() -> Void)?
   private var hasPendingOpen = false
   private var windows: [ObjectIdentifier: NSWindow] = [:]
+  /// The first launch's welcome while it's open: asking for Salah's window brings it
+  /// forward instead, until it ends.
+  private var onboardingWindow: NSWindow?
   private var closeObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
-  /// A login launch, until a person opens the window: a window SwiftUI opens by itself
-  /// meanwhile closes again (macOS 14 opens the window scene at launch).
+  /// A login launch or the first launch's welcome, until Salah's window is asked for: a
+  /// window SwiftUI opens by itself meanwhile closes again (macOS 14 opens the window scene
+  /// at launch).
   private var isQuietLaunch = false
   private var isQuitSalahRequested = false
   /// When macOS last said the session is ending. A logout another app cancels leaves it
@@ -82,12 +88,17 @@ final class AppWindowCoordinator {
     presence: any AppPresenceControlling = SystemAppPresence(),
     defaults: UserDefaults = Preferences.sharedDefaults,
     showCloseNote: @escaping @MainActor () -> Bool = { CloseNotePresenter.shared.show() },
-    dismissCloseNote: @escaping @MainActor () -> Void = { CloseNotePresenter.shared.dismiss() }
+    dismissCloseNote: @escaping @MainActor () -> Void = { CloseNotePresenter.shared.dismiss() },
+    startOnboarding:
+      @escaping @MainActor (_ otherwise: @escaping @MainActor () -> Void) -> Void = {
+        OnboardingPresenter.shared.start(otherwise: $0)
+      }
   ) {
     self.presence = presence
     self.defaults = defaults
     self.showCloseNote = showCloseNote
     self.dismissCloseNote = dismissCloseNote
+    self.startOnboarding = startOnboarding
     lifecycle = AppLifecycle(hasShownCloseNote: defaults.bool(forKey: Self.closeNoteShownKey))
   }
 
@@ -104,7 +115,10 @@ final class AppWindowCoordinator {
       MainActor.assumeIsolated { self?.sessionEndingSince = Date() }
     }
     if AppLifecycle.opensWindowAtLaunch(asLoginItem: asLoginItem) {
-      open()
+      // The first launch welcomes first; the window opens when the welcome ends. Until
+      // then, a window SwiftUI opens by itself closes again, as on a login launch.
+      isQuietLaunch = true
+      startOnboarding { [weak self] in self?.open() }
     } else {
       isQuietLaunch = true
     }
@@ -124,6 +138,11 @@ final class AppWindowCoordinator {
   /// Opens the window, or brings it forward and restores it if it's minimized; never a
   /// second one. It shows `pane`, or the last pane without one (Today the first time).
   func open(_ pane: WindowPane? = nil) {
+    if let onboardingWindow {
+      presence.bringForward()
+      onboardingWindow.makeKeyAndOrderFront(nil)
+      return
+    }
     if let pane { navigation.pane = pane }
     isQuietLaunch = false
     sessionEndingSince = nil
@@ -159,6 +178,39 @@ final class AppWindowCoordinator {
     lifecycle.windowOpened(id)
     presence.setPresence(lifecycle.presence)
     AppLog.lifecycle.notice("window opened windows=\(self.windows.count, privacy: .public)")
+  }
+
+  /// Called by the welcome's window once it's on screen: like Salah's window, it gives Salah
+  /// its Dock icon while it's open, but closing it shows no note.
+  func attachOnboarding(_ window: NSWindow) {
+    let id = ObjectIdentifier(window)
+    guard closeObservers[id] == nil else { return }
+    window.isRestorable = false
+    window.tabbingMode = .disallowed
+    closeObservers[id] = NotificationCenter.default.addObserver(
+      forName: NSWindow.willCloseNotification, object: window, queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated { self?.onboardingWillClose(id) }
+    }
+    onboardingWindow = window
+    lifecycle.windowOpened(id)
+    presence.setPresence(lifecycle.presence)
+  }
+
+  /// The welcome is ending: from now on, asking for Salah's window opens it.
+  func endOnboarding() {
+    onboardingWindow = nil
+  }
+
+  private func onboardingWillClose(_ id: ObjectIdentifier) {
+    if let onboardingWindow, ObjectIdentifier(onboardingWindow) == id {
+      self.onboardingWindow = nil
+    }
+    if let observer = closeObservers.removeValue(forKey: id) {
+      NotificationCenter.default.removeObserver(observer)
+    }
+    if lifecycle.windowClosed(id) { lifecycle.closeNoteNotShown() }
+    presence.setPresence(lifecycle.presence)
   }
 
   private func windowWillClose(_ id: ObjectIdentifier) {

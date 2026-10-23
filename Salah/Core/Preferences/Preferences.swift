@@ -313,6 +313,20 @@ final class Preferences {
     }
   }
 
+  /// Whether the first launch's welcome is behind us. Until then, Salah asks for neither
+  /// location nor notifications by itself: the welcome asks, each on its own page.
+  var onboardingCompleted: Bool = false {
+    didSet { defaults.set(onboardingCompleted, forKey: Key.onboardingCompleted) }
+  }
+
+  /// Whether the welcome's Not Now put off the notification prompt. Salah then doesn't ask
+  /// when it schedules alerts; the Notifications pane asks when it's opened.
+  var notificationPromptDeferred: Bool = false {
+    didSet {
+      defaults.set(notificationPromptDeferred, forKey: Key.notificationPromptDeferred)
+    }
+  }
+
   var duaEnabled: Bool = true {
     didSet {
       defaults.set(duaEnabled, forKey: Key.duaEnabled)
@@ -490,6 +504,8 @@ final class Preferences {
 
     appearance = Self.loadAppearance(from: defaults)
     followsTimeOfDay = defaults.bool(forKey: Key.followsTimeOfDay)
+    onboardingCompleted = defaults.bool(forKey: Key.onboardingCompleted)
+    notificationPromptDeferred = defaults.bool(forKey: Key.notificationPromptDeferred)
     Key.retiredWidgetTheme.forEach(defaults.removeObject(forKey:))
 
     enforceVisibleMenuBarContent()

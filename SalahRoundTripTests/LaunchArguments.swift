@@ -96,6 +96,7 @@ enum Launch {
       "-salah.debug.withoutSystemPrompts", "YES",
       "-salah.debug.scratchPreferences", "YES",
       "-salah.debug.withoutSystemNotifications", "YES",
+      "-salah.onboardingCompleted", "YES",
       "-salah.notificationSettings", hex,
       "-salah.appLanguage", "english",
       "-AppleLanguages", "(en)",
