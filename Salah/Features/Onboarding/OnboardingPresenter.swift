@@ -100,7 +100,10 @@ final class OnboardingPresenter {
     window.isMovableByWindowBackground = true
     window.isReleasedWhenClosed = false
     // The content starts below the title bar, whose height the window adds as its safe area.
-    window.contentViewController = NSHostingController(rootView: view)
+    let content = NSHostingController(rootView: view)
+    window.contentViewController = content
+    // Sized before it's centered: a window centered at no size grows from the middle.
+    window.setContentSize(content.view.fittingSize)
     window.center()
     adopt(window)
     NSApp.activate()
