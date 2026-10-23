@@ -36,6 +36,7 @@ final class IOSAppStore {
   var selectedDay: CivilDay
   var onboardingStep: IOSOnboardingStep = .welcome
   var settingsPath: [IOSSettingsDestination] = []
+  private(set) var settingsNavigationRequestID = UUID()
 
   /// Compact navigation and the regular-width sidebar select the same category.
   var selectedSettingsDestination: IOSSettingsDestination? {
@@ -256,6 +257,7 @@ final class IOSAppStore {
         default: IOSSettingsDestination.allCases.first { $0.rawValue.lowercased() == destination }
         }
       settingsPath = route.map { [$0] } ?? []
+      settingsNavigationRequestID = UUID()
     default: return
     }
     if destination == "times",

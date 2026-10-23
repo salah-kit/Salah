@@ -79,6 +79,13 @@ nonisolated final class IOSIPadJourneys: XCTestCase {
     XCTAssertLessThanOrEqual(masterRow.frame.maxX, detailRow.frame.minX + 1)
     captureSystem("iPad-English-Landscape-Settings-Calculation-Split")
 
+    tap("method.custom", in: app)
+    require("customAngle.fajr", in: app)
+    tap("tab.today", in: app)
+    tap("today.calculation", in: app)
+    XCTAssertTrue(require("method.automatic", in: app).isHittable)
+    XCTAssertFalse(element("customAngle.fajr", in: app).exists)
+
     tap("settings.sound", in: app)
     require("settings.form", in: app)
     require("sound.form", in: app)
