@@ -5,6 +5,21 @@ import SalahCore
 import SalahWidgets
 import UserNotifications
 
+/// Resumes a continuation the first time it's asked to, of several racing callers.
+@MainActor
+private final class ResumeOnce {
+  private var continuation: CheckedContinuation<Void, Never>?
+
+  init(_ continuation: CheckedContinuation<Void, Never>) {
+    self.continuation = continuation
+  }
+
+  func resume() {
+    continuation?.resume()
+    continuation = nil
+  }
+}
+
 /// The running app's prayer state: the schedule the preferences describe, its state now,
 /// the menu-bar text, the alerts, and the App Group mirror the widget builds from.
 @Observable
@@ -260,13 +275,27 @@ final class PrayerManager {
     isQuitting = true
     let alerts = alerts
     Task {
-      await withTaskGroup(of: Void.self) { group in
-        group.addTask { await alerts.withdraw() }
-        group.addTask { try? await Task.sleep(for: .seconds(2)) }
-        await group.next()
-        group.cancelAll()
-      }
+      await Self.wait(atMost: .seconds(2)) { await alerts.withdraw() }
       AppWindowCoordinator.shared.quitSalah()
+    }
+  }
+
+  /// Runs `work`, and returns when it finishes or after `limit`, whichever comes first. The
+  /// work isn't cancelled: what it does after the limit is left to run, or to end with the
+  /// process.
+  static func wait(atMost limit: Duration, for work: @escaping @MainActor () async -> Void)
+    async
+  {
+    await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+      let once = ResumeOnce(done)
+      Task { @MainActor in
+        await work()
+        once.resume()
+      }
+      Task { @MainActor in
+        try? await Task.sleep(for: limit)
+        once.resume()
+      }
     }
   }
 

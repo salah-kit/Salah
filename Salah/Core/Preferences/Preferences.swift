@@ -367,10 +367,8 @@ final class Preferences {
 
   /// Mirrors `appLanguage` into the `AppleLanguages` UserDefaults so
   /// `Bundle.main.preferredLocalizations` matches our in-app choice. Drives
-  /// system-rendered chrome like the Settings window title (built from
-  /// `CFBundleDisplayName` + the system-localized "Settings" word). Takes
-  /// effect on next launch; the currently-open Settings window keeps the title
-  /// it was created with.
+  /// system-rendered chrome like the app menu's items (built from
+  /// `CFBundleDisplayName`). Takes effect on next launch.
   func applyAppleLanguagesOverride() {
     if let override = appLanguage.appleLanguagesOverride {
       defaults.set(override, forKey: "AppleLanguages")

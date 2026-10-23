@@ -269,7 +269,9 @@ private struct TodayPrayerRow: View {
     let state = configuration.event.map { display.rowState(for: $0, status: configuration.status) }
     let isFocus: Bool = {
       switch state {
-      case .next?, .current?, .active?: true
+      case .next?, .current?: true
+      // Playing: the prayer's adhan is its focus; a reminder's prayer before or after isn't.
+      case .active?: configuration.event?.id == display.focus?.event.id
       default: false
       }
     }()

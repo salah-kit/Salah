@@ -70,7 +70,12 @@ final class AppWindowCoordinator {
   /// meanwhile closes again (macOS 14 opens the window scene at launch).
   private var isQuietLaunch = false
   private var isQuitSalahRequested = false
-  private var isSessionEnding = false
+  /// When macOS last said the session is ending. A logout another app cancels leaves it
+  /// set, so it counts for two minutes only.
+  private var sessionEndingSince: Date?
+  private var isSessionEnding: Bool {
+    sessionEndingSince.map { Date().timeIntervalSince($0) < 120 } ?? false
+  }
   private var powerOffObserver: (any NSObjectProtocol)?
 
   init(
@@ -96,7 +101,7 @@ final class AppWindowCoordinator {
     powerOffObserver = NSWorkspace.shared.notificationCenter.addObserver(
       forName: NSWorkspace.willPowerOffNotification, object: nil, queue: .main
     ) { [weak self] _ in
-      MainActor.assumeIsolated { self?.isSessionEnding = true }
+      MainActor.assumeIsolated { self?.sessionEndingSince = Date() }
     }
     if AppLifecycle.opensWindowAtLaunch(asLoginItem: asLoginItem) {
       open()
@@ -121,7 +126,7 @@ final class AppWindowCoordinator {
   func open(_ pane: WindowPane? = nil) {
     if let pane { navigation.pane = pane }
     isQuietLaunch = false
-    isSessionEnding = false
+    sessionEndingSince = nil
     dismissCloseNote()
     presence.bringForward()
     if let window = windows.values.first {

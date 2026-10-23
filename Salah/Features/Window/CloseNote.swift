@@ -4,7 +4,8 @@ import SwiftUI
 
 /// Shows, once, the note that hangs from Salah's menu bar item the first time its last window
 /// closes: Salah is still running, and the power button in its dropdown turns it off. Got It,
-/// Escape or a click elsewhere closes it.
+/// a click elsewhere or the window reopening closes it, and Escape while Salah is active:
+/// another app has the keyboard otherwise.
 @MainActor
 final class CloseNotePresenter: NSObject, NSPopoverDelegate {
   static let shared = CloseNotePresenter()
@@ -20,11 +21,13 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
   /// Salah leaves the Dock and macOS makes another app active, which would close a transient
   /// popover as it opens.
   func show() -> Bool {
-    guard popover == nil, let button = Self.statusItemButton(), let itemWindow = button.window
+    // A hidden app's windows don't show, so the note waits for the next close.
+    guard popover == nil, !NSApp.isHidden, let button = Self.statusItemButton(),
+      let itemWindow = button.window
     else {
       let windows = NSApp.windows.map(\.className).joined(separator: " ")
       AppLog.lifecycle.notice(
-        "note not shown showing=\(self.popover != nil, privacy: .public) windows=\(windows, privacy: .public)"
+        "note not shown showing=\(self.popover != nil, privacy: .public) hidden=\(NSApp.isHidden, privacy: .public) windows=\(windows, privacy: .public)"
       )
       return false
     }
@@ -58,7 +61,8 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
     return true
   }
 
-  /// Closes the note on a click anywhere outside it, in Salah or another app, and on Escape.
+  /// Closes the note on a click anywhere outside it, in Salah or another app, and on Escape
+  /// while Salah is active.
   private func monitorDismissal() {
     let clicks: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown, .otherMouseDown]
     if let global = NSEvent.addGlobalMonitorForEvents(

@@ -113,7 +113,7 @@ final class AlertSettingsUITests: XCTestCase {
     return app
   }
 
-  /// Opens the Notifications pane of the Settings window on `kind`, and returns its alert's
+  /// Opens the Notifications pane of Salah's window on `kind`, and returns its alert's
   /// toggle.
   @MainActor
   private func alertToggle(of kind: PrayerKind, in app: XCUIApplication) -> XCUIElement {

@@ -186,7 +186,13 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     if !identifiers.isEmpty {
       await center.removePendingNotificationRequests(withIdentifiers: identifiers)
     }
-    AppLog.notifications.notice("withdrew requests=\(identifiers.count, privacy: .public)")
+    // The system's removal returns before the notification service has it; reading the
+    // pending requests back waits until it does, before the process ends.
+    let remaining = ((try? await center.pendingNotificationRequests()) ?? [])
+      .filter { $0.identifier.hasPrefix(Self.identifierPrefix) }.count
+    AppLog.notifications.notice(
+      "withdrew requests=\(identifiers.count, privacy: .public) remaining=\(remaining, privacy: .public)"
+    )
   }
 
   /// The alert settings of a prayer: Friday's Dhuhr takes the Jumu'ah settings while the

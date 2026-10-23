@@ -1,4 +1,5 @@
 import AppKit
+import SalahCore
 import Testing
 
 /// How Salah shows itself, opens, closes and quits: in the menu bar only, or with a Dock
@@ -380,4 +381,69 @@ private final class NoteCounter {
 @MainActor
 private final class OpenCounter {
   var count = 0
+}
+
+/// Quit Salah waits for its alerts' withdrawal two seconds at most.
+@MainActor
+@Suite("Quit Salah's time limit")
+struct QuitTimeLimitTests {
+  @Test func returnsAtTheLimitWhenTheWorkHangs() async {
+    let start = ContinuousClock.now
+    await PrayerManager.wait(atMost: .milliseconds(200)) {
+      try? await Task.sleep(for: .seconds(30))
+    }
+    #expect(ContinuousClock.now - start < .seconds(5))
+  }
+
+  @Test func returnsWhenTheWorkFinishesFirst() async {
+    let start = ContinuousClock.now
+    var finished = false
+    await PrayerManager.wait(atMost: .seconds(30)) { finished = true }
+    #expect(finished)
+    #expect(ContinuousClock.now - start < .seconds(5))
+  }
+}
+
+/// The day's times of day, for the timeline and the next prayer's sky.
+@Suite("Day phases")
+struct DayPhaseTests {
+  init() { TestEnvironment.configure() }
+
+  private let start = Fixture.date(0, 0)
+  private let end = Fixture.date(0, 0, dayOffset: 1)
+  private var day: [PrayerEvent] {
+    [.fajr, .sunrise, .dhuhr, .asr, .maghrib, .isha].map { Fixture.event($0) }
+  }
+
+  @Test func eachPrayerOpensItsTimeOfDayAfterANight() {
+    let segments = DayPhase.segments(of: day, from: start, to: end)
+    #expect(segments.map(\.phase) == [.isha, .fajr, .dhuhr, .asr, .maghrib, .isha])
+    #expect(segments.first?.start == start)
+    #expect(segments.last?.end == end)
+    #expect(segments[1].start == Fixture.event(.fajr).time)
+    #expect(segments[2].start == Fixture.event(.sunrise).time, "Sunrise opens the day")
+  }
+
+  @Test func dhuhrOpensTheDayWithoutASunrise() {
+    let events = day.filter { $0.kind != .sunrise }
+    let segments = DayPhase.segments(of: events, from: start, to: end)
+    #expect(segments.map(\.phase) == [.isha, .fajr, .dhuhr, .asr, .maghrib, .isha])
+    #expect(segments[2].start == Fixture.event(.dhuhr).time)
+  }
+
+  @Test func anEventBeforeTheDayOpensItsFirstStretch() {
+    // A Fajr before midnight: the day starts at dawn, as the next prayer's sky does.
+    let earlyFajr = Fixture.event(.fajr, dayOffset: -1)
+    let events = [earlyFajr] + day.filter { $0.kind != .fajr }
+    let segments = DayPhase.segments(of: events, from: start, to: end)
+    #expect(segments.first?.phase == .fajr)
+    #expect(DayPhase.phase(at: start, events: events) == .fajr)
+  }
+
+  @Test func thePhaseAtAMomentIsTheLastOneOpened() {
+    #expect(DayPhase.phase(at: Fixture.date(3, 0), events: day) == .isha)
+    #expect(DayPhase.phase(at: Fixture.date(13, 19), events: day) == .dhuhr)
+    #expect(DayPhase.phase(at: Fixture.date(16, 0), events: day) == .asr)
+    #expect(DayPhase.phase(at: Fixture.date(21, 0), events: day) == .isha)
+  }
 }

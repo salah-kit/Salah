@@ -137,7 +137,7 @@ struct PreferenceEffectsTests {
   }
 
   /// Changing the language writes the `AppleLanguages` override into the app's own
-  /// domain, so system chrome (the Settings window title) follows on next launch;
+  /// domain, so system chrome (the app's menus) follows on next launch;
   /// `.system` removes it again.
   @Test func languageWritesTheAppleLanguagesOverride() {
     let scratch = ScratchDefaults()

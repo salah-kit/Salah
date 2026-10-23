@@ -10,7 +10,7 @@ import UserNotifications
     ///
     /// - `PrayerAlertCoordinator` doesn't ask for notification permission before it
     ///   installs a plan.
-    /// - The Settings window's Notifications tab doesn't ask either when an alert is on;
+    /// - The window's Notifications pane doesn't ask either when an alert is on;
     ///   it only reads and shows the current status.
     /// - `AudioPlaybackController` doesn't send Music the Apple Event that pauses it while
     ///   an alert plays.

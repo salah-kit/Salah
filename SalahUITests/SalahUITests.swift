@@ -82,9 +82,11 @@ final class SalahUITests: XCTestCase {
   }
 
   /// The status item opens the dropdown with the day's six prayers and Salah's controls.
+  /// The window closes first, so only the dropdown can answer.
   @MainActor
   func testMenuBarDropdownShowsTheDay() throws {
     let app = launchQuietly()
+    app.closeWindowToMenuBar()
     let statusItem = app.statusItems.firstMatch
     XCTAssertTrue(statusItem.waitForExistence(timeout: 30))
     try XCTSkipUnless(
@@ -99,12 +101,14 @@ final class SalahUITests: XCTestCase {
     add(screenshot)
     statusItem.click()
 
+    let dropdown = app.dialogs.containing(.button, identifier: "Quit Salah").firstMatch
+    XCTAssertTrue(dropdown.waitForExistence(timeout: 10), app.debugDescription)
     for prayer in Self.prayerNames {
       XCTAssertTrue(
-        app.staticTexts[prayer].firstMatch.waitForExistence(timeout: 10),
-        "\(prayer)\n\(app.windows.debugDescription)")
+        dropdown.staticTexts[prayer].firstMatch.waitForExistence(timeout: 10),
+        "\(prayer)\n\(dropdown.debugDescription)")
     }
-    XCTAssertTrue(app.buttons["Quit Salah"].exists, app.windows.debugDescription)
+    XCTAssertTrue(dropdown.buttons["Open Salah"].exists, dropdown.debugDescription)
   }
 
   /// The dropdown's measured surface still routes each action exactly once.
@@ -118,6 +122,8 @@ final class SalahUITests: XCTestCase {
       ]
     app.launch()
     addTeardownBlock { @MainActor in app.terminate() }
+    // With the window closed, ⌘, can only come from the dropdown.
+    app.closeWindowToMenuBar()
     let status = app.statusItems.firstMatch
     XCTAssertTrue(status.waitForExistence(timeout: 30))
     try XCTSkipUnless(

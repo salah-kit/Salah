@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// Keeps a SwiftUI scene's owning window title in sync with the app's language,
-/// including the Settings window and the menu-bar dropdown's dialog.
+/// such as the menu-bar dropdown's dialog.
 struct WindowTitleSetter: NSViewRepresentable {
   let title: String
 

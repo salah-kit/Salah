@@ -258,6 +258,17 @@ final class LifecycleUITests: XCTestCase {
 extension XCUIApplication {
   /// Salah's one window, whatever pane it shows.
   var salahWindow: XCUIElement { windows["salah.window"] }
+
+  /// Closes the window that a launch opens, so Salah is in the menu bar only, and closes the
+  /// note if it shows.
+  @MainActor
+  func closeWindowToMenuBar() {
+    XCTAssertTrue(salahWindow.waitForExistence(timeout: 30), debugDescription)
+    typeKey("w", modifierFlags: .command)
+    XCTAssertTrue(salahWindow.waitForNonExistence(timeout: 10), debugDescription)
+    let gotIt = buttons["Got It"]
+    if gotIt.waitForExistence(timeout: 5) { gotIt.click() }
+  }
 }
 
 extension XCUIElement {

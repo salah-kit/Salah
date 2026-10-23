@@ -26,9 +26,9 @@ nonisolated enum DayPhase: Equatable, Sendable {
     }
   }
 
-  /// The day from `start` to `end` in phases, from the day's events: night until Fajr, and
-  /// each phase from the event that opens it to the next one. Events outside the day count
-  /// for nothing.
+  /// The day from `start` to `end` in phases, from the day's events: the phase at `start`,
+  /// night unless an event before it opened another (a Fajr before midnight), then each phase
+  /// from the event that opens it to the next one.
   static func segments(of events: [PrayerEvent], from start: Date, to end: Date) -> [Segment] {
     guard start < end else { return [] }
     let hasSunrise = events.contains { $0.kind == .sunrise }
@@ -38,7 +38,7 @@ nonisolated enum DayPhase: Equatable, Sendable {
       .sorted { $0.time < $1.time }
       .compactMap { event in opened(by: event, hasSunrise: hasSunrise).map { (event.time, $0) } }
     var segments: [Segment] = []
-    var phase = DayPhase.isha
+    var phase = Self.phase(at: start, events: events)
     var from = start
     for (time, next) in openings {
       if time > from { segments.append(Segment(phase: phase, start: from, end: time)) }
