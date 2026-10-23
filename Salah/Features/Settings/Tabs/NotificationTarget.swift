@@ -28,12 +28,24 @@ enum NotificationTarget: Hashable, Identifiable {
     }
   }
 
-  /// Saves the alerts the pane edits: a prayer's own, or Jumu'ah's.
+  /// Saves the alerts the pane edits: a prayer's own, or Jumu'ah's while Friday's alerts
+  /// differ. With them off Jumu'ah has nothing of its own, so nothing is saved.
   func setConfig(_ config: PrayerNotificationConfig, in preferences: Preferences) {
     switch self {
     case .prayer(let kind): preferences.setConfig(config, for: kind)
-    case .jumuah: preferences.setJumuahConfig(config)
+    case .jumuah:
+      guard preferences.jumuahOverrideEnabled else { return }
+      preferences.setJumuahConfig(config)
     }
+  }
+
+  /// The segment after `target` in `order`, or before it; `nil` at either end.
+  static func neighbor(
+    of target: NotificationTarget, in order: [NotificationTarget], forward: Bool
+  ) -> NotificationTarget? {
+    guard let index = order.firstIndex(of: target) else { return nil }
+    let next = index + (forward ? 1 : -1)
+    return order.indices.contains(next) ? order[next] : nil
   }
 
   /// Whether nothing alerts for this target, which its segment shows with a muted bell.

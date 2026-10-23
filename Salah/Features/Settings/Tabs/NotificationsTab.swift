@@ -29,7 +29,14 @@ struct NotificationsContent: View {
   private var config: Binding<PrayerNotificationConfig> {
     Binding(
       get: { target.config(in: prefs) ?? prefs.config(for: selectedPrayer) },
-      set: { target.setConfig($0, in: prefs) }
+      set: { updated in
+        // A preview whose alert is turned off stops with it.
+        for slot in [PrayerNotificationSoundSlot.alert, .preReminder, .postReminder]
+        where isPreviewing(slot: slot) && !updated.isEnabled(slot) {
+          previewController.stop()
+        }
+        target.setConfig(updated, in: prefs)
+      }
     )
   }
 
@@ -85,11 +92,7 @@ struct NotificationsContent: View {
       }
     }
     .onChange(of: prefs.jumuahOverrideEnabled) {
-      previewController.stop()
       Task { await requestAuthorizationIfNeeded() }
-    }
-    .onChange(of: target) {
-      previewController.stop()
     }
     .task {
       await requestAuthorizationIfNeeded()
@@ -106,7 +109,14 @@ struct NotificationsContent: View {
     // its focus) whichever prayer it selects: Jumu'ah's Friday switch, or a prayer's alert.
     Section {
       if target == .jumuah {
-        Toggle("settings.notif.differentOnFriday", isOn: $prefs.jumuahOverrideEnabled)
+        Toggle(
+          "settings.notif.differentOnFriday",
+          isOn: Binding(
+            get: { prefs.jumuahOverrideEnabled },
+            set: {
+              previewController.stop()
+              prefs.jumuahOverrideEnabled = $0
+            }))
       } else {
         alertRows
       }
@@ -173,8 +183,15 @@ struct NotificationsContent: View {
   /// bell.
   private var prayerPicker: some View {
     let names = PrayerNames(locale: .app)
+    // A preview stops with any change of prayer: a click, an arrow key or VoiceOver.
     return PrayerPicker(
-      selection: $target,
+      selection: Binding(
+        get: { target },
+        set: {
+          guard $0 != target else { return }
+          previewController.stop()
+          target = $0
+        }),
       segments: NotificationTarget.all.map { ($0, $0.name(names), $0.isMuted(in: prefs)) }
     )
     // A header is inset like its title; the picker spans the groups' full width.
@@ -329,6 +346,9 @@ struct NotificationsContent: View {
       return
     }
 
+    // Claimed before the first wait, so overlapping calls ask macOS once.
+    permissionRequestInFlight = true
+    defer { permissionRequestInFlight = false }
     let center = UNUserNotificationCenter.current()
     let settings = await center.notificationSettings()
     let wasDelivering = notificationsCanDeliver(authorizationStatus)
@@ -336,9 +356,7 @@ struct NotificationsContent: View {
 
     guard settings.authorizationStatus == .notDetermined else { return }
 
-    permissionRequestInFlight = true
     permissionRequestFailed = false
-    defer { permissionRequestInFlight = false }
 
     do {
       _ = try await center.requestAuthorization(options: [.alert, .sound])

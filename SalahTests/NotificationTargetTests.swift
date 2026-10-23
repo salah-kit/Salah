@@ -72,4 +72,29 @@ struct NotificationTargetTests {
     #expect(preferences.config(for: .asr) == .alert(after: 5))
     #expect(preferences.jumuahConfig == .alert(false, before: 20))
   }
+
+  /// With Friday's alerts off, Jumu'ah has nothing of its own: an edit saves nothing, so
+  /// turning them on later starts from Dhuhr's.
+  @Test func jumuahSavesNothingWhileFridaysFollowDhuhr() {
+    let scratch = ScratchDefaults()
+    let preferences = Preferences(defaults: scratch.defaults)
+    preferences.setConfig(.alert(before: 10), for: .dhuhr)
+    preferences.jumuahOverrideEnabled = false
+    NotificationTarget.jumuah.setConfig(.off, in: preferences)
+    preferences.jumuahOverrideEnabled = true
+    #expect(preferences.jumuahConfig == .alert(before: 10))
+  }
+
+  /// The arrow keys step through the picker and stop at either end.
+  @Test func theArrowKeysStepAndStopAtTheEnds() {
+    let order = NotificationTarget.all
+    #expect(
+      NotificationTarget.neighbor(of: .prayer(.fajr), in: order, forward: true)
+        == .prayer(.sunrise))
+    #expect(
+      NotificationTarget.neighbor(of: .prayer(.sunrise), in: order, forward: false)
+        == .prayer(.fajr))
+    #expect(NotificationTarget.neighbor(of: .prayer(.fajr), in: order, forward: false) == nil)
+    #expect(NotificationTarget.neighbor(of: .jumuah, in: order, forward: true) == nil)
+  }
 }

@@ -34,7 +34,9 @@ struct PrayerPicker: View {
     .padding(2)
     .frame(height: 24)
     // The arrow keys move the selection, as in macOS's own segmented control.
-    .focusable()
+    // Keyboard navigation reaches it, as it does macOS's own control; a click doesn't
+    // leave it focused.
+    .focusable(interactions: .activate)
     .onMoveCommand { direction in
       let forward: Bool
       switch direction {
@@ -42,9 +44,11 @@ struct PrayerPicker: View {
       case .left: forward = layoutDirection == .rightToLeft
       default: return
       }
-      guard let index = segments.firstIndex(where: { $0.target == selection }) else { return }
-      let next = index + (forward ? 1 : -1)
-      if segments.indices.contains(next) { selection = segments[next].target }
+      if let next = NotificationTarget.neighbor(
+        of: selection, in: segments.map(\.target), forward: forward)
+      {
+        selection = next
+      }
     }
     .background(
       palette.fillTertiary.color, in: RoundedRectangle(cornerRadius: 8, style: .continuous)

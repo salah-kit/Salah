@@ -133,6 +133,15 @@ struct PrayerNotificationConfig: Codable, Equatable {
     }
   }
 
+  /// Whether the alert in `slot` is on.
+  func isEnabled(_ slot: PrayerNotificationSoundSlot) -> Bool {
+    switch slot {
+    case .alert: alertEnabled
+    case .preReminder: preReminderEnabled
+    case .postReminder: postReminderEnabled
+    }
+  }
+
   mutating func setSound(_ sound: AdhanSound, for slot: PrayerNotificationSoundSlot) {
     switch slot {
     case .alert:
