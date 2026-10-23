@@ -286,9 +286,10 @@ extension VoiceOverSpeechUITests {
 
   /// Opens Settings on `pane` and turns VoiceOver on, with its cursor moved into the pane.
   ///
-  /// VoiceOver starts on the window's first item, in the sidebar. The pane is the
-  /// window's scroll area, after the sidebar; moving into it, VoiceOver says the scroll
-  /// area and the pane's first heading, `heading`.
+  /// VoiceOver starts on the sidebar, which it reads as one table, "Sidebar table Row 3 of 8
+  /// General selected". The pane is the window's scroll area, after the sidebar and the
+  /// splitter; moving into it, VoiceOver says the scroll area and the pane's first heading,
+  /// `heading`.
   @available(macOS 27.0, *)
   @MainActor
   func openPane(
@@ -308,7 +309,7 @@ extension VoiceOverSpeechUITests {
     XCTAssertTrue(isOpen(), "Settings closed, or Salah isn't in front.")
 
     let speech = try Speech.start(in: self, reading: "Settings", while: isOpen)
-    // The window's title, the pane's name, or one of the sidebar's items.
+    // The window's title, or the sidebar's selected row: Today or the pane's name.
     let sidebar = ["Today"] + SettingsAccessibilityUITests.panes
     try speech.confirm(timeout: 3) { said in
       sidebar.contains { said.contains($0) }
@@ -609,8 +610,14 @@ final class Speech {
 
   /// Waits up to `timeout` seconds for VoiceOver, just turned on, to say something
   /// `match` recognizes while it can only be in `place`; then moves forward at most `moves`
-  /// items for it. Nothing VoiceOver says until then is kept, as it may be another app's;
-  /// when it never says anything of the place's, the error names only the place.
+  /// items for it, and back as many. Nothing VoiceOver says until then is kept, as it may be
+  /// another app's; when it never says anything of the place's, the error names only the
+  /// place.
+  ///
+  /// VoiceOver's welcome, "Welcome to macOS. VoiceOver is on.", can take the place of what it
+  /// says for the item it starts on, and the items after that one may say nothing of the
+  /// place's, as in Salah's window, whose sidebar is one item followed by the splitter and the
+  /// pane. Moving back reaches the item it started on again.
   func confirm(timeout: TimeInterval = 10, moves: Int = 2, _ match: (String) -> Bool) throws {
     let deadline = Date().addingTimeInterval(timeout)
     repeat {
@@ -619,8 +626,11 @@ final class Speech {
       }
       Thread.sleep(forTimeInterval: 0.25)
     } while Date() < deadline
-    for _ in 0..<moves {
-      if match(Self.spoken((try? service.moveForward())?.utterance ?? "")), isInPlace() {
+    let steps: [() throws -> XCUIVoiceOverService.Output] =
+      Array(repeating: { try self.service.moveForward() }, count: moves)
+      + Array(repeating: { try self.service.moveBackward() }, count: moves)
+    for step in steps {
+      if match(Self.spoken((try? step())?.utterance ?? "")), isInPlace() {
         return
       }
     }
