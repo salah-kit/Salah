@@ -102,6 +102,14 @@ final class OnboardingPresenter {
     // The content starts below the title bar, whose height the window adds as its safe area.
     window.contentViewController = NSHostingController(rootView: view)
     window.center()
+    adopt(window)
+    NSApp.activate()
+    window.makeKeyAndOrderFront(nil)
+    AppLog.lifecycle.notice("onboarding shown pages=\(flow.pages.count, privacy: .public)")
+  }
+
+  /// Makes `window` the welcome's: Salah's window waits for it, and closing it ends it early.
+  func adopt(_ window: NSWindow) {
     closeObserver = NotificationCenter.default.addObserver(
       forName: NSWindow.willCloseNotification, object: window, queue: .main
     ) { [weak self] _ in
@@ -109,9 +117,6 @@ final class OnboardingPresenter {
     }
     self.window = window
     coordinator().attachOnboarding(window)
-    NSApp.activate()
-    window.makeKeyAndOrderFront(nil)
-    AppLog.lifecycle.notice("onboarding shown pages=\(flow.pages.count, privacy: .public)")
   }
 
   /// The welcome ends: it's done for good, and Salah's window opens on the destination. The
@@ -135,7 +140,7 @@ final class OnboardingPresenter {
   /// Closing the welcome early leaves it unfinished: Salah stays in the menu bar and asks for
   /// nothing on its own. The welcome shows again the first time Salah opens in a later run
   /// (`AppWindowCoordinator.open`), while there's still a permission to ask for.
-  func windowWillClose() {
+  private func windowWillClose() {
     if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) }
     closeObserver = nil
     window = nil

@@ -1,6 +1,6 @@
 import Foundation
 
-/// The first launch's welcome: which pages it shows and where it leaves Salah. Each
+/// The welcome: which pages it shows and where it leaves Salah. Each
 /// permission page gives its reason before macOS asks, and shows only while macOS hasn't
 /// asked yet.
 struct OnboardingFlow: Equatable {
@@ -35,8 +35,8 @@ struct OnboardingFlow: Equatable {
       + (asksForNotifications ? [.notifications] : [])
   }
 
-  /// Whether a first launch shows the welcome at all: only while there's a permission to
-  /// ask for. A Mac that answered both already, after an update, goes straight to Today.
+  /// Whether the welcome shows at all: only while there's a permission to ask for. A Mac
+  /// that answered both already, after an update, goes straight to Today.
   static func isNeeded(asksForLocation: Bool, asksForNotifications: Bool) -> Bool {
     asksForLocation || asksForNotifications
   }

@@ -2,7 +2,7 @@ import AppKit
 import SalahUI
 import SwiftUI
 
-/// The first launch's welcome: a page at a time, each with its art, a title, why it
+/// The welcome: a page at a time, each with its art, a title, why it
 /// matters, the page dots and its buttons. Allow asks macOS, then moves on whatever the
 /// answer.
 struct OnboardingView: View {

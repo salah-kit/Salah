@@ -399,6 +399,16 @@ struct AppWindowCoordinatorTests {
     #expect(opener.count == 1)
   }
 
+  /// A widget's link that launches Salah asks for the window before the launch finishes:
+  /// the welcome is still offered once.
+  @Test func aLinkBeforeTheLaunchFinishesOffersTheWelcomeOnce() {
+    let offers = OpenCounter()
+    let coordinator = makeCoordinator(startOnboarding: { _ in offers.count += 1 })
+    coordinator.open(.today)
+    coordinator.didFinishLaunching(asLoginItem: false)
+    #expect(offers.count == 1)
+  }
+
   /// With the welcome done (or nothing to ask), the first open goes straight to the window.
   @Test func aFinishedWelcomeOpensTheWindowAtOnce() {
     let offers = OpenCounter()

@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import Testing
 
 /// What the welcome decides and changes, below its window: when it shows, that closing it
@@ -10,14 +10,12 @@ struct OnboardingPresenterTests {
 
   private func makePresenter(
     _ preferences: Preferences, locationUndetermined: Bool, notificationsUndetermined: Bool,
-    coordinatorUses: UseCounter = UseCounter()
+    presence: PresenceCounter = PresenceCounter()
   ) -> OnboardingPresenter {
-    OnboardingPresenter(
-      preferences: preferences,
-      coordinator: {
-        coordinatorUses.count += 1
-        return AppWindowCoordinator(presence: NoPresence(), defaults: ScratchDefaults().defaults)
-      },
+    let coordinator = AppWindowCoordinator(
+      presence: presence, defaults: scratch.defaults, startOnboarding: { $0() })
+    return OnboardingPresenter(
+      preferences: preferences, coordinator: { coordinator },
       locationUndetermined: { locationUndetermined },
       notificationsUndetermined: { notificationsUndetermined })
   }
@@ -55,22 +53,41 @@ struct OnboardingPresenterTests {
     #expect(await presenter.decide() == nil)
   }
 
-  /// Closing the welcome early, or finishing after it closed (macOS answering a prompt the
-  /// welcome asked before it closed), changes no preference and opens nothing.
+  /// Closing the welcome early, then finishing (macOS answering a prompt the welcome asked
+  /// before it closed), changes no preference and opens nothing.
   @Test func closingEarlyChangesNothing() {
     let preferences = Preferences(defaults: scratch.defaults)
     preferences.useCurrentLocation = true
-    let uses = UseCounter()
+    let presence = PresenceCounter()
     let presenter = makePresenter(
       preferences, locationUndetermined: true, notificationsUndetermined: true,
-      coordinatorUses: uses)
-    presenter.windowWillClose()
+      presence: presence)
+    let welcome = makeWindow()
+    presenter.adopt(welcome)
+    #expect(presence.presences == [.regular], "The welcome is Salah's open window")
+    welcome.close()
     presenter.finish(at: .location)
     presenter.finish(at: .today)
     #expect(!preferences.onboardingCompleted)
     #expect(preferences.useCurrentLocation)
     #expect(!preferences.notificationPromptDeferred)
-    #expect(uses.count == 0, "Salah's window doesn't open")
+    #expect(presence.bringForwards == 0, "Salah's window doesn't open")
+    #expect(presence.presences == [.regular, .menuBar])
+  }
+
+  /// Finishing an open welcome marks it done and opens Salah's window.
+  @Test func finishingOpensSalah() {
+    let preferences = Preferences(defaults: scratch.defaults)
+    let presence = PresenceCounter()
+    let presenter = makePresenter(
+      preferences, locationUndetermined: true, notificationsUndetermined: true,
+      presence: presence)
+    let welcome = makeWindow()
+    defer { welcome.close() }
+    presenter.adopt(welcome)
+    presenter.finish(at: .today)
+    #expect(preferences.onboardingCompleted)
+    #expect(presence.bringForwards == 1, "Salah's window opens")
   }
 
   /// Choose a City… stops following the location at once, so a welcome closed afterwards
@@ -80,8 +97,10 @@ struct OnboardingPresenterTests {
     preferences.useCurrentLocation = true
     let presenter = makePresenter(
       preferences, locationUndetermined: true, notificationsUndetermined: true)
+    let welcome = makeWindow()
+    presenter.adopt(welcome)
     presenter.choseCity()
-    presenter.windowWillClose()
+    welcome.close()
     #expect(!preferences.useCurrentLocation)
     #expect(await presenter.decide()?.pages == [.welcome, .notifications])
   }
@@ -96,13 +115,24 @@ struct OnboardingPresenterTests {
 }
 
 @MainActor
-private final class UseCounter {
-  var count = 0
+private func makeWindow() -> NSWindow {
+  _ = NSApplication.shared
+  let window = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
+    styleMask: [.titled, .closable], backing: .buffered, defer: false)
+  window.isReleasedWhenClosed = false
+  window.orderFront(nil)
+  return window
 }
 
 @MainActor
-private final class NoPresence: AppPresenceControlling {
-  func setPresence(_ presence: AppLifecycle.Presence) {}
-  func bringForward() {}
+private final class PresenceCounter: AppPresenceControlling {
+  var presences: [AppLifecycle.Presence] = []
+  var bringForwards = 0
+
+  func setPresence(_ presence: AppLifecycle.Presence) {
+    if presences.last != presence { presences.append(presence) }
+  }
+  func bringForward() { bringForwards += 1 }
   func terminate() {}
 }

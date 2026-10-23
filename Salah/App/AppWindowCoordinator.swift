@@ -67,13 +67,14 @@ final class AppWindowCoordinator {
   private var openWindow: (() -> Void)?
   private var hasPendingOpen = false
   private var windows: [ObjectIdentifier: NSWindow] = [:]
-  /// The first launch's welcome while it's open: asking for Salah's window brings it
+  /// The welcome while it's open: asking for Salah's window brings it
   /// forward instead, until it ends.
   private var onboardingWindow: NSWindow?
   /// The welcome once it has ended, until Salah's window is up: then it closes, so Salah
   /// keeps its Dock icon from one to the other.
   private var welcomeAwaitingWindow: NSWindow?
-  /// From launch until the welcome shows or isn't needed: asking for Salah's window waits.
+  /// From the welcome's offer until it shows or isn't needed: asking for Salah's window
+  /// waits.
   private var isDecidingOnboarding = false
   /// Whether this run has offered the welcome: at launch, or for a login launch the first
   /// time Salah's window is asked for. A welcome closed early comes back in a later run.
@@ -123,7 +124,7 @@ final class AppWindowCoordinator {
       MainActor.assumeIsolated { self?.sessionEndingSince = Date() }
     }
     if AppLifecycle.opensWindowAtLaunch(asLoginItem: asLoginItem) {
-      // The first launch welcomes first; the window opens when the welcome ends. Until
+      // An unfinished welcome comes first; the window opens when it ends. Until
       // then, a window SwiftUI opens by itself closes again, as on a login launch.
       isQuietLaunch = true
       offerOnboarding(then: nil)
@@ -175,6 +176,8 @@ final class AppWindowCoordinator {
   /// Shows the welcome if it's unfinished with something left to ask; otherwise opens the
   /// window on `pane`. Asking for the window meanwhile waits.
   private func offerOnboarding(then pane: WindowPane?) {
+    // Once per run: a widget's link can ask for the window before the launch finishes.
+    guard !hasOfferedOnboarding else { return }
     hasOfferedOnboarding = true
     isDecidingOnboarding = true
     startOnboarding { [weak self] in
