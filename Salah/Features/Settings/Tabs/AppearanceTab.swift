@@ -8,6 +8,7 @@ struct AppearanceContent: View {
   @Bindable var prefs = Preferences.shared
 
   var body: some View {
+    let preview = previewDisplay
     Section("settings.tab.appearance") {
       Picker("settings.appearance.mode", selection: $prefs.appearance) {
         Text("settings.appearance.mode.system").tag(SalahAppearance.system)
@@ -27,7 +28,10 @@ struct AppearanceContent: View {
 
     Section("settings.appearance.preview") {
       VStack(spacing: 10) {
-        WidgetPreviewContainer(display: previewDisplay, size: .medium)
+        WidgetPreviewContainer(display: preview, size: .medium)
+          // The widget's timers count against the real clock: at a moment a Debug launch
+          // asks for, they hold still at it instead.
+          .environment(\.salahTimerPause, AppClock.isShifted ? preview.date : nil)
           .accessibilityElement(children: .contain)
           .accessibilityLabel(Text("settings.appearance.preview"))
           .accessibilityIdentifier("appearance.preview")

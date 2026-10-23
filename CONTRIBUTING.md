@@ -221,6 +221,24 @@ midnight. These checks are open issues labelled
 [`help wanted`](https://github.com/salah-kit/Salah/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22),
 each with its steps and what to record.
 
+### Comparing a screen with its design
+
+The designs show Makkah on Tuesday 2 June 2026 at a given time. Debug builds take two
+launch options that put the running app in that state, for a screenshot next to the
+design:
+
+- `-salah.debug.now 2026-06-02T13:19:00+03:00` starts the window and the dropdown at
+  that moment, running on from there. Alerts and the widget keep the real time.
+- `-salah.debug.windowSize 888x411` opens the window at that size in points, title bar
+  included.
+
+```sh
+open -n .derived/Build/Products/Debug/Salah.app --args \
+  -salah.debug.scratchPreferences YES -salah.debug.withoutSystemPrompts YES \
+  -salah.alertVolume 0 -salah.debug.now 2026-06-02T13:19:00+03:00 \
+  -salah.debug.windowSize 888x411
+```
+
 ## Formatting
 
 Code is formatted with `swift format` and the shared `.swift-format` (2-space indentation,

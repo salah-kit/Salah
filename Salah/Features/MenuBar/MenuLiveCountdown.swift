@@ -27,17 +27,16 @@ struct MenuLiveCountdown: View {
       if magnitude <= 60 {
         // Final minute: Apple's system timer text, the one primitive that ticks
         // per-second on its own. `countsDown` is explicit so direction is exact.
+        // The system's timer counts against the real clock (`AppClock`).
+        let start = AppClock.unshifted(countingUp ? target : reference)
+        let end = AppClock.unshifted(countingUp ? target.addingTimeInterval(3600) : target)
         if countingUp {
           HStack(spacing: 0) {
             Text(verbatim: "+")
-            Text(
-              timerInterval: target...target.addingTimeInterval(3600),
-              countsDown: false, showsHours: false)
+            Text(timerInterval: start...end, countsDown: false, showsHours: false)
           }
         } else {
-          Text(
-            timerInterval: reference...max(reference, target),
-            countsDown: true, showsHours: false)
+          Text(timerInterval: start...max(start, end), countsDown: true, showsHours: false)
         }
       } else {
         // A minute or more out: the calm, static, timeline-advanced string.

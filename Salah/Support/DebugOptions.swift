@@ -31,7 +31,8 @@ import UserNotifications
     /// running on from there (`AppClock`). The alerts keep the real time.
     nonisolated static let nowKey = "salah.debug.now"
 
-    /// `-salah.debug.windowSize 888x411`: the size Salah's window opens at, in points.
+    /// `-salah.debug.windowSize 888x411`: the size Salah's window opens at, in points, its
+    /// title bar included. The window's minimum size still applies.
     nonisolated static let windowSizeKey = "salah.debug.windowSize"
 
     /// The launch's moment, if it asks for one.
@@ -41,10 +42,13 @@ import UserNotifications
 
     /// The launch's window size, if it asks for one.
     nonisolated static func windowSize(defaults: UserDefaults = .standard) -> CGSize? {
-      let parts = defaults.string(forKey: windowSizeKey)?.split(separator: "x")
-        .compactMap { Double($0) }
-      guard let parts, parts.count == 2 else { return nil }
-      return CGSize(width: parts[0], height: parts[1])
+      guard
+        let parts = defaults.string(forKey: windowSizeKey)?
+          .split(separator: "x", omittingEmptySubsequences: false),
+        parts.count == 2, let width = Double(parts[0]), let height = Double(parts[1]),
+        width.isFinite, height.isFinite, width > 0, height > 0
+      else { return nil }
+      return CGSize(width: width, height: height)
     }
 
     /// The scratch store's suite.
