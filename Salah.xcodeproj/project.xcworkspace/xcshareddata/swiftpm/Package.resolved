@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/salah-kit/SalahKit",
       "state" : {
-        "revision" : "74c4b7992fe4406056ef47e51771d86774dcd301",
-        "version" : "0.4.0"
+        "revision" : "00dc18e06a37bc6c7d897bb1c38b2d20a8d4302c",
+        "version" : "0.4.1"
       }
     },
     {

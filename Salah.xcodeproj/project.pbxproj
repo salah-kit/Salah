@@ -2118,7 +2118,7 @@
 			repositoryURL = "https://github.com/salah-kit/SalahKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.0;
+				minimumVersion = 0.4.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

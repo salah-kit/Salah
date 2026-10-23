@@ -18,7 +18,7 @@ packages:
   # SalahCalculation brings SalahTimes, the calculation engine, along with it.
   SalahKit:
     url: https://github.com/salah-kit/SalahKit
-    from: 0.4.0
+    from: 0.4.1
 settings:
   base:
     ALWAYS_SEARCH_USER_PATHS: NO
