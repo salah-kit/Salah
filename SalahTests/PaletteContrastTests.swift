@@ -5,9 +5,11 @@ import Testing
 /// Salah's color tokens keep the contrast the design promises on the surfaces the widgets,
 /// the dropdown and Today draw them on, in light and dark, with and without Increase
 /// Contrast: text tokens 4.5:1; marks, glyphs and passed rows (`labelTertiary`) 3:1. The
-/// faces draw text only in text tokens, or in one composited over the sky they sit on; the time of day's mark (`tint`) only in glyphs
-/// and bars, and its text in `Phase/text`. The baselines show which token each element
-/// draws in.
+/// faces draw text in text tokens, or in one composited over the sky they sit on; the time
+/// of day's mark (`tint`) draws glyphs and bars, and the dropdown's time-of-day text is
+/// `Phase/text`. The widget faces, as the widget components draw them, also put the prayer
+/// one is in, its count-up and the Now eyebrow in the mark, which holds 3:1. The baselines
+/// show which token each element draws in.
 @Suite("Palette contrast")
 struct PaletteContrastTests {
   /// Every appearance: light and dark, standard and increased contrast.

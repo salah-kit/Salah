@@ -329,8 +329,9 @@ The macOS app draws these tokens through `SalahPalette` and `SalahPhase`
 the dropdown and Today. The sky is the phase's pair, top to bottom, or Neutral when the
 user turns off Follow the time of day or the day's times aren't known. In the dropdown, the
 prayer one is in carries the phase's mark on its glyph and `Phase/text` on its text, since
-the mark holds only 3:1; on the widgets, as the widget components draw it, its row, count-up
-and Now take the mark itself. The next prayer carries the accent on its wash.
+the mark holds only 3:1. The widgets follow the widget components instead: its row, its
+count-up and the medium and large faces' Now eyebrow take the mark itself, at 3:1. The next
+prayer carries the accent on its wash.
 
 `PaletteContrastTests` in SalahTests holds the tokens to their promises in light and dark,
 with and without Increase Contrast: primary, secondary and accent text and each phase's
