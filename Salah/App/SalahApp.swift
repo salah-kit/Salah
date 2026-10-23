@@ -158,12 +158,20 @@ private struct MenuBarLabel: View {
   let item: MenuBarItem
   let layoutDirection: LayoutDirection
 
-  @Environment(\.colorScheme) private var menuBarScheme
+  @Environment(\.colorScheme) private var colorScheme
 
-  /// The item's height, and the glyph's and the speaker's frames, as Figma draws them.
+  /// Whether the menu bar is dark. It follows the wallpaper, not only the app's appearance,
+  /// so it's read from the status item's own window, as a template image would be tinted.
+  private var menuBarIsDark: Bool {
+    let statusWindow = NSApp.windows.first {
+      String(describing: type(of: $0)).contains("StatusBar")
+    }
+    guard let appearance = statusWindow?.effectiveAppearance else { return colorScheme == .dark }
+    return appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+  }
+
+  /// The glyph's and the speaker's frames, as Figma draws them.
   private enum Metrics {
-    static let height: CGFloat = 24
-    static let padding: CGFloat = 7
     static let spacing: CGFloat = 5
     static let glyph: CGFloat = 20
     static let glyphSize: CGFloat = 11
@@ -229,19 +237,13 @@ private struct MenuBarLabel: View {
   /// The label as a non-template image: on the approaching capsule, or with the attention
   /// dot in its color.
   private var coloredImage: some View {
-    let isDark = menuBarScheme == .dark && !item.approaching
+    let isDark = menuBarIsDark && !item.approaching
     let palette = SalahPalette(isDark: isDark)
     let ink = item.approaching ? palette.labelOnAccent.color : (isDark ? Color.white : .black)
     let renderer = ImageRenderer(
       content: content(ink: ink, dot: item.attention ? palette.warning.color : nil)
         .font(.system(size: NSFont.menuBarFont(ofSize: 0).pointSize))
-        .padding(.horizontal, Metrics.padding)
-        .frame(height: Metrics.height)
-        .background {
-          if item.approaching {
-            RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.accentFill.color)
-          }
-        }
+        .modifier(ApproachingCapsule(isOn: item.approaching, fill: palette.accentFill.color))
     )
     renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
     let nsImage = renderer.nsImage
@@ -252,6 +254,23 @@ private struct MenuBarLabel: View {
       } else {
         content(ink: .primary, dot: nil)
       }
+    }
+  }
+}
+
+/// The approaching state's gold capsule: the item's full 24 pt height, 7 pt padding, radius 6.
+private struct ApproachingCapsule: ViewModifier {
+  let isOn: Bool
+  let fill: Color
+
+  func body(content: Content) -> some View {
+    if isOn {
+      content
+        .padding(.horizontal, 7)
+        .frame(height: 24)
+        .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(fill))
+    } else {
+      content
     }
   }
 }

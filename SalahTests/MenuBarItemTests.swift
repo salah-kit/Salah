@@ -118,6 +118,21 @@ struct MenuBarItemTests {
     }
   }
 
+  /// The Icon display hides the next prayer's text, so its time style, even "Hidden",
+  /// doesn't stop the prayer that just began from leading the glyph.
+  @Test func theIconDisplayLeadsWithTheJustStartedPrayerWhateverItsHiddenTimeStyle() {
+    let display = MenuBarItem.Display(
+      showsIcon: true, showsNextPrayer: false, name: .full, time: .none)
+    let item = AppLanguageScope.with(.english) {
+      MenuBarItem(
+        display: display, moment: State.justStarted.moment,
+        text: SalahText(locale: AppLanguage.english.locale, timeZone: Fixture.timeZone),
+        names: PrayerNames(locale: AppLanguage.english.locale), appName: "Salah")
+    }
+    #expect(item.icon == .glyph(.dhuhr))
+    #expect(item.text.isEmpty)
+  }
+
   /// While the adhan plays, the speaker shows only where the display has the icon, and the
   /// text names the prayer, with its time in the clock-time display.
   @Test func playingShowsTheSpeakerAndThePrayer() {

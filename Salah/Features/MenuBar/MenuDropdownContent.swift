@@ -632,7 +632,6 @@ struct MenuPrayerRow: View {
         .frame(width: 18, height: 18)
         .accessibilityHidden(true)
       HStack(spacing: 6) {
-        // Figma lets a long detail run under the badge's edge rather than end in "…".
         name
           .font(.body.weight(isStrong ? .semibold : .regular))
           .foregroundStyle((role == .passed ? palette.labelSecondary : palette.labelPrimary).color)
@@ -649,8 +648,11 @@ struct MenuPrayerRow: View {
       // A set minimum keeps the frame at the space the row gives it, whatever the text.
       .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
       .clipped()
-      if role == .current {
-        MenuHero.nowBadge(display.labels.now, palette: palette)
+      // The badge lies over the text's trailing end, whole, so a long detail runs under it.
+      .overlay(alignment: .trailing) {
+        if role == .current {
+          MenuHero.nowBadge(display.labels.now, palette: palette).fixedSize()
+        }
       }
       time
         .font(.body.weight(isStrong ? .semibold : .regular).monospacedDigit())
@@ -727,7 +729,10 @@ struct MenuPrayerRow: View {
           .font(.system(size: MenuBellLabel.symbolSize))
           .foregroundStyle(bellColor(isOn: isOn).color)
           .frame(width: MenuBellLabel.size, height: MenuBellLabel.size)
+          // The click target reaches 2 pt past the 15 pt symbol frame.
+          .padding(2)
           .contentShape(Rectangle())
+          .padding(-2)
       }
       .buttonStyle(.plain)
       // The row draws the focus ring, in the accent.
@@ -782,7 +787,7 @@ private struct MenuRowInteraction: ViewModifier {
   let focused: Bool
 
   @State private var hovering = false
-  @State private var pressed = false
+  @GestureState private var pressed = false
 
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -803,8 +808,7 @@ private struct MenuRowInteraction: ViewModifier {
       .onHover { hovering = $0 }
       .simultaneousGesture(
         DragGesture(minimumDistance: 0)
-          .onChanged { _ in pressed = true }
-          .onEnded { _ in pressed = false })
+          .updating($pressed) { _, pressed, _ in pressed = true })
   }
 }
 

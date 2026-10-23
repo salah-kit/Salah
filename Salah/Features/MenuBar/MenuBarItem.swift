@@ -109,7 +109,8 @@ struct MenuBarItem: Equatable {
         .joined(separator: " · ")
     } else {
       // The prayer that just began leads the countdown and the clock time alike.
-      let lead = display.time == .none ? nil : moment.justStarted
+      // A hidden next prayer's time style doesn't apply: the Icon display leads with it too.
+      let lead = display.showsNextPrayer && display.time == .none ? nil : moment.justStarted
       icon = display.showsIcon ? .glyph((lead ?? moment.next)?.kind) : .none
       approaching = lead == nil && moment.isApproaching
       if let lead {
