@@ -259,8 +259,12 @@ final class VoiceOverSpeechUITests: XCTestCase {
       let toggle = language.alertOff(language.names.name(of: event))
       XCTAssertTrue(items.contains(toggle), "\(toggle)\n\(speech.log)")
     }
+    // After Isha, tomorrow's Fajr has its own toggle, named with its day.
+    let tomorrowsFajr = "\(language.tomorrow) · \(language.names.name(of: .fajr))"
     for toggle in items.filter({ $0.contains(language.playAtPrayerTime) }) {
-      XCTAssertTrue(names.contains { toggle == language.alertOff($0) }, "\(toggle)\n\(speech.log)")
+      XCTAssertTrue(
+        (names + [tomorrowsFajr]).contains { toggle == language.alertOff($0) },
+        "\(toggle)\n\(speech.log)")
     }
     let countdowns = Self.countdowns(from: start.addingTimeInterval(-120), to: end, in: language)
     XCTAssertTrue(
@@ -358,6 +362,8 @@ extension VoiceOverSpeechUITests {
     /// toggle's name after the prayer's.
     var alertOff: @Sendable (_ prayer: String) -> String
     var playAtPrayerTime: String
+    /// `SalahWidgetLabels.tomorrow`, which names tomorrow's Fajr row after Isha.
+    var tomorrow: String
 
     var names: PrayerNames { PrayerNames(locale: locale) }
   }
@@ -366,7 +372,7 @@ extension VoiceOverSpeechUITests {
     setting: "english", code: "en", locale: Locale(identifier: "en"), quit: "Quit Salah",
     quitSpoken: "Quit Salah button", remaining: "remaining", since: { "started \($0) ago" },
     alertOff: { "Alert off \($0) · Play at prayer time button" },
-    playAtPrayerTime: "Play at prayer time")
+    playAtPrayerTime: "Play at prayer time", tomorrow: "Tomorrow")
 
   static let arabic: Language = {
     // Salah's Arabic: Arabic-Indic digits, which `Locale(identifier: "ar")` doesn't use.
@@ -376,7 +382,7 @@ extension VoiceOverSpeechUITests {
       setting: "arabic", code: "ar", locale: Locale(components: components), quit: "إنهاء صلاة",
       quitSpoken: "إنهاء صلاة زر", remaining: "متبقّية", since: { "منذ \($0)" },
       alertOff: { "تنبيه مُعطّل \($0) · تشغيل عند وقت الصلاة زر" },
-      playAtPrayerTime: "تشغيل عند وقت الصلاة")
+      playAtPrayerTime: "تشغيل عند وقت الصلاة", tomorrow: "غدًا")
   }()
 
   static let makkah = TimeZone(identifier: "Asia/Riyadh") ?? .gmt

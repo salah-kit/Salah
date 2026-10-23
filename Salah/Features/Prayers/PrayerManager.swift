@@ -517,23 +517,25 @@ enum MenuBarStatusTone {
 }
 
 extension PrayerManager {
-  /// The glyph the status item shows: the prayer whose count-up the text shows, else the
-  /// next event's, so the glyph and the text name the same prayer.
-  var menuBarGlyph: PrayerKind? {
-    (menuBarCountUp ?? state.prayerState?.next)?.kind
+  /// What the status item shows besides its text's countdown.
+  var menuBarStatus: MenuBarStatus {
+    MenuBarStatus(
+      audio: audioPlaybackController.state, countUp: menuBarCountUp,
+      next: state.prayerState?.next)
   }
 
+  /// The glyph the status item shows: the prayer whose count-up the text shows, else the
+  /// next event's, so the glyph and the text name the same prayer.
+  var menuBarGlyph: PrayerKind? { menuBarStatus.glyph }
+
   /// Whether adhan, du'a or a reminder is playing: the status item shows the speaker.
-  var menuBarIsPlaying: Bool {
-    if case .playing = audioPlaybackController.state { return true }
-    return false
-  }
+  var menuBarIsPlaying: Bool { menuBarStatus.isPlaying }
 
   /// The status item's text: while a prayer's audio plays, only that prayer's name.
   var menuBarText: String {
-    guard preferences.displayNextPrayer,
-      case .playing(let context) = audioPlaybackController.state, let event = context.event
-    else { return statusBarText }
+    guard preferences.displayNextPrayer, let event = menuBarStatus.playingPrayer else {
+      return statusBarText
+    }
     return nameComponent(for: event, names: PrayerNames(locale: .app))
   }
 
@@ -567,6 +569,29 @@ extension PrayerManager {
     guard preferences.nextPrayerDisplayType == .timeUntil else { return nil }
     return state.prayerState?.justStarted
   }
+}
+
+/// The status item's glyph and speaker, from what plays and the schedule's state.
+struct MenuBarStatus: Equatable {
+  var audio: AudioPlaybackState
+  /// The prayer whose count-up the text shows (`menuBarCountUp`), or `nil`.
+  var countUp: PrayerEvent?
+  var next: PrayerEvent?
+
+  /// The speaker shows while audio plays, and only then: not during a count-up.
+  var isPlaying: Bool {
+    if case .playing = audio { return true }
+    return false
+  }
+
+  /// The prayer whose audio plays, whose name the text shows alone.
+  var playingPrayer: PrayerEvent? {
+    if case .playing(let context) = audio { return context.event }
+    return nil
+  }
+
+  /// The prayer the text names: the count-up's, else the next event's.
+  var glyph: PrayerKind? { (countUp ?? next)?.kind }
 }
 
 /// Where and why the schedule couldn't give today: one log line and notice per cause.

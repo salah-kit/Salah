@@ -10,8 +10,8 @@ import SalahUI
 /// adds Salah's settings and what's playing, and answers the questions Salah's views ask
 /// of those facts: the focus, the tone, each row's state, the text.
 nonisolated struct SalahDisplay: Sendable {
-  /// When a prayer counts as approaching (the imminent red, 15 minutes before it) and how
-  /// long it counts as just started (the green count-up, 15 minutes after it). Salah has
+  /// When a prayer counts as approaching (the gold approach, 15 minutes before it) and how
+  /// long it counts as just started (the count-up, 15 minutes after it). Salah has
   /// no iqama, so the window is fixed.
   static let policy = StatePolicy(
     approaching: .seconds(15 * 60), justStarted: .fixed(.seconds(15 * 60)))
@@ -96,10 +96,11 @@ nonisolated struct SalahDisplay: Sendable {
 
   /// The prayer whose adhan or du'a plays, or the one a reminder after it plays for: the
   /// prayer one is in while it plays. `nil` for a reminder before a prayer, which plays
-  /// while the prayer is still to come, and when nothing plays.
+  /// while the prayer is still to come, and when nothing plays. An adhan the engine starts
+  /// a moment early still counts.
   var playingPrayer: PrayerEvent? {
-    guard let event = playback?.event, event.time <= date else { return nil }
-    return event
+    guard let playback, playback.slot != .preReminder else { return nil }
+    return playback.event
   }
 
   /// The known state, or `nil` when the schedule can't establish one.
@@ -168,7 +169,7 @@ nonisolated struct SalahDisplay: Sendable {
 
   // MARK: - Focus
 
-  /// The one element that leads every surface: the green count-up of a prayer that just
+  /// The one element that leads every surface: the count-up of a prayer that just
   /// started, or the countdown to the next event, sunrise included.
   typealias Focus = PrayerFocus
 
@@ -192,7 +193,7 @@ nonisolated struct SalahDisplay: Sendable {
 
   // MARK: - Tones and row states
 
-  /// Tone for the moment: silent, the playing slot's color, the imminent red in the last
+  /// Tone for the moment: silent, the playing slot, the approach in the last
   /// 15 minutes before a prayer (never before sunrise, which isn't one), or normal.
   var tone: SalahWidgetTone {
     if settings.silentMode { return .silent }
@@ -200,8 +201,8 @@ nonisolated struct SalahDisplay: Sendable {
     return prayerState?.isApproaching == true ? .imminent : .normal
   }
 
-  /// Tone for the ambient background wash: like `tone`, but green while a prayer counts
-  /// up.
+  /// Tone for the ambient background wash: like `tone`, but the count-up's while a prayer
+  /// counts up.
   var backgroundTone: SalahWidgetTone {
     if settings.silentMode { return .silent }
     if let playback { return playback.tone }
@@ -225,7 +226,7 @@ nonisolated struct SalahDisplay: Sendable {
   }
 
   /// The "since" count-up on the row of the latest event, sunrise included ("+1:30"),
-  /// unless that row shows the green "Now" count-up itself. It anchors the row the user
+  /// unless that row shows the "Now" count-up itself. It anchors the row the user
   /// is "at", the playing prayer's row included.
   func sinceText(for event: PrayerEvent, status: PrayerEventStatus?) -> String? {
     guard let previous = prayerState?.previous, previous.id == event.id,

@@ -197,6 +197,10 @@ struct SalahDisplayTests {
       at: asr.time.adding(minutes: 5),
       playback: SalahPlayback(event: asr, slot: .postReminder, offsetMinutes: 5))
     #expect(after.playingPrayer == asr)
+    // The engine can start an adhan a moment before its time; it's the prayer one is in.
+    let early = Self.display(
+      at: asr.time.addingTimeInterval(-1), playback: SalahPlayback(event: asr, slot: .alert))
+    #expect(early.playingPrayer == asr)
     #expect(Self.display(at: asr.time.adding(minutes: 1)).playingPrayer == nil)
   }
 

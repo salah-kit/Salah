@@ -56,6 +56,7 @@
 		37084617F1244EDC8D50C556 /* AdjustmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7850779C111D56324DA71023 /* AdjustmentRow.swift */; };
 		38282006C00E5F58947A6CB0 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */; };
 		390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FBA9F0E069647A5AC1D2BE /* WidgetPreviewContainer.swift */; };
+		3935EC41C10332CC62D1425D /* MenuBarStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F5E4C18EBD81CF9FEE997 /* MenuBarStatusTests.swift */; };
 		3C17A1F0E9B5E1DCB09B0163 /* SalahUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85502C7E155811EF17729F5A /* SalahUITests.swift */; };
 		3D554C9CBF55F65F663D37E5 /* SalahWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0623A8755AF9D8667A573 /* SalahWidgetModels.swift */; };
 		3E8B9E6D9BE54C008C617BA3 /* PreferencesNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */; };
@@ -377,6 +378,7 @@
 		7850779C111D56324DA71023 /* AdjustmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentRow.swift; sourceTree = "<group>"; };
 		7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Makkah.mp3"; sourceTree = "<group>"; };
 		80DD5264ACADB60FA57577BD /* PaletteContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteContrastTests.swift; sourceTree = "<group>"; };
+		846F5E4C18EBD81CF9FEE997 /* MenuBarStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusTests.swift; sourceTree = "<group>"; };
 		85502C7E155811EF17729F5A /* SalahUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahUITests.swift; sourceTree = "<group>"; };
 		8552FB43879A30B29BAC8299 /* SalahSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahSettings.swift; sourceTree = "<group>"; };
 		8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityMonitor.swift; sourceTree = "<group>"; };
@@ -551,6 +553,7 @@
 				2C10C397A2110185F0814FD6 /* ClockRollbackTests.swift */,
 				FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */,
 				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
+				846F5E4C18EBD81CF9FEE997 /* MenuBarStatusTests.swift */,
 				80DD5264ACADB60FA57577BD /* PaletteContrastTests.swift */,
 				D3A61B56AAC43F94A7A72972 /* PrayerAlertCoordinatorTests.swift */,
 				65ED69414083ED778314A8E0 /* PreferenceEffectsTests.swift */,
@@ -1254,6 +1257,7 @@
 				4597A2F317CF6F2976326FBC /* MenuBarDropdownPreviews.swift in Sources */,
 				26F0012FBF1EA1102A1B3C51 /* MenuBarDropdownView.swift in Sources */,
 				E992F574BE00602768045000 /* MenuBarPreview.swift in Sources */,
+				3935EC41C10332CC62D1425D /* MenuBarStatusTests.swift in Sources */,
 				BDB78EA135CE4A4E021B6DDC /* MenuDropdownContent.swift in Sources */,
 				5FC3437E70FAD313FBD06F7C /* MenuDropdownFooter.swift in Sources */,
 				5BB6B368DD7D09598F975312 /* MenuLiveCountdown.swift in Sources */,

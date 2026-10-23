@@ -116,6 +116,27 @@ struct WidgetTimelineTests {
     #expect(atMidnight.focus == .countdown(Fixture.event(.fajr, dayOffset: 1)))
   }
 
+  /// After Isha the medium and large widgets list tomorrow's times, Fajr next; while
+  /// Isha's after-reminder still plays then, they keep today's, with Isha current.
+  @Test func afterIshaTheRowsAreTomorrowsUnlessIshaStillPlays() throws {
+    let isha = Fixture.event(.isha)
+    let now = isha.time.adding(minutes: 20)
+    let quiet = try #require(
+      Self.displays(SalahWidgetTimeline.make(settings: Self.settings, playback: nil, now: now))
+        .first?.1)
+    let tomorrow = WidgetTimes.rows(of: quiet)
+    #expect(tomorrow.map(\.event) == Fixture.day(dayOffset: 1).events)
+    #expect(tomorrow.first?.role == .next)
+
+    let playback = SalahPlayback(event: isha, slot: .postReminder, offsetMinutes: 20)
+    let playing = try #require(
+      Self.displays(SalahWidgetTimeline.make(settings: Self.settings, playback: playback, now: now))
+        .first?.1)
+    let today = WidgetTimes.rows(of: playing)
+    #expect(today.map(\.event) == Fixture.day().events)
+    #expect(today.last?.role == .current)
+  }
+
   /// Seven days of successive timelines, each asked for at the previous one's reload
   /// date, with no app in between: they cover the week without a hole, and every
   /// entry shows the state SalahCore gives at its date, in the day listed then.

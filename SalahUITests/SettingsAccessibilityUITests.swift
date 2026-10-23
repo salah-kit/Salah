@@ -21,15 +21,13 @@ final class SettingsAccessibilityUITests: XCTestCase {
   @MainActor
   func testAppearancePreviewShowsTheMediumWidgetInEnglish() throws {
     try assertAppearancePreview(
-      language: "english", code: "en", pane: "Appearance", mode: "Appearance",
-      followsTimeOfDay: "Follow the time of day")
+      language: "english", code: "en", pane: "Appearance", system: "System")
   }
 
   @MainActor
   func testAppearancePreviewShowsTheMediumWidgetInArabic() throws {
     try assertAppearancePreview(
-      language: "arabic", code: "ar", pane: "المظهر", mode: "المظهر",
-      followsTimeOfDay: "اتباع وقت اليوم")
+      language: "arabic", code: "ar", pane: "المظهر", system: "النظام")
   }
 
   /// Xcode's accessibility audit finds nothing in what each pane of the window, Today and the
@@ -277,7 +275,7 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// the form's width; the rendered baselines check the widget's exact width and colors.
   @MainActor
   private func assertAppearancePreview(
-    language: String, code: String, pane: String, mode: String, followsTimeOfDay label: String
+    language: String, code: String, pane: String, system: String
   ) throws {
     let app = XCUIApplication()
     var arguments = SalahUITests.quietLaunch
@@ -296,12 +294,14 @@ final class SettingsAccessibilityUITests: XCTestCase {
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
     settings.selectPane(pane)
 
-    XCTAssertTrue(
-      settings.popUpButtons[mode].waitForExistence(timeout: 10), settings.debugDescription)
-    let followsTimeOfDay = settings.switches[label]
-    XCTAssertTrue(followsTimeOfDay.waitForExistence(timeout: 10), settings.debugDescription)
+    // The pane's pop-up and switch have no name of their own for XCTest (VoiceOver names
+    // them after their rows); once the preview shows, they're the pane's only ones.
     let preview = settings.descendants(matching: .any)["appearance.preview"]
     XCTAssertTrue(preview.waitForExistence(timeout: 10), settings.debugDescription)
+    XCTAssertEqual(settings.popUpButtons.count, 1, settings.debugDescription)
+    XCTAssertEqual(settings.popUpButtons.firstMatch.value as? String, system)
+    XCTAssertEqual(settings.switches.count, 1, settings.debugDescription)
+    let followsTimeOfDay = settings.switches.firstMatch
 
     for step in ["on", "off", "on again"] {
       if step != "on" {

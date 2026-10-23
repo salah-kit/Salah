@@ -223,7 +223,7 @@ enum WidgetPreviewData {
     standard(playing: .maghrib, lang: lang, now: now)
   }
 
-  /// 10 min before Maghrib → imminent red.
+  /// 10 min before Maghrib → imminent, in gold.
   static func imminent(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
@@ -236,7 +236,7 @@ enum WidgetPreviewData {
       ], lang: lang, now: now)
   }
 
-  /// 4 min after Dhuhr started → green count-up leads; Asr is the secondary next.
+  /// 4 min after Dhuhr started → the count-up leads; Asr is the secondary next.
   static func countUp(_ lang: PreviewLang = .en, now: Date = Date()) -> SalahDisplay {
     make(
       prayers: [
@@ -250,9 +250,9 @@ enum WidgetPreviewData {
   }
 
   /// 16 min after Dhuhr started → the 15-min count-up window has closed, so the
-  /// focus must be back to the next prayer's countdown (Asr), with no green.
+  /// focus must be back to the next prayer's countdown (Asr), with no count-up.
   /// Guards the focus boundary: the count-up must not linger past 15 min
-  /// (the bug where the widget stayed green and kept counting up for hours).
+  /// (the bug where the widget kept counting up for hours).
   static func countUpEnded(
     _ lang: PreviewLang = .en, now: Date = Date()
   ) -> SalahDisplay {
@@ -267,7 +267,7 @@ enum WidgetPreviewData {
       ], lang: lang, now: now)
   }
 
-  /// 90 min after Dhuhr started (the green window long closed) → resting countdown
+  /// 90 min after Dhuhr started (the count-up window long closed) → resting countdown
   /// to Asr, with the always-on "since previous prayer" treatment: Small shows
   /// "Dhuhr since: 1:30"; Medium/Large show the un-dimmed Dhuhr row carrying
   /// "+1:30". Mirrors the user's example and exercises the h:mm since tier.

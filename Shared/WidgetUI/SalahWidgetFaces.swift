@@ -493,13 +493,20 @@ nonisolated struct WidgetTimes: View {
     }
   }
 
+  private var rows: [(event: PrayerEvent, role: Role)] { Self.rows(of: display) }
+
   /// The listed day's events with their roles, or tomorrow's while its Fajr is next.
-  private var rows: [(event: PrayerEvent, role: Role)] {
-    if display.focusIsTomorrow, let tomorrow = display.nextDay {
+  static func rows(of display: SalahDisplay) -> [(event: PrayerEvent, role: Role)] {
+    let day = display.listedDay
+    let playing = display.playingPrayer.flatMap { event in
+      day?.events.contains { $0.id == event.id } == true ? event : nil
+    }
+    // Tomorrow's times after Isha, unless one of today's prayers still plays.
+    if playing == nil, display.focusIsTomorrow, let tomorrow = display.nextDay {
       return tomorrow.events.map { ($0, $0.id == display.focus?.event.id ? .next : .upcoming) }
     }
-    guard let day = display.listedDay else { return [] }
-    if let playing = display.playingPrayer {
+    guard let day else { return [] }
+    if let playing {
       // While a prayer plays, the roles follow it, whatever the countdown knows.
       let next = day.events.first { $0.time > playing.time }
       return day.events.map { event in
