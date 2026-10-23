@@ -13,6 +13,10 @@ final class OnboardingPresenter {
 
   private var window: NSWindow?
   private var closeObserver: (any NSObjectProtocol)?
+  /// The welcome is ending on its own terms, not closed early.
+  private var isFinishing = false
+  /// macOS refused the location: the welcome ends on the Location pane, to choose a city.
+  private var locationWasDenied = false
   private let preferences: Preferences
 
   init(preferences: Preferences = .shared) {
@@ -85,18 +89,32 @@ final class OnboardingPresenter {
     AppLog.lifecycle.notice("onboarding shown pages=\(flow.pages.count, privacy: .public)")
   }
 
-  /// The welcome ends: it's done for good, and Salah's window opens on the destination.
+  /// The welcome ends: it's done for good, and Salah's window opens on the destination. The
+  /// welcome closes once that window is up, so Salah keeps its Dock icon throughout.
   private func finish(at destination: OnboardingFlow.Destination) {
+    // Closed while macOS was asking: nothing more opens.
+    guard window != nil, !isFinishing else { return }
+    isFinishing = true
     preferences.onboardingCompleted = true
-    // Open first, so Salah keeps its Dock icon from one window to the other.
+    // Choose a City…: Salah stops following the location, so nothing asks for it later and
+    // the Location pane shows the city search.
+    if destination == .location { preferences.useCurrentLocation = false }
     AppWindowCoordinator.shared.endOnboarding()
-    AppWindowCoordinator.shared.open(destination == .location ? .location : .today)
-    window?.close()
+    AppWindowCoordinator.shared.open(
+      destination == .location || locationWasDenied ? .location : .today)
   }
 
-  /// Closing the window early counts as done too: Salah stays in the menu bar, and asks
-  /// for nothing more on its own.
+  /// Closing the welcome early counts as done, and as Not Now for what it didn't ask: Salah
+  /// stays in the menu bar and asks for nothing on its own.
   private func windowWillClose() {
+    if !isFinishing {
+      preferences.notificationPromptDeferred = true
+      if preferences.useCurrentLocation,
+        CLLocationManager().authorizationStatus == .notDetermined
+      {
+        preferences.useCurrentLocation = false
+      }
+    }
     preferences.onboardingCompleted = true
     if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) }
     closeObserver = nil
@@ -109,6 +127,8 @@ final class OnboardingPresenter {
     if Self.withoutPrompts(preferences) { return }
     preferences.useCurrentLocation = true
     await LocationPermission().request()
+    let status = CLLocationManager().authorizationStatus
+    locationWasDenied = status == .denied || status == .restricted
     NotificationCenter.default.post(name: .startLocationUpdate, object: nil)
   }
 

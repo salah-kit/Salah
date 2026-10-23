@@ -28,6 +28,7 @@ struct OnboardingView: View {
     VStack(spacing: 14) {
       art
       Text(title)
+        .accessibilityAddTraits(.isHeader)
         .font(.system(size: 22))
         .foregroundStyle(palette.labelPrimary.color)
         .multilineTextAlignment(.center)
@@ -105,6 +106,7 @@ struct OnboardingView: View {
           if let destination = flow.chooseCity() { finish(destination) }
         }
         .buttonStyle(.bordered)
+        .keyboardShortcut(.cancelAction)
         prominent("onboarding.location.allow") {
           ask(allowLocation)
         }
@@ -114,6 +116,7 @@ struct OnboardingView: View {
           advance()
         }
         .buttonStyle(.bordered)
+        .keyboardShortcut(.cancelAction)
         prominent("onboarding.notifications.allow") {
           ask(allowNotifications)
         }
