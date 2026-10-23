@@ -483,8 +483,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
 
   /// A tap on a prayer alert's banner stops what's playing, so one click hushes a long
   /// adhan, or opens Today when nothing is. Either way the notification leaves
-  /// Notification Center.
+  /// Notification Center. After Quit Salah, a tap does nothing: the app is closing.
   func didTapAlert(_ identifier: String) async {
+    guard !isWithdrawn else { return }
     if audio.isPlaying {
       audio.stop()
     } else {
@@ -744,6 +745,9 @@ nonisolated struct PrayerAlertContent: Sendable {
   /// The place the times are for, as the dropdown names it; empty without one.
   let place: String
   let bundle: LocalizedStringResource.BundleDescription
+  /// The locale the bodies are looked up in: the app's, or English when the app's language
+  /// is one Salah doesn't ship, so the fallback text also takes English plural forms.
+  let bodyLocale: Locale
 
   @MainActor
   init(preferences: Preferences) {
@@ -753,6 +757,16 @@ nonisolated struct PrayerAlertContent: Sendable {
       locale: locale, timeZone: TimeZone(identifier: preferences.storedTimeZone) ?? .current)
     place = preferences.prayerLocation.name ?? ""
     bundle = AppResources.localizationBundle
+    bodyLocale = Self.bodyLocale(for: locale)
+  }
+
+  /// `locale` when Salah ships its language; English otherwise.
+  static func bodyLocale(for locale: Locale) -> Locale {
+    let shipped = AppLanguage.concreteCases.compactMap(\.languageCode)
+    guard let code = locale.language.languageCode?.identifier, shipped.contains(code) else {
+      return Locale(identifier: "en")
+    }
+    return locale
   }
 
   /// The content of one alert: the prayer's name as the title, the place as the
@@ -798,7 +812,7 @@ nonisolated struct PrayerAlertContent: Sendable {
   /// plural form and writes the number in its own digits. In a right-to-left language,
   /// Foundation isolates each argument.
   private func body(of alert: PlannedAlert, name: String, offset: Int) -> String {
-    let locale = text.locale
+    let locale = bodyLocale
     let time = text.timeFormatter().string(from: alert.event.time)
     let resource: LocalizedStringResource
     switch alert.kind {
