@@ -49,6 +49,7 @@ struct SalahApp: App {
     MenuBarExtra {
       MenuBarDropdownView(prayerManager: prayerManager)
         .background(WindowTitleSetter(title: appName))
+        .background(WindowAppearanceSetter(setting: preferences.appearance))
         .environment(\.locale, appLocale)
         .environment(\.layoutDirection, appLayoutDirection)
     } label: {

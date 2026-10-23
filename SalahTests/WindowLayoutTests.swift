@@ -34,6 +34,24 @@ struct WindowLayoutTests {
     #expect(AppAppearance.appearance(for: .dark)?.name == .darkAqua)
   }
 
+  /// The dropdown's panel takes the setting's appearance itself, and gives it back to macOS
+  /// for System.
+  @Test @MainActor func thePanelTakesTheAppearanceSetting() {
+    _ = NSApplication.shared
+    let window = NSWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 100, height: 100), styleMask: [.borderless],
+      backing: .buffered, defer: false)
+    window.isReleasedWhenClosed = false
+    let view = WindowAppearanceSetter.AppearanceView(frame: .zero)
+    view.setting = .light
+    window.contentView?.addSubview(view)
+    #expect(window.appearance?.name == .aqua)
+    view.setting = .dark
+    #expect(window.appearance?.name == .darkAqua)
+    view.setting = .system
+    #expect(window.appearance == nil)
+  }
+
   /// AppKit lays out right to left for Arabic, Urdu and Persian, left to right for the other
   /// languages, and as the system does when Salah follows it.
   @Test @MainActor func theAppLanguageSetsAppKitsDirection() {

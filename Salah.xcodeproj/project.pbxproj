@@ -31,6 +31,7 @@
 		1C0755173BA8B58B6285B4ED /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = C29C8EA95CAA56606EB0A30C /* SalahCalculation */; };
 		1C1121E186E8604020866D63 /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
 		1D7519A99D55633C8649A709 /* SalahUI in Frameworks */ = {isa = PBXBuildFile; productRef = FB0C7E356ADF04B793E7130D /* SalahUI */; };
+		1EA377B0BD3577931CB6770D /* WindowAppearanceSetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC11DC6E3352DA3B6C98331 /* WindowAppearanceSetter.swift */; };
 		1EC7FE633CB76F50F101A191 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 1ACF2E6A89287473F212C736 /* Localizable.xcstrings */; };
 		1EC84CE5970BE9FCA792910C /* AppSupportActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AA0132B344E5E89BD675F3 /* AppSupportActions.swift */; };
 		1F219F29B024875955BC8CF2 /* SalahUI in Frameworks */ = {isa = PBXBuildFile; productRef = 741980F60175B710192AABA7 /* SalahUI */; };
@@ -277,6 +278,7 @@
 		EF4A85AA4294D3AD5A06AA63 /* WindowPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5A2519AD84C5A0495CE414 /* WindowPane.swift */; };
 		F05A14389C3BA123FE6FD273 /* LifecycleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901BC06F79694AC2FE791FFF /* LifecycleUITests.swift */; };
 		F0BEA4E604B5B0DF0757F2C7 /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
+		F0E02FCD8219213141E4D4C8 /* WindowAppearanceSetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC11DC6E3352DA3B6C98331 /* WindowAppearanceSetter.swift */; };
 		F4E883D8DE4DEAA6BBF1483E /* AppWindowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40582EBF81AEEC0977B96F7 /* AppWindowCoordinator.swift */; };
 		F5EE41E3AECFAB16C863B5A2 /* LocationNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD80627E90B010963831E2FF /* LocationNotifications.swift */; };
 		F61E9732058C323293F0792E /* AppFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A855F46C7172EFE3F0658 /* AppFailure.swift */; };
@@ -397,6 +399,7 @@
 		54AA1DBFB3EE76CC59F8FE77 /* StopSalahAudioIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopSalahAudioIntent.swift; sourceTree = "<group>"; };
 		5A198BAFC5BE8CF4BC8F62E6 /* AppClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppClock.swift; sourceTree = "<group>"; };
 		5C64FE4F117F2787B4168C6C /* PreferencesDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesDefaults.swift; sourceTree = "<group>"; };
+		5CC11DC6E3352DA3B6C98331 /* WindowAppearanceSetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAppearanceSetter.swift; sourceTree = "<group>"; };
 		5CCDC01270443ADA8787FCBF /* SalahApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahApp.swift; sourceTree = "<group>"; };
 		5DC04AD29F9B9E7C929C7154 /* SalahTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalahTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F60BE825CA31CB8FDC59182 /* SalahDayTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahDayTimeline.swift; sourceTree = "<group>"; };
@@ -862,6 +865,7 @@
 				C6AA0132B344E5E89BD675F3 /* AppSupportActions.swift */,
 				3FD6738C76E5D3804685D784 /* DebugOptions.swift */,
 				2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */,
+				5CC11DC6E3352DA3B6C98331 /* WindowAppearanceSetter.swift */,
 				A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */,
 			);
 			path = Support;
@@ -1423,6 +1427,7 @@
 				390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */,
 				E0EC62A9F8D0A034343F4237 /* WidgetSunArc.swift in Sources */,
 				7CA5E2F449BD638FD2AC06AC /* WidgetTimelineTests.swift in Sources */,
+				F0E02FCD8219213141E4D4C8 /* WindowAppearanceSetter.swift in Sources */,
 				6BE91A3AF4929B414456087A /* WindowLayoutTests.swift in Sources */,
 				5963B6D62CC4DDBF83C3398C /* WindowPalette.swift in Sources */,
 				18251ED71F628C8A3CB1321E /* WindowPane.swift in Sources */,
@@ -1511,6 +1516,7 @@
 				85EB9C3CAACE4F4E54A2645E /* WidgetMirror.swift in Sources */,
 				725CFDC1316EC033E2CF2B14 /* WidgetPreviewContainer.swift in Sources */,
 				B626C341AD198D81C1ED4B37 /* WidgetSunArc.swift in Sources */,
+				1EA377B0BD3577931CB6770D /* WindowAppearanceSetter.swift in Sources */,
 				984EE32F12C684FE2E5834A2 /* WindowPalette.swift in Sources */,
 				EF4A85AA4294D3AD5A06AA63 /* WindowPane.swift in Sources */,
 				044D6547BD33DB22ECEDAFB8 /* WindowTitleSetter.swift in Sources */,
