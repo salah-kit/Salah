@@ -122,7 +122,9 @@ final class SalahUITests: XCTestCase {
       ]
     app.launch()
     addTeardownBlock { @MainActor in app.terminate() }
-    // With the window closed, ⌘, can only come from the dropdown.
+    // ⌘, with the window closed and the dropdown open: the dropdown's shortcut and the
+    // app menu's Settings… both open General, so this checks what the person sees, not
+    // which one answers.
     app.closeWindowToMenuBar()
     let status = app.statusItems.firstMatch
     XCTAssertTrue(status.waitForExistence(timeout: 30))

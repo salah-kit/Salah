@@ -68,8 +68,8 @@ nonisolated enum AppLanguage: String, Codable, CaseIterable, Sendable {
 
   /// Language identifier(s) for `AppleLanguages` UserDefaults. Setting this
   /// makes `Bundle.main.preferredLocalizations` resolve to the chosen language,
-  /// which is what drives the system's menus and window titles (built from
-  /// `CFBundleDisplayName`). Returns `nil` for
+  /// which is what drives the system's own strings, such as the app menu's items (built
+  /// from `CFBundleDisplayName`). Returns `nil` for
   /// `.system` so the OS picks based on user's global language order.
   var appleLanguagesOverride: [String]? {
     switch self {

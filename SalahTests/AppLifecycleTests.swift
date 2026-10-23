@@ -387,10 +387,13 @@ private final class OpenCounter {
 @MainActor
 @Suite("Quit Salah's time limit")
 struct QuitTimeLimitTests {
-  @Test func returnsAtTheLimitWhenTheWorkHangs() async {
+  // Without the limit this never returns; the time limit turns that into a failure.
+  @Test(.timeLimit(.minutes(1))) func returnsAtTheLimitWhenTheWorkHangs() async {
     let start = ContinuousClock.now
+    // Work that never finishes and ignores cancellation, as a withdrawal stuck on the
+    // notification center does.
     await PrayerManager.wait(atMost: .milliseconds(200)) {
-      try? await Task.sleep(for: .seconds(30))
+      await withUnsafeContinuation { (_: UnsafeContinuation<Void, Never>) in }
     }
     #expect(ContinuousClock.now - start < .seconds(5))
   }
