@@ -89,7 +89,7 @@ struct MenuBarPreview: View {
   }
 
   private var previewClockTime: String {
-    var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+    var components = Calendar.current.dateComponents([.year, .month, .day], from: AppClock.now)
     components.hour = 20
     components.minute = 34
     let date = Calendar.current.date(from: components) ?? Date()

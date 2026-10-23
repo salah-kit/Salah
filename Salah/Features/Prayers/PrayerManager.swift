@@ -72,7 +72,7 @@ final class PrayerManager {
 
     let settings = Preferences.shared.mirroredSettings
     let schedule = settings.schedule
-    let now = Date()
+    let now = AppClock.now
     self.settings = settings
     self.schedule = schedule
     day = schedule.day(containing: now)
@@ -120,7 +120,7 @@ final class PrayerManager {
   }
 
   private func handleTick() {
-    if CivilDay(containing: Date(), in: settings.location.timeZone) != currentDay {
+    if CivilDay(containing: AppClock.now, in: settings.location.timeZone) != currentDay {
       calculatePrayerTimes()
     } else {
       updateCurrentPrayer()
@@ -146,7 +146,7 @@ final class PrayerManager {
     guard preferences.displayNextPrayer,
       preferences.nextPrayerDisplayType == .timeUntil
     else { return false }
-    let now = Date()
+    let now = AppClock.now
     if let countUp = menuBarCountUp, now.timeIntervalSince(countUp.time) < 60 { return true }
     guard let next = state.prayerState?.next, next.kind != .sunrise else { return false }
     let delta = next.time.timeIntervalSince(now)
@@ -350,12 +350,12 @@ final class PrayerManager {
   private func rebuildSchedule() {
     settings = preferences.mirroredSettings
     schedule = settings.schedule
-    currentDay = CivilDay(containing: Date(), in: settings.location.timeZone)
+    currentDay = CivilDay(containing: AppClock.now, in: settings.location.timeZone)
     updateCurrentPrayer()
   }
 
   private func updateCurrentPrayer() {
-    let now = Date()
+    let now = AppClock.now
     day = schedule.day(containing: now)
     state = schedule.state(
       at: now, through: now.addingTimeInterval(SalahDisplay.lookahead), policy: SalahDisplay.policy)
@@ -446,7 +446,7 @@ final class PrayerManager {
       return
     }
 
-    let now = Date()
+    let now = AppClock.now
     let names = PrayerNames(locale: .app)
 
     // Iqama count-up: for 15 minutes after a prayer starts, lead with that prayer's

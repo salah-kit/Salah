@@ -27,6 +27,26 @@ import UserNotifications
     /// replace this Mac's own Salah preferences.
     static let scratchPreferencesKey = "salah.debug.scratchPreferences"
 
+    /// `-salah.debug.now 2026-06-02T13:19:00+03:00`: the moment Salah shows at launch,
+    /// running on from there (`AppClock`). The alerts keep the real time.
+    nonisolated static let nowKey = "salah.debug.now"
+
+    /// `-salah.debug.windowSize 888x411`: the size Salah's window opens at, in points.
+    nonisolated static let windowSizeKey = "salah.debug.windowSize"
+
+    /// The launch's moment, if it asks for one.
+    nonisolated static func now(defaults: UserDefaults = .standard) -> Date? {
+      defaults.string(forKey: nowKey).flatMap { ISO8601DateFormatter().date(from: $0) }
+    }
+
+    /// The launch's window size, if it asks for one.
+    nonisolated static func windowSize(defaults: UserDefaults = .standard) -> CGSize? {
+      let parts = defaults.string(forKey: windowSizeKey)?.split(separator: "x")
+        .compactMap { Double($0) }
+      guard let parts, parts.count == 2 else { return nil }
+      return CGSize(width: parts[0], height: parts[1])
+    }
+
     /// The scratch store's suite.
     static let scratchSuiteName = "io.github.salah-kit.Salah.debug.scratch"
 

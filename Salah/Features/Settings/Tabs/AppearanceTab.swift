@@ -45,6 +45,6 @@ struct AppearanceContent: View {
   /// the settings the widget mirror holds, so the preview matches the installed widget.
   private var previewDisplay: SalahDisplay {
     let settings = prefs.mirroredSettings
-    return SalahDisplay(date: Date(), settings: settings, schedule: settings.schedule)
+    return SalahDisplay(date: AppClock.now, settings: settings, schedule: settings.schedule)
   }
 }

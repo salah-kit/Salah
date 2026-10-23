@@ -151,6 +151,11 @@ final class AppWindowCoordinator {
     window.isRestorable = false
     window.tabbingMode = .disallowed
     window.setAccessibilityIdentifier(Self.windowAccessibilityIdentifier)
+    #if DEBUG
+      if let size = DebugOptions.windowSize() {
+        window.setFrame(NSRect(origin: window.frame.origin, size: size), display: true)
+      }
+    #endif
     closeObservers[id] = NotificationCenter.default.addObserver(
       forName: NSWindow.willCloseNotification, object: window, queue: .main
     ) { [weak self] _ in

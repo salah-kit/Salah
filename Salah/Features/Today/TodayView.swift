@@ -11,7 +11,7 @@ struct TodayView: View {
   var body: some View {
     TimelineView(.everyMinute) { context in
       TodayContent(
-        display: prayerManager.display(at: context.date),
+        display: prayerManager.display(at: AppClock.shifted(context.date)),
         onToggleAlert: { prayerManager.preferences.toggleAlert(for: $0) },
         onStop: { prayerManager.audioPlaybackController.stop() },
         onQuit: { prayerManager.quitSalah() })

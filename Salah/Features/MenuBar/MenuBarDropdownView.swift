@@ -20,7 +20,7 @@ struct MenuBarDropdownView: View {
     // timer primitive inside `MenuLiveCountdown`, with no per-second tree redraw.
     TimelineView(.everyMinute) { context in
       MenuDropdownContent(
-        display: prayerManager.display(at: context.date),
+        display: prayerManager.display(at: AppClock.shifted(context.date)),
         lastKnownDay: prayerManager.lastKnownDay,
         onToggleAlert: toggleAlert,
         onToggleSilent: toggleSilent,
