@@ -56,6 +56,14 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Appearance set back to System follows macOS again after Light or Dark, in the window,
+  the dropdown and the note, which now follows the setting too.
+- In Arabic, Urdu and Persian, Salah's window lays out right to left with its panes at full
+  width; before, each pane was squeezed by the sidebar's width on both sides.
+- Nothing in Salah's window takes the keyboard focus as it opens, so no control shows a
+  focus ring.
+- The note that Salah keeps running hangs centered under the menu bar item, on a solid
+  card.
 - Refresh the widget promptly after stopping audio, including when small, medium and
   large widgets are installed together ([#52](https://github.com/salah-kit/Salah/issues/52)).
   Recheck playback after planning a refresh, archive the static Stop face only once, and

@@ -55,6 +55,7 @@
 		2FB00A193A448BC0993FC6A2 /* AlertSettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */; };
 		31B29FA1F787E113B8AD65DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE641A6772CFF2B5D29315E8 /* Assets.xcassets */; };
 		327DA4BF5B48C803FD1C6389 /* NotificationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BEF191A1AC3CC459F76A3F /* NotificationsTab.swift */; };
+		32E78069A1411ED7E5A55448 /* AppearanceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376F978144A4B968E2C81507 /* AppearanceUITests.swift */; };
 		34792BA3D102FDE809569DE5 /* LocationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E9C3E3F5BB9E4176A0FDD3 /* LocationTab.swift */; };
 		355FB5320F4DD279E24C9336 /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
 		364B02ED1EC5A7AA3AEC5E01 /* Adhan-Alafasy.m4a in Resources */ = {isa = PBXBuildFile; fileRef = C56A7BACC2303019D64B6BEC /* Adhan-Alafasy.m4a */; };
@@ -69,6 +70,7 @@
 		3E8B9E6D9BE54C008C617BA3 /* PreferencesNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */; };
 		4065B66168D9C32DCD7B290F /* SalahWidgetFaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC745E7139FFF1BF86597C /* SalahWidgetFaces.swift */; };
 		4156357497B7EDBB7A52F25E /* Locale+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85A1F9F52601F7605DFD353 /* Locale+App.swift */; };
+		416B99256CF372F98D5BA14F /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D360D0B254920E7A9920C /* AppAppearance.swift */; };
 		437A119ED0082F596A05711A /* BaselineRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A739B3A33C1689F5860C1F5 /* BaselineRendering.swift */; };
 		4393A1EB83FFCB0CFF37EF81 /* AppLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06C21F7DB1A8717381074B2 /* AppLifecycle.swift */; };
 		4408B9DD2DC6FF2EA0FDA8C2 /* Adhan-Aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 08F3510F20456EFE4FCBB6F6 /* Adhan-Aqsa.mp3 */; };
@@ -114,6 +116,7 @@
 		6A4CCAE5C82301A6FC701C8F /* AppWindowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40582EBF81AEEC0977B96F7 /* AppWindowCoordinator.swift */; };
 		6B624B8B5D9FBC52E22631A9 /* CalculationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B782277B15B49EBB7F63F /* CalculationTab.swift */; };
 		6B79905BFE642F54D75A15B7 /* InlineNoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52A400F1902D63656AE733 /* InlineNoticeLabel.swift */; };
+		6BE91A3AF4929B414456087A /* WindowLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291A8A69F86CCE568DCDB285 /* WindowLayoutTests.swift */; };
 		6C712DB2519F6910E5BF091D /* StopSalahAudioIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AA1DBFB3EE76CC59F8FE77 /* StopSalahAudioIntent.swift */; };
 		6D4DDB14E292BE0FF0DAEC1B /* RealAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EFCB2D485B9D0FA820FEF /* RealAppTests.swift */; };
 		6DA0C3D81DCF73161B130B1A /* SalahText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BAFE950109CD5DEE9FEF68 /* SalahText.swift */; };
@@ -213,6 +216,7 @@
 		B7B012B57629E0FCE2E1D645 /* LanguagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */; };
 		B8723D00C08774ED4A2E8DC2 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C4D45ACF670852D66F36C6 /* Preferences.swift */; };
 		B9A842C82E9803F172368A56 /* LocationSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E811762213EA0827DFD2C8E /* LocationSearchService.swift */; };
+		B9BF5BAC15FD93EA4E245D91 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D360D0B254920E7A9920C /* AppAppearance.swift */; };
 		BB749F0752A4E0C20D3611A0 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0098093F6B7E49436BFA96DA /* AppLog.swift */; };
 		BBD70D95B04D80380B4078D9 /* AppLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06C21F7DB1A8717381074B2 /* AppLifecycle.swift */; };
 		BC617A1806E357E5F51F6597 /* MenuBarChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E600131ED4FAF7AF7D19859 /* MenuBarChrome.swift */; };
@@ -338,6 +342,7 @@
 		04491B0F3DB5901260D89E4E /* BaselineCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineCatalog.swift; sourceTree = "<group>"; };
 		0506C1BDDA91DA7A586CB0F3 /* Dua.m4a */ = {isa = PBXFileReference; path = Dua.m4a; sourceTree = "<group>"; };
 		06C36420A7912C369BD8BEF4 /* MenuDropdownContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDropdownContent.swift; sourceTree = "<group>"; };
+		073D360D0B254920E7A9920C /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		08F3510F20456EFE4FCBB6F6 /* Adhan-Aqsa.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Aqsa.mp3"; sourceTree = "<group>"; };
 		0A52A400F1902D63656AE733 /* InlineNoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineNoticeLabel.swift; sourceTree = "<group>"; };
 		0C680F7787ED544F2D480E5F /* PrayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerManager.swift; sourceTree = "<group>"; };
@@ -357,6 +362,7 @@
 		28837E4AF194675AAF562303 /* SalahPrayerSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPrayerSource.swift; sourceTree = "<group>"; };
 		28CD928BAA1A94A472FF97BB /* SalahPlayback+Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SalahPlayback+Audio.swift"; sourceTree = "<group>"; };
 		29130D6BD5DC3DDBA925DAAF /* WindowTitleSetterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowTitleSetterTests.swift; sourceTree = "<group>"; };
+		291A8A69F86CCE568DCDB285 /* WindowLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowLayoutTests.swift; sourceTree = "<group>"; };
 		297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preferences+Mirror.swift"; sourceTree = "<group>"; };
 		2A739B3A33C1689F5860C1F5 /* BaselineRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineRendering.swift; sourceTree = "<group>"; };
 		2BCF7325495D4784EE4B9EC5 /* AppLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLifecycleTests.swift; sourceTree = "<group>"; };
@@ -370,6 +376,7 @@
 		34963BC2BCF87B5CD9AF6DA4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		34AC745E7139FFF1BF86597C /* SalahWidgetFaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetFaces.swift; sourceTree = "<group>"; };
 		355B4807BB3B87ED162CEB73 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		376F978144A4B968E2C81507 /* AppearanceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUITests.swift; sourceTree = "<group>"; };
 		3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPlaybackGapTests.swift; sourceTree = "<group>"; };
 		3CFE2197A0A0548742324EA8 /* Numbers+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numbers+Localized.swift"; sourceTree = "<group>"; };
 		3FD6738C76E5D3804685D784 /* DebugOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOptions.swift; sourceTree = "<group>"; };
@@ -615,6 +622,7 @@
 				2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */,
 				3C03E6C78EF5F5BB1A0CE822 /* WidgetPlaybackGapTests.swift */,
 				7113CEB3E1FD05C888D9142A /* WidgetTimelineTests.swift */,
+				291A8A69F86CCE568DCDB285 /* WindowLayoutTests.swift */,
 				29130D6BD5DC3DDBA925DAAF /* WindowTitleSetterTests.swift */,
 				752322D6EA6B1EFD43229337 /* Support */,
 			);
@@ -688,6 +696,7 @@
 		47CA84A10E209A43510D1E07 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				073D360D0B254920E7A9920C /* AppAppearance.swift */,
 				F06C21F7DB1A8717381074B2 /* AppLifecycle.swift */,
 				D40582EBF81AEEC0977B96F7 /* AppWindowCoordinator.swift */,
 				5CCDC01270443ADA8787FCBF /* SalahApp.swift */,
@@ -891,6 +900,7 @@
 			isa = PBXGroup;
 			children = (
 				2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */,
+				376F978144A4B968E2C81507 /* AppearanceUITests.swift */,
 				901BC06F79694AC2FE791FFF /* LifecycleUITests.swift */,
 				FEB6147446EDD84F8D5B2A0E /* OnboardingUITests.swift */,
 				85502C7E155811EF17729F5A /* SalahUITests.swift */,
@@ -1260,6 +1270,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FB00A193A448BC0993FC6A2 /* AlertSettingsUITests.swift in Sources */,
+				32E78069A1411ED7E5A55448 /* AppearanceUITests.swift in Sources */,
 				D879E5C5B19564BF57C65B03 /* LaunchArguments.swift in Sources */,
 				F05A14389C3BA123FE6FD273 /* LifecycleUITests.swift in Sources */,
 				FC411609FBB4DF5D1BCD2AD1 /* OnboardingUITests.swift in Sources */,
@@ -1298,6 +1309,7 @@
 				A472413D9EE8311C92FFFF80 /* AdjustmentRow.swift in Sources */,
 				97116296A1B0075842255D13 /* AdjustmentsTab.swift in Sources */,
 				2A20AD19ED373DE32CDB19FC /* AlertDoubles.swift in Sources */,
+				416B99256CF372F98D5BA14F /* AppAppearance.swift in Sources */,
 				DA338895B76A74549F3FA2E6 /* AppClock.swift in Sources */,
 				9CF98F420175260DB8D9E1AD /* AppFailure.swift in Sources */,
 				01C343C2B2B40F4F2E0FBC82 /* AppLanguage.swift in Sources */,
@@ -1398,6 +1410,7 @@
 				390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */,
 				E0EC62A9F8D0A034343F4237 /* WidgetSunArc.swift in Sources */,
 				7CA5E2F449BD638FD2AC06AC /* WidgetTimelineTests.swift in Sources */,
+				6BE91A3AF4929B414456087A /* WindowLayoutTests.swift in Sources */,
 				5963B6D62CC4DDBF83C3398C /* WindowPalette.swift in Sources */,
 				18251ED71F628C8A3CB1321E /* WindowPane.swift in Sources */,
 				5D3FB9A45AE6B935988AB6C1 /* WindowTitleSetter.swift in Sources */,
@@ -1411,6 +1424,7 @@
 			files = (
 				37084617F1244EDC8D50C556 /* AdjustmentRow.swift in Sources */,
 				0DEC5192204C8C8C1126A5EF /* AdjustmentsTab.swift in Sources */,
+				B9BF5BAC15FD93EA4E245D91 /* AppAppearance.swift in Sources */,
 				38B7C5F2B6C46069D9B76CC0 /* AppClock.swift in Sources */,
 				F61E9732058C323293F0792E /* AppFailure.swift in Sources */,
 				607193D1ACE13A3BC4DEFA56 /* AppLanguage.swift in Sources */,

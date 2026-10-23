@@ -764,8 +764,8 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "إنهاء صلاة"
+            "state": "translated",
+            "value": "إنهاء «صلاة»"
           }
         },
         "en": {
@@ -7181,7 +7181,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Menu Bar"
+            "value": "Menu bar"
           }
         },
         "fr": {
@@ -7199,13 +7199,13 @@
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bilah Menu"
+            "value": "Bilah menu"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Menü Çubuğu"
+            "value": "Menü çubuğu"
           }
         },
         "fa": {
@@ -7223,7 +7223,7 @@
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bar Menu"
+            "value": "Bar menu"
           }
         }
       }
@@ -11938,7 +11938,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أغلق هذه النافذة وتستمر أوقات الصلاة والأذان. أنهه لإيقافها."
+            "value": "أغلق هذه النافذة وتستمر أوقات الصلاة والأذان. أنهِه لإيقافها."
           }
         },
         "en": {

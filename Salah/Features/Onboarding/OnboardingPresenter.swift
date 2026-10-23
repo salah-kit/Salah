@@ -89,7 +89,6 @@ final class OnboardingPresenter {
     )
     .environment(\.locale, .app)
     .environment(\.layoutDirection, Locale.app.preferredLayoutDirection)
-    .preferredColorScheme(preferences.appearance.colorScheme)
 
     let window = NSWindow(
       contentRect: .zero, styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],

@@ -283,9 +283,11 @@ final class SettingsAccessibilityUITests: XCTestCase {
     let systemLanguageIndex = try XCTUnwrap(arguments.firstIndex(of: "-AppleLanguages"))
     arguments[languageIndex + 1] = language
     arguments[systemLanguageIndex + 1] = "(\(code))"
+    // Tall enough to show the whole pane, preview included, without scrolling.
     app.launchArguments =
       arguments + [
         "-salah.debug.withoutSystemPrompts", "YES", "-salah.followsTimeOfDay", "YES",
+        "-salah.debug.windowSize", "888x640",
       ]
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }

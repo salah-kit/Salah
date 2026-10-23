@@ -80,6 +80,8 @@ final class AppWindowCoordinator {
   /// time Salah's window is asked for. A welcome closed early comes back in a later run.
   private var hasOfferedOnboarding = false
   private var closeObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
+  /// Each window's first time as the key window, when it gives up the focus AppKit gave.
+  private var firstKeyObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
   /// A login launch or an unfinished welcome, until Salah's window is asked for: a
   /// window SwiftUI opens by itself meanwhile closes again (macOS 14 opens the window scene
   /// at launch).
@@ -109,6 +111,9 @@ final class AppWindowCoordinator {
     self.dismissCloseNote = dismissCloseNote
     self.startOnboarding = startOnboarding
     lifecycle = AppLifecycle(hasShownCloseNote: defaults.bool(forKey: Self.closeNoteShownKey))
+    #if DEBUG
+      if let pane = DebugOptions.pane() { navigation.pane = pane }
+    #endif
   }
 
   // MARK: - Launch
@@ -204,6 +209,23 @@ final class AppWindowCoordinator {
         window.setFrame(NSRect(origin: window.frame.origin, size: size), display: true)
       }
     #endif
+    // Nothing has the keyboard focus when the window opens: with keyboard navigation on,
+    // AppKit focuses a control, a bell or Quit Salah on Today, and rings it. Tab still moves
+    // the focus from there. A window that's already key gave its focus as it came up.
+    if window.isKeyWindow {
+      DispatchQueue.main.async { [weak window] in _ = window?.makeFirstResponder(nil) }
+    } else {
+      firstKeyObservers[id] = NotificationCenter.default.addObserver(
+        forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
+      ) { [weak self, weak window] _ in
+        MainActor.assumeIsolated {
+          _ = window?.makeFirstResponder(nil)
+          if let observer = self?.firstKeyObservers.removeValue(forKey: id) {
+            NotificationCenter.default.removeObserver(observer)
+          }
+        }
+      }
+    }
     closeObservers[id] = NotificationCenter.default.addObserver(
       forName: NSWindow.willCloseNotification, object: window, queue: .main
     ) { [weak self] _ in
@@ -264,8 +286,10 @@ final class AppWindowCoordinator {
 
   private func windowWillClose(_ id: ObjectIdentifier) {
     windows[id] = nil
-    if let observer = closeObservers.removeValue(forKey: id) {
-      NotificationCenter.default.removeObserver(observer)
+    for observer in [
+      closeObservers.removeValue(forKey: id), firstKeyObservers.removeValue(forKey: id),
+    ] {
+      if let observer { NotificationCenter.default.removeObserver(observer) }
     }
     let showsNote = lifecycle.windowClosed(id)
     presence.setPresence(lifecycle.presence)

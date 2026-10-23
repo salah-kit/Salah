@@ -22,10 +22,23 @@ struct SalahWindowView: View {
       .toolbar(removing: .sidebarToggle)
     } detail: {
       detail
+        // Right to left before AppKit is (a language changed until the next launch), the
+        // sidebar's inset lands on both sides of the pane: it belongs on the leading side
+        // only, so the trailing side has none.
+        .ignoresSafeArea(.container, edges: .trailing)
         .navigationTitle(localizedString(dynamicKey: navigation.pane.titleKey, locale: locale))
+        // An empty toolbar gives the window macOS's full title row, as in Finder: the
+        // pane's title, with the traffic lights in line. Without one, macOS draws a slim
+        // title bar.
+        .toolbar {
+          if #available(macOS 26.0, *) {
+            ToolbarSpacer(.flexible)
+          }
+        }
     }
     .tint(WindowPalette.accent)
-    .frame(minWidth: 780, minHeight: 440)
+    // Low enough for the window's default size, which fits Today.
+    .frame(minWidth: 780, minHeight: 300)
     .background(WindowAttacher { AppWindowCoordinator.shared.attach($0) })
   }
 

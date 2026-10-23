@@ -41,6 +41,15 @@ import UserNotifications
     /// title bar included. The window's minimum size still applies.
     nonisolated static let windowSizeKey = "salah.debug.windowSize"
 
+    /// `-salah.debug.pane notifications`: the pane Salah's window opens on, by its name in
+    /// `WindowPane`.
+    static let paneKey = "salah.debug.pane"
+
+    /// The launch's pane, if it asks for one.
+    static func pane(defaults: UserDefaults = .standard) -> WindowPane? {
+      defaults.string(forKey: paneKey).flatMap(WindowPane.init(rawValue:))
+    }
+
     /// The launch's moment, if it asks for one.
     nonisolated static func now(defaults: UserDefaults = .standard) -> Date? {
       defaults.string(forKey: nowKey).flatMap { ISO8601DateFormatter().date(from: $0) }

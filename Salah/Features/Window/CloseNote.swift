@@ -14,6 +14,8 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
   private var popover: NSPopover?
   /// An invisible window over the status item that the note hangs from.
   private var anchor: NSWindow?
+  /// The status item's button, highlighted as if open while the note hangs from it.
+  private weak var button: NSStatusBarButton?
   private var monitors: [Any] = []
 
   /// Shows the note from the status item, and returns whether it could find the item.
@@ -37,10 +39,15 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
     popover.behavior = .applicationDefined
     popover.animates = true
     popover.delegate = self
-    popover.contentViewController = NSHostingController(
+    let content = NSHostingController(
       rootView: CloseNoteView { [weak self] in self?.close() }
         .environment(\.locale, locale)
         .environment(\.layoutDirection, locale.preferredLayoutDirection))
+    // Sized once, before it shows, so its arrow is centered under the item: a popover that
+    // grows afterwards grows away from its arrow.
+    content.sizingOptions = []
+    popover.contentViewController = content
+    popover.contentSize = content.sizeThatFits(in: NSSize(width: 300, height: 1000))
     self.popover = popover
     // The note hangs from a window of its own over the item, not from the item's button:
     // a popover highlights the button it's shown from, and `MenuBarExtra` then opens its
@@ -58,6 +65,9 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
     self.anchor = anchor
     guard let view = anchor.contentView else { return false }
     popover.show(relativeTo: view.bounds, of: view, preferredEdge: .minY)
+    // The item looks open, as in its Open state, without opening the dropdown.
+    button.highlight(true)
+    self.button = button
     monitorDismissal()
     return true
   }
@@ -104,6 +114,8 @@ final class CloseNotePresenter: NSObject, NSPopoverDelegate {
     popover = nil
     anchor?.close()
     anchor = nil
+    button?.highlight(false)
+    button = nil
   }
 
   /// The button of Salah's status item, the `MenuBarExtra`'s, which lives in a window of
@@ -132,8 +144,10 @@ struct CloseNoteView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       HStack(spacing: 10) {
+        // macOS's icon art fills 824 of its 1024 points: scaled so the art fills 32.
         Image(nsImage: NSApp.applicationIconImage)
           .resizable()
+          .frame(width: 32 * 1024 / 824, height: 32 * 1024 / 824)
           .frame(width: 32, height: 32)
           .accessibilityHidden(true)
         Text("note.stillRunning.title")
@@ -142,7 +156,7 @@ struct CloseNoteView: View {
       }
       Text("note.stillRunning.body")
         .font(.body)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(WindowPalette.labelSecondary)
         .fixedSize(horizontal: false, vertical: true)
       HStack {
         Spacer()
@@ -157,6 +171,8 @@ struct CloseNoteView: View {
     .padding(.horizontal, 16)
     .padding(.vertical, 14)
     .frame(width: 300)
+    // A solid card, not the popover's material.
+    .background(WindowPalette.elevated)
   }
 }
 

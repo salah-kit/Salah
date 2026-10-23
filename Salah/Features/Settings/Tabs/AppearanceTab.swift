@@ -16,6 +16,7 @@ struct AppearanceContent: View {
         Text("settings.appearance.mode.dark").tag(SalahAppearance.dark)
       }
       .pickerStyle(.menu)
+      .accessibilityIdentifier("appearance.mode")
     }
 
     Section("settings.appearance.colors") {

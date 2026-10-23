@@ -71,7 +71,8 @@ struct PreferenceStorageTests {
   }
 
   /// Every key the preferences write is in Salah's namespace, apart from the system's
-  /// `AppleLanguages`, which the language setting overrides on purpose.
+  /// `AppleLanguages` and `AppleTextDirection`, which the language setting overrides on
+  /// purpose.
   @Test func everyKeyIsInTheSalahNamespace() throws {
     let scratch = ScratchDefaults()
     let preferences = Preferences(defaults: scratch.defaults)
@@ -79,7 +80,8 @@ struct PreferenceStorageTests {
       PreferenceEffectsTests.expectation(for: setting).change(preferences)
     }
     let keys = try #require(scratch.defaults.persistentDomain(forName: scratch.suiteName)).keys
-    let foreign = keys.filter { !$0.hasPrefix("salah.") && $0 != "AppleLanguages" }
+    let system: Set = ["AppleLanguages", "AppleTextDirection"]
+    let foreign = keys.filter { !$0.hasPrefix("salah.") && !system.contains($0) }
     #expect(foreign.isEmpty, "\(foreign.sorted())")
     #expect(keys.contains("salah.notificationSettings"))
   }

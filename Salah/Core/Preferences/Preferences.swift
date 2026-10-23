@@ -380,7 +380,8 @@ final class Preferences {
   }
 
   /// Mirrors `appLanguage` into the `AppleLanguages` UserDefaults so
-  /// `Bundle.main.preferredLocalizations` matches our in-app choice. Drives
+  /// `Bundle.main.preferredLocalizations` matches our in-app choice, and into
+  /// `AppleTextDirection` so AppKit lays out in its direction. Drives
   /// system-rendered chrome like the app menu's items (built from
   /// `CFBundleDisplayName`). Takes effect on next launch.
   func applyAppleLanguagesOverride() {
@@ -388,6 +389,11 @@ final class Preferences {
       defaults.set(override, forKey: "AppleLanguages")
     } else {
       defaults.removeObject(forKey: "AppleLanguages")
+    }
+    if let rightToLeft = appLanguage.appleTextDirectionOverride {
+      defaults.set(rightToLeft, forKey: "AppleTextDirection")
+    } else {
+      defaults.removeObject(forKey: "AppleTextDirection")
     }
     // Force the change through CFPreferences immediately so any reader that
     // queries the preferences chain on the same run loop sees the new state.

@@ -19,6 +19,9 @@ final class LifecycleUITests: XCTestCase {
     let window = app.salahWindow
     XCTAssertTrue(window.waitForExistence(timeout: 30), app.debugDescription)
     XCTAssertEqual(window.title, "Today")
+    // No control takes the keyboard focus as the window opens.
+    let focused = window.buttons.matching(NSPredicate(format: "hasKeyboardFocus == true"))
+    XCTAssertEqual(focused.count, 0, focused.debugDescription)
     XCTAssertTrue(
       wait { Self.policy() == .regular }, "No Dock icon: \(String(describing: Self.policy()))")
     XCTAssertTrue(app.menuBars.menuBarItems["Window"].exists, app.menuBars.debugDescription)

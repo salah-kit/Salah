@@ -14,10 +14,15 @@ struct SalahApp: App {
   init() {
     let defaults = Preferences.sharedDefaults
     if let raw = defaults.string(forKey: Preferences.Key.appLanguage),
-      let lang = AppLanguage(rawValue: raw),
-      let override = lang.appleLanguagesOverride
+      let lang = AppLanguage(rawValue: raw)
     {
-      defaults.set(override, forKey: "AppleLanguages")
+      if let override = lang.appleLanguagesOverride {
+        defaults.set(override, forKey: "AppleLanguages")
+      }
+      // AppKit lays out right to left only with this default, read at launch.
+      if let rightToLeft = lang.appleTextDirectionOverride {
+        defaults.set(rightToLeft, forKey: "AppleTextDirection")
+      }
     }
   }
 
@@ -46,7 +51,6 @@ struct SalahApp: App {
         .background(WindowTitleSetter(title: appName))
         .environment(\.locale, appLocale)
         .environment(\.layoutDirection, appLayoutDirection)
-        .preferredColorScheme(preferences.appearance.colorScheme)
     } label: {
       MenuBarLabel(
         text: prayerManager.menuBarText,
@@ -58,6 +62,7 @@ struct SalahApp: App {
         layoutDirection: appLayoutDirection
       )
       .background(WindowOpenerBridge())
+      .onChange(of: preferences.appearance) { AppAppearance.apply($1) }
     }
     .menuBarExtraStyle(.window)
 
@@ -69,9 +74,8 @@ struct SalahApp: App {
       )
       .environment(\.locale, appLocale)
       .environment(\.layoutDirection, appLayoutDirection)
-      .preferredColorScheme(preferences.appearance.colorScheme)
     }
-    .defaultSize(width: 888, height: 520)
+    .defaultSize(width: 888, height: 411)
     .windowResizability(.contentMinSize)
     .commands { SalahCommands(locale: appLocale) }
   }
@@ -87,6 +91,10 @@ struct SalahApp: App {
 /// the Dock's reopen, a widget's link, and quitting.
 final class SalahAppDelegate: NSObject, NSApplicationDelegate {
   private var coordinator: AppWindowCoordinator { .shared }
+
+  func applicationWillFinishLaunching(_ notification: Notification) {
+    AppAppearance.apply(Preferences.shared.appearance)
+  }
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     coordinator.didFinishLaunching(

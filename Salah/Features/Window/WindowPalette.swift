@@ -11,6 +11,10 @@ enum WindowPalette {
   static let accentFill = dynamic(\.accentFill)
   /// `label/on-accent`: text on `accentFill`.
   static let onAccent = dynamic(\.labelOnAccent)
+  /// `label/secondary`: the note's body.
+  static let labelSecondary = dynamic(\.labelSecondary)
+  /// `bg/elevated`: the note's card.
+  static let elevated = dynamic(\.elevated)
 
   private static func dynamic(_ token: KeyPath<SalahPalette, ThemeColor> & Sendable) -> Color {
     Color(

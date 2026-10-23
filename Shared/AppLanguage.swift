@@ -71,6 +71,17 @@ nonisolated enum AppLanguage: String, Codable, CaseIterable, Sendable {
   /// which is what drives the system's own strings, such as the app menu's items (built
   /// from `CFBundleDisplayName`). Returns `nil` for
   /// `.system` so the OS picks based on user's global language order.
+  /// The `AppleTextDirection` default for this language, which lays AppKit out right to
+  /// left: macOS sets it only for a right-to-left system language, so Salah sets it for its
+  /// own. Nil follows the system.
+  var appleTextDirectionOverride: Bool? {
+    switch self {
+    case .system: nil
+    case .arabic, .urdu, .persian: true
+    case .english, .french, .indonesian, .turkish, .bengali, .malay: false
+    }
+  }
+
   var appleLanguagesOverride: [String]? {
     switch self {
     case .system: return nil

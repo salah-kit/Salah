@@ -35,7 +35,7 @@ struct TodayContent: View {
     ScrollView {
       VStack(alignment: .leading, spacing: 18) {
         MenuHeader(display: display, colors: colors)
-        HStack(alignment: .top, spacing: 20) {
+        TodayColumns(spacing: 20, inset: Self.prayersInset) {
           VStack(spacing: 12) {
             MenuHero(display: display, colors: colors, onStop: onStop)
             if let day = display.listedDay {
@@ -57,6 +57,9 @@ struct TodayContent: View {
     .environment(\.locale, display.locale)
   }
 
+  /// The prayers card's inset around its rows.
+  private static let prayersInset: CGFloat = 6
+
   // MARK: - Prayers
 
   @ViewBuilder
@@ -76,7 +79,7 @@ struct TodayContent: View {
         MenuRowStyle(
           display: display, colors: colors, isLastKnown: false, onToggleAlert: onToggleAlert)
       )
-      .padding(6)
+      .padding(Self.prayersInset)
       .background(colors.palette.formGroup.color, in: RoundedRectangle(cornerRadius: 12))
     } else {
       Label {
@@ -111,10 +114,14 @@ struct TodayContent: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         Spacer(minLength: 8)
-        // A plain push button: the window's gold tint is for its controls, not this one.
+        // A plain capsule push button: the window's gold tint is for its controls, not this
+        // one.
         Button(action: onQuit) {
           Text(verbatim: localizedString("menu.quit", locale: display.locale))
+            .fontWeight(.medium)
         }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
         .tint(.primary)
       }
       .padding(.horizontal, 10)
@@ -122,5 +129,43 @@ struct TodayContent: View {
       .frame(minHeight: 50)
       .background(colors.palette.formGroup.color, in: RoundedRectangle(cornerRadius: 12))
     }
+  }
+}
+
+/// Today's two columns: the next prayer and the prayers card. The next prayer is as wide as
+/// the card's rows, so the card is wider by its inset on each side; both fill the width.
+/// The leading column is the first subview, so the order mirrors right to left.
+struct TodayColumns: Layout {
+  var spacing: CGFloat
+  /// The second column's inset on each side.
+  var inset: CGFloat
+
+  /// The columns' widths in `width`.
+  func widths(_ width: CGFloat) -> (first: CGFloat, second: CGFloat) {
+    let first = max(0, (width - spacing - 2 * inset) / 2)
+    return (first, first + 2 * inset)
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard subviews.count == 2 else { return .zero }
+    let width = proposal.width ?? 600
+    let (first, second) = widths(width)
+    let height = max(
+      subviews[0].sizeThatFits(ProposedViewSize(width: first, height: proposal.height)).height,
+      subviews[1].sizeThatFits(ProposedViewSize(width: second, height: proposal.height)).height)
+    return CGSize(width: width, height: height)
+  }
+
+  func placeSubviews(
+    in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()
+  ) {
+    guard subviews.count == 2 else { return }
+    let (first, second) = widths(bounds.width)
+    subviews[0].place(
+      at: CGPoint(x: bounds.minX, y: bounds.minY), anchor: .topLeading,
+      proposal: ProposedViewSize(width: first, height: bounds.height))
+    subviews[1].place(
+      at: CGPoint(x: bounds.maxX - second, y: bounds.minY), anchor: .topLeading,
+      proposal: ProposedViewSize(width: second, height: bounds.height))
   }
 }
