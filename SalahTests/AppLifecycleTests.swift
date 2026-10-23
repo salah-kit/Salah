@@ -410,7 +410,7 @@ struct AppWindowCoordinatorTests {
   }
 
   /// A link that launches Salah with the welcome done opens the window, which the launch
-  /// finishing afterwards leaves open.
+  /// finishing afterwards leaves open, a login launch's included.
   @Test func aLinkBeforeTheLaunchFinishesKeepsItsWindow() {
     let coordinator = makeCoordinator()
     let opener = OpenCounter()
@@ -422,9 +422,19 @@ struct AppWindowCoordinatorTests {
     defer { window.close() }
     coordinator.attach(window)
     #expect(window.isVisible)
+
+    let login = makeCoordinator()
+    login.register {}
+    login.open()
+    login.didFinishLaunching(asLoginItem: true)
+    let loginWindow = makeWindow()
+    defer { loginWindow.close() }
+    login.attach(loginWindow)
+    #expect(loginWindow.isVisible)
   }
 
-  /// The same with the welcome decided later: the window opens once it's decided.
+  /// The same with the welcome decided later: SwiftUI's own window closes until it's decided,
+  /// then Salah's opens.
   @Test func aLinkBeforeTheLaunchFinishesOpensTheWindowOnceDecided() {
     let decision = PendingDecision()
     let coordinator = makeCoordinator(startOnboarding: { decision.otherwise = $0 })

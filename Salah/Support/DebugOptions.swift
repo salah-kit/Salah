@@ -14,6 +14,7 @@ import UserNotifications
     ///   it only reads and shows the current status.
     /// - `AudioPlaybackController` doesn't send Music the Apple Event that pauses it while
     ///   an alert plays.
+    /// - The welcome's Allow buttons move on without asking.
     ///
     /// Nothing else changes: the app still installs the plan, posts due alerts and plays
     /// their sounds. Without permission, macOS just doesn't schedule or show those

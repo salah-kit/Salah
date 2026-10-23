@@ -123,10 +123,10 @@ final class AppWindowCoordinator {
     ) { [weak self] _ in
       MainActor.assumeIsolated { self?.sessionEndingSince = Date() }
     }
+    // Either way, a widget's link that already asked for the window keeps it.
     if AppLifecycle.opensWindowAtLaunch(asLoginItem: asLoginItem) {
-      // Unless a widget's link already asked for the window.
       offerOnboarding(then: nil)
-    } else {
+    } else if !hasOfferedOnboarding {
       isQuietLaunch = true
     }
   }
