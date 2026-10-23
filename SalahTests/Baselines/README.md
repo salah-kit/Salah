@@ -26,7 +26,7 @@ The first renders every image but the Arabic menu dropdown; the second, whose `-
 
 ## Fixture
 
-The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):
+The app's default settings: Makkah (21.4167, 39.8167; named مكة المكرمة in Arabic), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):
 
 | Day | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
 |---|---|---|---|---|---|---|
@@ -35,7 +35,7 @@ The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura,
 
 ## Widget and menu states: `widget/` and `menu/`
 
-The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
+The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget, and the needs-attention state only in the dropdown.
 
 | State | Shows | Moment (Riyadh) | Setup |
 |---|---|---|---|
@@ -49,6 +49,7 @@ The states the widget and the menu bar show, built from the fixture by the app's
 | `playingPreReminder` | playing audio (stop control): before-reminder | 2026-06-02 18:50 | Maghrib − 10 min, Maghrib's 10-min before-reminder playing |
 | `playingPostReminder` | playing audio (stop control): after-reminder | 2026-06-02 19:05 | Maghrib + 5 min, Maghrib's 5-min after-reminder playing |
 | `silent` | silent mode | 2026-06-02 13:19 | Dhuhr + 60 min, silent mode on |
+| `needsAttention` | needs attention (the location-off banner) | 2026-06-02 13:19 | Dhuhr + 60 min, location access denied (dropdown only) |
 | `setupNeeded` | setup-needed | 2026-06-02 13:19 | no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min |
 | `stale` | stale | 2026-06-03 00:10 | the expired entry of a timeline that ran out, at 00:10 the next day |
 
@@ -74,7 +75,7 @@ The medium widget in each time of day, from the fixture's idle setup half an hou
 ## Count
 
 - `widget/`: 288 images
-- `menu/`: 60 images
+- `menu/`: 66 images
 - `preview/`: 192 images
 - `phase/`: 36 images
-- total: 576 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.
+- total: 582 images, 22 of them from the Arabic run; `index.json` lists each with its inputs.
