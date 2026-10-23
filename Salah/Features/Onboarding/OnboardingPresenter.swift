@@ -95,27 +95,16 @@ final class OnboardingPresenter {
     // Closed while macOS was asking: nothing more opens.
     guard window != nil, !isFinishing else { return }
     isFinishing = true
-    preferences.onboardingCompleted = true
-    // Choose a City…: Salah stops following the location, so nothing asks for it later and
-    // the Location pane shows the city search.
-    if destination == .location { preferences.useCurrentLocation = false }
+    let pane = OnboardingFlow.complete(
+      at: destination, locationWasDenied: locationWasDenied, preferences: preferences)
     AppWindowCoordinator.shared.endOnboarding()
-    AppWindowCoordinator.shared.open(
-      destination == .location || locationWasDenied ? .location : .today)
+    AppWindowCoordinator.shared.open(pane)
   }
 
-  /// Closing the welcome early counts as done, and as Not Now for what it didn't ask: Salah
-  /// stays in the menu bar and asks for nothing on its own.
+  /// Closing the welcome early leaves it unfinished: Salah stays in the menu bar, asks for
+  /// nothing on its own, and shows the welcome again at the next launch while there's still
+  /// a permission to ask for.
   private func windowWillClose() {
-    if !isFinishing {
-      preferences.notificationPromptDeferred = true
-      if preferences.useCurrentLocation,
-        CLLocationManager().authorizationStatus == .notDetermined
-      {
-        preferences.useCurrentLocation = false
-      }
-    }
-    preferences.onboardingCompleted = true
     if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) }
     closeObserver = nil
     window = nil

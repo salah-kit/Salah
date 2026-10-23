@@ -234,6 +234,9 @@ final class AppWindowCoordinator {
     if let onboardingWindow, ObjectIdentifier(onboardingWindow) == id {
       self.onboardingWindow = nil
     }
+    if let welcome = welcomeAwaitingWindow, ObjectIdentifier(welcome) == id {
+      welcomeAwaitingWindow = nil
+    }
     if let observer = closeObservers.removeValue(forKey: id) {
       NotificationCenter.default.removeObserver(observer)
     }

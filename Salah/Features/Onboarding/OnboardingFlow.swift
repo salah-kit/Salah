@@ -53,6 +53,18 @@ struct OnboardingFlow: Equatable {
     return choosesCity ? .location : .today
   }
 
+  /// Marks the welcome done and returns the pane Salah's window opens on. Choose a City…
+  /// stops Salah following the location, so nothing asks for it later and the Location pane
+  /// shows the city search; a refused location ends there too, to choose a city.
+  @MainActor
+  static func complete(
+    at destination: Destination, locationWasDenied: Bool, preferences: Preferences
+  ) -> WindowPane {
+    preferences.onboardingCompleted = true
+    if destination == .location { preferences.useCurrentLocation = false }
+    return destination == .location || locationWasDenied ? .location : .today
+  }
+
   /// Choose a City… on the location page: no prompt, and the welcome ends on the Location
   /// pane.
   mutating func chooseCity() -> Destination? {

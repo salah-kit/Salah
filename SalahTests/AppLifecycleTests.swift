@@ -335,6 +335,7 @@ struct AppWindowCoordinatorTests {
     #expect(opener.count == 0, "The welcome comes first")
     coordinator.open()
     #expect(opener.count == 0, "Asking for Salah waits while the welcome is decided")
+    #expect(presence.bringForwards == 0)
 
     let welcome = makeWindow()
     coordinator.attachOnboarding(welcome)
@@ -346,7 +347,7 @@ struct AppWindowCoordinatorTests {
 
     coordinator.open()
     #expect(opener.count == 0, "Asking for Salah brings the welcome forward")
-    #expect(welcome.isVisible)
+    #expect(presence.bringForwards == 1)
 
     coordinator.endOnboarding()
     coordinator.open()
