@@ -464,16 +464,17 @@ picks; there's no separate Arabic token file.
 ## Previews
 
 `Previews/` holds a few rendered screens, for reading this folder without Figma. They show
-Apple's system components and are rendered in Apple's fonts, with the Typeface collection
-in its SF modes. They use real times: Makkah on 2 June 2026 with Umm al-Qura, unless the
-image shows otherwise.
+Apple's system components. Most are rendered in Apple's fonts, with the Typeface collection
+in its SF modes; `macos-dropdown.png` and `macos-settings-notifications-dark.png` are
+renders of the macOS page, in its stand-in fonts. They use real times: Makkah on 2 June 2026
+with Umm al-Qura, unless the image shows otherwise.
 
 - `cover.png`: the cover of the library.
 - `iphone-today.png`: Today on iPhone, in English and Arabic, light and dark.
 - `iphone-phases.png`: Today through the five prayer periods, light and dark.
 - `ipad-today.png`: Today on iPad in landscape.
 - `macos-dropdown.png`: the menu-bar dropdown, in English and Arabic, light and dark.
-- `macos-settings-notifications-dark.png`: the Notifications pane of Settings, in dark.
+- `macos-settings-notifications-dark.png`: the Notifications pane of Salah's window, in dark.
 - `macos-desktop-widgets.png`: the desktop widgets, with the Stop face.
 - `watchos.png`: the watch app, in English and Arabic.
 - `ios-home-screen-widgets.png`: Home Screen widgets in light, dark, tinted and Arabic.
