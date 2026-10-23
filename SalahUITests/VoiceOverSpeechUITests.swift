@@ -286,8 +286,8 @@ extension VoiceOverSpeechUITests {
 
   /// Opens Settings on `pane` and turns VoiceOver on, with its cursor moved into the pane.
   ///
-  /// VoiceOver starts on the sidebar, which it reads as one table, "Sidebar table Row 3 of 8
-  /// General selected". The pane is the window's scroll area, after the sidebar and the
+  /// VoiceOver starts on the sidebar, which it reads as one table at the pane's row, such as
+  /// "Sidebar table Row 3 of 8 General selected". The pane is the window's scroll area, after the sidebar and the
   /// splitter; moving into it, VoiceOver says the scroll area and the pane's first heading,
   /// `heading`.
   @available(macOS 27.0, *)
@@ -540,7 +540,7 @@ final class Speech {
   /// open and in front while `isInPlace` holds; turns it off at the test's end, including
   /// when `enable()` gave up but VoiceOver came on later, and attaches the transcript.
   ///
-  /// VoiceOver that comes on starts on the window's first item, where the tests read from;
+  /// VoiceOver that comes on starts on the window's focused item, where the tests read from;
   /// VoiceOver that was on already may be elsewhere. So when VoiceOver is on already, the
   /// test restarts it if a test turned it on in the last half hour, and otherwise skips, as
   /// it's the person's, leaving it as it is. It also skips on a Mac that isn't in English,
