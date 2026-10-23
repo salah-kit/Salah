@@ -130,6 +130,7 @@
 		7358628DC89AD7804F2E6C63 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2216A82E7E46728E75358ADD /* Localizable.xcstrings */; };
 		735DB357CF495A53F207FB98 /* PreferencesDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C64FE4F117F2787B4168C6C /* PreferencesDefaults.swift */; };
 		75336366B5BD71DA482A7594 /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462BA70D21091BA0537CE7F8 /* AppResources.swift */; };
+		76D52BB920FBF3FF5704BA0C /* LocationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26919458978A22A9F5A66E14 /* LocationManagerTests.swift */; };
 		77060FE8B669C4C936857D6D /* SalahDayTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F60BE825CA31CB8FDC59182 /* SalahDayTimeline.swift */; };
 		77927B216CA942CF0F875B28 /* TestEnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646444C8D7F539850A7433B7 /* TestEnvironmentTests.swift */; };
 		781511A2C1B6E25647E66727 /* SalahUI in Frameworks */ = {isa = PBXBuildFile; productRef = 22C945DCF19D86632E72367B /* SalahUI */; };
@@ -358,6 +359,7 @@
 		2216A82E7E46728E75358ADD /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		232BCFB180F83294F5E3E373 /* TestEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEnvironment.swift; sourceTree = "<group>"; };
 		234F045E664BEDC26ECA97E3 /* AppearanceTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceTab.swift; sourceTree = "<group>"; };
+		26919458978A22A9F5A66E14 /* LocationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManagerTests.swift; sourceTree = "<group>"; };
 		2783FA50AE3C8F6C4D95CA30 /* PreferencesNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesNotifications.swift; sourceTree = "<group>"; };
 		28837E4AF194675AAF562303 /* SalahPrayerSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPrayerSource.swift; sourceTree = "<group>"; };
 		28CD928BAA1A94A472FF97BB /* SalahPlayback+Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SalahPlayback+Audio.swift"; sourceTree = "<group>"; };
@@ -606,6 +608,7 @@
 				7118B5FB030156F22424C715 /* DebugLaunchOptionsTests.swift */,
 				FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */,
 				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
+				26919458978A22A9F5A66E14 /* LocationManagerTests.swift */,
 				846F5E4C18EBD81CF9FEE997 /* MenuBarStatusTests.swift */,
 				6A4DC47073A66A3254478106 /* NotificationTargetTests.swift */,
 				52E8485FD3AAA8075FAE085E /* OnboardingFlowTests.swift */,
@@ -1342,6 +1345,7 @@
 				4156357497B7EDBB7A52F25E /* Locale+App.swift in Sources */,
 				7E8145A6AE27CCA48787794F /* LocationFailure.swift in Sources */,
 				2AAA42EA9ADDB619859BAD04 /* LocationManager.swift in Sources */,
+				76D52BB920FBF3FF5704BA0C /* LocationManagerTests.swift in Sources */,
 				F5EE41E3AECFAB16C863B5A2 /* LocationNotifications.swift in Sources */,
 				4A5EBCA7451E9C1B4CC3E079 /* LocationSearchService.swift in Sources */,
 				34792BA3D102FDE809569DE5 /* LocationTab.swift in Sources */,

@@ -47,6 +47,7 @@ final class AlertSettingsUITests: XCTestCase {
     let playing = Self.wait(until: placed.time.addingTimeInterval(20)) {
       AppGroup.playback.flatMap { $0.matches(placed) ? $0 : nil }
     }
+    XCTAssertEqual(AppGroup.placeName, "Makkah", "The app kept the launch's place")
     let playback = try XCTUnwrap(
       playing,
       "No adhan for \(placed.kind) at \(placed.time): \(String(describing: AppGroup.playback))")
@@ -82,6 +83,7 @@ final class AlertSettingsUITests: XCTestCase {
       Date(), placed.time.addingTimeInterval(-10), "The alert was turned off before its minute")
 
     let played = Self.wait(until: placed.time.addingTimeInterval(20)) { AppGroup.playback }
+    XCTAssertEqual(AppGroup.placeName, "Makkah", "The app kept the launch's place")
     XCTAssertNil(played, "Something played after the alert was turned off")
     XCTAssertGreaterThanOrEqual(Date(), placed.time.addingTimeInterval(20))
     XCTAssertTrue(
@@ -181,15 +183,23 @@ nonisolated enum AppGroup {
     }
   }
 
-  /// The settings mirror's alerts (`SalahSettings` in Shared/SalahSettings.swift).
+  /// The settings mirror's place and alerts (`SalahSettings` in Shared/SalahSettings.swift).
   struct Settings: Decodable, Sendable {
     struct Alerts: Decodable, Sendable {
       var alert: Bool
     }
+    var location: PrayerLocation
     var alerts: [PrayerKind: Alerts]
   }
 
   static var playback: Playback? { load("SalahPlayback.v1") }
+
+  /// The name of the place the mirrored settings are for: the launch's, unless the app
+  /// moved to the Mac's own location.
+  static var placeName: String? {
+    let settings: Settings? = load("SalahSettings.v2")
+    return settings?.location.name
+  }
 
   /// Whether the mirror shows `kind`'s at-time alert on; `nil` without a mirror.
   static func alertIsOn(for kind: PrayerKind) -> Bool? {

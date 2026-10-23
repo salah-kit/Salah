@@ -1,9 +1,28 @@
 import CoreLocation
 import OSLog
 
+/// The part of `CLLocationManager` Salah uses. Test seam: tests pass a recorder.
+nonisolated protocol LocationUpdating: AnyObject {
+  var delegate: (any CLLocationManagerDelegate)? { get set }
+  var desiredAccuracy: CLLocationAccuracy { get set }
+  var distanceFilter: CLLocationDistance { get set }
+  var authorizationStatus: CLAuthorizationStatus { get }
+  func requestWhenInUseAuthorization()
+  func startUpdatingLocation()
+  func stopUpdatingLocation()
+  func startMonitoringSignificantLocationChanges()
+  func stopMonitoringSignificantLocationChanges()
+}
+
+extension CLLocationManager: LocationUpdating {}
+
+/// The Mac's current location, while "Use current location" is on. With it off, Salah keeps
+/// the place the user chose: it neither starts location updates nor applies a fix, even when
+/// it has permission (macOS reports the permission to every new location manager).
 @Observable
 final class LocationManager: NSObject, CLLocationManagerDelegate {
-  private let manager = CLLocationManager()
+  private let manager: any LocationUpdating
+  private let preferences: Preferences
   var authorizationStatus: CLAuthorizationStatus = .notDetermined
 
   // Reachability-retry state (approach B): once a reverse-geocode succeeds we
@@ -14,7 +33,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   private var pendingGeocode: CLLocation?
   private var pendingFirstRunFix = false
 
-  override init() {
+  init(preferences: Preferences = .shared, manager: any LocationUpdating = CLLocationManager()) {
+    self.preferences = preferences
+    self.manager = manager
     super.init()
     manager.delegate = self
     manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
@@ -106,11 +127,13 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   @MainActor
-  private func applyResolvedLocation(
+  func applyResolvedLocation(
     latitude: Double, longitude: Double, city: String, state: String,
     country: String, countryName: String, timeZone: String
   ) {
-    Preferences.shared.updateLocation(
+    // A fix that arrives after "Use current location" was turned off keeps the chosen place.
+    guard preferences.useCurrentLocation else { return }
+    preferences.updateLocation(
       latitude: latitude, longitude: longitude,
       city: city, state: state,
       country: country, countryName: countryName,
@@ -128,7 +151,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   /// the next reconnect - no polling, no hot loop.
   @MainActor
   func retryPendingGeocodeOnReconnect() {
-    guard Preferences.shared.useCurrentLocation else { return }
+    guard preferences.useCurrentLocation else { return }
 
     if pendingFirstRunFix || !hasRealFix {
       startUpdating()
@@ -144,7 +167,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
       manager.stopUpdatingLocation()
       manager.stopMonitoringSignificantLocationChanges()
       Task { @MainActor in
-        Preferences.shared.useCurrentLocation = false
+        self.preferences.useCurrentLocation = false
         NotificationCenter.default.post(name: .locationDidFail, object: LocationFailure.denied)
       }
       return
@@ -169,7 +192,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   /// code, and stored time zone are left untouched.
   @MainActor
   func refreshGeocodedLabels(in locale: Locale) async {
-    let prefs = Preferences.shared
+    let prefs = preferences
     let lat = prefs.latitude
     let lng = prefs.longitude
     guard lat != 0 || lng != 0 else { return }
@@ -202,8 +225,10 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
-  private func handleAuthorizationStatus(_ status: CLAuthorizationStatus) {
+  /// Records the permission, and acts on it only while "Use current location" is on.
+  func handleAuthorizationStatus(_ status: CLAuthorizationStatus) {
     authorizationStatus = status
+    guard preferences.useCurrentLocation else { return }
     if status == .authorized || status == .authorizedAlways {
       manager.startUpdatingLocation()
       manager.startMonitoringSignificantLocationChanges()
@@ -217,7 +242,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   private func disableCurrentLocation(failure: LocationFailure) {
     manager.stopUpdatingLocation()
     manager.stopMonitoringSignificantLocationChanges()
-    Preferences.shared.useCurrentLocation = false
+    preferences.useCurrentLocation = false
     NotificationCenter.default.post(name: .locationDidFail, object: failure)
   }
 
