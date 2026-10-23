@@ -443,6 +443,11 @@ struct MenuHero: View {
       footer(
         symbol: "speaker.wave.2.fill",
         text: localizedString("menu.hero.duaFollows", locale: display.locale))
+    } else if playback.slot != .alert, let offset = playback.offsetMinutes {
+      // A reminder says how far it is from its prayer: "10m before".
+      footer(
+        symbol: "alarm",
+        text: display.text.offsetPhrase(offset, before: playback.slot == .preReminder))
     }
   }
 
