@@ -20,7 +20,7 @@ nonisolated enum SalahWidgetConstants {
   static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
   /// The settings mirror (`SalahSettings`). The version is in the key: a change to the
   /// value's shape takes a new key.
-  static let settingsKey = "SalahSettings.v1"
+  static let settingsKey = "SalahSettings.v2"
   /// What's playing (`SalahPlayback`), or nothing.
   static let playbackKey = "SalahPlayback.v1"
   /// The widget's Stop button posts this signal; the running app stops playback.

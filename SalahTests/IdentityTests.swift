@@ -29,7 +29,7 @@ struct IdentityTests {
       SalahWidgetConstants.prayerTimesWidgetKind == "io.github.salah-kit.Salah.widgets.prayerTimes")
     #expect(SalahWidgetConstants.stopAudioSignal == "io.github.salah-kit.Salah.widget.stopAudio")
     #expect(DarwinSignal.stopAudio.name == SalahWidgetConstants.stopAudioSignal)
-    #expect(SalahWidgetConstants.settingsKey == "SalahSettings.v1")
+    #expect(SalahWidgetConstants.settingsKey == "SalahSettings.v2")
     #expect(SalahWidgetConstants.playbackKey == "SalahPlayback.v1")
     #expect(SharedValue.settings.appGroup == SalahWidgetConstants.appGroupID)
     #expect(SharedValue.settings.key == SalahWidgetConstants.settingsKey)

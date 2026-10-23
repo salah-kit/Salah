@@ -104,17 +104,34 @@ struct SettingsMirrorTests {
     #expect(header.hijriMonth == "Dhuʻl-Hijjah" && header.hijriYear == "1447 H")
   }
 
-  /// The location's name and the theme come from the preferences.
-  @Test func locationAndThemeComeFromPreferences() throws {
+  /// The location's name and the appearance come from the preferences.
+  @Test func locationAndAppearanceComeFromPreferences() throws {
     let scratch = ScratchDefaults()
     let preferences = Preferences(defaults: scratch.defaults)
     preferences.city = ""
     preferences.countryName = "Saudi Arabia"
-    preferences.widgetThemeID = "dawn"
+    preferences.appearance = .dark
+    preferences.followsTimeOfDay = false
     let settings = preferences.mirroredSettings
     #expect(settings.location.name == "Saudi Arabia")
     #expect(settings.location.timeZone.identifier == "Asia/Riyadh")
-    #expect(settings.theme == SalahWidgetTheme.dawn)
+    #expect(settings.appearance == .dark)
+    #expect(!settings.followsTimeOfDay)
+  }
+
+  /// The retired widget themes' Always Dark carries over to the appearance, and their keys
+  /// go.
+  @Test func theRetiredThemeAppearanceCarriesOver() {
+    let scratch = ScratchDefaults()
+    scratch.defaults.set("alwaysDark", forKey: "salah.widgetAppearance")
+    scratch.defaults.set("dawn", forKey: "salah.widgetThemeID")
+    let preferences = Preferences(defaults: scratch.defaults)
+    #expect(preferences.appearance == .dark)
+    #expect(preferences.followsTimeOfDay, "On by default")
+    #expect(scratch.defaults.object(forKey: "salah.widgetThemeID") == nil)
+    #expect(scratch.defaults.object(forKey: "salah.widgetAppearance") == nil)
+    // Saved once, it stays after the retired key is gone.
+    #expect(Preferences(defaults: scratch.defaults).appearance == .dark)
   }
 
   // MARK: - Reminder summaries
@@ -243,7 +260,7 @@ struct SettingsMirrorTests {
   /// What plays reaches the widget as `SalahPlayback`; the playing banner's title and
   /// subtitle per slot are the ones the app's snapshot builder wrote before the move.
   @Test(arguments: [
-    PlayingCase(slot: "alert", offset: nil, title: "Playing Adhan", subtitleSuffix: "TIME"),
+    PlayingCase(slot: "alert", offset: nil, title: "Playing adhan", subtitleSuffix: "TIME"),
     PlayingCase(
       dua: true, slot: "alert", offset: nil, title: "Playing Du’ā’", subtitleSuffix: "TIME"),
     PlayingCase(

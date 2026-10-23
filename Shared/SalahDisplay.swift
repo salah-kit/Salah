@@ -21,7 +21,7 @@ nonisolated struct SalahDisplay: Sendable {
 
   /// The moment shown.
   var date: Date
-  /// The mirrored settings: language, theme, silent mode, Hijri offset, alerts.
+  /// The mirrored settings: language, appearance, silent mode, Hijri offset, alerts.
   var settings: SalahSettings
   /// The listed day: the owning day that is the moment's civil date in the location's
   /// zone, or why it can't be listed.
@@ -34,13 +34,17 @@ nonisolated struct SalahDisplay: Sendable {
   var names: PrayerNames
   /// The header's dates and place.
   var header: SalahHeader
+  /// The day after the listed one, which the widgets list after Isha; `nil` when unknown.
+  var nextDay: PrayerDay?
 
   /// Builds a display from its parts; the names and the header follow the settings
   /// unless given (previews give their own).
   init(
     date: Date, settings: SalahSettings, day: PrayerDayAvailability, state: ScheduleState,
-    playback: SalahPlayback? = nil, names: PrayerNames? = nil, header: SalahHeader? = nil
+    playback: SalahPlayback? = nil, names: PrayerNames? = nil, header: SalahHeader? = nil,
+    nextDay: PrayerDay? = nil
   ) {
+    self.nextDay = nextDay
     self.date = date
     self.settings = settings
     self.day = day
@@ -56,11 +60,18 @@ nonisolated struct SalahDisplay: Sendable {
     date: Date, settings: SalahSettings, schedule: PrayerSchedule,
     playback: SalahPlayback? = nil
   ) {
+    let day = schedule.day(containing: date)
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = settings.location.timeZone
+    let tomorrow = day.day.flatMap { listed in
+      calendar.date(byAdding: .day, value: 1, to: listed.day.start(in: settings.location.timeZone))
+    }
     self.init(
-      date: date, settings: settings, day: schedule.day(containing: date),
+      date: date, settings: settings, day: day,
       state: schedule.state(
         at: date, through: date.addingTimeInterval(Self.lookahead), policy: Self.policy),
-      playback: playback)
+      playback: playback,
+      nextDay: tomorrow.flatMap { schedule.day(containing: $0).day })
   }
 
   // MARK: - Text
@@ -69,7 +80,12 @@ nonisolated struct SalahDisplay: Sendable {
   var isRightToLeft: Bool { locale.language.characterDirection == .rightToLeft }
   var text: SalahText { SalahText(locale: locale, timeZone: settings.location.timeZone) }
   var labels: SalahWidgetLabels { text.labels }
-  var theme: SalahWidgetTheme { settings.theme }
+  /// The time of day the surfaces draw in: the prayer period now, or the neutral sky when
+  /// Salah doesn't follow the time of day.
+  var phase: SalahPhase {
+    guard settings.followsTimeOfDay else { return .neutral }
+    return SalahPhase.at(date, events: listedDay?.events ?? [])
+  }
 
   /// The known state, or `nil` when the schedule can't establish one.
   var prayerState: PrayerState? { state.prayerState }

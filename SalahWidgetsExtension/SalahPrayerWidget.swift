@@ -96,15 +96,15 @@ struct SalahPrayerWidgetEntryView: View {
   var body: some View {
     switch entry.content {
     case .setupNeeded:
-      // No settings yet, so no language or theme: the device's language, Nocturne.
-      SalahWidgetShell(theme: .nocturne, tone: .normal) { _ in
+      // No settings yet, so no language or appearance: the device's, on the neutral sky.
+      SalahWidgetShell(phase: .neutral) {
         WidgetMessageContent(systemImage: "moon.stars", message: Text("widget.openToSetUp"))
           .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
       }
     case .expired(let settings):
       // The timeline ran out before WidgetKit asked for another: no countdown that
       // would be stale. Opening the app asks WidgetKit for a new timeline.
-      SalahWidgetShell(settings: settings) { _ in
+      SalahWidgetShell(settings: settings, phase: .neutral) {
         WidgetMessageContent(
           systemImage: "arrow.clockwise",
           message: Text(verbatim: settings.labels.openToUpdate)
@@ -112,11 +112,11 @@ struct SalahPrayerWidgetEntryView: View {
         .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
       }
     case .schedule(let display):
-      SalahWidgetShell(display: display) { _ in
+      SalahWidgetShell(settings: display.settings, phase: display.phase) {
         switch display.widgetFace {
         case .stop:
           // While audio plays, the entire widget is the Stop control, even when
-          // the surrounding schedule is incomplete. It has no Settings link.
+          // the surrounding schedule is incomplete. It has no link.
           if let stop = WidgetStopContent(display: display, size: size) {
             Button(intent: StopSalahAudioIntent()) { stop }
               .buttonStyle(.plain)
@@ -125,8 +125,8 @@ struct SalahPrayerWidgetEntryView: View {
         case .unavailable:
           // The schedule knows nothing usable at this moment.
           WidgetMessageContent(
-            systemImage: "exclamationmark.triangle",
-            message: Text(verbatim: display.labels.timesUnavailable)
+            systemImage: "exclamationmark.triangle.fill",
+            message: Text(verbatim: display.labels.timesUnavailable), phase: display.phase
           )
           .widgetURL(SalahWidgetConstants.settingsDeepLinkURL)
         case .schedule:
@@ -140,77 +140,40 @@ struct SalahPrayerWidgetEntryView: View {
   private var size: SalahWidgetSize { family.salahSize }
 }
 
-/// The container around every face: the themed backdrop as the widget's container
-/// background, the locale and layout direction, and a pinned theme appearance.
+/// The container around every face: the time of day's sky as the widget's container
+/// background, so the system can remove it in accented and vibrant rendering; the locale
+/// and layout direction; and the appearance the settings choose.
 private struct SalahWidgetShell<Content: View>: View {
-  let theme: SalahWidgetTheme
-  let tone: SalahWidgetTone
-  var locale: Locale?
-  var isRightToLeft = false
-  @ViewBuilder let content: (SalahWidgetColors) -> Content
-  @Environment(\.colorScheme) private var scheme
-  /// The direction the container background is drawn in: the system's, not the face's.
-  @Environment(\.layoutDirection) private var backgroundDirection
+  var settings: SalahSettings?
+  let phase: SalahPhase
+  @ViewBuilder let content: () -> Content
 
   init(
-    theme: SalahWidgetTheme, tone: SalahWidgetTone, locale: Locale? = nil,
-    isRightToLeft: Bool = false, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
+    settings: SalahSettings? = nil, phase: SalahPhase, @ViewBuilder content: @escaping () -> Content
   ) {
-    self.theme = theme
-    self.tone = tone
-    self.locale = locale
-    self.isRightToLeft = isRightToLeft
+    self.settings = settings
+    self.phase = phase
     self.content = content
   }
 
-  init(
-    display: SalahDisplay, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
-  ) {
-    self.init(
-      theme: display.theme, tone: display.backgroundTone, locale: display.locale,
-      isRightToLeft: display.isRightToLeft, content: content)
-  }
-
-  init(
-    settings: SalahSettings, @ViewBuilder content: @escaping (SalahWidgetColors) -> Content
-  ) {
-    self.init(
-      theme: settings.theme, tone: settings.silentMode ? .silent : .normal,
-      locale: settings.locale,
-      isRightToLeft: settings.locale.language.characterDirection == .rightToLeft,
-      content: content)
-  }
-
   var body: some View {
-    let colors = theme.colors(for: scheme)
-    // The face's size and coordinate space, which its inks resolve against.
-    GeometryReader { proxy in
-      localized(content(colors))
-        .environment(
-          \.salahWidgetBackdrop,
-          SalahWidgetBackdrop(
-            colors: colors, tone: tone, size: proxy.size,
-            isRightToLeft: backgroundDirection == .rightToLeft)
-        )
-        .frame(width: proxy.size.width, height: proxy.size.height)
-        .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
-    }
-    // Honor a pinned theme appearance (Always Dark/Light) so the system colors
-    // match the themed background; .system passes through unchanged.
-    .salahColorScheme(theme.forcedColorScheme)
-    .containerBackground(for: .widget) {
-      SalahWidgetBackground(tone: tone, colors: colors)
-    }
+    localized(content())
+      .salahColorScheme(settings?.appearance.colorScheme)
+      .containerBackground(for: .widget) {
+        WidgetSky(phase: phase)
+          .salahColorScheme(settings?.appearance.colorScheme)
+      }
   }
 
-  /// The face in the user's language and direction; the setup face keeps the
-  /// device's.
+  /// The face in the user's language and direction; the setup face keeps the device's.
   @ViewBuilder
   private func localized(_ view: Content) -> some View {
-    if let locale {
+    if let settings {
       view
-        .environment(\.locale, locale)
-        .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
+        .environment(\.locale, settings.locale)
+        .environment(
+          \.layoutDirection,
+          settings.locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
     } else {
       view
     }

@@ -60,9 +60,11 @@ enum BaselineIndex {
     case .preview:
       moment = BaselinePipeline.previewNow
       setup = "WidgetPreviewData.\(baseline.state)"
-    case .theme:
-      moment = BaselinePipeline.previewNow
-      setup = "WidgetPreviewData.idle with the \(baseline.state) theme"
+    case .phase:
+      moment = BaselinePipeline.moment(for: SalahPhase(rawValue: baseline.state)!)
+      setup =
+        baseline.state == "neutral"
+        ? "idle, with the time of day off" : "idle, in the \(baseline.state) period"
     }
     return Entry(
       path: baseline.path, surface: baseline.surface.rawValue, state: baseline.state,
@@ -168,10 +170,10 @@ enum BaselineIndex {
       )
     }
     add()
-    add("## `WidgetPreviewContainer` scenarios: `preview/` and `theme/`")
+    add("## `WidgetPreviewContainer` scenarios: `preview/`")
     add()
     add(
-      "The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Features/Widgets/WidgetPreviewContainer.swift`), with their clock fixed at \(clock(BaselinePipeline.previewNow)). They place prayers at minute offsets from that clock and use the previews' hand-written names, which differ from the app's catalog (French Sunrise is “Lever”). Files are `preview/<scenario>-<family>-<language>-<appearance>.png`, and the theme presets at medium size, as their previews show them, are `theme/<preset>-medium-<language>-<appearance>.png`."
+      "The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Features/Widgets/WidgetPreviewContainer.swift`), with their clock fixed at \(clock(BaselinePipeline.previewNow)). They place prayers at minute offsets from that clock and use the previews' hand-written names, which differ from the app's catalog (French Sunrise is “Lever”). Files are `preview/<scenario>-<family>-<language>-<appearance>.png`."
     )
     add()
     add("| Scenario | Shows |")
@@ -180,8 +182,11 @@ enum BaselineIndex {
       add("| `\(scenario.rawValue)` | \(previewDescriptions[scenario]!) |")
     }
     add()
+    add("## Times of day: `phase/`")
+    add()
     add(
-      "Theme presets: \(ThemePreset.allCases.map { "`\($0.rawValue)`" }.joined(separator: ", ")).")
+      "The medium widget in each time of day, from the fixture's idle setup half an hour or an hour into the period, and in the neutral sky with the time of day off. Files are `phase/<phase>-medium-<language>-<appearance>.png`: \(SalahPhase.allCases.map { "`\($0.rawValue)`" }.joined(separator: ", "))."
+    )
     add()
     add("## Count")
     add()

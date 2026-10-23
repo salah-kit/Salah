@@ -12,8 +12,9 @@ nonisolated struct Baseline: Sendable, Hashable, Codable, CustomTestStringConver
     case menu
     /// A `WidgetPreviewContainer` scenario (`WidgetPreviewData`).
     case preview
-    /// A `WidgetPreviewContainer` theme preset (the "Presets" previews).
-    case theme
+    /// The medium widget in each time of day, and in the neutral sky when Salah doesn't
+    /// follow the time of day.
+    case phase
   }
 
   enum Family: String, Sendable, Codable, CaseIterable { case small, medium, large }
@@ -117,9 +118,6 @@ nonisolated enum PreviewScenario: String, Sendable, CaseIterable {
 }
 
 /// The theme presets the "Presets" previews show (`SalahWidgetTheme.allPresets`).
-nonisolated enum ThemePreset: String, Sendable, CaseIterable {
-  case nocturne, dawn, oasis, ink, highContrast
-}
 
 nonisolated enum BaselineCatalog {
   /// The images this test process renders: those whose process languages are its own.
@@ -162,10 +160,10 @@ nonisolated enum BaselineCatalog {
                 appearance: appearance))
           }
         }
-        for preset in ThemePreset.allCases {
+        for phase in SalahPhase.allCases {
           baselines.append(
             Baseline(
-              surface: .theme, state: preset.rawValue, family: .medium, language: language,
+              surface: .phase, state: phase.rawValue, family: .medium, language: language,
               appearance: appearance))
         }
       }

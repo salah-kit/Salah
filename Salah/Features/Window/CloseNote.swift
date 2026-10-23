@@ -1,5 +1,6 @@
 import AppKit
 import OSLog
+import SalahUI
 import SwiftUI
 
 /// Shows, once, the note that hangs from Salah's menu bar item the first time its last window

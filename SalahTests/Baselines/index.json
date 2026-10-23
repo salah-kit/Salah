@@ -904,66 +904,79 @@
       "appearance" : "light",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-en-light.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-en-light.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-en-light.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-en-light.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-en-light.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "light",
+      "family" : "medium",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
@@ -1869,66 +1882,79 @@
       "appearance" : "dark",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-en-dark.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-en-dark.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-en-dark.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-en-dark.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "en",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-en-dark.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "medium",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
@@ -2834,66 +2860,79 @@
       "appearance" : "light",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-ar-light.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-ar-light.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-ar-light.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-ar-light.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-ar-light.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "light",
+      "family" : "medium",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
@@ -3799,66 +3838,79 @@
       "appearance" : "dark",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-ar-dark.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-ar-dark.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-ar-dark.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-ar-dark.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "ar",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-ar-dark.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "medium",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
@@ -4764,66 +4816,79 @@
       "appearance" : "light",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-fr-light.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-fr-light.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-fr-light.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-fr-light.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "light",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-fr-light.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "light",
+      "family" : "medium",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
@@ -5729,66 +5794,79 @@
       "appearance" : "dark",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/nocturne-medium-fr-dark.png",
+      "moment" : "2026-06-02T04:41:00+03:00",
+      "path" : "phase/fajr-medium-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the nocturne theme",
-      "state" : "nocturne",
-      "surface" : "theme"
+      "setup" : "idle, in the fajr period",
+      "state" : "fajr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/dawn-medium-fr-dark.png",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/dhuhr-medium-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the dawn theme",
-      "state" : "dawn",
-      "surface" : "theme"
+      "setup" : "idle, in the dhuhr period",
+      "state" : "dhuhr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/oasis-medium-fr-dark.png",
+      "moment" : "2026-06-02T16:05:00+03:00",
+      "path" : "phase/asr-medium-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the oasis theme",
-      "state" : "oasis",
-      "surface" : "theme"
+      "setup" : "idle, in the asr period",
+      "state" : "asr",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/ink-medium-fr-dark.png",
+      "moment" : "2026-06-02T19:30:00+03:00",
+      "path" : "phase/maghrib-medium-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the ink theme",
-      "state" : "ink",
-      "surface" : "theme"
+      "setup" : "idle, in the maghrib period",
+      "state" : "maghrib",
+      "surface" : "phase"
     },
     {
       "appearance" : "dark",
       "family" : "medium",
       "language" : "fr",
-      "moment" : "2026-06-02T16:00:00+03:00",
-      "path" : "theme/highContrast-medium-fr-dark.png",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "phase/isha-medium-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
-      "setup" : "WidgetPreviewData.idle with the highContrast theme",
-      "state" : "highContrast",
-      "surface" : "theme"
+      "setup" : "idle, in the isha period",
+      "state" : "isha",
+      "surface" : "phase"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "medium",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "phase/neutral-medium-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "idle, with the time of day off",
+      "state" : "neutral",
+      "surface" : "phase"
     }
   ],
   "fixture" : "Makkah (21.4167, 39.8167), Umm al-Qura, Shafi, middle of the night; Fajr 30-min before-reminder; Maghrib 10-min before and 5-min after reminders",

@@ -419,7 +419,7 @@ struct DayPhaseTests {
   }
 
   @Test func eachPrayerOpensItsTimeOfDayAfterANight() {
-    let segments = DayPhase.segments(of: day, from: start, to: end)
+    let segments = SalahPhase.segments(of: day, from: start, to: end)
     #expect(segments.map(\.phase) == [.isha, .fajr, .dhuhr, .asr, .maghrib, .isha])
     #expect(segments.first?.start == start)
     #expect(segments.last?.end == end)
@@ -429,7 +429,7 @@ struct DayPhaseTests {
 
   @Test func dhuhrOpensTheDayWithoutASunrise() {
     let events = day.filter { $0.kind != .sunrise }
-    let segments = DayPhase.segments(of: events, from: start, to: end)
+    let segments = SalahPhase.segments(of: events, from: start, to: end)
     #expect(segments.map(\.phase) == [.isha, .fajr, .dhuhr, .asr, .maghrib, .isha])
     #expect(segments[2].start == Fixture.event(.dhuhr).time)
   }
@@ -438,15 +438,15 @@ struct DayPhaseTests {
     // A Fajr before midnight: the day starts at dawn, as the next prayer's sky does.
     let earlyFajr = Fixture.event(.fajr, dayOffset: -1)
     let events = [earlyFajr] + day.filter { $0.kind != .fajr }
-    let segments = DayPhase.segments(of: events, from: start, to: end)
+    let segments = SalahPhase.segments(of: events, from: start, to: end)
     #expect(segments.first?.phase == .fajr)
-    #expect(DayPhase.phase(at: start, events: events) == .fajr)
+    #expect(SalahPhase.at(start, events: events) == .fajr)
   }
 
   @Test func thePhaseAtAMomentIsTheLastOneOpened() {
-    #expect(DayPhase.phase(at: Fixture.date(3, 0), events: day) == .isha)
-    #expect(DayPhase.phase(at: Fixture.date(13, 19), events: day) == .dhuhr)
-    #expect(DayPhase.phase(at: Fixture.date(16, 0), events: day) == .asr)
-    #expect(DayPhase.phase(at: Fixture.date(21, 0), events: day) == .isha)
+    #expect(SalahPhase.at(Fixture.date(3, 0), events: day) == .isha)
+    #expect(SalahPhase.at(Fixture.date(13, 19), events: day) == .dhuhr)
+    #expect(SalahPhase.at(Fixture.date(16, 0), events: day) == .asr)
+    #expect(SalahPhase.at(Fixture.date(21, 0), events: day) == .isha)
   }
 }

@@ -52,9 +52,9 @@ The states the widget and the menu bar show, built from the fixture by the app's
 | `setupNeeded` | setup-needed | 2026-06-02 13:19 | no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min |
 | `stale` | stale | 2026-06-03 00:10 | the expired entry of a timeline that ran out, at 00:10 the next day |
 
-## `WidgetPreviewContainer` scenarios: `preview/` and `theme/`
+## `WidgetPreviewContainer` scenarios: `preview/`
 
-The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Features/Widgets/WidgetPreviewContainer.swift`), with their clock fixed at 2026-06-02 16:00. They place prayers at minute offsets from that clock and use the previews' hand-written names, which differ from the app's catalog (French Sunrise is “Lever”). Files are `preview/<scenario>-<family>-<language>-<appearance>.png`, and the theme presets at medium size, as their previews show them, are `theme/<preset>-medium-<language>-<appearance>.png`.
+The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Features/Widgets/WidgetPreviewContainer.swift`), with their clock fixed at 2026-06-02 16:00. They place prayers at minute offsets from that clock and use the previews' hand-written names, which differ from the app's catalog (French Sunrise is “Lever”). Files are `preview/<scenario>-<family>-<language>-<appearance>.png`.
 
 | Scenario | Shows |
 |---|---|
@@ -67,12 +67,14 @@ The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Fea
 | `silent` | The normal day in silent mode. |
 | `playing` | Maghrib's adhan playing: the whole widget is the stop control. |
 
-Theme presets: `nocturne`, `dawn`, `oasis`, `ink`, `highContrast`.
+## Times of day: `phase/`
+
+The medium widget in each time of day, from the fixture's idle setup half an hour or an hour into the period, and in the neutral sky with the time of day off. Files are `phase/<phase>-medium-<language>-<appearance>.png`: `fajr`, `dhuhr`, `asr`, `maghrib`, `isha`, `neutral`.
 
 ## Count
 
 - `widget/`: 216 images
 - `menu/`: 60 images
 - `preview/`: 144 images
-- `theme/`: 30 images
-- total: 450 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.
+- `phase/`: 36 images
+- total: 456 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.

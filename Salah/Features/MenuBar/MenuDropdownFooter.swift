@@ -1,16 +1,18 @@
+import SalahUI
 import SwiftUI
 
-/// The dropdown's action bar: the Silent-mode toggle, then Open Salah, which opens Salah's
-/// window, and Quit Salah, the power button. Location lives in the header (matching the
-/// widget), so the footer is controls only. Each control shows the pointer cursor and a
-/// tooltip. ⌘, opens the window at General, as it does from the window.
+/// The dropdown's footer: the Silent toggle, then Open Salah, which opens Salah's window,
+/// and Quit Salah, the power button. Each control shows the pointer cursor and a tooltip.
+/// ⌘, opens the window at General, as it does from the window.
 struct MenuDropdownFooter: View {
   let display: SalahDisplay
-  let colors: SalahWidgetColors
+  let colors: SalahColors
   let onToggleSilent: () -> Void
   let onOpenSalah: () -> Void
   let onOpenSettings: () -> Void
   let onQuit: () -> Void
+
+  private var palette: SalahPalette { colors.palette }
 
   var body: some View {
     HStack(spacing: 6) {
@@ -19,6 +21,7 @@ struct MenuDropdownFooter: View {
       openSalahButton
       quitButton
     }
+    .padding(.top, 2)
     .background {
       Button(action: onOpenSettings) { EmptyView() }
         .keyboardShortcut(",", modifiers: .command)
@@ -35,21 +38,19 @@ struct MenuDropdownFooter: View {
     Button(action: onToggleSilent) {
       HStack(spacing: 5) {
         Image(systemName: silentMode ? "bell.slash.fill" : "bell")
-          .salahInk(silentInk.glyph)
+          .font(.system(size: 10))
         Text(verbatim: display.labels.silent)
-          .salahInk(silentInk)
+          .font(.caption)
       }
-      .font(.caption.weight(.medium))
-      .padding(.horizontal, 8)
+      .foregroundStyle((silentMode ? palette.accentText : palette.labelSecondary).color)
+      .padding(.leading, 9)
+      .padding(.trailing, 10)
       .padding(.vertical, 4)
       .background {
         if silentMode {
-          Capsule().fill(colors.accent.opacity(0.18))
-        }
-      }
-      .overlay {
-        if silentMode {
-          Capsule().strokeBorder(colors.accent.opacity(0.45), lineWidth: 0.75)
+          Capsule().fill(palette.accentSubtle.color)
+        } else {
+          Capsule().strokeBorder(palette.separator.color, lineWidth: 1)
         }
       }
       .contentShape(Capsule())
@@ -61,27 +62,20 @@ struct MenuDropdownFooter: View {
     .accessibilityAddTraits(silentMode ? .isSelected : [])
   }
 
-  private var silentInk: SalahWidgetInk {
-    silentMode ? .primary.onAccent(opacity: 0.18) : .secondary
-  }
-
-  /// Open Salah, a pill in the theme's accent. Its fill is the 18% accent the contrast
-  /// tests check its ink over, as Silent's when it's on.
   private var openSalahButton: some View {
     let title = localizedString("menu.openSalah", locale: display.locale)
-    let ink = SalahWidgetInk.primary.onAccent(opacity: 0.18)
     return Button(action: onOpenSalah) {
       HStack(spacing: 5) {
         Image(systemName: "macwindow")
-          .salahInk(ink.glyph)
+          .font(.system(size: 10))
         Text(verbatim: title)
-          .salahInk(ink)
+          .font(.caption)
       }
-      .font(.caption.weight(.medium))
-      .padding(.horizontal, 9)
+      .foregroundStyle(palette.labelOnAccent.color)
+      .padding(.leading, 9)
+      .padding(.trailing, 10)
       .padding(.vertical, 4)
-      .background(Capsule().fill(colors.accent.opacity(0.18)))
-      .overlay(Capsule().strokeBorder(colors.accent.opacity(0.45), lineWidth: 0.75))
+      .background(Capsule().fill(palette.accentFill.color))
       .contentShape(Capsule())
     }
     .buttonStyle(.plain)
@@ -96,8 +90,9 @@ struct MenuDropdownFooter: View {
     return Button(action: onQuit) {
       Image(systemName: "power")
         .font(.system(size: 13))
-        .salahInk(.secondary.glyph)
-        .frame(width: 24, height: 24)
+        .foregroundStyle(palette.labelSecondary.color)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
         .contentShape(Rectangle())
     }
     .buttonStyle(.plain)

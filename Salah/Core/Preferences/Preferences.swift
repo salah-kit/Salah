@@ -380,65 +380,37 @@ final class Preferences {
     defaults.synchronize()
   }
 
-  // MARK: - Widget Appearance
+  // MARK: - Appearance
 
-  /// Selected widget theme: a preset id ("nocturne", "dawn", …) or "custom".
-  /// Like every state-affecting preference, the didSet persists *and* emits its
-  /// refresh effect (`.display`) - so tabs never wire this up by hand.
-  var widgetThemeID: String = "nocturne" {
+  /// Light, dark, or the system's appearance, for Salah's window, dropdown and widgets.
+  var appearance: SalahAppearance = .system {
     didSet {
-      defaults.set(widgetThemeID, forKey: Key.widgetThemeID)
-      requestRefresh(.display)
-    }
-  }
-  /// Custom-theme accent (used when `widgetThemeID == "custom"`).
-  var widgetCustomAccent: SalahColorSpec = SalahWidgetTheme.nocturne.dark.accent {
-    didSet {
-      storeColorSpec(widgetCustomAccent, forKey: Key.widgetCustomAccent)
-      requestRefresh(.display)
-    }
-  }
-  /// Custom-theme primary (the next-prayer / countdown color).
-  var widgetCustomPrimary: SalahColorSpec = SalahWidgetTheme.nocturne.dark.primary {
-    didSet {
-      storeColorSpec(widgetCustomPrimary, forKey: Key.widgetCustomPrimary)
-      requestRefresh(.display)
-    }
-  }
-  var widgetCustomBase: SalahWidgetBackgroundBase = .midnight {
-    didSet {
-      defaults.set(widgetCustomBase.rawValue, forKey: Key.widgetCustomBase)
-      requestRefresh(.display)
-    }
-  }
-  var widgetAppearance: SalahWidgetAppearance = .system {
-    didSet {
-      defaults.set(widgetAppearance.rawValue, forKey: Key.widgetAppearance)
+      defaults.set(appearance.rawValue, forKey: Key.appearance)
       requestRefresh(.display)
     }
   }
 
-  /// The theme the widget snapshot should carry, resolved from the selection.
-  /// Both the snapshot builder and the in-app live preview read this, so they
-  /// render the identical theme.
-  var resolvedWidgetTheme: SalahWidgetTheme {
-    if widgetThemeID == "custom" {
-      return .custom(
-        accent: widgetCustomAccent, primary: widgetCustomPrimary,
-        base: widgetCustomBase, appearance: widgetAppearance)
+  /// Whether the sky follows the time of day; the neutral sky when it doesn't.
+  var followsTimeOfDay: Bool = true {
+    didSet {
+      defaults.set(followsTimeOfDay, forKey: Key.followsTimeOfDay)
+      requestRefresh(.display)
     }
-    return SalahWidgetTheme.preset(id: widgetThemeID) ?? .nocturne
   }
 
-  private func storeColorSpec(_ spec: SalahColorSpec, forKey key: String) {
-    if let data = try? JSONEncoder().encode(spec) { defaults.set(data, forKey: key) }
-  }
-  private func loadColorSpec(forKey key: String, default fallback: SalahColorSpec) -> SalahColorSpec
-  {
-    guard let data = defaults.data(forKey: key),
-      let spec = try? JSONDecoder().decode(SalahColorSpec.self, from: data)
-    else { return fallback }
-    return spec
+  /// The stored appearance, or the one the retired widget themes pinned (Always Dark or
+  /// Always Light) before there was one.
+  private static func loadAppearance(from defaults: UserDefaults) -> SalahAppearance {
+    if let raw = defaults.string(forKey: Key.appearance),
+      let stored = SalahAppearance(rawValue: raw)
+    {
+      return stored
+    }
+    switch defaults.string(forKey: Key.retiredWidgetAppearance) {
+    case "alwaysDark": return .dark
+    case "alwaysLight": return .light
+    default: return .system
+    }
   }
 
   // MARK: - Init
@@ -514,17 +486,9 @@ final class Preferences {
       ?? .system
     applyAppleLanguagesOverride()
 
-    widgetThemeID = defaults.string(forKey: Key.widgetThemeID) ?? "nocturne"
-    widgetCustomAccent = loadColorSpec(
-      forKey: Key.widgetCustomAccent, default: SalahWidgetTheme.nocturne.dark.accent)
-    widgetCustomPrimary = loadColorSpec(
-      forKey: Key.widgetCustomPrimary, default: SalahWidgetTheme.nocturne.dark.primary)
-    widgetCustomBase =
-      SalahWidgetBackgroundBase(rawValue: defaults.string(forKey: Key.widgetCustomBase) ?? "")
-      ?? .midnight
-    widgetAppearance =
-      SalahWidgetAppearance(rawValue: defaults.string(forKey: Key.widgetAppearance) ?? "")
-      ?? .system
+    appearance = Self.loadAppearance(from: defaults)
+    followsTimeOfDay = defaults.bool(forKey: Key.followsTimeOfDay)
+    Key.retiredWidgetTheme.forEach(defaults.removeObject(forKey:))
 
     enforceVisibleMenuBarContent()
 

@@ -1,36 +1,29 @@
 import SalahCore
 import SwiftUI
 
-/// Renders the shared widget content at the measured normal desktop reference size.
-/// It uses the same `WidgetContentView`, theme resolution and `SalahWidgetBackground`
-/// as the extension, clipped to a rounded rectangle. The extension takes its actual
-/// bounds from WidgetKit; those can vary by host and state. Used by the Appearance
-/// tab, design verification and SalahTests.
+/// Renders the shared widget content at the measured normal desktop reference size, on the
+/// time of day's sky and clipped to the widget's shape, in the appearance the settings
+/// choose. The extension takes its actual bounds from WidgetKit; those can vary by host and
+/// state. Used by the Appearance pane, design verification and SalahTests.
 struct WidgetPreviewContainer: View {
   let display: SalahDisplay
   let size: SalahWidgetSize
 
-  @Environment(\.colorScheme) private var scheme
-
   var body: some View {
-    let colors = display.theme.colors(for: scheme)
     let pointSize = size.desktopPointSize
+    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
     content
-      .environment(
-        \.salahWidgetBackdrop,
-        SalahWidgetBackdrop(
-          colors: colors, tone: display.backgroundTone, size: pointSize,
-          isRightToLeft: display.isRightToLeft)
-      )
       .frame(width: pointSize.width, height: pointSize.height)
-      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
       .background {
-        SalahWidgetBackground(tone: display.backgroundTone, colors: colors)
+        WidgetSky(
+          phase: display.widgetFace == .schedule || display.widgetFace == .stop
+            ? display.phase : .neutral)
       }
-      .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+      .containerShape(shape)
+      .clipShape(shape)
       .environment(\.locale, display.locale)
       .environment(\.layoutDirection, display.isRightToLeft ? .rightToLeft : .leftToRight)
-      .salahColorScheme(display.theme.forcedColorScheme)
+      .salahColorScheme(display.settings.appearance.colorScheme)
   }
 
   /// The extension shell's branches that don't need a widget host.
@@ -41,8 +34,8 @@ struct WidgetPreviewContainer: View {
       WidgetStopContent(display: display, size: size)
     case .unavailable:
       WidgetMessageContent(
-        systemImage: "exclamationmark.triangle",
-        message: Text(verbatim: display.labels.timesUnavailable))
+        systemImage: "exclamationmark.triangle.fill",
+        message: Text(verbatim: display.labels.timesUnavailable), phase: display.phase)
     case .schedule:
       WidgetContentView(display: display, size: size)
     }
@@ -75,7 +68,7 @@ private struct WidgetSizeGallery: View {
 /// previews have always shown, in English, Arabic or French, so RTL and
 /// Arabic-Indic digits can be verified. Internal (with `WidgetPreviewData`) so
 /// SalahTests renders these scenarios.
-enum PreviewLang {
+enum PreviewLang: CaseIterable {
   case en, ar, fr
 
   var language: AppLanguage {
@@ -398,27 +391,11 @@ nonisolated struct PreviewSource: PrayerSource {
     .preferredColorScheme(.dark)
 }
 
-private func themedIdle(_ theme: SalahWidgetTheme) -> SalahDisplay {
-  var display = WidgetPreviewData.idle()
-  display.settings.theme = theme
-  return display
-}
-
-// All presets at medium, to confirm each theme's calm palette reads well.
-#Preview("Presets · dark") {
+// Every time of day at medium, to check each sky and its marks.
+#Preview("Times of day · light") {
   VStack(spacing: 14) {
-    ForEach(SalahWidgetTheme.allPresets, id: \.id) { theme in
-      WidgetPreviewContainer(display: themedIdle(theme), size: .medium)
-    }
-  }
-  .padding(20)
-  .preferredColorScheme(.dark)
-}
-
-#Preview("Presets · light") {
-  VStack(spacing: 14) {
-    ForEach(SalahWidgetTheme.allPresets, id: \.id) { theme in
-      WidgetPreviewContainer(display: themedIdle(theme), size: .medium)
+    ForEach(PreviewLang.allCases, id: \.self) { lang in
+      WidgetPreviewContainer(display: WidgetPreviewData.idle(lang), size: .medium)
     }
   }
   .padding(20)

@@ -41,14 +41,32 @@ struct MenuLiveCountdown: View {
         }
       } else {
         // A minute or more out: the calm, static, timeline-advanced string.
-        Text(
-          verbatim: PrayerDurationFormat.string(
-            magnitude, direction: countingUp ? .elapsed : .remaining, locale: locale))
+        Text(verbatim: MenuDuration.string(magnitude, countingUp: countingUp, locale: locale))
       }
     }
     .font(bold ? font.weight(.bold) : font)
     .monospacedDigit()
     .lineLimit(1)
     .minimumScaleFactor(0.6)
+  }
+}
+
+/// The dropdown's durations: hours and minutes from an hour on ("2:16"), minutes in words
+/// under an hour ("10 min"), with a "+" while a prayer counts up.
+enum MenuDuration {
+  static func string(_ seconds: TimeInterval, countingUp: Bool = false, locale: Locale) -> String {
+    let magnitude = abs(seconds)
+    guard magnitude < 3_600 else {
+      return PrayerDurationFormat.string(
+        magnitude, direction: countingUp ? .elapsed : .remaining, locale: locale)
+    }
+    let formatter = DateComponentsFormatter()
+    formatter.unitsStyle = .short
+    formatter.allowedUnits = [.minute]
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.locale = locale
+    formatter.calendar = calendar
+    let minutes = formatter.string(from: max(60, (magnitude / 60).rounded(.down) * 60)) ?? ""
+    return countingUp ? "+\(minutes)" : minutes
   }
 }

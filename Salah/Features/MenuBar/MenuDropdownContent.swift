@@ -1,29 +1,28 @@
+import AppKit
 import SalahCore
 import SalahUI
 import SwiftUI
 
 enum MenuDropdownMetrics {
-  /// The dropdown width - a touch wider than the old 232pt panel so the serif
-  /// schedule and hero read like the large widget, while staying a comfortable
-  /// menu-bar popover rather than a desktop widget.
+  /// The dropdown's width.
   static let width: CGFloat = 300
 }
 
-/// The rendered dropdown for a display - the previewable visual core shared by the
-/// live menu bar and the SwiftUI previews. The root `MenuBarDropdownView` builds the
-/// display from `PrayerManager` and supplies the action closures; everything visual
-/// lives here.
+/// The rendered dropdown for a display: the dates and the place, the next prayer on the
+/// time of day's sky, the day's timeline, the day's prayers with their alerts, and the
+/// footer. The root `MenuBarDropdownView` builds the display and supplies the actions;
+/// previews and the visual tests render this alone.
 ///
-/// It keeps every case the schedule can be in visible: a prayer the calculation can't
-/// give today is a row with a dash, an unknown next prayer is said in the focus's
-/// place, and while today's times aren't available at all, the last day that was is
-/// shown marked as last known, never as today's.
+/// It keeps every case the schedule can be in visible: a prayer the calculation can't give
+/// today is a row with a dash, an unknown next prayer is said in the hero's place, and
+/// while today's times aren't available at all, the last day that was is shown marked as
+/// last known, never as today's.
 struct MenuDropdownContent: View {
   let display: SalahDisplay
   /// The last listed day the schedule could give, shown while the listed day isn't.
   var lastKnownDay: PrayerDayAvailability? = nil
-  /// Flip a prayer's alert. The root writes the (Jumu'ah-aware) config; previews pass
-  /// a no-op.
+  /// Flip a prayer's alert. The root writes the (Jumu'ah-aware) config; previews pass a
+  /// no-op.
   var onToggleAlert: (PrayerEvent) -> Void = { _ in }
   var onToggleSilent: () -> Void = {}
   var onStop: () -> Void = {}
@@ -32,36 +31,35 @@ struct MenuDropdownContent: View {
   var onQuit: () -> Void = {}
 
   @Environment(\.colorScheme) private var scheme
+  @Environment(\.colorSchemeContrast) private var contrast
 
   var body: some View {
-    let theme = display.theme
-    let colors = theme.colors(for: scheme)
-    MenuDropdownSurface(display: display, colors: colors) {
-      VStack(alignment: .leading, spacing: 10) {
-        MenuDropdownHeader(display: display, colors: colors)
-        schedule(colors: colors)
-        if let notice = FailureReporter.shared.currentNotice, notice.category == .terminal {
-          noticeRow(notice)
-        }
-        Rectangle()
-          .fill(colors.accent.opacity(0.15))
-          .frame(height: 1)
-        MenuDropdownFooter(
-          display: display, colors: colors,
-          onToggleSilent: onToggleSilent, onOpenSalah: onOpenSalah,
-          onOpenSettings: onOpenSettings, onQuit: onQuit)
+    let colors = SalahColors(phase: display.phase, scheme: scheme, contrast: contrast)
+    VStack(alignment: .leading, spacing: 10) {
+      MenuHeader(display: display, colors: colors)
+      if let notice = FailureReporter.shared.currentNotice, notice.category == .terminal {
+        MenuAttentionBanner(message: notice.message, colors: colors)
       }
-      .padding(.horizontal, 12)
-      .padding(.top, 12)
-      .padding(.bottom, 10)
+      MenuHero(display: display, colors: colors, onStop: onStop)
+      if let day = display.listedDay {
+        SalahDayTimeline(
+          day: day, date: display.date, followsTimeOfDay: display.settings.followsTimeOfDay)
+      }
+      schedule(colors: colors)
+      MenuDropdownFooter(
+        display: display, colors: colors, onToggleSilent: onToggleSilent,
+        onOpenSalah: onOpenSalah, onOpenSettings: onOpenSettings, onQuit: onQuit)
     }
+    .padding(.horizontal, 12)
+    .padding(.top, 12)
+    .padding(.bottom, 10)
     .frame(width: MenuDropdownMetrics.width)
+    .background(colors.palette.elevated.color)
     .environment(\.locale, display.locale)
     .environment(\.layoutDirection, display.isRightToLeft ? .rightToLeft : .leftToRight)
-    .salahColorScheme(theme.forcedColorScheme)
   }
 
-  // MARK: - Living schedule
+  // MARK: - The day's prayers
 
   /// The rows the dropdown lists: today's, or the last known day's while today's isn't
   /// available.
@@ -75,21 +73,11 @@ struct MenuDropdownContent: View {
   }
 
   @ViewBuilder
-  private func schedule(colors: SalahWidgetColors) -> some View {
+  private func schedule(colors: SalahColors) -> some View {
     let (rows, lastKnown) = listed
-    let playing = display.playback != nil
-    VStack(spacing: 6) {
-      // While audio plays, the Stop control leads in the focus position and every
-      // prayer drops to a collapsed row.
-      if let title = display.playingTitle, let subtitle = display.playingSubtitle,
-        let playback = display.playback
-      {
-        MenuStopCard(
-          title: title, subtitle: subtitle, tone: playback.tone, labels: display.labels,
-          colors: colors, onStop: onStop)
-      }
+    VStack(spacing: 2) {
       if let lastKnown {
-        MenuLastKnownCaption(day: lastKnown, display: display)
+        MenuLastKnownCaption(day: lastKnown, display: display, colors: colors)
       }
       if case .available(let day, let coverage) = rows.day {
         let missing: [PrayerKind: ScheduleGapReason] = {
@@ -97,176 +85,123 @@ struct MenuDropdownContent: View {
           return [:]
         }()
         PrayerTimesList(
-          day: day, state: rows.prayerState, names: display.names,
-          countdown: .staticText, missing: missing
+          day: day, state: rows.prayerState, names: display.names, countdown: .staticText,
+          missing: missing
         ).rows
-      }
-      if !playing, lastKnown == nil, display.listedDay != nil,
-        display.floatingFocus != nil
-          || display.focus == nil
-      {
-        // End of day: tomorrow's Fajr is not a today row, so it floats beneath. When
-        // the next prayer isn't known, the same place says so.
-        MenuFocusView(display: display, colors: colors, onToggleAlert: nil)
       }
     }
     .prayerRowStyle(
       MenuRowStyle(
-        display: rows, colors: colors, showsFocus: !playing && lastKnown == nil,
-        onToggleAlert: onToggleAlert)
+        display: rows, colors: colors, isLastKnown: lastKnown != nil, onToggleAlert: onToggleAlert)
     )
-    .animation(.smooth(duration: 0.3), value: display.focus?.event.id)
-  }
-
-  private func noticeRow(_ notice: FailureNotice) -> some View {
-    HStack(spacing: 6) {
-      Image(systemName: "exclamationmark.triangle.fill").font(.caption)
-      Text(verbatim: notice.message)
-        .font(.caption)
-        .fixedSize(horizontal: false, vertical: true)
-      Spacer(minLength: 0)
+    .animation(.smooth(duration: 0.5), value: display.focus?.event.id)
+    // After Isha: tomorrow's Fajr beneath the day.
+    if lastKnown == nil, display.focusIsTomorrow, let fajr = display.focus?.event {
+      Text(verbatim: display.labels.tomorrow)
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(colors.palette.labelSecondary.color)
+        .padding(.horizontal, 8)
+      MenuPrayerRow(
+        event: fajr, name: Text(verbatim: display.name(of: fajr)),
+        time: Text(verbatim: display.timeText(of: fajr)), role: .next, display: display,
+        colors: colors, onToggleAlert: { onToggleAlert(fajr) })
     }
-    .salahInk(.secondary.wrapping)
-    .padding(.horizontal, 4)
   }
 }
 
-/// Measures the intrinsic menu before drawing it, so its inks see the actual sky
-/// and their positions in the same render pass, including in ImageRenderer.
-private struct MenuDropdownSurface<Content: View>: View {
+// MARK: - Header
+
+/// The dates, and the place; while silent, "Sounds off" in the place's stead.
+struct MenuHeader: View {
   let display: SalahDisplay
-  let colors: SalahWidgetColors
-  @ViewBuilder let content: Content
-  @Environment(\.colorSchemeContrast) private var contrast
+  let colors: SalahColors
 
   var body: some View {
-    let isSolid = contrast == .increased
-    ZStack {
-      SalahWidgetBackground(tone: display.backgroundTone, colors: colors, isSolid: isSolid)
-      content
-        .environment(\.salahWidgetInkProbe, nil)
-        .hidden()
-        .accessibilityHidden(true)
-        .allowsHitTesting(false)
-        .overlay {
-          GeometryReader { proxy in
-            content
-              .environment(
-                \.salahWidgetBackdrop,
-                SalahWidgetBackdrop(
-                  colors: colors, tone: display.backgroundTone, size: proxy.size,
-                  isRightToLeft: display.isRightToLeft, isSolid: isSolid)
-              )
-              .frame(width: proxy.size.width, height: proxy.size.height)
-          }
-        }
-    }
-    .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
-  }
-}
-
-/// Salah's look for one dropdown row of SalahUI's `PrayerTimesList`: the collapsed
-/// row, or the focus hero card. The package supplies times and missing-kind configurations.
-private struct MenuRowStyle: PrayerRowStyle {
-  let display: SalahDisplay
-  let colors: SalahWidgetColors
-  /// Whether the focus expands into the hero card; not while audio plays (the Stop
-  /// card leads) or while the rows are the last known day's.
-  let showsFocus: Bool
-  let onToggleAlert: (PrayerEvent) -> Void
-
-  func makeBody(configuration: Configuration) -> some View {
-    if let event = configuration.event {
-      if showsFocus, display.focus?.event.id == event.id {
-        MenuFocusView(display: display, colors: colors, onToggleAlert: toggle(event))
-      } else {
-        MenuScheduleRow(
-          name: configuration.name, time: configuration.time ?? Text(verbatim: "–"),
-          state: display.rowState(for: event, status: configuration.status),
-          isSunrise: event.kind == .sunrise, alertEnabled: display.alerts(for: event).alert,
-          colors: colors, labels: display.labels,
-          sinceText: display.sinceText(for: event, status: configuration.status),
-          onToggleAlert: toggle(event))
+    let header = display.header
+    let palette = colors.palette
+    HStack(alignment: .top, spacing: 8) {
+      VStack(alignment: .leading, spacing: 1) {
+        Text(verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear)")
+          .font(.headline)
+          .foregroundStyle(palette.labelPrimary.color)
+        Text(verbatim: header.gregorianDate)
+          .font(.subheadline)
+          .foregroundStyle(palette.labelSecondary.color)
       }
-    } else {
-      MenuMissingRow(name: configuration.name, labels: display.labels)
-    }
-  }
-
-  /// The per-row alert toggle, or nil for Sunrise (never alerted).
-  private func toggle(_ event: PrayerEvent) -> (() -> Void)? {
-    guard event.kind.isPrayer else { return nil }
-    return { onToggleAlert(event) }
-  }
-}
-
-/// The hero, SalahUI's `NextPrayerView` in Salah's menu focus style.
-struct MenuFocusView: View {
-  let display: SalahDisplay
-  let colors: SalahWidgetColors
-  var onToggleAlert: (() -> Void)?
-
-  var body: some View {
-    if let state = display.prayerState {
-      NextPrayerView(
-        state: state, names: display.names, timeZone: display.settings.location.timeZone,
-        countdown: .staticText, selection: .justStartedOrNextEvent
-      )
-      .nextPrayerStyle(
-        MenuFocusStyle(display: display, colors: colors, onToggleAlert: onToggleAlert))
-    } else {
-      MenuNoticeCard(text: display.labels.nextUnknown, colors: colors)
-    }
-  }
-}
-
-/// Salah's hero card for the package-selected focus.
-private struct MenuFocusStyle: NextPrayerStyle {
-  let display: SalahDisplay
-  let colors: SalahWidgetColors
-  let onToggleAlert: (() -> Void)?
-
-  func makeBody(configuration: Configuration) -> some View {
-    if let focus = configuration.focus {
-      MenuHeroCard(
-        focus: focus, name: configuration.name, time: configuration.time,
-        display: display, colors: colors,
-        onToggleAlert: display.focusIsTomorrow ? nil : onToggleAlert)
-    } else {
-      MenuNoticeCard(text: display.labels.nextUnknown, colors: colors)
-    }
-  }
-}
-
-/// A row for a prayer the calculation can't give today: its name and a dash.
-private struct MenuMissingRow: View {
-  let name: Text
-  let labels: SalahWidgetLabels
-
-  var body: some View {
-    HStack(spacing: 10) {
-      Image(systemName: "questionmark.circle")
-        .font(.footnote)
-        .salahInk(.secondary.glyph)
-        .frame(width: 18)
-        .accessibilityHidden(true)
-      name
-        .font(Font.system(.subheadline, design: .serif))
-        .salahInk(.secondary)
+      .lineLimit(1)
+      .minimumScaleFactor(0.8)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      if display.settings.silentMode {
+        Label {
+          Text(verbatim: localizedString("menu.soundsOff", locale: display.locale))
+        } icon: {
+          Image(systemName: "bell.slash.fill")
+        }
+        .labelStyle(.titleAndIcon)
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(palette.labelPrimary.color)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(Capsule().fill(palette.fillTertiary.color))
+      } else {
+        Label {
+          Text(verbatim: header.location).privacySensitive()
+        } icon: {
+          Image(systemName: "location.fill")
+        }
+        .labelStyle(.titleAndIcon)
+        .font(.caption)
+        .foregroundStyle(palette.labelSecondary.color)
         .lineLimit(1)
-        .minimumScaleFactor(0.7)
-        .frame(minWidth: 56, alignment: .leading)
-      Spacer(minLength: 6)
-      Text(verbatim: "–")
-        .font(Font.subheadline.monospacedDigit())
-        .salahInk(.secondary)
-        .frame(minWidth: 70, alignment: .trailing)
-        .accessibilityLabel(Text(verbatim: labels.notAvailable))
+        .padding(.top, 2)
+      }
     }
-    .padding(.horizontal, 10)
-    .padding(.vertical, 6)
-    .frame(maxWidth: .infinity, alignment: .leading)
     .accessibilityElement(children: .combine)
+  }
+}
+
+/// Something needs attention, such as location access being off: what, and the way to it.
+private struct MenuAttentionBanner: View {
+  let message: String
+  let colors: SalahColors
+
+  var body: some View {
+    let palette = colors.palette
+    Button {
+      if let url = URL(
+        string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices")
+      {
+        NSWorkspace.shared.open(url)
+      }
+    } label: {
+      HStack(spacing: 12) {
+        Image(systemName: "location.slash.fill")
+          .font(.system(size: 18))
+          .foregroundStyle(palette.warning.color)
+          .accessibilityHidden(true)
+        VStack(alignment: .leading, spacing: 2) {
+          Text(verbatim: message)
+            .font(.body.weight(.semibold))
+            .foregroundStyle(palette.labelPrimary.color)
+            .fixedSize(horizontal: false, vertical: true)
+          Text("menu.openSettings")
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(palette.accentText.color)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        Image(systemName: "chevron.forward")
+          .font(.system(size: 12, weight: .semibold))
+          .foregroundStyle(palette.labelTertiary.color)
+          .accessibilityHidden(true)
+      }
+      .padding(12)
+      .background(
+        palette.formGroup.color, in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+      )
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .menuPointerCursor()
   }
 }
 
@@ -274,6 +209,7 @@ private struct MenuMissingRow: View {
 private struct MenuLastKnownCaption: View {
   let day: CivilDay
   let display: SalahDisplay
+  let colors: SalahColors
 
   var body: some View {
     let formatter = DateFormatter()
@@ -290,28 +226,444 @@ private struct MenuLastKnownCaption: View {
     } icon: {
       Image(systemName: "clock.badge.questionmark")
     }
-    .font(.caption.weight(.medium))
-    .salahInk(.secondary)
+    .font(.subheadline.weight(.semibold))
+    .foregroundStyle(colors.palette.labelSecondary.color)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.horizontal, 4)
+    .padding(.horizontal, 8)
   }
 }
 
-/// A notice in the focus's place: the schedule doesn't know the next prayer.
-private struct MenuNoticeCard: View {
-  let text: String
-  let colors: SalahWidgetColors
+// MARK: - Hero
+
+/// The next prayer on the time of day's sky; the one that just began, counting up; tomorrow's
+/// Fajr after Isha; or, while the adhan, the du'a or a reminder plays, Stop.
+struct MenuHero: View {
+  let display: SalahDisplay
+  let colors: SalahColors
+  var onStop: () -> Void = {}
+
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @State private var breathing = false
+
+  private var palette: SalahPalette { colors.palette }
 
   var body: some View {
-    Label {
-      Text(verbatim: text).fixedSize(horizontal: false, vertical: true)
-    } icon: {
-      Image(systemName: "questionmark.circle")
+    let approaching = isApproaching
+    VStack(alignment: .leading, spacing: 2) {
+      if let playback = display.playback {
+        playing(playback)
+      } else if let focus = display.focus {
+        focusContent(focus)
+      } else {
+        unknown
+      }
     }
-    .font(.subheadline)
-    .salahInk(.secondary.on(.normal, opacity: SalahWidgetTint.card).wrapping)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(12)
-    .salahHeroCard(toneColor: colors.primary, accent: colors.accent)
+    .padding(.horizontal, 14)
+    .padding(.vertical, 12)
+    .background(colors.sky, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    .overlay {
+      if approaching {
+        RoundedRectangle(cornerRadius: 14, style: .continuous)
+          .strokeBorder(
+            palette.accent.color.opacity(reduceMotion ? 1 : (breathing ? 1 : 0.45)),
+            lineWidth: 1.5
+          )
+          .animation(
+            reduceMotion ? nil : .easeInOut(duration: 1.2).repeatForever(autoreverses: true),
+            value: breathing
+          )
+          .onAppear { breathing = true }
+          .allowsHitTesting(false)
+      }
+    }
+  }
+
+  private var isApproaching: Bool {
+    display.playback == nil && display.focus?.isCountUp == false
+      && display.prayerState?.isApproaching == true && !display.focusIsTomorrow
+  }
+
+  // MARK: Pieces
+
+  private func top(eyebrow: some View, glyph: PrayerKind?) -> some View {
+    HStack(spacing: 6) {
+      eyebrow
+      Spacer(minLength: 6)
+      if let glyph {
+        PrayerGlyph(kind: glyph)
+          .font(.system(size: 19))
+          .foregroundStyle(colors.phase.tint.color)
+          .frame(width: 24, height: 24)
+          .accessibilityHidden(true)
+      }
+    }
+  }
+
+  private func eyebrowText(_ text: String) -> some View {
+    Text(verbatim: text)
+      .font(.subheadline.weight(.semibold))
+      .foregroundStyle(palette.labelSecondary.color)
+  }
+
+  private func nameLine(_ name: String, when: String) -> some View {
+    HStack(alignment: .firstTextBaseline, spacing: 8) {
+      Text(verbatim: name)
+        .font(.title)
+        .foregroundStyle(palette.labelPrimary.color)
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
+      Spacer(minLength: 6)
+      Text(verbatim: when)
+        .font(.callout)
+        .foregroundStyle(palette.labelSecondary.color)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .layoutPriority(-1)
+    }
+  }
+
+  private func footer(symbol: String, text: String) -> some View {
+    HStack(spacing: 5) {
+      Image(systemName: symbol)
+        .font(.system(size: 10))
+        .accessibilityHidden(true)
+      Text(verbatim: text)
+        .font(.footnote)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+      Spacer(minLength: 0)
+    }
+    .foregroundStyle(palette.labelSecondary.color)
+    .padding(.top, 4)
+  }
+
+  private func time(_ event: PrayerEvent) -> String { display.timeText(of: event) }
+
+  private func format(_ key: String.LocalizationValue, _ arguments: CVarArg...) -> String {
+    String(
+      format: localizedString(key, locale: display.locale), locale: display.locale,
+      arguments: arguments)
+  }
+
+  // MARK: States
+
+  @ViewBuilder
+  private func focusContent(_ focus: SalahDisplay.Focus) -> some View {
+    let event = focus.event
+    let labels = display.labels
+    if focus.isCountUp {
+      top(
+        eyebrow: Text(verbatim: labels.now)
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(palette.labelOnAccent.color)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 2)
+          .background(Capsule().fill(palette.accentFill.color)),
+        glyph: event.kind)
+      nameLine(display.name(of: event), when: format("today.began", time(event)))
+      countdown(event, countingUp: true, color: colors.phase.text)
+      if let next = display.prayerState?.nextPrayer {
+        footer(
+          symbol: "clock",
+          text: format("menu.hero.nextAt", display.name(of: next), time(next)))
+      }
+    } else {
+      let tomorrow = display.focusIsTomorrow
+      top(
+        eyebrow: eyebrowText(tomorrow ? labels.tomorrow : labels.nextPrayer), glyph: event.kind)
+      nameLine(display.name(of: event), when: format("today.begins", time(event)))
+      countdown(
+        event, countingUp: false, color: isApproaching ? palette.accentText : palette.labelPrimary)
+      let alerts = display.alerts(for: event)
+      if isApproaching, alerts.alert, !display.settings.silentMode {
+        footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
+      } else if let before = alerts.beforeMinutes, !isApproaching {
+        footer(
+          symbol: "alarm",
+          text: format(
+            "menu.hero.reminderBefore",
+            MenuDuration.string(TimeInterval(before * 60), locale: display.locale)))
+      } else if alerts.alert, event.kind.isPrayer {
+        footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
+      }
+    }
+  }
+
+  private func countdown(_ event: PrayerEvent, countingUp: Bool, color: ThemeColor) -> some View {
+    MenuLiveCountdown(
+      target: event.time, reference: display.date,
+      font: .system(size: 30, weight: .semibold, design: .rounded), countingUp: countingUp
+    )
+    .foregroundStyle(color.color)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(Text(verbatim: spokenCountdown(event, countingUp: countingUp)))
+    .accessibilityAddTraits(.isStaticText)
+    .accessibilityIdentifier("menu.hero.duration")
+  }
+
+  /// A spelled-out duration for VoiceOver; the visible timer is the abbreviated "1:24".
+  private func spokenCountdown(_ event: PrayerEvent, countingUp: Bool) -> String {
+    let duration = PrayerDurationFormat.string(
+      abs(event.time.timeIntervalSince(display.date)), width: .spoken, locale: display.locale)
+    if countingUp {
+      return display.labels.sinceSpoken(prayer: display.name(of: event), time: duration)
+    }
+    return "\(display.name(of: event)) · \(duration) \(display.labels.remaining)"
+  }
+
+  @ViewBuilder
+  private func playing(_ playback: SalahPlayback) -> some View {
+    let event = playback.event
+    top(
+      eyebrow: Label {
+        Text(verbatim: display.playingTitle ?? "")
+      } icon: {
+        Image(systemName: "speaker.wave.2.fill")
+      }
+      .labelStyle(.titleAndIcon)
+      .font(.subheadline.weight(.semibold))
+      .foregroundStyle(colors.phase.text.color),
+      glyph: event.kind)
+    nameLine(display.name(of: event), when: time(event))
+    Button(action: onStop) {
+      Text(verbatim: display.labels.stopShort)
+        .font(.body.weight(.medium))
+        .foregroundStyle(palette.labelOnAccent.color)
+        .padding(.horizontal, 16)
+        .frame(height: 28)
+        .background(Capsule().fill(palette.accentFill.color))
+        .contentShape(Capsule())
+    }
+    .buttonStyle(.plain)
+    .keyboardShortcut(.defaultAction)
+    .menuPointerCursor()
+    .padding(.vertical, 4)
+    .accessibilityLabel(Text(verbatim: display.labels.stopAudio))
+    // The adhan, not yet its du'a: the du'a follows it when it's on.
+    if playback.slot == .alert, !playback.isDua, Preferences.shared.duaEnabled {
+      footer(
+        symbol: "speaker.wave.2.fill",
+        text: localizedString("menu.hero.duaFollows", locale: display.locale))
+    }
+  }
+
+  private var unknown: some View {
+    VStack(alignment: .leading, spacing: 2) {
+      eyebrowText(display.labels.nextPrayer)
+      Text(verbatim: display.labels.nextUnknown)
+        .font(.body.weight(.semibold))
+        .foregroundStyle(palette.labelPrimary.color)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+  }
+}
+
+// MARK: - Rows
+
+/// A prayer's role in the list, which sets its look.
+enum MenuRowRole { case passed, current, next, upcoming }
+
+/// Salah's dropdown row for SalahUI's `PrayerTimesList`.
+struct MenuRowStyle: PrayerRowStyle {
+  let display: SalahDisplay
+  let colors: SalahColors
+  let isLastKnown: Bool
+  let onToggleAlert: (PrayerEvent) -> Void
+
+  func makeBody(configuration: Configuration) -> some View {
+    if let event = configuration.event {
+      MenuPrayerRow(
+        event: event, name: configuration.name, time: configuration.time ?? Text(verbatim: "–"),
+        role: isLastKnown ? .passed : role(of: event, status: configuration.status),
+        display: display, colors: colors, onToggleAlert: { onToggleAlert(event) })
+    } else {
+      MenuMissingRow(name: configuration.name, display: display, colors: colors)
+    }
+  }
+
+  private func role(of event: PrayerEvent, status: PrayerEventStatus?) -> MenuRowRole {
+    if display.playback?.event.id == event.id { return .current }
+    switch status {
+    case .justStarted?: return .current
+    case .next?: return display.focusIsTomorrow ? .upcoming : .next
+    case .upcoming?: return .upcoming
+    case .passed?: return .passed
+    case nil: return event.time <= display.date ? .passed : .upcoming
+    }
+  }
+}
+
+struct MenuPrayerRow: View {
+  let event: PrayerEvent
+  let name: Text
+  let time: Text
+  let role: MenuRowRole
+  let display: SalahDisplay
+  let colors: SalahColors
+  let onToggleAlert: () -> Void
+
+  @State private var hovering = false
+
+  private var palette: SalahPalette { colors.palette }
+
+  var body: some View {
+    HStack(spacing: 8) {
+      PrayerGlyph(kind: event.kind)
+        .font(.system(size: 14))
+        .foregroundStyle(glyphColor.color)
+        .frame(width: 18, height: 18)
+        .accessibilityHidden(true)
+      HStack(spacing: 6) {
+        name
+          .font(.body.weight(isStrong ? .semibold : .regular))
+          .foregroundStyle((role == .passed ? palette.labelSecondary : palette.labelPrimary).color)
+          .lineLimit(1)
+          .minimumScaleFactor(0.8)
+        if let detail {
+          Text(verbatim: detail)
+            .font(.subheadline)
+            .foregroundStyle(detailColor.color)
+            .lineLimit(1)
+            .layoutPriority(-1)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      if role == .current {
+        Text(verbatim: display.labels.now)
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(palette.labelOnAccent.color)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 2)
+          .background(Capsule().fill(palette.accentFill.color))
+      }
+      time
+        .font(.body.weight(isStrong ? .semibold : .regular).monospacedDigit())
+        .foregroundStyle((role == .passed ? palette.labelSecondary : palette.labelPrimary).color)
+        .lineLimit(1)
+      bell
+    }
+    .padding(.horizontal, 8)
+    .padding(.vertical, 5)
+    .frame(minHeight: 28)
+    .background {
+      RoundedRectangle(cornerRadius: 8, style: .continuous).fill(background)
+    }
+    .onHover { hovering = $0 }
+  }
+
+  private var isStrong: Bool { role == .current || role == .next }
+
+  private var background: Color {
+    switch role {
+    case .current: colors.phase.tintSubtle.color
+    case .next: palette.accentSubtle.color
+    case .passed, .upcoming: hovering ? palette.fillQuaternary.color : .clear
+    }
+  }
+
+  private var glyphColor: ThemeColor {
+    switch role {
+    case .passed: palette.labelTertiary
+    case .current: colors.phase.tint
+    case .next: palette.accent
+    case .upcoming: palette.labelSecondary
+    }
+  }
+
+  private var detailColor: ThemeColor {
+    switch role {
+    case .current: colors.phase.text
+    case .next: palette.accentText
+    case .passed, .upcoming: palette.labelSecondary
+    }
+  }
+
+  /// How long until the next prayer; how long ago the current or latest one began.
+  private var detail: String? {
+    switch role {
+    case .next:
+      let duration = MenuDuration.string(
+        event.time.timeIntervalSince(display.date), locale: display.locale)
+      return String(
+        format: localizedString("today.row.in", locale: display.locale), locale: display.locale,
+        duration.bidiIsolated)
+    case .current, .passed:
+      guard role == .current || display.prayerState?.previous?.id == event.id else { return nil }
+      let formatter = RelativeDateTimeFormatter()
+      formatter.locale = display.locale
+      formatter.unitsStyle = .short
+      return formatter.localizedString(for: event.time, relativeTo: display.date)
+    case .upcoming:
+      return nil
+    }
+  }
+
+  @ViewBuilder
+  private var bell: some View {
+    if event.kind.isPrayer {
+      // Silent mode draws every bell off: nothing sounds.
+      let isOn = display.alerts(for: event).alert && !display.settings.silentMode
+      let label = "\(display.name(of: event)) · \(localizedString("settings.notif.alert.toggle"))"
+      Button(action: onToggleAlert) {
+        Image(systemName: isOn ? "bell.fill" : "bell.slash")
+          .font(.system(size: 12))
+          .foregroundStyle(bellColor(isOn: isOn).color)
+          .frame(width: 18, height: 18)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .menuPointerCursor()
+      .help(Text(verbatim: label))
+      .accessibilityLabel(Text(verbatim: label))
+      .accessibilityValue(
+        Text(
+          verbatim: display.alerts(for: event).alert
+            ? display.labels.alertOn : display.labels.alertOff))
+    } else {
+      Image(systemName: "bell.slash")
+        .font(.system(size: 12))
+        .foregroundStyle(palette.labelTertiary.color)
+        .frame(width: 18, height: 18)
+        .accessibilityHidden(true)
+    }
+  }
+
+  private func bellColor(isOn: Bool) -> ThemeColor {
+    guard isOn else { return palette.labelTertiary }
+    return isStrong ? palette.accent : palette.labelSecondary
+  }
+}
+
+/// A row for a prayer the calculation can't give today: its name and a dash.
+struct MenuMissingRow: View {
+  let name: Text
+  let display: SalahDisplay
+  let colors: SalahColors
+
+  var body: some View {
+    let palette = colors.palette
+    HStack(spacing: 8) {
+      Image(systemName: "questionmark.circle")
+        .font(.system(size: 13))
+        .foregroundStyle(palette.labelTertiary.color)
+        .frame(width: 18, height: 18)
+        .accessibilityHidden(true)
+      HStack(spacing: 6) {
+        name.font(.body)
+        Text("menu.row.missing").font(.subheadline)
+      }
+      .foregroundStyle(palette.labelSecondary.color)
+      .lineLimit(1)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      Text(verbatim: "—")
+        .font(.body.monospacedDigit())
+        .foregroundStyle(palette.labelSecondary.color)
+        .accessibilityLabel(Text(verbatim: display.labels.notAvailable))
+    }
+    .padding(.horizontal, 8)
+    .padding(.vertical, 5)
+    .frame(minHeight: 28)
+    .accessibilityElement(children: .combine)
   }
 }

@@ -66,9 +66,13 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
   var notAvailable: String
   /// Shown in the focus's place when the next prayer's time isn't known.
   var nextUnknown: String
+  /// The focus's time beneath its countdown: `%@` is the time ("at 3:35 PM").
+  var atTime: String
+  /// After a prayer began, the next one: `%1$@` its name, `%2$@` its time ("Next: Asr 3:35 PM").
+  var nextLine: String
 
   static let english = SalahWidgetLabels(
-    nextPrayer: "Next Prayer",
+    nextPrayer: "Next prayer",
     tomorrow: "Tomorrow",
     now: "Now",
     sinceSpoken: "%1$@ · started %2$@ ago",
@@ -79,7 +83,7 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     stopAudio: "Stop Audio",
     tapToStop: "Tap to stop",
     openToUpdate: "Open Salah to update",
-    playingAdhan: "Playing Adhan",
+    playingAdhan: "Playing adhan",
     playingDua: "Playing Du’ā’",
     playingPreReminder: "Pre-reminder",
     playingPostReminder: "Post-reminder",
@@ -90,7 +94,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "H",
     timesUnavailable: "Prayer times aren't available for this location.",
     notAvailable: "Not available",
-    nextUnknown: "Next prayer time not available"
+    nextUnknown: "Next prayer time not available",
+    atTime: "at %@",
+    nextLine: "Next: %1$@ %2$@"
   )
 
   static let arabic = SalahWidgetLabels(
@@ -116,7 +122,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "هـ",
     timesUnavailable: "أوقات الصلاة غير متوفرة لهذا الموقع.",
     notAvailable: "غير متاح",
-    nextUnknown: "وقت الصلاة القادمة غير متاح"
+    nextUnknown: "وقت الصلاة القادمة غير متاح",
+    atTime: "الساعة %@",
+    nextLine: "القادمة: %1$@ %2$@"
   )
 
   static let french = SalahWidgetLabels(
@@ -142,7 +150,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "H",
     timesUnavailable: "Les horaires de prière ne sont pas disponibles pour ce lieu.",
     notAvailable: "Non disponible",
-    nextUnknown: "Heure de la prochaine prière indisponible"
+    nextUnknown: "Heure de la prochaine prière indisponible",
+    atTime: "à %@",
+    nextLine: "Suivante : %1$@ %2$@"
   )
 
   static let urdu = SalahWidgetLabels(
@@ -168,7 +178,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "ھ",
     timesUnavailable: "اس مقام کے لیے اوقاتِ نماز دستیاب نہیں ہیں۔",
     notAvailable: "دستیاب نہیں",
-    nextUnknown: "اگلی نماز کا وقت دستیاب نہیں"
+    nextUnknown: "اگلی نماز کا وقت دستیاب نہیں",
+    atTime: "%@ بجے",
+    nextLine: "اگلی: %1$@ %2$@"
   )
 
   static let indonesian = SalahWidgetLabels(
@@ -194,7 +206,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "H",
     timesUnavailable: "Waktu salat tidak tersedia untuk lokasi ini.",
     notAvailable: "Tidak tersedia",
-    nextUnknown: "Waktu salat berikutnya tidak tersedia"
+    nextUnknown: "Waktu salat berikutnya tidak tersedia",
+    atTime: "pukul %@",
+    nextLine: "Berikutnya: %1$@ %2$@"
   )
 
   static let turkish = SalahWidgetLabels(
@@ -220,7 +234,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "H",
     timesUnavailable: "Bu konum için namaz vakitleri kullanılamıyor.",
     notAvailable: "Kullanılamıyor",
-    nextUnknown: "Sonraki namaz vakti kullanılamıyor"
+    nextUnknown: "Sonraki namaz vakti kullanılamıyor",
+    atTime: "saat %@",
+    nextLine: "Sonraki: %1$@ %2$@"
   )
 
   static let persian = SalahWidgetLabels(
@@ -246,7 +262,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "ه\u{200D}.ق",
     timesUnavailable: "اوقات شرعی برای این موقعیت در دسترس نیست.",
     notAvailable: "در دسترس نیست",
-    nextUnknown: "زمان نماز بعدی در دسترس نیست"
+    nextUnknown: "زمان نماز بعدی در دسترس نیست",
+    atTime: "ساعت %@",
+    nextLine: "بعدی: %1$@ %2$@"
   )
 
   static let bengali = SalahWidgetLabels(
@@ -272,7 +290,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "হি.",
     timesUnavailable: "এই অবস্থানের জন্য নামাজের সময় পাওয়া যাচ্ছে না।",
     notAvailable: "পাওয়া যাচ্ছে না",
-    nextUnknown: "পরবর্তী নামাজের সময় পাওয়া যাচ্ছে না"
+    nextUnknown: "পরবর্তী নামাজের সময় পাওয়া যাচ্ছে না",
+    atTime: "%@-এ",
+    nextLine: "পরবর্তী: %1$@ %2$@"
   )
 
   static let malay = SalahWidgetLabels(
@@ -298,7 +318,9 @@ nonisolated struct SalahWidgetLabels: Equatable, Sendable {
     hijriSuffix: "H",
     timesUnavailable: "Waktu solat tidak tersedia untuk lokasi ini.",
     notAvailable: "Tidak tersedia",
-    nextUnknown: "Waktu solat seterusnya tidak tersedia"
+    nextUnknown: "Waktu solat seterusnya tidak tersedia",
+    atTime: "pada %@",
+    nextLine: "Seterusnya: %1$@ %2$@"
   )
 
   /// Picks the table for the resolved language. Falls back to English for any
@@ -354,8 +376,22 @@ extension SalahWidgetLabels {
 
   /// Puts the name and the time in a template's `%1$@` and `%2$@`, without the isolates and
   /// digits a locale's string formatting would add.
-  nonisolated private static func fill(_ template: String, prayer: String, time: String) -> String {
+  nonisolated fileprivate static func fill(_ template: String, prayer: String, time: String)
+    -> String
+  {
     template.replacingOccurrences(of: "%1$@", with: prayer)
       .replacingOccurrences(of: "%2$@", with: time)
+  }
+}
+
+extension SalahWidgetLabels {
+  /// "at 3:35 PM", in the language's word order.
+  nonisolated func atTime(_ time: String) -> String {
+    atTime.replacingOccurrences(of: "%@", with: time)
+  }
+
+  /// "Next: Asr 3:35 PM", in the language's word order.
+  nonisolated func nextLine(prayer: String, time: String) -> String {
+    Self.fill(nextLine, prayer: prayer, time: time)
   }
 }

@@ -292,6 +292,238 @@
         }
       }
     },
+    "menu.hero.adhanAt": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأذان الساعة %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adhan at %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adhan à %@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اذان %@ بجے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Azan pukul %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ezan saat %@"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اذان ساعت %@"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আজান %@-এ"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Azan pada %@"
+          }
+        }
+      }
+    },
+    "menu.hero.duaFollows": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يليه الدعاء"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The du’a follows"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le doua suit"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اس کے بعد دعا"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Doa menyusul"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ardından dua"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "سپس دعا"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এরপর দোয়া"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Doa menyusul"
+          }
+        }
+      }
+    },
+    "menu.hero.nextAt": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "القادمة: %1$@ الساعة %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next: %1$@ at %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Suivante : %1$@ à %2$@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اگلی: %1$@ %2$@ بجے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Berikutnya: %1$@ pukul %2$@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sonraki: %1$@, saat %2$@"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بعدی: %1$@ ساعت %2$@"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরবর্তী: %1$@ %2$@-এ"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Seterusnya: %1$@ pada %2$@"
+          }
+        }
+      }
+    },
+    "menu.hero.reminderBefore": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تذكير قبل %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reminder %@ before"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rappel %@ avant"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ پہلے یاددہانی"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pengingat %@ sebelumnya"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ önce hatırlatma"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآوری %@ قبل"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ আগে রিমাইন্ডার"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan %@ sebelum"
+          }
+        }
+      }
+    },
     "menu.lastKnown": {
       "comment": "Menu-bar dropdown: caption above the last day whose prayer times were available, while today's aren't. %@ is that day's date.",
       "extractionState": "manual",
@@ -469,6 +701,64 @@
         }
       }
     },
+    "menu.openSettings": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح الإعدادات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrir les Réglages"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ترتیبات کھولیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Buka Pengaturan"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ayarları Aç"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "باز کردن تنظیمات"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সেটিংস খুলুন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Buka Tetapan"
+          }
+        }
+      }
+    },
     "menu.quit": {
       "extractionState": "stale",
       "localizations": {
@@ -524,6 +814,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keluar dari Salah"
+          }
+        }
+      }
+    },
+    "menu.row.missing": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "لا تحدث اليوم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doesn’t occur today"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "N’a pas lieu aujourd’hui"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آج نہیں ہوتی"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tidak terjadi hari ini"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bugün gerçekleşmiyor"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "امروز رخ نمی‌دهد"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আজ হয় না"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tidak berlaku hari ini"
           }
         }
       }
@@ -641,6 +989,64 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tetapan…"
+          }
+        }
+      }
+    },
+    "menu.soundsOff": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأصوات متوقفة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sounds off"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sons coupés"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آوازیں بند"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Suara mati"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sesler kapalı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صداها خاموش"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শব্দ বন্ধ"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bunyi dimatikan"
           }
         }
       }
@@ -2967,524 +3373,176 @@
         }
       }
     },
-    "settings.appearance.accent": {
+    "settings.appearance.colors": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اللون المميّز"
+            "value": "الألوان"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Accent"
+            "value": "Colors"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Accent"
+            "state": "needs_review",
+            "value": "Couleurs"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "نمایاں رنگ"
+            "state": "needs_review",
+            "value": "رنگ"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Aksen"
+            "state": "needs_review",
+            "value": "Warna"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Vurgu"
+            "state": "needs_review",
+            "value": "Renkler"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "رنگ تأکید"
+            "state": "needs_review",
+            "value": "رنگ‌ها"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "অ্যাকসেন্ট"
+            "state": "needs_review",
+            "value": "রং"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Aksen"
+            "state": "needs_review",
+            "value": "Warna"
           }
         }
       }
     },
-    "settings.appearance.background": {
+    "settings.appearance.followsTimeOfDay": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الخلفية"
+            "value": "اتباع وقت اليوم"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Background"
+            "value": "Follow the time of day"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Arrière-plan"
+            "state": "needs_review",
+            "value": "Suivre le moment de la journée"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "پس منظر"
+            "state": "needs_review",
+            "value": "دن کے وقت کے مطابق"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Latar Belakang"
+            "state": "needs_review",
+            "value": "Ikuti waktu hari"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Arka Plan"
+            "state": "needs_review",
+            "value": "Günün saatini izle"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "پس‌زمینه"
+            "state": "needs_review",
+            "value": "پیروی از زمان روز"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "পটভূমি"
+            "state": "needs_review",
+            "value": "দিনের সময় অনুসরণ করুন"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Latar Belakang"
+            "state": "needs_review",
+            "value": "Ikut waktu hari"
           }
         }
       }
     },
-    "settings.appearance.base.graphite": {
+    "settings.appearance.followsTimeOfDay.detail": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "رمادي"
+            "value": "تتبع السماء الصلاة التي أنت في وقتها."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Graphite"
+            "value": "The sky follows the prayer you’re in."
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Graphite"
+            "state": "needs_review",
+            "value": "Le ciel suit la prière en cours."
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "گریفائٹ"
+            "state": "needs_review",
+            "value": "آسمان موجودہ نماز کے وقت کے مطابق ہوتا ہے۔"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Grafit"
+            "state": "needs_review",
+            "value": "Langit mengikuti waktu salat saat ini."
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Grafit"
+            "state": "needs_review",
+            "value": "Gökyüzü içinde bulunduğunuz namaz vaktini izler."
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "نوک‌مدادی"
+            "state": "needs_review",
+            "value": "آسمان از وقت نمازی که در آن هستید پیروی می‌کند."
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "গ্রাফাইট"
+            "state": "needs_review",
+            "value": "আকাশ বর্তমান নামাজের সময় অনুসরণ করে।"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Grafit"
-          }
-        }
-      }
-    },
-    "settings.appearance.base.midnight": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ليلي"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Midnight"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Minuit"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نیم شب"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tengah Malam"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gece Yarısı"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نیمه‌شب"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "মধ্যরাত"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tengah Malam"
-          }
-        }
-      }
-    },
-    "settings.appearance.base.sand": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "رملي"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sand"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sable"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ریتیلا"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pasir"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kum"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "شنی"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "বালুকা"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pasir"
-          }
-        }
-      }
-    },
-    "settings.appearance.contrastWarning": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تباين منخفض هنا"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Low contrast here"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Contraste faible ici"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "یہاں تضاد کم ہے"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kontras rendah di sini"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Burada kontrast düşük"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "کنتراست در اینجا کم است"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "এখানে কম কনট্রাস্ট"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kontras rendah di sini"
-          }
-        }
-      }
-    },
-    "settings.appearance.customize": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تخصيص"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Customize"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Personnaliser"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حسبِ ضرورت بنائیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sesuaikan"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Özelleştir"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سفارشی‌سازی"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "কাস্টমাইজ"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suaikan"
-          }
-        }
-      }
-    },
-    "settings.appearance.fixContrast": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تصحيح التباين"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fix contrast"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Corriger le contraste"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تضاد ٹھیک کریں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perbaiki kontras"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kontrastı düzelt"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اصلاح کنتراست"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "কনট্রাস্ট ঠিক করুন"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Betulkan kontras"
-          }
-        }
-      }
-    },
-    "settings.appearance.hueWarning": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "قريب من لون حالة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close to a status color"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Proche d’une couleur d’état"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "کسی اسٹیٹس رنگ کے قریب"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mendekati warna status"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bir durum rengine yakın"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نزدیک به یک رنگ وضعیت"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "স্ট্যাটাস রঙের কাছাকাছি"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hampir dengan warna status"
+            "state": "needs_review",
+            "value": "Langit mengikut waktu solat semasa."
           }
         }
       }
@@ -3779,350 +3837,60 @@
         }
       }
     },
-    "settings.appearance.primary": {
+    "settings.appearance.preview.caption": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اللون الأساسي"
+            "value": "تشترك الأداة والقائمة في هذه الألوان."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Primary"
+            "value": "The widget and the dropdown share these colors."
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Principale"
+            "state": "needs_review",
+            "value": "Le widget et le menu partagent ces couleurs."
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "بنیادی رنگ"
+            "state": "needs_review",
+            "value": "وجیٹ اور مینیو یہی رنگ استعمال کرتے ہیں۔"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Utama"
+            "state": "needs_review",
+            "value": "Widget dan menu memakai warna yang sama."
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Birincil"
+            "state": "needs_review",
+            "value": "Widget ve menü bu renkleri paylaşır."
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "رنگ اصلی"
+            "state": "needs_review",
+            "value": "ابزارک و منو این رنگ‌ها را به اشتراک می‌گذارند."
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "প্রধান"
+            "state": "needs_review",
+            "value": "উইজেট ও মেনু এই রং ব্যবহার করে।"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Utama"
-          }
-        }
-      }
-    },
-    "settings.appearance.size": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الحجم"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Size"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Taille"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سائز"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ukuran"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boyut"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اندازه"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "আকার"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saiz"
-          }
-        }
-      }
-    },
-    "settings.appearance.size.large": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "كبير"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Large"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grand"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بڑا"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Besar"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Büyük"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بزرگ"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "বড়"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Besar"
-          }
-        }
-      }
-    },
-    "settings.appearance.size.medium": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "متوسط"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Medium"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Moyen"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "درمیانہ"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sedang"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Orta"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "متوسط"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "মাঝারি"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sederhana"
-          }
-        }
-      }
-    },
-    "settings.appearance.size.small": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "صغير"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Small"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Petit"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "چھوٹا"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kecil"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Küçük"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "کوچک"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ছোট"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kecil"
-          }
-        }
-      }
-    },
-    "settings.appearance.theme": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "السمة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Theme"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thème"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تھیم"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "زمینه"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "থিম"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
+            "state": "needs_review",
+            "value": "Widget dan menu berkongsi warna ini."
           }
         }
       }

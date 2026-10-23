@@ -30,7 +30,8 @@ extension Preferences {
   var mirroredSettings: SalahSettings {
     SalahSettings(
       location: prayerLocation, calculation: calculationChoices.calculationSettings,
-      language: appLanguage, theme: resolvedWidgetTheme, silentMode: silentMode,
+      language: appLanguage, appearance: appearance, followsTimeOfDay: followsTimeOfDay,
+      silentMode: silentMode,
       hijriOffset: hijriOffset,
       alerts: Dictionary(
         uniqueKeysWithValues: PrayerKind.allCases.map { ($0, PrayerAlerts(config(for: $0))) }),

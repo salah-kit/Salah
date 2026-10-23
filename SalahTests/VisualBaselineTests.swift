@@ -181,7 +181,7 @@ struct VisualBaselineTests {
       all.filter { $0.surface == .menu }.count == SpecState.allCases.filter(\.onMenu).count * 3 * 2)
     #expect(
       all.filter { $0.surface == .preview }.count == PreviewScenario.allCases.count * 3 * 3 * 2)
-    #expect(all.filter { $0.surface == .theme }.count == ThemePreset.allCases.count * 3 * 2)
+    #expect(all.filter { $0.surface == .phase }.count == SalahPhase.allCases.count * 3 * 2)
     // Only the Arabic menu dropdown renders in the Arabic run.
     #expect(
       all.filter { $0.processLanguages == ["ar"] }

@@ -186,7 +186,7 @@ nonisolated extension SalahSettings {
         latitude: 21.4167, longitude: 39.8167, timeZone: zone, countryCode: "SA",
         name: "Makkah"),
       calculation: CalculationSettings(parameters: parameters), language: .system,
-      theme: .nocturne, silentMode: false, hijriOffset: 0,
+      appearance: .system, followsTimeOfDay: true, silentMode: false, hijriOffset: 0,
       alerts: Dictionary(
         uniqueKeysWithValues: PrayerKind.allCases.map { ($0, PrayerAlerts(alert: $0.isPrayer)) }),
       jumuahAlerts: nil)

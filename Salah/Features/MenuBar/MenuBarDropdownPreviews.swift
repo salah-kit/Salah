@@ -8,10 +8,8 @@
   /// anchored to the real `now` (minute offsets) so the live countdown renders
   /// truthfully, so the two surfaces are verified against the same states.
   private enum MenuPreviewData {
-    static func idle(rtl: Bool = false, theme: SalahWidgetTheme = .nocturne) -> SalahDisplay {
-      var display = WidgetPreviewData.idle(rtl ? .ar : .en)
-      display.settings.theme = theme
-      return display
+    static func idle(rtl: Bool = false) -> SalahDisplay {
+      WidgetPreviewData.idle(rtl ? .ar : .en)
     }
     static var silent: SalahDisplay { WidgetPreviewData.silent() }
     static var playing: SalahDisplay { WidgetPreviewData.playing() }
@@ -53,7 +51,7 @@
   }
 
   #Preview("Imminent · dark") {
-    MenuDropdownPreview(title: "Imminent (<15m)", display: MenuPreviewData.imminent)
+    MenuDropdownPreview(title: "Approaching (<15m)", display: MenuPreviewData.imminent)
       .preferredColorScheme(.dark)
   }
 
@@ -93,16 +91,4 @@
     ).preferredColorScheme(.dark)
   }
 
-  #Preview("Themes · dark") {
-    ScrollView {
-      VStack(spacing: 16) {
-        ForEach(SalahWidgetTheme.allPresets, id: \.id) { theme in
-          MenuDropdownContent(display: MenuPreviewData.idle(theme: theme))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-      }
-      .padding(20)
-    }
-    .preferredColorScheme(.dark)
-  }
 #endif

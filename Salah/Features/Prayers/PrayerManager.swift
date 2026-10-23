@@ -517,6 +517,13 @@ enum MenuBarStatusTone {
 }
 
 extension PrayerManager {
+  /// The glyph the status item shows: the prayer that just began while it counts up, else
+  /// the next event's.
+  var menuBarGlyph: PrayerKind? {
+    let state = state.prayerState
+    return (state?.justStarted ?? state?.next)?.kind
+  }
+
   var menuBarStatusTone: MenuBarStatusTone {
     if case .playing(let context) = audioPlaybackController.state {
       switch context.slot {

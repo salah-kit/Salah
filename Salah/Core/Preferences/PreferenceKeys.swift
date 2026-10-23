@@ -35,11 +35,15 @@ extension Preferences {
     static let notificationSettings = "salah.notificationSettings"
     static let jumuahOverrideEnabled = "salah.jumuahOverrideEnabled"
     static let appLanguage = "salah.appLanguage"
-    // Widget appearance (theming)
-    static let widgetThemeID = "salah.widgetThemeID"
-    static let widgetCustomAccent = "salah.widgetCustomAccent"
-    static let widgetCustomPrimary = "salah.widgetCustomPrimary"
-    static let widgetCustomBase = "salah.widgetCustomBase"
-    static let widgetAppearance = "salah.widgetAppearance"
+    static let appearance = "salah.appearance"
+    static let followsTimeOfDay = "salah.followsTimeOfDay"
+    /// The retired widget theme's appearance, read once to carry an Always Dark or Always
+    /// Light choice over to `appearance`.
+    static let retiredWidgetAppearance = "salah.widgetAppearance"
+    /// The retired widget theme's keys, removed at launch.
+    static let retiredWidgetTheme = [
+      "salah.widgetThemeID", "salah.widgetCustomAccent", "salah.widgetCustomPrimary",
+      "salah.widgetCustomBase", retiredWidgetAppearance,
+    ]
   }
 }

@@ -11,7 +11,7 @@ import SalahWidgets
 /// builds its own schedule from it, so the widget stays right on the days the app isn't
 /// running. `SharedValue.settings` reloads the widget only when the value changed.
 ///
-/// Version 1: the version is in the key (`SalahWidgetConstants.settingsKey`), so a change
+/// Version 2: the version is in the key (`SalahWidgetConstants.settingsKey`), so a change
 /// to the shape takes a new key, and a value that no longer decodes reads as missing.
 nonisolated struct SalahSettings: Codable, Equatable, Sendable {
   /// Where: the coordinates, the time zone that defines the days, the country, and the
@@ -21,8 +21,10 @@ nonisolated struct SalahSettings: Codable, Equatable, Sendable {
   var calculation: CalculationSettings
   /// The language the user chose.
   var language: AppLanguage
-  /// The widget's theme, resolved from the chosen preset or the custom colors.
-  var theme: SalahWidgetTheme
+  /// Light, dark, or the system's appearance.
+  var appearance: SalahAppearance
+  /// Whether the sky follows the time of day; the neutral sky when it doesn't.
+  var followsTimeOfDay: Bool
   /// Whether silent mode is on.
   var silentMode: Bool
   /// Days added to the Hijri date, for a local moon sighting.

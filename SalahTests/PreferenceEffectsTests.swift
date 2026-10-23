@@ -37,7 +37,7 @@ struct PreferenceEffectsTests {
   nonisolated enum Setting: String, Sendable, CaseIterable {
     case displayNextPrayer, nextPrayerDisplayType, nextPrayerDisplayName, displayIcon
     case useCurrentLocation, city, state, country, countryName, hijriOffset
-    case widgetThemeID, widgetCustomAccent, widgetCustomPrimary, widgetCustomBase, widgetAppearance
+    case appearance, followsTimeOfDay
     case storedTimeZone, latitude, longitude, methodPreference, madhabPreference
     case autoDetectMethod, autoDetectHighLatitudeRule, highLatitudeRulePreference
     case customFajrAngle, customIshaAngle
@@ -52,7 +52,7 @@ struct PreferenceEffectsTests {
     effects: [PreferenceRefresh], change: (Preferences) -> Void
   ) {
     switch setting {
-    // Display: the menu bar's format, the location label, the Hijri offset, the theme.
+    // Display: the menu bar's format, the location label, the Hijri offset, the appearance.
     case .displayNextPrayer: ([.display], { $0.displayNextPrayer = false })
     case .nextPrayerDisplayType: ([.display], { $0.nextPrayerDisplayType = .timeOfPrayer })
     case .nextPrayerDisplayName: ([.display], { $0.nextPrayerDisplayName = .abbreviation })
@@ -63,11 +63,8 @@ struct PreferenceEffectsTests {
     case .country: ([.display], { $0.country = "EG" })
     case .countryName: ([.display], { $0.countryName = "Egypt" })
     case .hijriOffset: ([.display], { $0.hijriOffset = 1 })
-    case .widgetThemeID: ([.display], { $0.widgetThemeID = "dawn" })
-    case .widgetCustomAccent: ([.display], { $0.widgetCustomAccent = SalahColorSpec(1, 0, 0) })
-    case .widgetCustomPrimary: ([.display], { $0.widgetCustomPrimary = SalahColorSpec(0, 1, 0) })
-    case .widgetCustomBase: ([.display], { $0.widgetCustomBase = .sand })
-    case .widgetAppearance: ([.display], { $0.widgetAppearance = .alwaysDark })
+    case .appearance: ([.display], { $0.appearance = .dark })
+    case .followsTimeOfDay: ([.display], { $0.followsTimeOfDay = false })
     // Prayer times: anything that moves a time, plus the notification settings.
     case .storedTimeZone: ([.prayerTimes], { $0.storedTimeZone = "Africa/Cairo" })
     case .latitude: ([.prayerTimes], { $0.latitude = 30.0444 })

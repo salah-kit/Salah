@@ -29,9 +29,7 @@ extension Preferences {
       Key.silentMode: false,
       Key.jumuahOverrideEnabled: false,
       Key.appLanguage: AppLanguage.system.rawValue,
-      Key.widgetThemeID: "nocturne",
-      Key.widgetCustomBase: SalahWidgetBackgroundBase.midnight.rawValue,
-      Key.widgetAppearance: SalahWidgetAppearance.system.rawValue,
+      Key.followsTimeOfDay: true,
     ])
   }
 }

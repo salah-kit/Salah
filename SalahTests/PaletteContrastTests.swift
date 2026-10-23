@@ -1,0 +1,90 @@
+import SalahUI
+import Testing
+
+/// Salah's color tokens keep the contrast the design promises, on every surface they're
+/// drawn on, in light and dark, with and without Increase Contrast: text 4.5:1, marks and
+/// passed rows 3:1. The widgets, the dropdown and Today draw only these tokens, so this holds
+/// for every face, whatever the time of day.
+@Suite("Palette contrast")
+struct PaletteContrastTests {
+  /// Every appearance: light and dark, standard and increased contrast.
+  static let appearances: [(isDark: Bool, increased: Bool)] = [
+    (false, false), (true, false), (false, true), (true, true),
+  ]
+
+  /// `color` composited over the opaque `surface`.
+  private static func over(_ color: ThemeColor, _ surface: ThemeColor) -> ThemeColor {
+    let alpha = color.opacity
+    return ThemeColor(
+      red: color.red * alpha + surface.red * (1 - alpha),
+      green: color.green * alpha + surface.green * (1 - alpha),
+      blue: color.blue * alpha + surface.blue * (1 - alpha))
+  }
+
+  private static func ratio(_ ink: ThemeColor, on surface: ThemeColor) -> Double {
+    ThemeColor.contrastRatio(over(ink, surface), surface)
+  }
+
+  /// Text and marks on each time of day's sky, as the widgets and the next-prayer card draw
+  /// them.
+  @Test(arguments: SalahPhase.allCases)
+  func inksHoldOnTheSky(_ phase: SalahPhase) {
+    for (isDark, increased) in Self.appearances {
+      let palette = SalahPalette(isDark: isDark, increasedContrast: increased)
+      let colors = phase.colors(isDark: isDark, increasedContrast: increased)
+      let label = "\(phase) dark=\(isDark) increased=\(increased)"
+      for sky in [colors.skyTop, colors.skyBottom] {
+        #expect(Self.ratio(palette.labelPrimary, on: sky) >= 4.5, "\(label) primary")
+        #expect(Self.ratio(palette.labelSecondary, on: sky) >= 4.5, "\(label) secondary")
+        #expect(Self.ratio(palette.labelTertiary, on: sky) >= 3, "\(label) tertiary")
+        #expect(Self.ratio(palette.accentText, on: sky) >= 4.5, "\(label) accent text")
+        #expect(Self.ratio(colors.text, on: sky) >= 4.5, "\(label) phase text")
+        #expect(Self.ratio(colors.tint, on: sky) >= 3, "\(label) phase tint")
+      }
+      // The current prayer's row: its wash, with its detail in the phase's text.
+      let window = palette.elevated
+      let wash = Self.over(colors.tintSubtle, window)
+      #expect(Self.ratio(colors.text, on: wash) >= 4.5, "\(label) phase text on its wash")
+      #expect(Self.ratio(palette.labelPrimary, on: wash) >= 4.5, "\(label) primary on its wash")
+    }
+  }
+
+  /// Text and marks on the dropdown's and the window's surfaces, and on the accent fills.
+  @Test func inksHoldOnTheSurfaces() {
+    for (isDark, increased) in Self.appearances {
+      let palette = SalahPalette(isDark: isDark, increasedContrast: increased)
+      let label = "dark=\(isDark) increased=\(increased)"
+      let surfaces = [
+        ("elevated", palette.elevated),
+        ("grouped", palette.groupedSecondary),
+        ("form group", Self.over(palette.formGroup, palette.groupedSecondary)),
+      ]
+      for (name, surface) in surfaces {
+        #expect(Self.ratio(palette.labelPrimary, on: surface) >= 4.5, "\(label) primary on \(name)")
+        #expect(
+          Self.ratio(palette.labelSecondary, on: surface) >= 4.5, "\(label) secondary on \(name)")
+        #expect(
+          Self.ratio(palette.labelTertiary, on: surface) >= 3, "\(label) tertiary on \(name)")
+        #expect(Self.ratio(palette.accentText, on: surface) >= 4.5, "\(label) accent on \(name)")
+        #expect(Self.ratio(palette.accent, on: surface) >= 3, "\(label) accent mark on \(name)")
+      }
+      // The next prayer's row and Silent when it's on: the accent's text on its wash.
+      let wash = Self.over(palette.accentSubtle, palette.elevated)
+      #expect(Self.ratio(palette.accentText, on: wash) >= 4.5, "\(label) accent text on the wash")
+      #expect(Self.ratio(palette.labelPrimary, on: wash) >= 4.5, "\(label) primary on the wash")
+      // Open Salah, Stop, Got It and the Now badge: dark ink on the gold fill.
+      #expect(
+        Self.ratio(palette.labelOnAccent, on: palette.accentFill) >= 4.5,
+        "\(label) on-accent on the gold fill")
+    }
+  }
+
+  /// Light and dark are distinct palettes, and each time of day has its own sky.
+  @Test func eachAppearanceHasItsOwnColors() {
+    let light = SalahPalette(isDark: false)
+    let dark = SalahPalette(isDark: true)
+    #expect(light.labelPrimary != dark.labelPrimary)
+    #expect(
+      SalahPhase.dhuhr.colors(isDark: false).skyTop != SalahPhase.asr.colors(isDark: false).skyTop)
+  }
+}

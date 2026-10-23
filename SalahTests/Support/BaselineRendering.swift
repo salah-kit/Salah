@@ -42,14 +42,24 @@ enum BaselinePipeline {
     }
   }
 
-  static func theme(_ preset: ThemePreset) -> SalahWidgetTheme {
-    switch preset {
-    case .nocturne: .nocturne
-    case .dawn: .dawn
-    case .oasis: .oasis
-    case .ink: .ink
-    case .highContrast: .highContrast
+  /// The moment a time of day is shown at on the fixture day, with the idle setup: half an
+  /// hour or an hour into its prayer's period. The neutral sky is shown at the idle moment,
+  /// with the time of day turned off.
+  static func moment(for phase: SalahPhase) -> Date {
+    switch phase {
+    case .fajr: Fixture.time(.fajr).adding(minutes: 30)
+    case .dhuhr, .neutral: Fixture.time(.dhuhr).adding(minutes: 60)
+    case .asr: Fixture.time(.asr).adding(minutes: 30)
+    case .maghrib: Fixture.time(.maghrib).adding(minutes: 30)
+    case .isha: Fixture.time(.isha).adding(minutes: 60)
     }
+  }
+
+  /// The idle display at a time of day's moment.
+  static func display(for phase: SalahPhase, language: Baseline.Language) -> SalahDisplay {
+    var settings = settings(for: .idle, language: language)
+    settings.followsTimeOfDay = phase != .neutral
+    return SalahDisplay(date: moment(for: phase), settings: settings, schedule: settings.schedule)
   }
 
   /// The moment a spec state is shown at, on the fixture day.
@@ -140,6 +150,8 @@ enum BaselinePipeline {
 
   static func view(for baseline: Baseline) throws -> AnyView {
     let content: AnyView
+    // A still pauses the live timers at the face's moment, as they'd read then.
+    var pause: Date?
     switch baseline.surface {
     case .widget:
       let state = SpecState(rawValue: baseline.state)!
@@ -153,22 +165,19 @@ enum BaselinePipeline {
           "widget.openToSetUp",
           localeIdentifier: Locale.preferredLanguages.first ?? "en")
         content = AnyView(
-          WidgetShellMessage(
-            theme: .nocturne, tone: .normal, size: size, systemImage: "moon.stars",
-            message: message))
+          WidgetShellMessage(size: size, systemImage: "moon.stars", message: message))
       case .stale:
         // The timeline ran out before WidgetKit asked for a new one: the expired
         // entry, the morning after the fixture day.
         let settings = settings(for: state, language: baseline.language)
         content = AnyView(
           WidgetShellMessage(
-            theme: settings.theme, tone: settings.silentMode ? .silent : .normal,
-            locale: settings.locale, size: size, systemImage: "arrow.clockwise",
-            message: settings.labels.openToUpdate))
+            locale: settings.locale, appearance: settings.appearance, size: size,
+            systemImage: "arrow.clockwise", message: settings.labels.openToUpdate))
       default:
-        content = AnyView(
-          WidgetPreviewContainer(
-            display: display(for: state, language: baseline.language), size: size))
+        let display = display(for: state, language: baseline.language)
+        pause = display.date
+        content = AnyView(WidgetPreviewContainer(display: display, size: size))
       }
     case .menu:
       let state = SpecState(rawValue: baseline.state)!
@@ -176,15 +185,19 @@ enum BaselinePipeline {
         MenuDropdownContent(display: display(for: state, language: baseline.language)))
     case .preview:
       let scenario = PreviewScenario(rawValue: baseline.state)!
-      content = AnyView(
-        WidgetPreviewContainer(
-          display: previewDisplay(scenario, baseline.language), size: size(baseline.family!)))
-    case .theme:
-      var display = WidgetPreviewData.idle(previewLanguage(baseline.language), now: previewNow)
-      display.settings.theme = theme(ThemePreset(rawValue: baseline.state)!)
+      let display = previewDisplay(scenario, baseline.language)
+      pause = display.date
+      content = AnyView(WidgetPreviewContainer(display: display, size: size(baseline.family!)))
+    case .phase:
+      let phase = SalahPhase(rawValue: baseline.state)!
+      let display = display(for: phase, language: baseline.language)
+      pause = display.date
       content = AnyView(WidgetPreviewContainer(display: display, size: .medium))
     }
-    return AnyView(content.environment(\.colorScheme, colorScheme(baseline.appearance)))
+    return AnyView(
+      content
+        .environment(\.salahTimerPause, pause)
+        .environment(\.colorScheme, colorScheme(baseline.appearance)))
   }
 }
 
@@ -192,33 +205,22 @@ enum BaselinePipeline {
 /// message branches) in the frame, backdrop and clip `WidgetPreviewContainer` gives
 /// the data faces. WidgetKit's own container only renders in a widget host.
 struct WidgetShellMessage: View {
-  let theme: SalahWidgetTheme
-  let tone: SalahWidgetTone
   /// The settings' locale; `nil` for the setup face, which keeps the device's.
   var locale: Locale? = nil
+  var appearance: SalahAppearance = .system
   let size: SalahWidgetSize
   let systemImage: String
   let message: String
 
-  @Environment(\.colorScheme) private var scheme
-
   var body: some View {
-    let colors = theme.colors(for: scheme)
     let point = size.desktopPointSize
+    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
     let face = WidgetMessageContent(systemImage: systemImage, message: Text(verbatim: message))
-      .environment(
-        \.salahWidgetBackdrop,
-        SalahWidgetBackdrop(
-          colors: colors, tone: tone, size: point,
-          isRightToLeft: locale?.language.characterDirection == .rightToLeft)
-      )
       .frame(width: point.width, height: point.height)
-      .coordinateSpace(.named(SalahWidgetBackdrop.coordinateSpace))
-      .background {
-        SalahWidgetBackground(tone: tone, colors: colors)
-      }
-      .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-      .salahColorScheme(theme.forcedColorScheme)
+      .background { WidgetSky(phase: .neutral) }
+      .containerShape(shape)
+      .clipShape(shape)
+      .salahColorScheme(appearance.colorScheme)
     if let locale {
       face
         .environment(\.locale, locale)

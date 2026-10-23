@@ -1,4 +1,6 @@
 import AppKit
+import SalahCore
+import SalahUI
 import SwiftUI
 
 @main
@@ -44,12 +46,16 @@ struct SalahApp: App {
         .background(WindowTitleSetter(title: appName))
         .environment(\.locale, appLocale)
         .environment(\.layoutDirection, appLayoutDirection)
+        .preferredColorScheme(preferences.appearance.colorScheme)
     } label: {
       MenuBarLabel(
         text: prayerManager.statusBarText,
         showIcon: prayerManager.preferences.displayIcon || hasLocationAttention,
+        glyph: prayerManager.menuBarGlyph,
+        isPlaying: prayerManager.menuBarStatusTone != .normal
+          && prayerManager.menuBarStatusTone != .imminent,
+        isApproaching: prayerManager.menuBarStatusTone == .imminent,
         attention: hasLocationAttention,
-        tint: menuBarTint,
         layoutDirection: appLayoutDirection
       )
       .background(WindowOpenerBridge())
@@ -64,24 +70,11 @@ struct SalahApp: App {
       )
       .environment(\.locale, appLocale)
       .environment(\.layoutDirection, appLayoutDirection)
+      .preferredColorScheme(preferences.appearance.colorScheme)
     }
     .defaultSize(width: 888, height: 520)
     .windowResizability(.contentMinSize)
     .commands { SalahCommands(locale: appLocale) }
-  }
-
-  /// Menu-bar tint for the current state, or `nil` for the normal state. `nil`
-  /// keeps the system's default template rendering (the text auto-adapts to a
-  /// light or dark menu bar); a non-nil color is drawn explicitly by
-  /// `MenuBarLabel`, since `MenuBarExtra` otherwise strips its label's colors.
-  private var menuBarTint: Color? {
-    switch prayerManager.menuBarStatusTone {
-    case .normal: nil
-    case .imminent: .red
-    case .playingPreReminderAudio: .orange
-    case .playingPrayerAudio: .green
-    case .playingPostReminderAudio: .purple
-    }
   }
 
   /// A live terminal failure (e.g. location permission denied) badges the
@@ -151,63 +144,78 @@ private struct SalahCommands: Commands {
   }
 }
 
-/// The menu-bar label (icon + status text).
+/// The menu-bar label: the next prayer's glyph (the one that just began, while it counts
+/// up) and the status text, in the system's menu-bar font.
 ///
-/// macOS renders a `MenuBarExtra` label as a monochrome *template*: it discards
-/// any SwiftUI foreground color, so the imminent-red / count-up-green tint never
-/// reached the menu bar (it stayed default-colored). The original app colored the
-/// status item via `NSStatusItem`'s `attributedTitle` + `NSForegroundColorAttribute`;
-/// we keep the SwiftUI `MenuBarExtra` (and its popover) and get the same result by
-/// rasterizing the tinted label to a **non-template** image with `ImageRenderer`,
-/// which the status item then shows in full color.
-///
-/// The normal (untinted) state stays a plain SwiftUI label, so it keeps the
-/// system template behavior and auto-adapts to a light or dark menu bar.
+/// It's a template, so it follows the menu bar's light or dark appearance, except while a
+/// prayer approaches: then it sits on a gold capsule with dark ink, legible on any wallpaper.
+/// `MenuBarExtra` draws its label as a template and drops colors, so that state is drawn to a
+/// non-template image. While audio plays, a speaker stands in for the glyph. A permission
+/// that's off adds a small dot.
 private struct MenuBarLabel: View {
   let text: String
   let showIcon: Bool
+  let glyph: PrayerKind?
+  let isPlaying: Bool
+  let isApproaching: Bool
   let attention: Bool
-  /// Non-nil only for a colored state (imminent / playing); `nil` = normal.
-  let tint: Color?
   let layoutDirection: LayoutDirection
 
   var body: some View {
-    if let tint {
-      tintedImage(tint)
+    if isApproaching {
+      approachingImage
     } else {
-      content(font: nil, color: .primary)
+      content(font: nil, ink: .primary)
     }
   }
 
   @ViewBuilder
-  private func content(font: Font?, color: Color) -> some View {
-    HStack(spacing: 4) {
-      if showIcon {
-        Image(systemName: "moon.stars")
+  private func content(font: Font?, ink: Color) -> some View {
+    HStack(spacing: 5) {
+      if showIcon || isPlaying {
+        icon
           .overlay(alignment: .topTrailing) {
             if attention {
               Circle()
                 .fill(.orange)
-                .frame(width: 5, height: 5)
+                .frame(width: 6, height: 6)
                 .offset(x: 3, y: -2)
             }
           }
       }
       if !text.isEmpty {
-        Text(text)
+        Text(text).monospacedDigit()
       }
     }
     .font(font)
-    .foregroundStyle(color)
+    .foregroundStyle(ink)
     .environment(\.layoutDirection, layoutDirection)
   }
 
-  /// Rasterize the tinted label to a non-template image (see the type comment).
-  /// The raster needs an explicit menu-bar font since it leaves the live view
-  /// tree; the normal path inherits the system menu-bar font as before.
-  private func tintedImage(_ tint: Color) -> some View {
+  @ViewBuilder
+  private var icon: some View {
+    if isPlaying {
+      Image(systemName: "speaker.wave.2.fill")
+    } else if let glyph {
+      PrayerGlyph(kind: glyph)
+    } else {
+      Image(systemName: "moon.stars")
+    }
+  }
+
+  /// The approaching state as a non-template image: the label in `label/on-accent` on an
+  /// `accent/fill` capsule.
+  private var approachingImage: some View {
+    let palette = SalahPalette(isDark: false)
     let renderer = ImageRenderer(
-      content: content(font: .system(size: NSFont.menuBarFont(ofSize: 0).pointSize), color: tint)
+      content: content(
+        font: .system(size: NSFont.menuBarFont(ofSize: 0).pointSize),
+        ink: palette.labelOnAccent.color
+      )
+      .padding(.horizontal, 7)
+      .padding(.vertical, 2)
+      .background(
+        RoundedRectangle(cornerRadius: 6, style: .continuous).fill(palette.accentFill.color))
     )
     renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
     let nsImage = renderer.nsImage
@@ -218,7 +226,7 @@ private struct MenuBarLabel: View {
         Image(nsImage: nsImage).renderingMode(.original)
           .accessibilityLabel(Text(verbatim: text))
       } else {
-        content(font: nil, color: tint)
+        content(font: nil, ink: .primary)
       }
     }
   }
