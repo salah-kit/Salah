@@ -22,7 +22,7 @@ func localizedString(_ key: String.LocalizationValue, locale: Locale = .app) -> 
 }
 
 /// Same as `localizedString(_:locale:)` but for a key only known at runtime -
-/// e.g. derived from an `AppLanguage` case via `captionKey`. The key must exist
+/// e.g. a window pane's title key. The key must exist
 /// in the catalog; an unknown key resolves to itself (its own text).
 func localizedString(dynamicKey key: String, locale: Locale = .app) -> String {
   String(

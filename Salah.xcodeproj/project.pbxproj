@@ -62,6 +62,7 @@
 		364B02ED1EC5A7AA3AEC5E01 /* Adhan-Alafasy.m4a in Resources */ = {isa = PBXBuildFile; fileRef = C56A7BACC2303019D64B6BEC /* Adhan-Alafasy.m4a */; };
 		364C0EB8F4C0599E41B9E9F8 /* MenuBarChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E600131ED4FAF7AF7D19859 /* MenuBarChrome.swift */; };
 		37084617F1244EDC8D50C556 /* AdjustmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7850779C111D56324DA71023 /* AdjustmentRow.swift */; };
+		3750321919FC31974FB8EA8D /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15B0A4E0B001592D768EDC /* SettingsForm.swift */; };
 		38282006C00E5F58947A6CB0 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */; };
 		38B7C5F2B6C46069D9B76CC0 /* AppClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A198BAFC5BE8CF4BC8F62E6 /* AppClock.swift */; };
 		390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FBA9F0E069647A5AC1D2BE /* WidgetPreviewContainer.swift */; };
@@ -72,6 +73,7 @@
 		4065B66168D9C32DCD7B290F /* SalahWidgetFaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC745E7139FFF1BF86597C /* SalahWidgetFaces.swift */; };
 		4156357497B7EDBB7A52F25E /* Locale+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85A1F9F52601F7605DFD353 /* Locale+App.swift */; };
 		416B99256CF372F98D5BA14F /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D360D0B254920E7A9920C /* AppAppearance.swift */; };
+		420272EE26A7A2D90871B04B /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15B0A4E0B001592D768EDC /* SettingsForm.swift */; };
 		437A119ED0082F596A05711A /* BaselineRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A739B3A33C1689F5860C1F5 /* BaselineRendering.swift */; };
 		4393A1EB83FFCB0CFF37EF81 /* AppLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06C21F7DB1A8717381074B2 /* AppLifecycle.swift */; };
 		4408B9DD2DC6FF2EA0FDA8C2 /* Adhan-Aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 08F3510F20456EFE4FCBB6F6 /* Adhan-Aqsa.mp3 */; };
@@ -84,6 +86,7 @@
 		49B15A4FD775DF85CF945D3D /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = 53DED3417D115902EFEF8828 /* SalahCore */; };
 		4A5EBCA7451E9C1B4CC3E079 /* LocationSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E811762213EA0827DFD2C8E /* LocationSearchService.swift */; };
 		4C30722D49DEA291A0F45B0E /* SalahPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91709727D4888850F7EFB668 /* SalahPalette.swift */; };
+		4C5615EB89FF5911CEA97D9C /* Tone-Soft.m4a in Resources */ = {isa = PBXBuildFile; fileRef = D1A0F98E8D4F6B63EBA28FD3 /* Tone-Soft.m4a */; };
 		4D11B2EE212752679886D646 /* SalahPrayerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28837E4AF194675AAF562303 /* SalahPrayerSource.swift */; };
 		4DB44E44E672C3A4F09A827D /* LaunchArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11FC1F1E5D80D15687E3899 /* LaunchArguments.swift */; };
 		5178901B3EB6427BB3D629C7 /* SalahWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CB7D479E323D965E2DBE5FDE /* SalahWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -148,6 +151,7 @@
 		7E8145A6AE27CCA48787794F /* LocationFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA8217C9C1A12C795295E91 /* LocationFailure.swift */; };
 		7F3D77C0C04C77CB20D61E02 /* SalahDayTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F60BE825CA31CB8FDC59182 /* SalahDayTimeline.swift */; };
 		81638F1942939D2F5829DE57 /* SoundPickerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7FDC206871EA9045D3E864 /* SoundPickerRow.swift */; };
+		8217A6FBCE0DAC5E2466C150 /* SettingsPanesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E204EA3844233F3621410E8 /* SettingsPanesTests.swift */; };
 		8443920AE6ECD54215DFE3A8 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		84730EA8F8C0F9969AC77183 /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = E343A08774DBFCBC3BB96DFC /* SalahCalculation */; };
 		852ED85F11A9C1204BC3F970 /* Locale+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85A1F9F52601F7605DFD353 /* Locale+App.swift */; };
@@ -156,6 +160,7 @@
 		866B66E9D00D278764C6AE19 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C316F5DF076C516CA2C245EF /* Assets.xcassets */; };
 		8A2D554ACE146BBE8A8BD248 /* PreferenceEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EC32D7FCEE7E9AAFD7F809 /* PreferenceEnums.swift */; };
 		8AA377D0918BCB0A7D37CA71 /* PrayerCalcFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E991D181F4950B6713318C2 /* PrayerCalcFailure.swift */; };
+		8B27DA02EB94776C7729968A /* Preferences+Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151FC6999CF1745DF4939567 /* Preferences+Place.swift */; };
 		8CC200A3AD72D69B9221CC4A /* Glyphs.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4902533DB63CAA75CD4B8704 /* Glyphs.xcassets */; };
 		8CE5762B1999995BF1733793 /* SalahWidgets in Frameworks */ = {isa = PBXBuildFile; productRef = 363766575D95CE17A4A7BBBE /* SalahWidgets */; };
 		8E6A5CB7C168A52333C8FAF8 /* SalahDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EFE7DDA9A724FDF705576 /* SalahDisplay.swift */; };
@@ -237,6 +242,7 @@
 		C4ACACB4A2D49BEEBE555074 /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = 40120B4CE9F73DC784EE81CA /* SalahCore */; };
 		C57F5B043E75C4A34876CA72 /* Adhan-Makkah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */; };
 		C6D8C8508B2B2CA688876316 /* DebugLaunchOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7118B5FB030156F22424C715 /* DebugLaunchOptionsTests.swift */; };
+		C7F01329C632ED92349DB5AF /* Preferences+Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151FC6999CF1745DF4939567 /* Preferences+Place.swift */; };
 		C81BFDB5B18B43B605E627E1 /* SalahDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3447D11C3C2A7C95591D7 /* SalahDisplayTests.swift */; };
 		C943D38420D0BAFE34B515A1 /* MenuBarPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D6EDF019EACB924BC6CA07 /* MenuBarPreview.swift */; };
 		C94AADC3006FD5BF2F3F6963 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */; };
@@ -269,6 +275,7 @@
 		E3C737F31AE195EC8D98C787 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B96E3F5DB244E89AA6C8AA21 /* PrivacyInfo.xcprivacy */; };
 		E4C61C64BF9A9A1ABECB4846 /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD33235975BB0568FB6BC074 /* OnboardingFlow.swift */; };
 		E4D1CC0D1F34AAF7ECC85941 /* SalahWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E61E71AFF940C3AF83D8B2 /* SalahWidgetsBundle.swift */; };
+		E5309BFC6316C090CAC2A475 /* Tone-Soft.m4a in Resources */ = {isa = PBXBuildFile; fileRef = D1A0F98E8D4F6B63EBA28FD3 /* Tone-Soft.m4a */; };
 		E72B964F949BFE59FA1220D2 /* SalahWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8F7AA39750E3C0F53F24C8 /* SalahWindowView.swift */; };
 		E81EE1CFB949A05E4182D0A6 /* SalahWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0623A8755AF9D8667A573 /* SalahWidgetModels.swift */; };
 		E88788693396385C93694C5C /* SalahUI in Frameworks */ = {isa = PBXBuildFile; productRef = 19D6802963AE1B1FDCC61CC3 /* SalahUI */; };
@@ -355,6 +362,7 @@
 		0D2E519F24E6DB17B28FCADB /* GeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTab.swift; sourceTree = "<group>"; };
 		0DA4E51F88D694408BE9E0ED /* MenuDropdownFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDropdownFooter.swift; sourceTree = "<group>"; };
 		0FD12B29808D2CFB3C0BF7C4 /* MenuBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarItem.swift; sourceTree = "<group>"; };
+		151FC6999CF1745DF4939567 /* Preferences+Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preferences+Place.swift"; sourceTree = "<group>"; };
 		1524368D959363FDDFED1335 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		1A090191B2CF26A55B3E6D08 /* Salah.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salah.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A459E8C53F68865EB3B156A /* SalahStopHarness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SalahStopHarness.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -422,11 +430,13 @@
 		7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePicker.swift; sourceTree = "<group>"; };
 		7850779C111D56324DA71023 /* AdjustmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentRow.swift; sourceTree = "<group>"; };
 		7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Makkah.mp3"; sourceTree = "<group>"; };
+		7E204EA3844233F3621410E8 /* SettingsPanesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPanesTests.swift; sourceTree = "<group>"; };
 		80DD5264ACADB60FA57577BD /* PaletteContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteContrastTests.swift; sourceTree = "<group>"; };
 		85502C7E155811EF17729F5A /* SalahUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahUITests.swift; sourceTree = "<group>"; };
 		8552FB43879A30B29BAC8299 /* SalahSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahSettings.swift; sourceTree = "<group>"; };
 		8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityMonitor.swift; sourceTree = "<group>"; };
 		8C27B824CF1B9C5D41E580EA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		8D15B0A4E0B001592D768EDC /* SettingsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsForm.swift; sourceTree = "<group>"; };
 		901BC06F79694AC2FE791FFF /* LifecycleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifecycleUITests.swift; sourceTree = "<group>"; };
 		91709727D4888850F7EFB668 /* SalahPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPalette.swift; sourceTree = "<group>"; };
 		921D39EAD7CCEB866D7139E0 /* PrayerPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerPicker.swift; sourceTree = "<group>"; };
@@ -463,6 +473,7 @@
 		CD961191847B459803C37A27 /* SalahWidgetConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetConstants.swift; sourceTree = "<group>"; };
 		CEE9FAAEFB4B160776C283E6 /* NotificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModels.swift; sourceTree = "<group>"; };
 		D11FC1F1E5D80D15687E3899 /* LaunchArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchArguments.swift; sourceTree = "<group>"; };
+		D1A0F98E8D4F6B63EBA28FD3 /* Tone-Soft.m4a */ = {isa = PBXFileReference; path = "Tone-Soft.m4a"; sourceTree = "<group>"; };
 		D32A855F46C7172EFE3F0658 /* AppFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFailure.swift; sourceTree = "<group>"; };
 		D34D87BE592637BB56E8E8CC /* VoiceOverSpeechUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOverSpeechUITests.swift; sourceTree = "<group>"; };
 		D359B166C89F23825A5922A3 /* SalahPrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahPrayerWidget.swift; sourceTree = "<group>"; };
@@ -629,6 +640,7 @@
 				5FC3447D11C3C2A7C95591D7 /* SalahDisplayTests.swift */,
 				9DEA3764D4D7E768A26D5396 /* SalahTextTests.swift */,
 				03A90D479C9856A52E43C67D /* SettingsMirrorTests.swift */,
+				7E204EA3844233F3621410E8 /* SettingsPanesTests.swift */,
 				4E29BB065E75A15115233794 /* SunArcLayoutTests.swift */,
 				646444C8D7F539850A7433B7 /* TestEnvironmentTests.swift */,
 				2F9FF8819AD61DFA45A30935 /* VisualBaselineTests.swift */,
@@ -660,6 +672,7 @@
 				66C4D45ACF670852D66F36C6 /* Preferences.swift */,
 				1CCC2A3227698502D0DE5EAB /* Preferences+API.swift */,
 				297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */,
+				151FC6999CF1745DF4939567 /* Preferences+Place.swift */,
 				5C64FE4F117F2787B4168C6C /* PreferencesDefaults.swift */,
 			);
 			path = Preferences;
@@ -735,6 +748,7 @@
 				7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */,
 				BFDB27A20EBA965D57AFF7DA /* Adhan-Yusuf.mp3 */,
 				0506C1BDDA91DA7A586CB0F3 /* Dua.m4a */,
+				D1A0F98E8D4F6B63EBA28FD3 /* Tone-Soft.m4a */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -746,6 +760,7 @@
 				0A52A400F1902D63656AE733 /* InlineNoticeLabel.swift */,
 				7569F0EA27E388F2AD599A7E /* LanguagePicker.swift */,
 				C1D6EDF019EACB924BC6CA07 /* MenuBarPreview.swift */,
+				8D15B0A4E0B001592D768EDC /* SettingsForm.swift */,
 				6F7FDC206871EA9045D3E864 /* SoundPickerRow.swift */,
 			);
 			path = Components;
@@ -1234,6 +1249,7 @@
 				9FF067D08453E879704EF09B /* Dua.m4a in Resources */,
 				8FBB50FB1E14B5D858EA9E8A /* Glyphs.xcassets in Resources */,
 				D37F2A1FFAEDD8A1DDFAE9E4 /* Localizable.xcstrings in Resources */,
+				E5309BFC6316C090CAC2A475 /* Tone-Soft.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1273,6 +1289,7 @@
 				7358628DC89AD7804F2E6C63 /* Localizable.xcstrings in Resources */,
 				14EAF1E793B94A15C3DA55B9 /* PrivacyInfo.xcprivacy in Resources */,
 				03A850B01175A17F82A17E1F /* Salah.icon in Resources */,
+				4C5615EB89FF5911CEA97D9C /* Tone-Soft.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1394,6 +1411,7 @@
 				466E238C5917B3B57BE791BB /* PreferenceStorageTests.swift in Sources */,
 				52BA0420B0B0062D0DCBDA7B /* Preferences+API.swift in Sources */,
 				9AC56DD8075D437A87556322 /* Preferences+Mirror.swift in Sources */,
+				8B27DA02EB94776C7729968A /* Preferences+Place.swift in Sources */,
 				974F2C43024D34A3537F6EDB /* Preferences.swift in Sources */,
 				735DB357CF495A53F207FB98 /* PreferencesDefaults.swift in Sources */,
 				3E8B9E6D9BE54C008C617BA3 /* PreferencesNotifications.swift in Sources */,
@@ -1414,7 +1432,9 @@
 				E81EE1CFB949A05E4182D0A6 /* SalahWidgetModels.swift in Sources */,
 				8F9BF658C95D8A27B0ABC5D8 /* SalahWidgetTimeline.swift in Sources */,
 				E72B964F949BFE59FA1220D2 /* SalahWindowView.swift in Sources */,
+				420272EE26A7A2D90871B04B /* SettingsForm.swift in Sources */,
 				9533F21B21CDA25FB035EF2F /* SettingsMirrorTests.swift in Sources */,
+				8217A6FBCE0DAC5E2466C150 /* SettingsPanesTests.swift in Sources */,
 				81638F1942939D2F5829DE57 /* SoundPickerRow.swift in Sources */,
 				FE8C7FB912387EC1D655C8D1 /* StopSalahAudioIntent.swift in Sources */,
 				29243265A2A29014A421E4CC /* SunArcLayoutTests.swift in Sources */,
@@ -1492,6 +1512,7 @@
 				C94AADC3006FD5BF2F3F6963 /* PreferenceKeys.swift in Sources */,
 				90AD373674A7F16173F1A778 /* Preferences+API.swift in Sources */,
 				5A5BF993197384F6D5BEBF46 /* Preferences+Mirror.swift in Sources */,
+				C7F01329C632ED92349DB5AF /* Preferences+Place.swift in Sources */,
 				B8723D00C08774ED4A2E8DC2 /* Preferences.swift in Sources */,
 				D7B31E22D60869A36E160740 /* PreferencesDefaults.swift in Sources */,
 				B15B002930778F6353BFFC14 /* PreferencesNotifications.swift in Sources */,
@@ -1510,6 +1531,7 @@
 				3D554C9CBF55F65F663D37E5 /* SalahWidgetModels.swift in Sources */,
 				45D577F96572ABA354F87E47 /* SalahWidgetTimeline.swift in Sources */,
 				6471F970723E1928C386A5A4 /* SalahWindowView.swift in Sources */,
+				3750321919FC31974FB8EA8D /* SettingsForm.swift in Sources */,
 				D38292CDC73B55D5CB76E9E3 /* SoundPickerRow.swift in Sources */,
 				6C712DB2519F6910E5BF091D /* StopSalahAudioIntent.swift in Sources */,
 				D2F34F6FC4368F498C16FA5C /* TodayView.swift in Sources */,

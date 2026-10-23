@@ -9,25 +9,30 @@ struct AppearanceContent: View {
 
   var body: some View {
     let preview = previewDisplay
-    Section("settings.tab.appearance") {
+    Section {
       Picker("settings.appearance.mode", selection: $prefs.appearance) {
         Text("settings.appearance.mode.system").tag(SalahAppearance.system)
         Text("settings.appearance.mode.light").tag(SalahAppearance.light)
         Text("settings.appearance.mode.dark").tag(SalahAppearance.dark)
       }
-      .pickerStyle(.menu)
+      .settingsPopUp()
       .accessibilityIdentifier("appearance.mode")
+      .settingsRow(last: true)
+    } header: {
+      SettingsHeader("settings.tab.appearance", isFirst: true)
     }
 
-    Section("settings.appearance.colors") {
+    Section {
       Toggle(isOn: $prefs.followsTimeOfDay) {
         Text("settings.appearance.followsTimeOfDay")
         Text("settings.appearance.followsTimeOfDay.detail")
       }
-      .toggleStyle(.switch)
+      .settingsRow(detail: true, last: true)
+    } header: {
+      SettingsHeader("settings.appearance.colors")
     }
 
-    Section("settings.appearance.preview") {
+    Section {
       VStack(spacing: 10) {
         WidgetPreviewContainer(display: preview, size: .medium)
           // The widget's timers count against the real clock: at a moment a Debug launch
@@ -42,7 +47,9 @@ struct AppearanceContent: View {
           .multilineTextAlignment(.center)
       }
       .frame(maxWidth: .infinity)
-      .padding(.vertical, 20)
+      .settingsRow(height: 227, last: true)
+    } header: {
+      SettingsHeader("settings.appearance.preview")
     }
   }
 

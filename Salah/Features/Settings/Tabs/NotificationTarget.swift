@@ -1,3 +1,4 @@
+import Foundation
 import SalahCore
 
 /// What the Notifications pane edits: one of the day's six events, or Friday's Jumu'ah.
@@ -9,6 +10,13 @@ enum NotificationTarget: Hashable, Identifiable {
   static let all: [NotificationTarget] = PrayerKind.allCases.map(Self.prayer) + [.jumuah]
 
   var id: Self { self }
+
+  /// The picker's prayer names in `locale`: SalahKit's, with Jumu'ah as the app's catalog
+  /// spells it ("Jumu’ah").
+  static func names(locale: Locale) -> PrayerNames {
+    PrayerNames(
+      locale: locale, overrides: [.jumuah: localizedString("prayer.dhuhr.jumuah", locale: locale)])
+  }
 
   /// The segment's name, in the app's language.
   func name(_ names: PrayerNames) -> String {

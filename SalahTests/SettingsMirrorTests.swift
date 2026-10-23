@@ -57,7 +57,12 @@ struct SettingsMirrorTests {
     preferences.appLanguage = .arabic
     let arabic = try #require(group.settings.load())
     #expect(arabic.language == .arabic)
-    #expect(arabic.calculation == english.calculation && arabic.location == english.location)
+    #expect(arabic.calculation == english.calculation)
+    // The same place, named in the new language: the default place is Makkah / مكة المكرمة.
+    var renamed = arabic.location
+    renamed.name = english.location.name
+    #expect(renamed == english.location)
+    #expect(english.location.name == "Makkah" && arabic.location.name == "مكة المكرمة")
     #expect(group.reloads.kinds.count == 2)
 
     let at = Fixture.date(13, 0)

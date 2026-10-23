@@ -44,6 +44,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   func startUpdating() {
+    #if DEBUG
+      if UserDefaults.standard.bool(forKey: DebugOptions.withoutLocationUpdatesKey) { return }
+    #endif
     refreshAuthorizationStatus()
     switch manager.authorizationStatus {
     case .notDetermined:
@@ -192,6 +195,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   /// code, and stored time zone are left untouched.
   @MainActor
   func refreshGeocodedLabels(in locale: Locale) async {
+    #if DEBUG
+      if UserDefaults.standard.bool(forKey: DebugOptions.withoutLocationUpdatesKey) { return }
+    #endif
     let prefs = preferences
     let lat = prefs.latitude
     let lng = prefs.longitude
@@ -229,6 +235,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
   func handleAuthorizationStatus(_ status: CLAuthorizationStatus) {
     authorizationStatus = status
     guard preferences.useCurrentLocation else { return }
+    #if DEBUG
+      if UserDefaults.standard.bool(forKey: DebugOptions.withoutLocationUpdatesKey) { return }
+    #endif
     if status == .authorized || status == .authorizedAlways {
       manager.startUpdatingLocation()
       manager.startMonitoringSignificantLocationChanges()

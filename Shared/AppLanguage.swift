@@ -107,8 +107,7 @@ nonisolated extension AppLanguage {
     AppLanguage.allCases.filter { $0 != .system }
   }
 
-  /// ISO language code for concrete languages. Used as a search token and to
-  /// resolve display names via `Locale.localizedString(forLanguageCode:)`.
+  /// ISO language code for concrete languages, `nil` for `.system`.
   var languageCode: String? {
     switch self {
     case .system: return nil
@@ -139,63 +138,5 @@ nonisolated extension AppLanguage {
     case .bengali: return "বাংলা"
     case .malay: return "Bahasa Melayu"
     }
-  }
-
-  /// Two-glyph specimen shown in the picker's language tile (e.g. "Aa", "أب").
-  /// Empty for `.system`, which renders a gear icon instead. Sourced here so the
-  /// picker stays data-driven as languages are added.
-  var glyphText: String {
-    switch self {
-    case .system: return ""
-    case .english: return "Aa"
-    case .arabic: return "أب"
-    case .french: return "Àé"
-    case .urdu: return "اب"
-    case .indonesian: return "Ba"
-    case .turkish: return "Tü"
-    case .persian: return "فا"
-    case .bengali: return "অআ"
-    case .malay: return "Ba"
-    }
-  }
-
-  /// Font used to render `glyphText`. Latin-script specimens use Georgia for a
-  /// distinct serif look; non-Latin scripts use the system font (which carries
-  /// the right shaping). `nil` means the system font.
-  var glyphFontName: String? {
-    switch self {
-    case .english, .french, .indonesian, .turkish, .malay: return "Georgia"
-    case .system, .arabic, .urdu, .persian, .bengali: return nil
-    }
-  }
-
-  /// Catalog key for the caption shown under the option (e.g. "App is in Urdu",
-  /// localized into the current UI language). `.system` uses a format-string key
-  /// that takes the macOS language name as an argument.
-  var captionKey: String {
-    "settings.general.language.caption.\(rawValue)"
-  }
-
-  /// Language name translated into `displayLocale`. E.g. `.arabic` becomes
-  /// "Arabe" in French, "العربية" in Arabic, "Arabic" in English.
-  func translatedName(in displayLocale: Locale) -> String {
-    guard let code = languageCode else { return nativeName }
-    let resolved = displayLocale.localizedString(forLanguageCode: code) ?? code
-    return resolved.prefix(1).uppercased() + resolved.dropFirst()
-  }
-
-  /// Case-insensitive substring match against native name, translated name,
-  /// and raw code. Empty queries match everything.
-  func matches(searchQuery: String, in displayLocale: Locale) -> Bool {
-    let trimmed = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-    if trimmed.isEmpty { return true }
-    let needle = trimmed.lowercased()
-    let haystack: [String] = [
-      nativeName.lowercased(),
-      translatedName(in: displayLocale).lowercased(),
-      languageCode?.lowercased() ?? "",
-      rawValue.lowercased(),
-    ]
-    return haystack.contains { !$0.isEmpty && $0.contains(needle) }
   }
 }

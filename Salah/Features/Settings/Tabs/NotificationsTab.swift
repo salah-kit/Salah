@@ -54,12 +54,14 @@ struct NotificationsContent: View {
   }
 
   var body: some View {
-    Section("settings.notif.section.sound") {
+    Section {
       Toggle("settings.notif.silent", isOn: $prefs.silentMode)
+        .settingsRow()
       Toggle("settings.notif.duaAfterAdhan", isOn: $prefs.duaEnabled)
         .disabled(prefs.silentMode)
+        .settingsRow()
       LabeledContent("settings.notif.volume") {
-        Slider(value: volume, in: 0...100, step: 1)
+        VolumeSlider(value: volume)
           .labelsHidden()
           .accessibilityLabel(
             Text(verbatim: localizedString("settings.notif.volume", locale: .app))
@@ -69,9 +71,12 @@ struct NotificationsContent: View {
               verbatim: (Double(prefs.alertVolume) / 100).formatted(
                 .percent.locale(Locale.app)))
           )
-          .frame(maxWidth: 164)
+          .frame(width: 160)
           .disabled(prefs.silentMode)
       }
+      .settingsRow(last: true)
+    } header: {
+      SettingsHeader("settings.notif.section.sound", isFirst: true)
     }
     .onChange(of: prefs.silentMode) {
       // Refresh (audio + display) is emitted by the `silentMode` didSet; this
@@ -116,48 +121,59 @@ struct NotificationsContent: View {
             set: {
               previewController.stop()
               prefs.jumuahOverrideEnabled = $0
-            }))
+            })
+        )
+        .settingsRow(last: true)
       } else {
         alertRows
       }
     } header: {
-      // The picker stands on the window above the first group it edits, not in a group.
-      VStack(alignment: .leading, spacing: 18) {
+      // The picker stands on the window above the first group it edits, not in a group,
+      // as far from each as sections are from each other.
+      VStack(alignment: .leading, spacing: SettingsMetrics.sectionSpacing) {
         prayerPicker
         if target != .jumuah {
           Text("settings.notif.section.atPrayerTime")
+            .settingsHeaderFont()
         }
       }
-      .padding(.bottom, target == .jumuah ? 12 : 0)
+      .settingsHeaderPlacement(
+        extraBottom: target == .jumuah ? SettingsMetrics.sectionSpacing - 6 : 0)
     } footer: {
       if target == .jumuah {
-        Text("settings.notif.differentOnFriday.footer")
-          .font(.footnote)
-          .foregroundStyle(.secondary)
+        SettingsFooter("settings.notif.differentOnFriday.footer")
       }
     }
 
     if target == .jumuah, prefs.jumuahOverrideEnabled {
-      Section("settings.notif.section.atPrayerTime") {
+      Section {
         alertRows
+      } header: {
+        SettingsHeader("settings.notif.section.atPrayerTime")
       }
     }
 
     if editsAlerts {
-      Section("settings.notif.section.before") {
+      Section {
         Toggle("settings.notif.remindBefore", isOn: config.preReminderEnabled)
+          .settingsRow(last: !config.preReminderEnabled.wrappedValue)
         if config.preReminderEnabled.wrappedValue {
           minutesRow("settings.notif.minutesBefore", value: config.preReminderOffset)
           soundRow(config.preReminderSound, slot: .preReminder)
         }
+      } header: {
+        SettingsHeader("settings.notif.section.before")
       }
 
-      Section("settings.notif.section.after") {
+      Section {
         Toggle("settings.notif.remindAfter", isOn: config.postReminderEnabled)
+          .settingsRow(last: !config.postReminderEnabled.wrappedValue)
         if config.postReminderEnabled.wrappedValue {
           minutesRow("settings.notif.minutesAfter", value: config.postReminderOffset)
           soundRow(config.postReminderSound, slot: .postReminder)
         }
+      } header: {
+        SettingsHeader("settings.notif.section.after")
       }
     }
 
@@ -166,6 +182,7 @@ struct NotificationsContent: View {
         Button("settings.notif.systemSettings.open") {
           openNotificationSettings()
         }
+        .settingsPushButton()
       } label: {
         Text("settings.notif.systemSettings")
         if let permissionMessage {
@@ -176,13 +193,18 @@ struct NotificationsContent: View {
           }
         }
       }
+      .settingsRow(last: true, grows: permissionMessage != nil)
+    } header: {
+      // An empty header: without one, the form puts the group nearer the one above than
+      // it puts a headed section.
+      Color.clear.frame(height: 1)
     }
   }
 
   /// The five prayers, Sunrise and Jumu'ah. A target with every alert off shows a muted
   /// bell.
   private var prayerPicker: some View {
-    let names = PrayerNames(locale: .app)
+    let names = NotificationTarget.names(locale: .app)
     // A preview stops with any change of prayer: a click, an arrow key or VoiceOver.
     return PrayerPicker(
       selection: Binding(
@@ -198,14 +220,11 @@ struct NotificationsContent: View {
     .padding(.horizontal, -10)
   }
 
-  /// The alert at the prayer's time, and its sound while it's on. Sunrise, which has no
-  /// adhan, says only that it plays at its time.
+  /// The alert at the prayer's time, and its sound while it's on.
   @ViewBuilder
   private var alertRows: some View {
-    Toggle(
-      selectedPrayer == .sunrise && target != .jumuah
-        ? "settings.notif.alert.toggle" : "settings.notif.playAdhan",
-      isOn: config.alertEnabled)
+    Toggle("settings.notif.playAdhan", isOn: config.alertEnabled)
+      .settingsRow(last: !config.alertEnabled.wrappedValue)
     if config.alertEnabled.wrappedValue {
       soundRow(config.alertSound, slot: .alert)
     }
@@ -214,13 +233,23 @@ struct NotificationsContent: View {
   /// A reminder's offset: its minutes, and a stepper from 1 to 120.
   private func minutesRow(_ title: LocalizedStringKey, value: Binding<Int>) -> some View {
     LabeledContent(title) {
-      HStack(spacing: 6) {
-        Text(verbatim: MenuDuration.lead(minutes: value.wrappedValue, locale: .app))
+      HStack(spacing: 12) {
+        Text(verbatim: Self.minutesText(value.wrappedValue, locale: .app))
           .monospacedDigit()
+          .foregroundStyle(.primary)
         Stepper(title, value: value, in: 1...120)
           .labelsHidden()
       }
     }
+    .settingsRow()
+  }
+
+  /// "10 min" / "١٠ دقائق": a reminder's minutes, in each language's plural and digits.
+  static func minutesText(_ minutes: Int, locale: Locale) -> String {
+    String(
+      localized: LocalizedStringResource(
+        "settings.notif.minutesValue", defaultValue: "\(minutes) min", locale: locale,
+        bundle: AppResources.localizationBundle))
   }
 
   private func soundRow(_ sound: Binding<AdhanSound>, slot: PrayerNotificationSoundSlot)
@@ -233,6 +262,7 @@ struct NotificationsContent: View {
       onPreviewToggle: { togglePreview(sound: sound.wrappedValue, slot: slot) },
       onSoundChanged: { stopPreviewIfNeeded(slot: slot) }
     )
+    .settingsRow(last: true, grows: sound.wrappedValue.isCustomUnavailable)
   }
 
   private var permissionMessage: String.LocalizationValue? {
@@ -421,6 +451,31 @@ struct NotificationsContent: View {
       if NSWorkspace.shared.open(url) {
         return
       }
+    }
+  }
+}
+
+/// The alert volume, 0 to 100 (the binding rounds it to whole steps), with ticks at every
+/// quarter where macOS draws them. A stepped slider would tick every step.
+private struct VolumeSlider: View {
+  @Binding var value: Double
+
+  var body: some View {
+    if #available(macOS 26.0, *) {
+      Slider(
+        value: $value, in: 0...100,
+        // The row names the slider, and so does its accessibility label: none of its own,
+        // or VoiceOver would say "Volume, Volume".
+        label: { EmptyView() },
+        ticks: {
+          SliderTick(0)
+          SliderTick(25)
+          SliderTick(50)
+          SliderTick(75)
+          SliderTick(100)
+        })
+    } else {
+      Slider(value: $value, in: 0...100)
     }
   }
 }

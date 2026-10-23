@@ -322,7 +322,8 @@ struct PrayerAlertCoordinatorTests {
     }
     let arabicAsr = try #require(arabic.center.pendingRequest(Self.identifier(.asr, .atTime)))
     #expect(arabicAsr.content.title == "العصر")
-    #expect(arabicAsr.content.subtitle == "Makkah")
+    // The default place is named in the app's language.
+    #expect(arabicAsr.content.subtitle == "مكة المكرمة")
     #expect(try arabicBody(.asr, .atTime) == "حان وقت العصر (٣:٣٥ م).")
     #expect(arabicAsr.content.body.contains("\u{2068}العصر\u{2069}"))
     #expect(arabicAsr.content.threadIdentifier == "salah-prayers-2026-06-02")
@@ -1412,6 +1413,16 @@ struct PrayerAlertCoordinatorTests {
     let adhan = try #require(harness.audio.plays.first)
     #expect(adhan.request.resource.url == Self.makkah)
     #expect(adhan.followUp == nil)
+  }
+
+  /// A soft tone at prayer time isn't an adhan, so no du'a follows it.
+  @Test func playsNoDuaAfterATone() async throws {
+    let harness = Harness(now: Fixture.date(15, 0), settings: [.asr: .alert(sound: .softTone)])
+    await harness.update()
+    await harness.fire()
+    let tone = try #require(harness.audio.plays.first)
+    #expect(tone.request.resource.url?.lastPathComponent == "Tone-Soft.m4a")
+    #expect(tone.followUp == nil)
   }
 
   /// Among alerts due together the latest fire date wins: after a sleep that covers

@@ -30,6 +30,9 @@ license from Batoul Apps covers only what Batoul Apps owned.
   Adhan-Yusuf.mp3      Yusuf Islam           Guidance for Mac (Batoul Apps)  Unconfirmed
   Dua.m4a              (du'a after adhan)    Guidance for Mac (Batoul Apps)  Unconfirmed
 
+Tone-Soft.m4a, the soft tone, is no recording: it is synthesized for Salah from two sine
+chimes, and this repository's license covers it.
+
 Adhan-Alafasy.m4a is a third-party recording, presented in the app as the adhan of
 Mishary Rashid Alafasy; Adhan-Yusuf.mp3 is presented as Yusuf Islam's adhan.
 

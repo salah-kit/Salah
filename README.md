@@ -38,8 +38,8 @@ checked on every change, so they show what the app draws today.
   widgets. The sky follows the prayer period you're in, from dawn at Fajr to night at
   Isha, or stays neutral.
 - **Alerts.** Per-prayer adhan alerts with before and after reminders, a Jumu'ah
-  override, six built-in recordings or your own audio, a du'a after the adhan, and a
-  catch-up when the Mac wakes from sleep.
+  override, six built-in recordings, a soft tone or your own audio, a du'a after the
+  adhan, and a catch-up when the Mac wakes from sleep.
 - **Calculation.** Eleven methods plus custom angles, Shafi or Hanafi Asr, high-latitude
   rules, per-prayer adjustments, a Hijri offset and a delayed Isha in Ramadan.
 - **Nine languages:** English, Arabic, French, Urdu, Indonesian, Turkish, Persian,

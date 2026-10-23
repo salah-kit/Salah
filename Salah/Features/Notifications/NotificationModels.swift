@@ -212,6 +212,14 @@ enum BuiltInAdhanSound: String, Codable, CaseIterable, Hashable {
   case istanbul = "Adhan-Istanbul"
   case yusuf = "Adhan-Yusuf"
   case aqsa = "Adhan-Aqsa"
+  /// A gentle generated tone, for reminders or a quiet alert: not an adhan.
+  case softTone = "Tone-Soft"
+
+  /// The adhans, in the sound pop-up's first section.
+  static let adhans: [BuiltInAdhanSound] = [.alafasy, .fajr, .makkah, .istanbul, .yusuf, .aqsa]
+
+  /// Whether the sound is an adhan, after which the du'a may play.
+  var isAdhan: Bool { self != .softTone }
 
   var displayName: String {
     localizedString(localizationKey, locale: .app)
@@ -219,7 +227,7 @@ enum BuiltInAdhanSound: String, Codable, CaseIterable, Hashable {
 
   var fileExtension: String {
     switch self {
-    case .alafasy: "m4a"
+    case .alafasy, .softTone: "m4a"
     case .fajr, .makkah, .istanbul, .yusuf, .aqsa: "mp3"
     }
   }
@@ -236,6 +244,7 @@ enum BuiltInAdhanSound: String, Codable, CaseIterable, Hashable {
     case .istanbul: "sound.istanbul"
     case .yusuf: "sound.yusuf"
     case .aqsa: "sound.aqsa"
+    case .softTone: "sound.softTone"
     }
   }
 }
@@ -337,9 +346,15 @@ enum AdhanSound: Codable, Equatable, Hashable {
   static let yusuf = AdhanSound.builtIn(.yusuf)
   static let aqsa = AdhanSound.builtIn(.aqsa)
 
+  static let softTone = AdhanSound.builtIn(.softTone)
+
+  /// The adhans, the sound pop-up's first section.
   static var adhanSounds: [AdhanSound] {
-    BuiltInAdhanSound.allCases.map(AdhanSound.builtIn)
+    BuiltInAdhanSound.adhans.map(AdhanSound.builtIn)
   }
+
+  /// The generated tones, the sound pop-up's second section.
+  static var toneSounds: [AdhanSound] { [.softTone] }
 
   func audioPlaybackResource(refreshCustomFile: ((CustomAdhanFile) -> Void)? = nil)
     -> AudioPlaybackResource?

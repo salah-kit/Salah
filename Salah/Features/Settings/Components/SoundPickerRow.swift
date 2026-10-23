@@ -23,10 +23,16 @@ struct SoundPickerRow: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
-      HStack {
+      HStack(spacing: 8) {
         Picker("settings.notif.sound", selection: soundSelection) {
           Section("settings.notif.sound.adhan") {
             ForEach(AdhanSound.adhanSounds, id: \.self) { option in
+              Text(option.displayName).tag(option)
+            }
+          }
+
+          Section {
+            ForEach(AdhanSound.toneSounds, id: \.self) { option in
               Text(option.displayName).tag(option)
             }
           }
@@ -42,13 +48,18 @@ struct SoundPickerRow: View {
             Text(AdhanSound.none.displayName).tag(AdhanSound.none)
           }
         }
+        .settingsPopUp()
 
         Button {
           chooseCustomSound()
         } label: {
           Image(systemName: "folder.badge.plus")
+            .font(.system(size: 13))
+            .frame(width: 24, height: 24)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
+        .foregroundStyle(WindowPalette.labelSecondary)
         .help(Text(localizedString(customButtonHelpKey, locale: .app)))
         .accessibilityLabel(Text(localizedString(customButtonHelpKey, locale: .app)))
 
@@ -56,8 +67,12 @@ struct SoundPickerRow: View {
           onPreviewToggle()
         } label: {
           Image(systemName: isPreviewing ? "stop.fill" : "play.fill")
+            .font(.system(size: 11))
+            .frame(width: 24, height: 24)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
+        .foregroundStyle(WindowPalette.accent)
         .disabled(!sound.canPreview && !isPreviewing)
         .help(Text(localizedString(previewHelpKey, locale: .app)))
         .accessibilityLabel(Text(localizedString(previewHelpKey, locale: .app)))

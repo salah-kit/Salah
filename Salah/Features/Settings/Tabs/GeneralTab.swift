@@ -5,17 +5,25 @@ struct GeneralContent: View {
   @Bindable var prefs = Preferences.shared
 
   var body: some View {
-    Section("settings.general.language") {
+    Section {
       LanguagePicker()
+        .settingsRow()
+      MenuBarPreview(language: prefs.appLanguage)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .settingsRow(last: true)
+    } header: {
+      SettingsHeader("settings.general.language", isFirst: true)
+    } footer: {
+      SettingsFooter("settings.general.language.footer")
     }
 
-    Section("settings.general.menubar") {
+    // The menu-bar item: its icon, and the next prayer's name and time.
+    Section {
       Toggle("settings.general.showIcon", isOn: $prefs.displayIcon)
+        .settingsRow()
       Toggle("settings.general.showNextPrayer", isOn: $prefs.displayNextPrayer)
-    }
-
-    if prefs.displayNextPrayer {
-      Section("settings.general.nextPrayerDisplay") {
+        .settingsRow(last: !prefs.displayNextPrayer)
+      if prefs.displayNextPrayer {
         Picker("settings.general.nameStyle", selection: $prefs.nextPrayerDisplayName) {
           Text("settings.general.nameStyle.full").tag(NextPrayerDisplayName.full)
           Text("settings.general.nameStyle.abbr").tag(NextPrayerDisplayName.abbreviation)
@@ -23,6 +31,8 @@ struct GeneralContent: View {
             .tag(NextPrayerDisplayName.none)
             .disabled(prefs.nextPrayerDisplayType == .none)
         }
+        .settingsPopUp()
+        .settingsRow()
         Picker("settings.general.timeStyle", selection: $prefs.nextPrayerDisplayType) {
           Text("settings.general.timeStyle.countdown").tag(NextPrayerDisplayType.timeUntil)
           Text("settings.general.timeStyle.prayerTime").tag(NextPrayerDisplayType.timeOfPrayer)
@@ -30,11 +40,17 @@ struct GeneralContent: View {
             .tag(NextPrayerDisplayType.none)
             .disabled(prefs.nextPrayerDisplayName == .none)
         }
+        .settingsPopUp()
+        .settingsRow(last: true)
       }
+    } header: {
+      SettingsHeader("settings.general.menubar")
     }
 
-    Section("settings.general.startup") {
+    Section {
       LaunchAtLoginControl()
+    } header: {
+      SettingsHeader("settings.general.startup")
     }
   }
 }
@@ -55,6 +71,7 @@ struct LaunchAtLoginControl: View {
         }
       )
     )
+    .settingsRow(last: !requiresApproval && errorMessage == nil)
     // Stale `errorMessage` is frozen in the language it was built in - drop
     // it when the user switches languages so the next attempt rebuilds fresh.
     .onChange(of: prefs.appLanguage) { errorMessage = nil }
@@ -64,6 +81,8 @@ struct LaunchAtLoginControl: View {
         SMAppService.openSystemSettingsLoginItems()
         refresh()
       }
+      .settingsPushButton()
+      .settingsRow(last: errorMessage == nil)
     }
 
     if let errorMessage {

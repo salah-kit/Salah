@@ -30,6 +30,9 @@ nonisolated struct CalculationChoices: Equatable, Sendable {
   /// is SalahTimes' Ramadan rule: an interval Isha becomes 120 minutes in the month of
   /// Ramadan, read in the Umm al-Qura calendar after the Hijri offset, as the Hijri date
   /// Salah shows; an angle-based Isha doesn't change.
+  /// The minutes after Maghrib of an interval Isha in Ramadan, when it's delayed.
+  static let ramadanIshaMinutes = 120
+
   var calculationSettings: CalculationSettings {
     var parameters =
       method.method?.parameters
@@ -38,7 +41,8 @@ nonisolated struct CalculationChoices: Equatable, Sendable {
     parameters.highLatitudeRule = highLatitudeRule.rule
     parameters.adjustments = adjustments
     parameters.ramadanIsha =
-      delayedIshaInRamadan ? .interval(minutes: 120, hijriDayOffset: hijriOffset) : .off
+      delayedIshaInRamadan
+      ? .interval(minutes: Self.ramadanIshaMinutes, hijriDayOffset: hijriOffset) : .off
     return CalculationSettings(parameters: parameters)
   }
 }

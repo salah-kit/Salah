@@ -57,16 +57,41 @@ extension Preferences {
     return calendar.component(.weekday, from: date) == 6
   }
 
+  /// The method Salah suggests for the stored country.
+  var suggestedMethod: MethodPreference { MethodPreference.detect(forCountry: country) }
+
+  /// The high-latitude rule Salah suggests at the stored latitude.
+  var suggestedHighLatitudeRule: HighLatitudeRulePreference {
+    abs(latitude) > 48 ? .seventhOfTheNight : .middleOfTheNight
+  }
+
   func updateAutoDetectedSettings() {
     // Re-entrant-safe: when called from inside `updateLocation`'s batch, these
     // writes join that batch; called on its own they coalesce to one refresh.
     batchUpdates {
       if autoDetectMethod {
-        methodPreference = MethodPreference.detect(forCountry: country)
+        methodPreference = suggestedMethod
       }
       if autoDetectHighLatitudeRule {
-        highLatitudeRulePreference = abs(latitude) > 48 ? .seventhOfTheNight : .middleOfTheNight
+        highLatitudeRulePreference = suggestedHighLatitudeRule
       }
+    }
+  }
+
+  /// A method chosen by hand. It replaces the suggestion, so suggesting from the location
+  /// turns off, and a later move keeps the method.
+  func chooseMethod(_ method: MethodPreference) {
+    batchUpdates {
+      autoDetectMethod = false
+      methodPreference = method
+    }
+  }
+
+  /// A high-latitude rule chosen by hand. Choosing automatically turns off.
+  func chooseHighLatitudeRule(_ rule: HighLatitudeRulePreference) {
+    batchUpdates {
+      autoDetectHighLatitudeRule = false
+      highLatitudeRulePreference = rule
     }
   }
 

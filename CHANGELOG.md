@@ -23,6 +23,7 @@ All notable changes to this project are documented here. The format follows
   hidden and minimized included. A login launch stays in the menu bar.
 - An extra-large desktop widget: the next prayer and its countdown, the day's sun arc,
   and the day's six times.
+- A soft tone, a generated sound, for alerts and reminders. No du’a follows it.
 
 ### Changed
 
@@ -49,7 +50,22 @@ All notable changes to this project are documented here. The format follows
   is off, then At prayer time, Before and After, each with its sound, and System
   notification settings last. Jumu’ah is the picker’s last segment, with a switch for
   different alerts on Friday; with it off, Fridays use Dhuhr’s alerts. Reminder offsets
-  read "10 min" beside their stepper.
+  read "10 min" beside their stepper. Every prayer's alert reads "Play the adhan", and
+  System notification settings opens with a bordered Open… button.
+- Settings → General, Location, Calculation, Adjustments and Appearance follow the new
+  look too, with the design's spacing and regular-size controls, and gold only on
+  switches, the slider and the selected segment; the sidebar's selection is neutral.
+  - General: Language is a pop-up ("System (English)") with no search field, and Name and
+    Time sit with the menu bar's switches.
+  - Location: "Use current location" says it updates when you travel, and the region,
+    coordinates and time zone use the language's commas, digits and names.
+  - Calculation: "Suggest from location" names its suggestion ("Umm al-Qura for Saudi
+    Arabia"), and "Choose automatically" its high-latitude rule. Their pop-ups stay
+    enabled, and choosing by hand turns the switch off.
+  - Adjustments: the Hijri date offset and each prayer's minutes have steppers, and the
+    Ramadan switch says what it does.
+- Salah's default place, Makkah, is named in the app's language everywhere, "مكة المكرمة"
+  in Arabic, until a location or a chosen city replaces it.
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.
@@ -85,9 +101,10 @@ All notable changes to this project are documented here. The format follows
   - French notifications read "C'est l'heure de Asr"; they now say "C'est l'heure : Asr".
   - The Friday section in Settings spelled the prayer "Jumu'ah" in French, unlike its name
     "Joumouah" everywhere else.
-  - Arabic reminders and their Settings steppers wrote "١٠ دقيقة", which doesn't agree
-    with 3 to 10. They now write minutes as "١٠ د", as the dropdown does.
-  - The Ramadan Isha footer writes its 120 minutes in the language's digits, as the rest of
+  - Arabic reminders wrote "١٠ دقيقة", which doesn't agree with 3 to 10. They now write
+    minutes as "١٠ د", as the dropdown does, and the Settings steppers take each number's
+    plural: "١٠ دقائق", "٣٠ دقيقة".
+  - The Ramadan Isha detail writes its 120 minutes in the language's digits, as the rest of
     the app does.
 - Name the time zone's pop-up in Settings → Location for VoiceOver, which read only the zone.
 - Name the menu-bar dropdown for VoiceOver in the selected app language

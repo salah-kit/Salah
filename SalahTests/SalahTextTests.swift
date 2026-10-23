@@ -64,24 +64,6 @@ struct SalahTextTests {
     #expect(french.offsetPhrase(5, before: false) == "\u{2068}5 min\u{2069} après")
   }
 
-  /// The Ramadan Isha footer writes its minutes in the language's digits, so they match the
-  /// rest of the app whatever digits the language uses.
-  @Test func theRamadanIshaFooterUsesTheLanguagesDigits() {
-    let digits: [(AppLanguage, String)] = [
-      (.english, "120"), (.arabic, "١٢٠"), (.urdu, "۱۲۰"), (.persian, "۱۲۰"), (.bengali, "১২০"),
-      (.french, "120"), (.turkish, "120"),
-    ]
-    for (language, minutes) in digits {
-      let footer = AdjustmentsContent.delayedIshaFooter(locale: language.locale)
-      #expect(footer.contains("\u{2068}\(minutes)\u{2069}"), "\(language): \(footer)")
-      #expect(!footer.contains("%@"), "\(language): \(footer)")
-    }
-    #expect(
-      AdjustmentsContent.delayedIshaFooter(locale: AppLanguage.english.locale)
-        == "Extends Isha interval to \u{2068}120\u{2069} minutes during Ramadan for methods that"
-        + " use a fixed interval.")
-  }
-
   /// The header's dates follow Figma: the Hijri year has no era, in every language, and
   /// the Arabic Gregorian date has no comma before its year.
   @Test func theHeaderDatesHaveNoEraAndArabicHasNoCommaBeforeTheYear() {

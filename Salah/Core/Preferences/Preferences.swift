@@ -99,7 +99,7 @@ final class Preferences {
     }
   }
 
-  var city: String = "Makkah" {
+  var city: String = DefaultPlace.city {
     didSet {
       defaults.set(city, forKey: Key.city)
       requestRefresh(.display)
@@ -120,7 +120,7 @@ final class Preferences {
     }
   }
 
-  var countryName: String = "Saudi Arabia" {
+  var countryName: String = DefaultPlace.countryName {
     didSet {
       defaults.set(countryName, forKey: Key.countryName)
       requestRefresh(.display)
@@ -452,10 +452,10 @@ final class Preferences {
     displayIcon = defaults.bool(forKey: Key.displayIcon)
 
     useCurrentLocation = defaults.bool(forKey: Key.autoLocation)
-    city = defaults.string(forKey: Key.city) ?? "Makkah"
+    city = defaults.string(forKey: Key.city) ?? DefaultPlace.city
     state = defaults.string(forKey: Key.state) ?? ""
     country = defaults.string(forKey: Key.country) ?? "SA"
-    countryName = defaults.string(forKey: Key.countryName) ?? "Saudi Arabia"
+    countryName = defaults.string(forKey: Key.countryName) ?? DefaultPlace.countryName
     storedTimeZone = defaults.string(forKey: Key.timeZone) ?? "Asia/Riyadh"
     latitude = defaults.double(forKey: Key.latitude)
     longitude = defaults.double(forKey: Key.longitude)

@@ -17,12 +17,16 @@ extension Preferences {
   }
 
   /// The place prayer times are for: the stored coordinates and time zone, the country,
-  /// and the name the header shows (the city, or the country when there's none).
+  /// and the name every surface shows (the city, or the country when there's none), in
+  /// Salah's language for the default place.
   var prayerLocation: PrayerLocation {
-    PrayerLocation(
+    let locale = appLanguage.locale
+    let city = placeCity(locale: locale)
+    return PrayerLocation(
       latitude: latitude, longitude: longitude,
       timeZone: TimeZone(identifier: storedTimeZone) ?? .current,
-      countryCode: country.isEmpty ? nil : country, name: city.isEmpty ? countryName : city)
+      countryCode: country.isEmpty ? nil : country,
+      name: city.isEmpty ? placeCountry(locale: locale) : city)
   }
 
   /// The settings the widget extension builds its timelines from, as the App Group

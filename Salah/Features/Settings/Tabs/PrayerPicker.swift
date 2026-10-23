@@ -54,7 +54,7 @@ struct PrayerPicker: NSViewRepresentable {
 
   private static let mutedBell = NSImage(
     systemSymbolName: "bell.slash", accessibilityDescription: nil)?
-    .withSymbolConfiguration(.init(pointSize: 10, weight: .regular))
+    .withSymbolConfiguration(.init(pointSize: 12, weight: .regular))
 
   @MainActor
   final class Coordinator: NSObject {
@@ -102,6 +102,8 @@ final class PrayerSegmentedCell: NSSegmentedCell {
       NSBezierPath(roundedRect: frame, xRadius: 8, yRadius: 8).fill()
     }
     let color = (isSelected ? palette.labelOnAccent : palette.labelPrimary).nsColor
+    // The muted bell is secondary beside the name, as the design draws it.
+    let bellColor = (isSelected ? palette.labelOnAccent : palette.labelSecondary).nsColor
     let title = NSAttributedString(
       string: label(forSegment: segment) ?? "",
       attributes: [.font: NSFont.systemFont(ofSize: 13), .foregroundColor: color])
@@ -115,7 +117,7 @@ final class PrayerSegmentedCell: NSSegmentedCell {
     if let bell {
       // The bell leads the name: on its left, or on its right in right-to-left.
       let bellX = isRightToLeft ? start + contentWidth - bell.size.width : start
-      bell.tinted(color).draw(
+      bell.tinted(bellColor).draw(
         in: NSRect(
           x: bellX, y: frame.midY - bell.size.height / 2, width: bell.size.width,
           height: bell.size.height),

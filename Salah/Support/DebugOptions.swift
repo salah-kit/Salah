@@ -66,6 +66,12 @@ import UserNotifications
       return CGSize(width: width, height: height)
     }
 
+    /// `-salah.debug.withoutLocationUpdates YES`: Salah keeps the place it launches with,
+    /// even with location access on this Mac: it neither asks for nor applies a location,
+    /// and doesn't rename the place when the language changes. "Use current location"
+    /// stays as the preferences have it.
+    static let withoutLocationUpdatesKey = "salah.debug.withoutLocationUpdates"
+
     /// The scratch store's suite.
     static let scratchSuiteName = "io.github.salah-kit.Salah.debug.scratch"
 

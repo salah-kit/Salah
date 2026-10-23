@@ -14,8 +14,12 @@ struct LocationContent: View {
   var body: some View {
     @Bindable var search = locationSearch
 
-    Section("settings.location.detection") {
-      Toggle("settings.location.useCurrent", isOn: $prefs.useCurrentLocation)
+    Section {
+      Toggle(isOn: $prefs.useCurrentLocation) {
+        Text("settings.location.useCurrent")
+        Text("settings.location.useCurrent.detail")
+      }
+      .settingsRow(detail: true, last: FailureReporter.shared.currentNotice?.domain != .location)
 
       if let notice = FailureReporter.shared.currentNotice, notice.domain == .location {
         InlineNoticeLabel(message: notice.message)
@@ -23,8 +27,12 @@ struct LocationContent: View {
           Button("settings.location.openSystemSettings") {
             openLocationSystemSettings()
           }
+          .settingsPushButton()
+          .settingsRow(last: true)
         }
       }
+    } header: {
+      SettingsHeader("settings.location.detection", isFirst: true)
     }
     .onChange(of: prefs.useCurrentLocation) {
       if prefs.useCurrentLocation {
@@ -44,7 +52,7 @@ struct LocationContent: View {
     }
 
     if !prefs.useCurrentLocation {
-      Section("settings.location.search") {
+      Section {
         HStack(spacing: 8) {
           Image(systemName: "magnifyingglass")
             .foregroundStyle(.tertiary)
@@ -98,6 +106,8 @@ struct LocationContent: View {
             .font(.caption)
             .foregroundStyle(.red)
         }
+      } header: {
+        SettingsHeader("settings.location.search")
       }
       .onChange(of: locationSearch.searchText) {
         locationSearch.updateCompleter()
@@ -107,26 +117,24 @@ struct LocationContent: View {
       .onChange(of: prefs.appLanguage) { locationSearch.errorMessage = nil }
     }
 
-    Section("settings.location.current") {
-      LabeledContent("settings.location.city", value: prefs.city)
-      LabeledContent("settings.location.region") {
-        Text(
-          [prefs.state, prefs.countryName]
-            .filter { !$0.isEmpty }
-            .joined(separator: ", "))
-      }
-      LabeledContent("settings.location.coordinates") {
-        // Coordinates are inherently LTR ("31.1342, 29.9792"); force the
-        // direction so the comma doesn't migrate to the wrong side under Arabic.
-        Text(String(format: "%.4f, %.4f", prefs.latitude, prefs.longitude))
-          .environment(\.layoutDirection, .leftToRight)
-      }
+    Section {
+      LabeledContent("settings.location.city", value: prefs.placeCity(locale: .app))
+        .settingsRow()
+      LabeledContent(
+        "settings.location.region",
+        value: LocationText.pair(
+          prefs.placeRegion(locale: .app), prefs.placeCountry(locale: .app), locale: .app)
+      )
+      .settingsRow()
+      LabeledContent(
+        "settings.location.coordinates",
+        value: LocationText.coordinates(
+          latitude: prefs.latitude, longitude: prefs.longitude, locale: .app)
+      )
+      .settingsRow()
       LabeledContent("settings.location.timeZone") {
         if prefs.useCurrentLocation {
-          // IANA identifiers like "America/New_York" must stay LTR regardless of
-          // the surrounding paragraph direction.
-          Text(prefs.storedTimeZone)
-            .environment(\.layoutDirection, .leftToRight)
+          Text(verbatim: LocationText.timeZone(prefs.storedTimeZone, locale: .app))
         } else {
           // Labelled for VoiceOver; the row's own label shows it.
           Picker("settings.location.timeZone", selection: $prefs.storedTimeZone) {
@@ -135,9 +143,13 @@ struct LocationContent: View {
             }
           }
           .labelsHidden()
+          .settingsPopUp()
           .environment(\.layoutDirection, .leftToRight)
         }
       }
+      .settingsRow(last: true)
+    } header: {
+      SettingsHeader("settings.location.current")
     }
   }
 
@@ -167,5 +179,46 @@ private struct TimeZoneChoice: Identifiable {
       .last
       .map { $0.replacingOccurrences(of: "_", with: " ") }
       ?? identifier
+  }
+}
+
+/// How the Location pane writes a place, in the language Salah shows.
+enum LocationText {
+  /// "Makkah, Saudi Arabia" / "مكة المكرمة، السعودية": two parts with the language's comma,
+  /// or the one that isn't empty.
+  static func pair(_ first: String, _ second: String, locale: Locale) -> String {
+    if first.isEmpty || second.isEmpty { return first.isEmpty ? second : first }
+    return String(
+      format: localizedString("settings.location.pair", locale: locale), locale: locale, first,
+      second)
+  }
+
+  /// "21.4167, 39.8167" / "٢١٫٤١٦٧، ٣٩٫٨١٦٧": four decimals in the language's digits.
+  static func coordinates(latitude: Double, longitude: Double, locale: Locale) -> String {
+    let formatter = NumberFormatter()
+    formatter.locale = locale
+    formatter.numberStyle = .decimal
+    formatter.usesGroupingSeparator = false
+    formatter.minimumFractionDigits = 4
+    formatter.maximumFractionDigits = 4
+    let text = { (value: Double) in formatter.string(from: NSNumber(value: value)) ?? "" }
+    return pair(text(latitude), text(longitude), locale: locale)
+  }
+
+  /// The time zone: its identifier ("Asia/Riyadh") in a language written in Latin script,
+  /// as macOS shows it, and in another script the zone's city in that language ("توقيت
+  /// الرياض"), since an identifier in Latin letters doesn't read in it.
+  static func timeZone(_ identifier: String, locale: Locale) -> String {
+    guard locale.language.script != .latin, let zone = TimeZone(identifier: identifier) else {
+      return identifier
+    }
+    let formatter = DateFormatter()
+    formatter.locale = locale
+    formatter.timeZone = zone
+    formatter.dateFormat = "VVV"
+    let city = formatter.string(from: Date(timeIntervalSince1970: 0))
+    return String(
+      format: localizedString("settings.location.timeZone.city", locale: locale), locale: locale,
+      city)
   }
 }

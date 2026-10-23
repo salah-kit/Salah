@@ -438,8 +438,11 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     }
   }
 
-  /// The du'a after an adhan, when it's on (Salah's policy: never after a reminder).
+  /// The du'a after an adhan, when it's on (Salah's policy: never after a reminder, nor
+  /// after a tone).
   private func duaRequest(after alert: PlannedAlert, offset: Int?) -> AudioPlaybackRequest? {
+    let sound = config(for: alert).sound(for: .alert)
+    if case .builtIn(let builtIn) = sound, !builtIn.isAdhan { return nil }
     guard alert.kind == .atTime, !preferences.silentMode, preferences.duaEnabled,
       let url = AppResources.bundle.url(forResource: "Dua", withExtension: "m4a")
     else { return nil }

@@ -36,7 +36,6 @@ struct SalahWindowView: View {
           }
         }
     }
-    .tint(WindowPalette.accent)
     // Low enough for the window's default size, which fits Today.
     .frame(minWidth: 780, minHeight: 300)
     .background(WindowAttacher { AppWindowCoordinator.shared.attach($0) })
@@ -49,13 +48,18 @@ struct SalahWindowView: View {
       set: { if let pane = $0 { navigation.pane = pane } })
   }
 
-  /// A sidebar row: the pane's symbol in the accent, and its name.
+  /// A sidebar row: the pane's symbol in the accent, and its name in the regular weight,
+  /// selected or not. The list takes no tint, so macOS draws the selection neutral.
   private func row(_ pane: WindowPane) -> some View {
     Label {
       Text(LocalizedStringKey(pane.titleKey))
+        .fontWeight(.regular)
     } icon: {
       Image(systemName: pane.icon)
         .foregroundStyle(WindowPalette.accent)
+        // The design's symbols are the same in every language: macOS would draw
+        // Calculation's f(x) in Arabic letters.
+        .environment(\.locale, Locale(identifier: "en"))
     }
     .tag(pane)
   }
@@ -65,8 +69,9 @@ struct SalahWindowView: View {
     switch navigation.pane {
     case .today:
       TodayView(prayerManager: prayerManager)
+        .tint(WindowPalette.accent)
     case let pane:
-      Form {
+      SettingsForm {
         switch pane {
         case .today: EmptyView()
         case .general: GeneralContent()
@@ -77,7 +82,6 @@ struct SalahWindowView: View {
         case .appearance: AppearanceContent()
         }
       }
-      .formStyle(.grouped)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .id(pane)
     }
