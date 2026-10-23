@@ -31,9 +31,9 @@ checked on every change, so they show what the app draws today.
   icon, a place in ⌘-Tab and its own menus. Closing it, ⌘Q included, keeps Salah in the
   menu bar; Quit Salah, in the dropdown and on Today, turns it off, scheduled alerts
   included.
-- **Widgets** in small, medium and large sizes, with a live countdown and a stop button
-  while audio plays. The widget calculates its own times, so it stays right on days Salah
-  isn't running.
+- **Widgets** in small, medium, large and extra-large sizes, with a live countdown and a
+  stop button while audio plays; the extra-large one adds the day's sun arc. The widget
+  calculates its own times, so it stays right on days Salah isn't running.
 - **Appearance.** Light, dark or the system's, for the window, the dropdown and the
   widgets. The sky follows the prayer period you're in, from dawn at Fajr to night at
   Isha, or stays neutral.

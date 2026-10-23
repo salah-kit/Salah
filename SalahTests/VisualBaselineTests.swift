@@ -13,11 +13,12 @@ struct VisualBaselineTests {
 
   static let mode = BaselineMode.current
 
-  /// Native normal desktop frames measured on Mac14,10, macOS 27.0.1 (#28).
+  /// Native normal desktop frames measured on Mac14,10, macOS 27.0.1 (#28), and the
+  /// extra-large widget at the design's size, which hasn't been measured on a desktop yet.
   /// Check the rendered container, independently of the reference-size constants.
   @Test func widgetPreviewsMatchMeasuredNormalDesktopFrames() throws {
     let references: [(family: Baseline.Family, width: Int, height: Int)] = [
-      (.small, 164, 164), (.medium, 344, 164), (.large, 344, 344),
+      (.small, 164, 164), (.medium, 344, 164), (.large, 344, 344), (.extraLarge, 715, 342),
     ]
     for language in [Baseline.Language.en, .ar] {
       for reference in references {
@@ -176,11 +177,11 @@ struct VisualBaselineTests {
   @Test func catalogCoversEveryStateFamilyLanguageAndAppearance() {
     let all = BaselineCatalog.all
     #expect(Set(all.map(\.path)).count == all.count)
-    #expect(all.filter { $0.surface == .widget }.count == SpecState.allCases.count * 3 * 3 * 2)
+    #expect(all.filter { $0.surface == .widget }.count == SpecState.allCases.count * 4 * 3 * 2)
     #expect(
       all.filter { $0.surface == .menu }.count == SpecState.allCases.filter(\.onMenu).count * 3 * 2)
     #expect(
-      all.filter { $0.surface == .preview }.count == PreviewScenario.allCases.count * 3 * 3 * 2)
+      all.filter { $0.surface == .preview }.count == PreviewScenario.allCases.count * 4 * 3 * 2)
     #expect(all.filter { $0.surface == .phase }.count == SalahPhase.allCases.count * 3 * 2)
     // Only the Arabic menu dropdown renders in the Arabic run.
     #expect(

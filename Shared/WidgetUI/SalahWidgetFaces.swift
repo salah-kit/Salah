@@ -11,6 +11,7 @@ nonisolated enum SalahWidgetSize: Sendable, Hashable {
   case small
   case medium
   case large
+  case extraLarge
 }
 
 nonisolated extension SalahWidgetSize {
@@ -21,8 +22,14 @@ nonisolated extension SalahWidgetSize {
     case .small: CGSize(width: 164, height: 164)
     case .medium: CGSize(width: 344, height: 164)
     case .large: CGSize(width: 344, height: 344)
+    // The design's size; the desktop's extra-large widget hasn't been measured yet.
+    case .extraLarge: CGSize(width: 715, height: 342)
     }
   }
+
+  /// The corner radius the previews and baselines clip each family to, as the design draws
+  /// it; on the desktop, the system shapes the widget.
+  var desktopCornerRadius: CGFloat { self == .extraLarge ? 24 : 22 }
 }
 
 // MARK: - Styles
@@ -52,6 +59,8 @@ nonisolated struct WidgetStyle {
   var secondary: AnyShapeStyle { token(colors.palette.labelSecondary, else: .secondary) }
   /// `widget/tertiary`: passed rows.
   var tertiary: AnyShapeStyle { token(colors.palette.labelTertiary, else: .tertiary) }
+  /// `label/quaternary`: the sun arc's path still to come.
+  var quaternary: AnyShapeStyle { token(colors.palette.labelQuaternary, else: .quaternary) }
   /// `widget/accent`: the one accentable element, the countdown or the next row.
   var accent: AnyShapeStyle { token(colors.palette.accentText, else: .primary) }
   /// `widget/mark`: glyphs, the progress bar, and the prayer one is in: its row, its
@@ -61,6 +70,10 @@ nonisolated struct WidgetStyle {
   var track: AnyShapeStyle { token(colors.palette.fillSecondary, else: .quaternary) }
   /// `widget/separator`.
   var separator: AnyShapeStyle { token(colors.palette.separator, else: .quaternary) }
+  /// `accent/default`: the ring on the sun arc's next prayer.
+  var accentMark: AnyShapeStyle { token(colors.palette.accent, else: .primary) }
+  /// `bg/grouped-secondary`: inside the sun arc's rings.
+  var markerFill: AnyShapeStyle { token(colors.palette.groupedSecondary, else: Color.clear) }
   /// `widget/badge` and `widget/on-badge`: the Now badge.
   var badge: AnyShapeStyle { token(colors.palette.accentFill, else: .quaternary) }
   var onBadge: AnyShapeStyle { token(colors.palette.labelOnAccent, else: .primary) }
@@ -146,6 +159,7 @@ struct WidgetContentView: View {
         case .small: SmallFace(display: display, hero: hero, style: style)
         case .medium: MediumFace(display: display, hero: hero, style: style)
         case .large: LargeFace(display: display, hero: hero, style: style)
+        case .extraLarge: ExtraLargeFace(display: display, hero: hero, style: style)
         }
       }
       .overlay {
@@ -435,6 +449,83 @@ private struct LargeFace: View {
   }
 }
 
+/// The extra-large face: a column with the date and place, the next prayer and its timer
+/// side by side, and the sun arc; a hairline; and the day's times, centered beside it.
+private struct ExtraLargeFace: View {
+  let display: SalahDisplay
+  let hero: WidgetHero?
+  let style: WidgetStyle
+
+  var body: some View {
+    ExtraLargeLayout(display: display, style: style) {
+      if let hero {
+        Text(verbatim: hero.eyebrow)
+          .font(.system(size: 12, weight: .semibold))
+          .foregroundStyle(hero.kind == .justStarted ? style.mark : style.secondary)
+          .lineLimit(1)
+          .lineBox(16)
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+          Text(verbatim: hero.name)
+            .font(.system(size: 28, weight: .bold))
+            .foregroundStyle(style.primary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .lineBox(34)
+          WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
+            .fixedSize()
+        }
+      } else {
+        WidgetUnknownFace(display: display, style: style)
+      }
+    }
+  }
+}
+
+/// The extra-large frame both its faces share; `hero` goes between the header and the arc.
+private struct ExtraLargeLayout<Hero: View>: View {
+  let display: SalahDisplay
+  let style: WidgetStyle
+  @ViewBuilder let hero: () -> Hero
+
+  var body: some View {
+    HStack(alignment: .top, spacing: 20) {
+      VStack(alignment: .leading, spacing: 2) {
+        ExtraLargeHeader(display: display, style: style)
+        hero()
+        WidgetSunArc(display: display, style: style, scale: 0.98)
+      }
+      .topAligned()
+      Rectangle()
+        .fill(style.separator)
+        .frame(width: 1, height: 300)
+      WidgetTimes(display: display, rowHeight: 38, nameSize: 17, style: style, isExtraLarge: true)
+        .frame(width: 220)
+        .frame(maxHeight: .infinity)
+    }
+    .padding(.horizontal, 20)
+    .padding(.vertical, 18)
+  }
+}
+
+/// The extra-large face's header: "16 Dhuʻl-Hijjah 1447 · Makkah".
+private struct ExtraLargeHeader: View {
+  let display: SalahDisplay
+  let style: WidgetStyle
+
+  var body: some View {
+    let header = display.header
+    Text(
+      verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear) · \(header.location)"
+    )
+    .font(.system(size: 15, weight: .semibold))
+    .foregroundStyle(style.primary)
+    .lineLimit(1)
+    .minimumScaleFactor(0.7)
+    .lineBox(20)
+    .privacySensitive()
+  }
+}
+
 /// The large face's header: the Hijri date, and the place.
 private struct WidgetHeader: View {
   let display: SalahDisplay
@@ -508,31 +599,41 @@ nonisolated struct WidgetTimes: View {
   let rowHeight: CGFloat
   let nameSize: CGFloat
   let style: WidgetStyle
+  /// The extra-large face's rows: 17-point full times ("4:11 AM"), wider insets and
+  /// corners, and the next row's time in semibold too.
+  var isExtraLarge = false
 
   enum Role { case passed, current, next, upcoming }
 
   var body: some View {
     VStack(spacing: 0) {
       ForEach(rows, id: \.event.id) { row in
-        HStack(spacing: 6) {
+        HStack(spacing: isExtraLarge ? 8 : 6) {
           Text(verbatim: display.name(of: row.event))
             .font(.system(size: nameSize, weight: isStrong(row.role) ? .semibold : .regular))
             .lineLimit(1)
             .minimumScaleFactor(0.85)
             .frame(maxWidth: .infinity, alignment: .leading)
-          Text(verbatim: display.text.compactTime(row.event.time))
-            .font(.system(size: 13).monospacedDigit())
+          Text(verbatim: timeText(row.event.time))
+            .font(
+              .system(
+                size: isExtraLarge ? 17 : 13,
+                weight: isExtraLarge && isStrong(row.role) ? .semibold : .regular
+              )
+              .monospacedDigit()
+            )
             .lineLimit(1)
             // The row drops the day period; VoiceOver says it: "5:03 AM".
             .accessibilityLabel(
               Text(verbatim: display.text.timeFormatter().string(from: row.event.time)))
         }
         .foregroundStyle(color(row.role))
-        .padding(.horizontal, 6)
+        .padding(.horizontal, isExtraLarge ? 10 : 6)
         .frame(height: rowHeight)
         .background {
           if row.role == .next {
-            RoundedRectangle(cornerRadius: 7, style: .continuous).fill(style.track)
+            RoundedRectangle(cornerRadius: isExtraLarge ? 10 : 7, style: .continuous)
+              .fill(style.track)
           }
         }
         .accessibilityElement(children: .combine)
@@ -541,6 +642,12 @@ nonisolated struct WidgetTimes: View {
   }
 
   private func isStrong(_ role: Role) -> Bool { role == .current || role == .next }
+
+  /// "4:11" in the rows, or "4:11 AM" in the extra-large face's.
+  private func timeText(_ time: Date) -> String {
+    isExtraLarge
+      ? display.text.timeFormatter().string(from: time) : display.text.compactTime(time)
+  }
 
   private func color(_ role: Role) -> AnyShapeStyle {
     switch role {
@@ -676,6 +783,12 @@ struct WidgetStopContent: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 15)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+      case .extraLarge:
+        // No design of its own: the extra-large layout, with the Stop control in the
+        // place of the next prayer.
+        ExtraLargeLayout(display: display, style: style) {
+          hero(side: 40, titleSize: 20, style: style)
+        }
       case .large:
         VStack(alignment: .leading, spacing: 9) {
           WidgetHeader(display: display, style: style)

@@ -39,6 +39,7 @@ enum BaselinePipeline {
     case .small: .small
     case .medium: .medium
     case .large: .large
+    case .extraLarge: .extraLarge
     }
   }
 
@@ -214,7 +215,7 @@ struct WidgetShellMessage: View {
 
   var body: some View {
     let point = size.desktopPointSize
-    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+    let shape = RoundedRectangle(cornerRadius: size.desktopCornerRadius, style: .continuous)
     let face = WidgetMessageContent(systemImage: systemImage, message: Text(verbatim: message))
       .frame(width: point.width, height: point.height)
       .background { WidgetSky(phase: .neutral) }

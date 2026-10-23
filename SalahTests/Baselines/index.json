@@ -41,6 +41,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-en-light.png",
@@ -83,6 +96,19 @@
       "language" : "en",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -143,6 +169,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "en",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-en-light.png",
@@ -185,6 +224,19 @@
       "language" : "en",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -245,6 +297,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "en",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-en-light.png",
@@ -287,6 +352,19 @@
       "language" : "en",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -347,6 +425,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "en",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-en-light.png",
@@ -389,6 +480,19 @@
       "language" : "en",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -449,6 +553,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "en",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-en-light.png",
@@ -491,6 +608,19 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -551,6 +681,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -581,6 +724,19 @@
       "language" : "en",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -629,6 +785,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -659,6 +828,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -707,6 +889,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -737,6 +932,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -785,6 +993,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -815,6 +1036,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -863,6 +1097,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -893,6 +1140,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-en-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-en-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1019,6 +1279,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-en-dark.png",
@@ -1061,6 +1334,19 @@
       "language" : "en",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1121,6 +1407,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "en",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-en-dark.png",
@@ -1163,6 +1462,19 @@
       "language" : "en",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1223,6 +1535,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "en",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-en-dark.png",
@@ -1265,6 +1590,19 @@
       "language" : "en",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1325,6 +1663,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "en",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-en-dark.png",
@@ -1367,6 +1718,19 @@
       "language" : "en",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1427,6 +1791,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "en",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-en-dark.png",
@@ -1469,6 +1846,19 @@
       "language" : "en",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1529,6 +1919,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -1559,6 +1962,19 @@
       "language" : "en",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1607,6 +2023,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -1637,6 +2066,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1685,6 +2127,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -1715,6 +2170,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1763,6 +2231,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -1793,6 +2274,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1841,6 +2335,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -1871,6 +2378,19 @@
       "language" : "en",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-en-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "en",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-en-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -1997,6 +2517,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-ar-light.png",
@@ -2039,6 +2572,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2099,6 +2645,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "ar",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-ar-light.png",
@@ -2141,6 +2700,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2201,6 +2773,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "ar",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-ar-light.png",
@@ -2243,6 +2828,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2303,6 +2901,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "ar",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-ar-light.png",
@@ -2345,6 +2956,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2405,6 +3029,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "ar",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-ar-light.png",
@@ -2447,6 +3084,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2507,6 +3157,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -2537,6 +3200,19 @@
       "language" : "ar",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2585,6 +3261,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -2615,6 +3304,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2663,6 +3365,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -2693,6 +3408,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2741,6 +3469,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -2771,6 +3512,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2819,6 +3573,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -2849,6 +3616,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-ar-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-ar-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -2975,6 +3755,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-ar-dark.png",
@@ -3017,6 +3810,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3077,6 +3883,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "ar",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-ar-dark.png",
@@ -3119,6 +3938,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3179,6 +4011,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "ar",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-ar-dark.png",
@@ -3221,6 +4066,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3281,6 +4139,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "ar",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-ar-dark.png",
@@ -3323,6 +4194,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3383,6 +4267,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "ar",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-ar-dark.png",
@@ -3425,6 +4322,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3485,6 +4395,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -3515,6 +4438,19 @@
       "language" : "ar",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3563,6 +4499,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -3593,6 +4542,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3641,6 +4603,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -3671,6 +4646,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3719,6 +4707,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -3749,6 +4750,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3797,6 +4811,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -3827,6 +4854,19 @@
       "language" : "ar",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-ar-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "ar",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-ar-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -3953,6 +4993,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-fr-light.png",
@@ -3995,6 +5048,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4055,6 +5121,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "fr",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-fr-light.png",
@@ -4097,6 +5176,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4157,6 +5249,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "fr",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-fr-light.png",
@@ -4199,6 +5304,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4259,6 +5377,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "fr",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-fr-light.png",
@@ -4301,6 +5432,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4361,6 +5505,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "language" : "fr",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-fr-light.png",
@@ -4403,6 +5560,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4463,6 +5633,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -4493,6 +5676,19 @@
       "language" : "fr",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4541,6 +5737,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -4571,6 +5780,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4619,6 +5841,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -4649,6 +5884,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4697,6 +5945,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -4727,6 +5988,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4775,6 +6049,19 @@
     },
     {
       "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -4805,6 +6092,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-fr-light.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "light",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-fr-light.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -4931,6 +6231,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/idle-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min",
+      "state" : "idle",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "menu/idle-dropdown-fr-dark.png",
@@ -4973,6 +6286,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T15:25:00+03:00",
       "path" : "widget/imminent-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Asr − 10 min",
+      "state" : "imminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T15:25:00+03:00",
+      "path" : "widget/imminent-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5033,6 +6359,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUp-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min",
+      "state" : "countUp",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "fr",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "menu/countUp-dropdown-fr-dark.png",
@@ -5075,6 +6414,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T12:23:00+03:00",
       "path" : "widget/countUpSilent-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 4 min, silent mode on",
+      "state" : "countUpSilent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T12:23:00+03:00",
+      "path" : "widget/countUpSilent-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5135,6 +6487,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:04:00+03:00",
+      "path" : "widget/countUpImminent-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 4 min, Isha adjusted −78 min (19:12)",
+      "state" : "countUpImminent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "fr",
       "moment" : "2026-06-02T19:04:00+03:00",
       "path" : "menu/countUpImminent-dropdown-fr-dark.png",
@@ -5177,6 +6542,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T21:30:00+03:00",
       "path" : "widget/endOfDay-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Isha + 60 min",
+      "state" : "endOfDay",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T21:30:00+03:00",
+      "path" : "widget/endOfDay-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5237,6 +6615,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:02:00+03:00",
+      "path" : "widget/playingAdhan-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 2 min, Maghrib's adhan playing",
+      "state" : "playingAdhan",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "fr",
       "moment" : "2026-06-02T19:02:00+03:00",
       "path" : "menu/playingAdhan-dropdown-fr-dark.png",
@@ -5279,6 +6670,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T18:50:00+03:00",
       "path" : "widget/playingPreReminder-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib − 10 min, Maghrib's 10-min before-reminder playing",
+      "state" : "playingPreReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T18:50:00+03:00",
+      "path" : "widget/playingPreReminder-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5339,6 +6743,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T19:05:00+03:00",
+      "path" : "widget/playingPostReminder-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Maghrib + 5 min, Maghrib's 5-min after-reminder playing",
+      "state" : "playingPostReminder",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "language" : "fr",
       "moment" : "2026-06-02T19:05:00+03:00",
       "path" : "menu/playingPostReminder-dropdown-fr-dark.png",
@@ -5381,6 +6798,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T13:19:00+03:00",
       "path" : "widget/silent-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "Dhuhr + 60 min, silent mode on",
+      "state" : "silent",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/silent-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5441,6 +6871,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T13:19:00+03:00",
+      "path" : "widget/setupNeeded-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min",
+      "state" : "setupNeeded",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-03T00:10:00+03:00",
@@ -5471,6 +6914,19 @@
       "language" : "fr",
       "moment" : "2026-06-03T00:10:00+03:00",
       "path" : "widget/stale-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "the expired entry of a timeline that ran out, at 00:10 the next day",
+      "state" : "stale",
+      "surface" : "widget"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-03T00:10:00+03:00",
+      "path" : "widget/stale-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5519,6 +6975,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/idle-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.idle",
+      "state" : "idle",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -5549,6 +7018,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/imminent-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.imminent",
+      "state" : "imminent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/imminent-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5597,6 +7079,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUp-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUp",
+      "state" : "countUp",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -5627,6 +7122,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/countUpEnded-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.countUpEnded",
+      "state" : "countUpEnded",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/countUpEnded-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5675,6 +7183,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/since-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.since",
+      "state" : "since",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -5705,6 +7226,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/tomorrow-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.tomorrow",
+      "state" : "tomorrow",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/tomorrow-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],
@@ -5753,6 +7287,19 @@
     },
     {
       "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/silent-extraLarge-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.silent",
+      "state" : "silent",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
       "family" : "small",
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
@@ -5783,6 +7330,19 @@
       "language" : "fr",
       "moment" : "2026-06-02T16:00:00+03:00",
       "path" : "preview/playing-large-fr-dark.png",
+      "processLanguages" : [
+        "en-US"
+      ],
+      "setup" : "WidgetPreviewData.playing",
+      "state" : "playing",
+      "surface" : "preview"
+    },
+    {
+      "appearance" : "dark",
+      "family" : "extraLarge",
+      "language" : "fr",
+      "moment" : "2026-06-02T16:00:00+03:00",
+      "path" : "preview/playing-extraLarge-fr-dark.png",
       "processLanguages" : [
         "en-US"
       ],

@@ -74,7 +74,7 @@ struct SalahPrayerWidget: Widget {
     }
     .configurationDisplayName(Text("widget.prayerTimes.displayName"))
     .description(Text("widget.prayerTimes.description"))
-    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     // Take over the full widget bounds; each view applies its own padding. The
     // default system content margins double-inset content and were a cause of
     // the large widget's vertical clipping.
@@ -187,6 +187,7 @@ extension WidgetFamily {
     case .systemSmall: .small
     case .systemMedium: .medium
     case .systemLarge: .large
+    case .systemExtraLarge: .extraLarge
     default: .small
     }
   }
@@ -207,6 +208,12 @@ extension WidgetFamily {
 }
 
 #Preview("Large", as: .systemLarge) {
+  SalahPrayerWidget()
+} timeline: {
+  SalahPrayerWidgetProvider.previewEntry
+}
+
+#Preview("Extra Large", as: .systemExtraLarge) {
   SalahPrayerWidget()
 } timeline: {
   SalahPrayerWidgetProvider.previewEntry

@@ -20,7 +20,7 @@ The first renders every image but the Arabic menu dropdown; the second, whose `-
 - Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages.
 - Light and dark through the `colorScheme` environment, with the sky of the time of day at each moment; the `phase` images show each time of day's sky, and the neutral one.
 - Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The dropdown reads Reduce Motion (the approaching card's rim stops breathing), and a render can't override it, so record with both off.
-- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)). The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
+- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)), and the extra-large face at the design's 715×342 points, which hasn't been measured on a desktop yet. The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
 - The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.
 - Compared pixel by pixel. A channel difference of up to 2/255 counts as equal, and up to 16 pixels per image may differ by more, none of them by more than 32/255: antialiasing can shift a pixel or two by a few levels between processes, while a changed digit, glyph, diacritic, icon or color moves pixels far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases.
 
@@ -35,7 +35,7 @@ The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura,
 
 ## Widget and menu states: `widget/` and `menu/`
 
-The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
+The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget.
 
 | State | Shows | Moment (Riyadh) | Setup |
 |---|---|---|---|
@@ -73,8 +73,8 @@ The medium widget in each time of day, from the fixture's idle setup half an hou
 
 ## Count
 
-- `widget/`: 216 images
+- `widget/`: 288 images
 - `menu/`: 60 images
-- `preview/`: 144 images
+- `preview/`: 192 images
 - `phase/`: 36 images
-- total: 456 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.
+- total: 576 images, 20 of them from the Arabic run; `index.json` lists each with its inputs.

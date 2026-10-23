@@ -11,7 +11,7 @@ struct WidgetPreviewContainer: View {
 
   var body: some View {
     let pointSize = size.desktopPointSize
-    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+    let shape = RoundedRectangle(cornerRadius: size.desktopCornerRadius, style: .continuous)
     content
       .frame(width: pointSize.width, height: pointSize.height)
       .background {
@@ -59,6 +59,7 @@ private struct WidgetSizeGallery: View {
         WidgetPreviewContainer(display: display, size: .medium)
       }
       WidgetPreviewContainer(display: display, size: .large)
+      WidgetPreviewContainer(display: display, size: .extraLarge)
     }
     .padding(24)
   }

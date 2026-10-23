@@ -14,6 +14,8 @@ All notable changes to this project are documented here. The format follows
   forward; it opens on Today the first time, then on the last pane.
 - While the window is open, Salah has a Dock icon, a place in ⌘-Tab and its own menus,
   hidden and minimized included. A login launch stays in the menu bar.
+- An extra-large desktop widget: the next prayer and its countdown, the day's sun arc,
+  and the day's six times.
 
 ### Changed
 

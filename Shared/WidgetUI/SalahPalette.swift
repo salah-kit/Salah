@@ -12,6 +12,8 @@ nonisolated struct SalahPalette: Equatable, Sendable {
   var labelSecondary: ThemeColor
   /// `label/tertiary`: passed rows, large text and marks only (3:1).
   var labelTertiary: ThemeColor
+  /// `label/quaternary`: the quietest marks, such as the sun arc's path still to come.
+  var labelQuaternary: ThemeColor
   /// `label/on-accent`: text and glyphs on `accentFill`.
   var labelOnAccent: ThemeColor
   /// `accent/default`: the one accent, for controls, selection and marks (3:1).
@@ -55,6 +57,7 @@ nonisolated struct SalahPalette: Equatable, Sendable {
     labelPrimary = pick(0x0000_00FF, 0xFFFF_FFFF)
     labelSecondary = pick(0x3C3C_43C7, 0xEBEB_F5A3, 0x3C3C_43EB, 0xEBEB_F5D6)
     labelTertiary = pick(0x3C3C_439E, 0xEBEB_F570, 0x3C3C_43C2, 0xEBEB_F599)
+    labelQuaternary = pick(0x3C3C_432E, 0xEBEB_F529, 0x3C3C_435C, 0xEBEB_F552)
     labelOnAccent = pick(0x2619_00FF, 0x2619_00FF)
     accent = pick(0x986F_05FF, 0xCCA5_5BFF, 0x7A57_00FF, 0xE1C1_88FF)
     accentText = pick(0x7A57_00FF, 0xE1C1_88FF, 0x4D36_00FF, 0xF9EC_D6FF)

@@ -135,7 +135,7 @@ enum BaselineIndex {
       "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The dropdown reads Reduce Motion (the approaching card's rim stops breathing), and a render can't override it, so record with both off."
     )
     add(
-      "- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)). The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
+      "- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)), and the extra-large face at the design's 715×342 points, which hasn't been measured on a desktop yet. The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
     )
     add("- The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.")
     add(
@@ -159,7 +159,7 @@ enum BaselineIndex {
     add("## Widget and menu states: `widget/` and `menu/`")
     add()
     add(
-      "The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
+      "The states the widget and the menu bar show, built from the fixture by the app's real settings mirror and SalahKit's schedule, as the app and the widget extension build them. Files are `widget/<state>-<small|medium|large|extraLarge>-<en|ar|fr>-<light|dark>.png` and `menu/<state>-dropdown-<en|ar|fr>-<light|dark>.png`; the setup and stale states exist only in the widget."
     )
     add()
     add("| State | Shows | Moment (Riyadh) | Setup |")

@@ -1,0 +1,223 @@
+import SalahCore
+import SwiftUI
+import WidgetKit
+
+// MARK: - Layout
+
+/// Where the sun arc draws the day, in the design's 370 × 190 points, left to right. The
+/// x axis is time: sunrise at 55 and Maghrib at 315, with 15% of the day's width of night
+/// drawn on each side. The y axis is the sun's height, `sin(π · (t − sunrise) / (Maghrib −
+/// sunrise))` above a horizon at 120, so Dhuhr peaks midway and Fajr and Isha fall below.
+nonisolated struct SunArcLayout: Equatable {
+  static let size = CGSize(width: 370, height: 190)
+  static let horizonY: CGFloat = 120
+  static let horizonInset: CGFloat = 8
+  static let amplitude: CGFloat = 96
+  static let sunriseX: CGFloat = 55
+  static let maghribX: CGFloat = 315
+  /// The night drawn beyond sunrise and Maghrib, as a share of the day's width.
+  static let nightShare: CGFloat = 0.15
+  static var nightStartX: CGFloat { sunriseX - nightShare * (maghribX - sunriseX) }
+  static var nightEndX: CGFloat { maghribX + nightShare * (maghribX - sunriseX) }
+
+  /// How a prayer's marker is drawn.
+  enum MarkerStyle: Equatable {
+    /// Passed, or the prayer one is in: filled in the mark.
+    case reached
+    /// The next prayer: a ring in the accent.
+    case next
+    /// Later today: a quiet ring.
+    case upcoming
+  }
+
+  struct Marker: Equatable {
+    let event: PrayerEvent
+    let point: CGPoint
+    let style: MarkerStyle
+  }
+
+  let markers: [Marker]
+  /// Where the travelled path ends: now, held between sunrise and Maghrib.
+  let travelledEndX: CGFloat
+  /// The sun now, or nil when now falls outside the drawn part of the day.
+  let sun: CGPoint?
+
+  /// The arc for a day's rows at `now`, or nil without both sunrise and Maghrib.
+  init?(rows: [(event: PrayerEvent, role: WidgetTimes.Role)], now: Date) {
+    guard let sunrise = rows.first(where: { $0.event.kind == .sunrise })?.event.time,
+      let maghrib = rows.first(where: { $0.event.kind == .maghrib })?.event.time,
+      maghrib > sunrise
+    else { return nil }
+    let span = maghrib.timeIntervalSince(sunrise)
+    func x(_ time: Date) -> CGFloat {
+      Self.sunriseX + CGFloat(time.timeIntervalSince(sunrise) / span)
+        * (Self.maghribX - Self.sunriseX)
+    }
+    markers = rows.compactMap { row in
+      let markerX = x(row.event.time)
+      guard markerX >= Self.nightStartX, markerX <= Self.nightEndX else { return nil }
+      let style: MarkerStyle =
+        switch row.role {
+        case .passed, .current: .reached
+        case .next: .next
+        case .upcoming: .upcoming
+        }
+      return Marker(
+        event: row.event, point: CGPoint(x: markerX, y: Self.y(atX: markerX)), style: style)
+    }
+    let nowX = x(now)
+    travelledEndX = min(max(nowX, Self.sunriseX), Self.maghribX)
+    sun =
+      nowX >= Self.nightStartX && nowX <= Self.nightEndX
+      ? CGPoint(x: nowX, y: Self.y(atX: nowX)) : nil
+  }
+
+  /// The curve's height at `x`.
+  static func y(atX x: CGFloat) -> CGFloat {
+    horizonY - amplitude * sin(.pi * (x - sunriseX) / (maghribX - sunriseX))
+  }
+
+  /// The curve from `start` to `end`, as points one design point apart.
+  static func curve(from start: CGFloat, to end: CGFloat) -> [CGPoint] {
+    guard end > start else { return [] }
+    let steps = max(Int((end - start).rounded(.up)), 1)
+    return (0...steps).map { step in
+      let x = start + (end - start) * CGFloat(step) / CGFloat(steps)
+      return CGPoint(x: x, y: y(atX: x))
+    }
+  }
+}
+
+// MARK: - View
+
+/// The day as the sun's height, for the extra-large face: the night before sunrise and
+/// after Maghrib, the path the sun has travelled in the time of day's mark (the accentable
+/// element), what remains, a marker and a label for each prayer, and the sun now. It
+/// repeats what the hero and the times say, so VoiceOver skips it.
+struct WidgetSunArc: View {
+  let display: SalahDisplay
+  let style: WidgetStyle
+  /// The arc's scale from the design's 370 × 190 points.
+  var scale: CGFloat = 1
+  @Environment(\.layoutDirection) private var direction
+
+  var body: some View {
+    let rows = WidgetTimes.rows(of: display)
+    ZStack(alignment: .topLeading) {
+      if let layout = SunArcLayout(rows: rows, now: display.date) {
+        arc(layout)
+      }
+    }
+    .frame(
+      width: SunArcLayout.size.width * scale, height: SunArcLayout.size.height * scale,
+      alignment: .topLeading
+    )
+    .environment(\.layoutDirection, .leftToRight)
+    .accessibilityHidden(true)
+  }
+
+  @ViewBuilder
+  private func arc(_ layout: SunArcLayout) -> some View {
+    let horizon = [
+      CGPoint(x: SunArcLayout.horizonInset, y: SunArcLayout.horizonY),
+      CGPoint(x: SunArcLayout.size.width - SunArcLayout.horizonInset, y: SunArcLayout.horizonY),
+    ]
+    stroke(horizon, style.separator, width: 1)
+    stroke(
+      SunArcLayout.curve(from: SunArcLayout.nightStartX, to: SunArcLayout.sunriseX),
+      style.tertiary, width: 2)
+    stroke(
+      SunArcLayout.curve(from: SunArcLayout.maghribX, to: SunArcLayout.nightEndX),
+      style.tertiary, width: 2)
+    stroke(
+      SunArcLayout.curve(from: layout.travelledEndX, to: SunArcLayout.maghribX),
+      style.quaternary, width: 3)
+    stroke(
+      SunArcLayout.curve(from: SunArcLayout.sunriseX, to: layout.travelledEndX),
+      style.mark, width: 3
+    )
+    .widgetAccentable()
+    ForEach(layout.markers, id: \.event.id) { marker in
+      markerView(marker.style)
+        .position(place(marker.point))
+    }
+    if let sun = layout.sun {
+      Circle().fill(style.mark).opacity(0.22)
+        .frame(width: 34 * scale, height: 34 * scale)
+        .position(place(sun))
+      Circle().fill(style.mark)
+        .frame(width: 16 * scale, height: 16 * scale)
+        .position(place(sun))
+    }
+    ForEach(layout.markers, id: \.event.id) { marker in
+      label(marker)
+    }
+  }
+
+  /// A design point in the frame: scaled, and mirrored right to left.
+  private func place(_ point: CGPoint) -> CGPoint {
+    let x = direction == .rightToLeft ? SunArcLayout.size.width - point.x : point.x
+    return CGPoint(x: x * scale, y: point.y * scale)
+  }
+
+  private func stroke(_ points: [CGPoint], _ color: AnyShapeStyle, width: CGFloat) -> some View {
+    Path { path in
+      guard let first = points.first else { return }
+      path.move(to: place(first))
+      for point in points.dropFirst() { path.addLine(to: place(point)) }
+    }
+    .stroke(color, style: StrokeStyle(lineWidth: width * scale, lineCap: .round, lineJoin: .round))
+  }
+
+  @ViewBuilder
+  private func markerView(_ markerStyle: SunArcLayout.MarkerStyle) -> some View {
+    let side = 9 * scale
+    switch markerStyle {
+    case .reached:
+      Circle().fill(style.mark).frame(width: side, height: side)
+    case .next:
+      Circle().fill(style.markerFill)
+        .overlay { Circle().strokeBorder(style.accentMark, lineWidth: 2.5 * scale) }
+        .frame(width: side, height: side)
+    case .upcoming:
+      Circle().fill(style.markerFill)
+        .overlay { Circle().strokeBorder(style.tertiary, lineWidth: 1.5 * scale) }
+        .frame(width: side, height: side)
+    }
+  }
+
+  /// A prayer's label: Sunrise and Maghrib with their times under the horizon, Fajr and
+  /// Isha under their markers and a little toward the day, Dhuhr above its own, Asr beside
+  /// it toward the evening. The
+  /// next prayer's label carries its time, in the accent.
+  @ViewBuilder
+  private func label(_ marker: SunArcLayout.Marker) -> some View {
+    let isNext = marker.style == .next
+    let kind = marker.event.kind
+    let name = display.name(of: marker.event)
+    let time = display.text.compactTime(marker.event.time)
+    let showsTime = isNext || kind == .sunrise || kind == .maghrib
+    let lineHeight: CGFloat = isNext ? 16 : 13
+    let center: CGPoint =
+      switch kind {
+      case .sunrise, .maghrib:
+        CGPoint(x: marker.point.x, y: SunArcLayout.horizonY + 6 + lineHeight / 2)
+      case .fajr:
+        CGPoint(x: marker.point.x + 6, y: marker.point.y + 8 + lineHeight / 2)
+      case .isha:
+        CGPoint(x: marker.point.x - 6, y: marker.point.y + 8 + lineHeight / 2)
+      case .dhuhr:
+        CGPoint(x: marker.point.x, y: marker.point.y - 22 + lineHeight / 2)
+      case .asr:
+        CGPoint(x: marker.point.x + 44, y: marker.point.y)
+      }
+    Text(verbatim: showsTime ? "\(name) \(time)" : name)
+      .font(.system(size: (isNext ? 12 : 11) * scale, weight: isNext ? .semibold : .regular))
+      .foregroundStyle(isNext ? style.accent : style.secondary)
+      .lineLimit(1)
+      .fixedSize()
+      .frame(height: lineHeight * scale)
+      .environment(\.layoutDirection, direction)
+      .position(place(center))
+  }
+}

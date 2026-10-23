@@ -17,7 +17,7 @@ nonisolated struct Baseline: Sendable, Hashable, Codable, CustomTestStringConver
     case phase
   }
 
-  enum Family: String, Sendable, Codable, CaseIterable { case small, medium, large }
+  enum Family: String, Sendable, Codable, CaseIterable { case small, medium, large, extraLarge }
   enum Language: String, Sendable, Codable, CaseIterable { case en, ar, fr }
   enum Appearance: String, Sendable, Codable, CaseIterable { case light, dark }
 
