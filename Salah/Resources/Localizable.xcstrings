@@ -2684,55 +2684,55 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يستخدم «صلاة» موقعك لحساب أوقات الصلاة، ويبقى موقعك على هذا الـMac."
+            "value": "يستخدم «صلاة» موقعك لحساب أوقات الصلاة فقط."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salah uses your location to calculate prayer times. It stays on this Mac."
+            "value": "Salah uses your location only to calculate prayer times."
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah utilise votre position pour calculer les heures de prière. Elle reste sur ce Mac."
+            "state": "translated",
+            "value": "Salah utilise votre position uniquement pour calculer les heures de prière."
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah نماز کے اوقات کے حساب کے لیے آپ کا مقام استعمال کرتا ہے۔ یہ اسی Mac پر رہتا ہے۔"
+            "state": "translated",
+            "value": "Salah آپ کا مقام صرف نماز کے اوقات کے حساب کے لیے استعمال کرتا ہے۔"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah memakai lokasi Anda untuk menghitung waktu salat. Lokasi tetap di Mac ini."
+            "state": "translated",
+            "value": "Salah memakai lokasi Anda hanya untuk menghitung waktu salat."
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah, namaz vakitlerini hesaplamak için konumunuzu kullanır. Konumunuz bu Mac’te kalır."
+            "state": "translated",
+            "value": "Salah, konumunuzu yalnızca namaz vakitlerini hesaplamak için kullanır."
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah از موقعیت شما برای محاسبهٔ اوقات نماز استفاده می‌کند. موقعیت روی همین Mac می‌ماند."
+            "state": "translated",
+            "value": "Salah از موقعیت شما فقط برای محاسبهٔ اوقات نماز استفاده می‌کند."
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah নামাজের সময় হিসাব করতে আপনার অবস্থান ব্যবহার করে। এটি এই Mac-এই থাকে।"
+            "state": "translated",
+            "value": "Salah আপনার অবস্থান শুধু নামাজের সময় হিসাব করতে ব্যবহার করে।"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Salah menggunakan lokasi anda untuk mengira waktu solat. Ia kekal pada Mac ini."
+            "state": "translated",
+            "value": "Salah menggunakan lokasi anda hanya untuk mengira waktu solat."
           }
         }
       }

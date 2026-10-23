@@ -26,8 +26,8 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2026 The Salah Kit Authors</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Your location is used to calculate prayer times for your area.</string>
+	<string>Salah uses your location only to calculate prayer times.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location is used to calculate prayer times for your area.</string>
+	<string>Salah uses your location only to calculate prayer times.</string>
 </dict>
 </plist>
