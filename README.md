@@ -2,13 +2,47 @@
 
 <img src="Design/Previews/app-icon.png" alt="" width="96" align="right">
 
-A calm macOS menu-bar app for the five daily prayers, with desktop widgets and adhan alerts.
+A calm prayer app for iPhone, iPad and macOS, with prayer times, widgets and reminders.
 
 [![CI](https://github.com/salah-kit/Salah/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/salah-kit/Salah/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/salah-kit/Salah?sort=semver)](https://github.com/salah-kit/Salah/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## What it is
+
+### On iPhone and iPad
+
+The iOS app has Today, Times, Qibla and Settings, with tabs on iPhone and adaptive
+navigation on iPad. It calculates prayer times on the device from your current location
+or a city you choose, with no account or subscription.
+
+- **Today and Times.** The next prayer, a live countdown, the day's schedule and sun
+  arc, with day and week views for other dates. The sky follows the prayer period, or
+  stays neutral. English and Arabic include local digits and right-to-left layout.
+- **Qibla.** The bearing and distance to the Kaaba, with a compass where the device
+  supplies a heading and a bearing-only view when it cannot.
+- **Calculation.** Automatic selection, all fourteen methods from the engine, or
+  custom twilight angles; Shafi or Hanafi Asr; high-latitude rules; per-prayer
+  adjustments; a Hijri offset; and delayed Isha in Ramadan.
+- **Reminders and sound.** Independent at-time, before and after alerts for each
+  prayer, optional Sunrise alerts, and different alerts on Friday. Mute keeps the
+  notifications and silences their sounds. Choose the licensed built-in regular or
+  Fajr adhan, a system sound, a synthesized soft tone, or import your own recording.
+  Recordings get a notification excerpt under 30 seconds; full playback starts from an
+  explicit app action and can continue in the background. iOS notifications do not
+  start a full adhan automatically. Imported recordings can be up to 30 minutes long;
+  longer files are rejected. The optional spoken du'a can add up to two minutes.
+- **System surfaces.** Home Screen and Lock Screen widgets, prayer Live Activities,
+  Dynamic Island, and Control Center controls for mute and Stop. Widgets calculate
+  their own schedule from shared settings. Setup, unavailable and stale states explain
+  when to open the app, without showing an old countdown.
+
+The iOS app is available as source in the Unreleased changes. There is no App Store
+listing or installable iOS download yet. See [Installation](#installation) to run a
+simulator build without a paid developer membership.
+The [iOS privacy policy](docs/privacy.md) explains local storage and Apple services.
+
+### On macOS
 
 Salah lives in your menu bar. It shows how long until the next prayer, opens a dropdown
 with the day's schedule, brings the same schedule to desktop and Notification Center
@@ -53,12 +87,8 @@ What it deliberately isn't:
 
 - It isn't a mosque timetable app: it calculates times from your location, and doesn't
   show a mosque's published iqama times.
-- It isn't on the Mac App Store, and there is no signed download yet. Salah is released
-  as source; you build it yourself.
-- It's macOS only. The prayer-time code it is built on,
-  [SalahKit](https://github.com/salah-kit/SalahKit) and
-  [SalahTimes](https://github.com/salah-kit/SalahTimes), is how other apps on other
-  platforms share it.
+- It isn't on the Mac App Store or iOS App Store, and there is no signed download yet.
+  Salah is available as source; you build it yourself.
 
 Salah is the [salah-kit](https://github.com/salah-kit) ecosystem's own app and a working
 sample of the packages, used through their public API only. SalahTimes calculates the
@@ -70,6 +100,8 @@ the ones macOS can keep and follows every one while the app runs. Salah's look, 
 sounds and wording stay in the app.
 
 ## Installation
+
+### macOS
 
 Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
@@ -94,7 +126,27 @@ Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
 3. Move `build/Build/Products/Release/Salah.app` to `/Applications` and open it.
 
+### iPhone and iPad
+
+Build with Xcode 27 on a Mac. The app requires iOS or iPadOS 26 or later. A simulator
+build needs no paid Apple Developer membership, signing team or provisioning profile:
+
+```sh
+git clone https://github.com/salah-kit/Salah.git
+cd Salah
+xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug \
+  -destination 'generic/platform=iOS Simulator' -derivedDataPath .derived/ios \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run it, open `Salah.xcodeproj`, choose the `SalahIOS` scheme and an iPhone or iPad
+simulator, then Run. [CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados) covers the command-line
+simulator journeys and unsigned device build. Installing on a physical device needs
+your local signing configuration; App Store distribution needs a paid membership.
+
 ## Quick start
+
+### macOS
 
 1. Open Salah. A welcome explains what Salah does and asks for the location and
    notifications, each on its own page; then Salah's window opens on Today, and a
@@ -108,6 +160,22 @@ Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 4. To add a widget, right-click the desktop, choose **Edit Widgets**, and search for
    Salah.
 
+### iPhone and iPad
+
+1. Open Salah and complete setup. Allow current location or choose a city, choose
+   whether to allow notifications, and confirm the calculation method. A city remains
+   usable when location access is off.
+2. Use **Today** for the next prayer and today's times, **Times** for another day or
+   week, and **Qibla** for the direction of prayer. The compass needs heading hardware;
+   a simulator can show the calculated bearing.
+3. Open **Settings → Prayer alerts** to configure each prayer's at-time, before and
+   after reminders, including its sound. Use the Friday override for Jumu'ah, or leave it
+   off to inherit Dhuhr's alerts. **Sound** controls mute, in-app playback volume and
+   the optional spoken du'a after a built-in or imported adhan.
+4. Add a Salah widget through the Home Screen or Lock Screen editor. Control Center's
+   control gallery includes mute and Stop. Live Activities follow a prayer while it is
+   relevant; iOS controls their availability and presentation.
+
 ## Documentation
 
 This README and [CONTRIBUTING.md](CONTRIBUTING.md) cover using and building the app. The
@@ -117,10 +185,16 @@ repos: [SalahKit](https://github.com/salah-kit/SalahKit) and
 [SalahTimes](https://github.com/salah-kit/SalahTimes).
 The design system for the apps (tokens, the prayer symbols, the app icon and previews of
 key screens) is described in [Design](Design/README.md).
+The [iOS architecture](docs/ios-architecture.md) describes state, persistence, platform
+services and the app's system surfaces.
 
 ## Supported platforms
 
-macOS 14 Sonoma or later, on Apple silicon and Intel Macs.
+| App | Minimum system |
+|---|---|
+| macOS menu-bar app | macOS 14 Sonoma, on Apple silicon and Intel Macs |
+| iPhone app | iOS 26 |
+| iPad app | iPadOS 26 |
 
 ## Status and versioning
 
@@ -128,9 +202,19 @@ Salah 1.1.2 is a source release on SalahKit 0.4.0. Releases use a
 marketing version (1.1.2) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
 change.
 
+The iOS app is part of the Unreleased source on the same SalahKit version. Its source
+availability does not mean an iOS App Store release, a signed download, or completed
+physical-device validation. The simulator build and test commands are in
+[CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados).
+
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language
 review includes the new volume accessibility label.
+
+The iOS target includes two recordings under CC BY 4.0, with full attribution in
+[NOTICE](NOTICE) and the app's Audio credits. System sounds, a synthesized tone and
+imported recordings are also available. It does not bundle the macOS recordings whose
+redistribution rights are still unconfirmed.
 
 Salah's colors are the design system's tokens. A test holds their text to 4.5:1 and their
 glyphs, marks and passed prayers to 3:1 on the skies and surfaces they're drawn on, in light

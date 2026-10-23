@@ -90,6 +90,41 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
 
+  ios-build-and-test:
+    name: iOS (${{ matrix.family }})
+    runs-on: xcode-27
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [iPhone, iPad]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      # The iPhone job also builds the Release app and embedded widget for a
+      # generic device, unsigned. Both families run logic and real-app journeys.
+      # The script creates and deletes its own simulator and needs no paid team.
+      - name: Build and test iOS
+        env:
+          SALAH_IOS_SIMULATOR_FAMILY: ${{ matrix.family }}
+        run: bash scripts/verify-ios.sh
+
+      - name: Upload iOS test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-results-${{ matrix.family }}
+          path: .derived/ios-${{ matrix.family }}/Results
+          include-hidden-files: true
+          if-no-files-found: ignore
+
   lint:
     name: Lint
     runs-on: xcode-27
@@ -102,7 +137,8 @@ jobs:
       - name: swift format lint
         run: |
           swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
-            SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
+            SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
+            SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
 
       # Salah.xcodeproj is generated from project.yml; this fails when they differ. The
       # XcodeGen release is pinned by version and checksum, so its output can't drift.
