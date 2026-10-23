@@ -248,8 +248,9 @@ nonisolated struct SalahColors {
   }
 
   /// Secondary text on the sky, as one opaque color: `labelSecondary` composited over the
-  /// sky's end it sits nearest. It looks the same, and reads the same to contrast checks
-  /// that measure the drawn color against the gradient under small text.
+  /// sky's end it sits nearest. It's close to the translucent label over the sky, and the
+  /// accessibility audit measures it as drawn, where it reported the translucent label's
+  /// small text on some skies.
   func secondaryOnSky(atTop: Bool) -> ThemeColor {
     palette.labelSecondary.composited(over: atTop ? phase.skyTop : phase.skyBottom)
   }
