@@ -35,6 +35,7 @@ final class SalahUITests: XCTestCase {
       "-salah.autoLocation", "NO",
       "-salah.debug.scratchPreferences", "YES",
       "-salah.debug.withoutSystemNotifications", "YES",
+      "-salah.onboardingCompleted", "YES",
       "-salah.notificationSettings", alertsOff,
       "-salah.appLanguage", "english",
       "-AppleLanguages", "(en)",

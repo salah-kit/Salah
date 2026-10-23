@@ -1831,6 +1831,702 @@
         }
       }
     },
+    "onboarding.continue": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متابعة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Continuer"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "جاری رکھیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lanjutkan"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Devam"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ادامه"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "চালিয়ে যান"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Teruskan"
+          }
+        }
+      }
+    },
+    "onboarding.location.allow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السماح بالوصول إلى الموقع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Location Access"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Autoriser l’accès à la position"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مقام تک رسائی کی اجازت دیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Izinkan Akses Lokasi"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Konum Erişimine İzin Ver"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اجازهٔ دسترسی به موقعیت"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অবস্থান অ্যাক্সেসের অনুমতি দিন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Benarkan Akses Lokasi"
+          }
+        }
+      }
+    },
+    "onboarding.location.chooseCity": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختيار مدينة…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a City…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisir une ville…"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "شہر منتخب کریں…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pilih Kota…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Şehir Seç…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "انتخاب شهر…"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শহর বেছে নিন…"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pilih Bandar…"
+          }
+        }
+      }
+    },
+    "onboarding.location.message": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يستخدم «صلاة» موقعك لحساب أوقات الصلاة، ويبقى موقعك على هذا الـMac."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah uses your location to calculate prayer times. It stays on this Mac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah utilise votre position pour calculer les heures de prière. Elle reste sur ce Mac."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah نماز کے اوقات کے حساب کے لیے آپ کا مقام استعمال کرتا ہے۔ یہ اسی Mac پر رہتا ہے۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah memakai lokasi Anda untuk menghitung waktu salat. Lokasi tetap di Mac ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah, namaz vakitlerini hesaplamak için konumunuzu kullanır. Konumunuz bu Mac’te kalır."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "«صلاة» از موقعیت شما برای محاسبهٔ اوقات نماز استفاده می‌کند. موقعیت روی همین Mac می‌ماند."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah নামাজের সময় হিসাব করতে আপনার অবস্থান ব্যবহার করে। এটি এই Mac-এই থাকে।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah menggunakan lokasi anda untuk mengira waktu solat. Ia kekal pada Mac ini."
+          }
+        }
+      }
+    },
+    "onboarding.location.title": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أوقات الصلاة في مكانك"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Times for where you are"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les heures là où vous êtes"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آپ کی جگہ کے اوقات"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu untuk lokasi Anda"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bulunduğunuz yerin vakitleri"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اوقات برای جایی که هستید"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি যেখানে আছেন তার সময়"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu untuk lokasi anda"
+          }
+        }
+      }
+    },
+    "onboarding.notifications.allow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السماح بالتنبيهات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Notifications"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Autoriser les notifications"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اطلاعات کی اجازت دیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Izinkan Notifikasi"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bildirimlere İzin Ver"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اجازهٔ اعلان‌ها"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বিজ্ঞপ্তির অনুমতি দিন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Benarkan Pemberitahuan"
+          }
+        }
+      }
+    },
+    "onboarding.notifications.message": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احصل على تنبيه بالأذان عند دخول الوقت، وتذكيرات لطيفة قبل الصلاة أو بعدها، للصلوات التي تختارها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get an alert at prayer time with the adhan, and gentle reminders before or after. You choose the prayers."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recevez une alerte à l’heure de la prière avec l’adhan, et de doux rappels avant ou après. Vous choisissez les prières."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز کے وقت اذان کے ساتھ الرٹ، اور پہلے یا بعد میں ہلکی یاد دہانیاں پائیں۔ نمازیں آپ چنتے ہیں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dapatkan peringatan dengan azan saat waktu salat, serta pengingat lembut sebelum atau sesudahnya. Anda memilih salatnya."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namaz vaktinde ezanla bir uyarı, önce veya sonra nazik hatırlatıcılar alın. Namazları siz seçersiniz."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "در وقت نماز هشداری با اذان، و یادآوری‌های آرام پیش یا پس از آن دریافت کنید. نمازها را خودتان انتخاب می‌کنید."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের সময় আজানসহ সতর্কতা এবং আগে বা পরে মৃদু অনুস্মারক পান। নামাজগুলো আপনিই বেছে নেন।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dapatkan amaran dengan azan pada waktu solat, serta peringatan lembut sebelum atau selepasnya. Anda pilih solatnya."
+          }
+        }
+      }
+    },
+    "onboarding.notifications.notNow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ليس الآن"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not Now"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pas maintenant"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ابھی نہیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jangan Sekarang"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Şimdi Değil"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الان نه"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখন নয়"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bukan Sekarang"
+          }
+        }
+      }
+    },
+    "onboarding.notifications.title": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسمع الأذان عند كل صلاة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hear the adhan at each prayer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Entendez l’adhan à chaque prière"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ہر نماز پر اذان سنیں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dengarkan azan di setiap salat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Her namazda ezanı duyun"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "در هر نماز اذان را بشنوید"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রতিটি নামাজে আজান শুনুন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dengar azan pada setiap solat"
+          }
+        }
+      }
+    },
+    "onboarding.welcome.message": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعرض «صلاة» صلوات اليوم، ويعدّ الوقت المتبقي حتى الصلاة القادمة، ويشغّل الأذان عند دخول وقتها."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah shows today’s prayers, counts down to the next, and plays the adhan when it’s time."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah affiche les prières du jour, décompte jusqu’à la suivante et joue l’adhan à l’heure."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah آج کی نمازیں دکھاتا ہے، اگلی نماز تک الٹی گنتی کرتا ہے، اور وقت ہونے پر اذان چلاتا ہے۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah menampilkan salat hari ini, menghitung mundur ke salat berikutnya, dan memutar azan saat waktunya tiba."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah bugünün namazlarını gösterir, sonrakine geri sayar ve vakti gelince ezanı çalar."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "«صلاة» نمازهای امروز را نشان می‌دهد، تا نماز بعدی شمارش معکوس می‌کند و در وقتش اذان پخش می‌کند."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah আজকের নামাজগুলো দেখায়, পরেরটির জন্য সময় গণনা করে এবং সময় হলে আজান বাজায়।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah memaparkan solat hari ini, mengira detik ke solat seterusnya, dan memainkan azan apabila tiba waktunya."
+          }
+        }
+      }
+    },
+    "onboarding.welcome.title": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أوقات الصلاة، بهدوء وفي موعدها"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prayer times, calm and on time"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les heures de prière, calmes et à l’heure"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز کے اوقات، سکون سے اور بروقت"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu salat, tenang dan tepat waktu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namaz vakitleri, sakin ve zamanında"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اوقات نماز، آرام و سر وقت"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের সময়, শান্তভাবে ও ঠিক সময়ে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waktu solat, tenang dan tepat pada masanya"
+          }
+        }
+      }
+    },
+    "onboarding.window": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرحبًا بك في «صلاة»"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Salah"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bienvenue dans Salah"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah میں خوش آمدید"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selamat datang di Salah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah’a hoş geldiniz"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "به «صلاة» خوش آمدید"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah-এ স্বাগতম"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selamat datang ke Salah"
+          }
+        }
+      }
+    },
     "prayer.asr": {
       "localizations": {
         "ar": {

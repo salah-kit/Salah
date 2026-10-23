@@ -356,6 +356,8 @@ struct NotificationsContent: View {
 
     guard settings.authorizationStatus == .notDetermined else { return }
 
+    // Opening this pane with an alert on is the moment to ask, after a Not Now too.
+    prefs.notificationPromptDeferred = false
     permissionRequestFailed = false
 
     do {

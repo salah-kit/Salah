@@ -101,7 +101,11 @@ struct AppWindowCoordinatorTests {
   private let scratch = ScratchDefaults()
   private let presence = PresenceRecorder()
 
-  private func makeCoordinator(noteShows: Bool = true, notes: NoteCounter = NoteCounter())
+  private func makeCoordinator(
+    noteShows: Bool = true, notes: NoteCounter = NoteCounter(),
+    startOnboarding: @escaping @MainActor (_ otherwise: @escaping @MainActor () -> Void) -> Void =
+      { $0() }
+  )
     -> AppWindowCoordinator
   {
     AppWindowCoordinator(
@@ -110,7 +114,8 @@ struct AppWindowCoordinatorTests {
         notes.count += 1
         return noteShows
       },
-      dismissCloseNote: { notes.dismissals += 1 })
+      dismissCloseNote: { notes.dismissals += 1 },
+      startOnboarding: startOnboarding)
   }
 
   @Test func theWindowGivesTheDockIconAndClosingItTakesItAway() {
@@ -315,6 +320,41 @@ struct AppWindowCoordinatorTests {
     coordinator.didFinishLaunching(asLoginItem: false)
     #expect(opener.count == 1)
     #expect(presence.bringForwards == 1)
+  }
+
+  /// A first launch shows the welcome instead of the window. Meanwhile a window SwiftUI
+  /// opens by itself closes again, and asking for Salah (the Dock, Open Salah) brings the
+  /// welcome forward; once it ends, Salah's window opens, and closing the welcome shows no
+  /// note.
+  @Test func theFirstLaunchWelcomesBeforeTheWindow() {
+    let notes = NoteCounter()
+    let coordinator = makeCoordinator(notes: notes, startOnboarding: { _ in })
+    let opener = OpenCounter()
+    coordinator.register { opener.count += 1 }
+    coordinator.didFinishLaunching(asLoginItem: false)
+    #expect(opener.count == 0, "The welcome comes first")
+
+    let welcome = makeWindow()
+    coordinator.attachOnboarding(welcome)
+    #expect(presence.presences == [.regular], "The welcome gives the Dock icon")
+
+    let early = makeWindow()
+    coordinator.attach(early)
+    #expect(!early.isVisible, "SwiftUI's own window closes again")
+
+    coordinator.open()
+    #expect(opener.count == 0, "Asking for Salah brings the welcome forward")
+    #expect(presence.bringForwards == 1)
+
+    coordinator.endOnboarding()
+    coordinator.open()
+    #expect(opener.count == 1)
+    let opened = makeWindow()
+    defer { opened.close() }
+    coordinator.attach(opened)
+    welcome.close()
+    #expect(notes.count == 0, "No note for the welcome")
+    #expect(presence.presences.last == .regular, "The window keeps the Dock icon")
   }
 
   @Test func readsALoginItemLaunch() {

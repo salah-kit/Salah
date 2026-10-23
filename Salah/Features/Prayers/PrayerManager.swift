@@ -1,4 +1,5 @@
 import AppKit
+import CoreLocation
 import Foundation
 import OSLog
 import SalahCore
@@ -101,7 +102,10 @@ final class PrayerManager {
     }
     reachability.start()
 
-    if preferences.useCurrentLocation {
+    // A first launch asks for the location on the welcome's page, not at once.
+    if preferences.useCurrentLocation
+      && (preferences.onboardingCompleted || locationManager.authorizationStatus != .notDetermined)
+    {
       locationManager.startUpdating()
     }
   }

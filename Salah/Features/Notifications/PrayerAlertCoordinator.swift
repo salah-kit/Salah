@@ -313,6 +313,9 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
       // The real-app tests must never bring up a consent prompt.
       if preferences.defaults.bool(forKey: DebugOptions.withoutSystemPromptsKey) { return }
     #endif
+    // The welcome asks on its own page, and its Not Now holds off asking here: the
+    // Notifications pane asks when it's opened.
+    guard preferences.onboardingCompleted, !preferences.notificationPromptDeferred else { return }
     guard await center.authorizationStatus() == .notDetermined else { return }
     if let authorizationRequest {
       _ = await authorizationRequest.value
