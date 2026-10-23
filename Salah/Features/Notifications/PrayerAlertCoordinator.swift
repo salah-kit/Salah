@@ -17,16 +17,21 @@ import SalahCore
 /// the preferred one's sound, with the du'a after an adhan.
 ///
 /// What stays Salah's: the settings each prayer gets (Friday's Dhuhr takes the Jumu'ah
-/// settings while the override is on), the wording and interruption levels, asking for
-/// permission, playing the sounds, and stopping them from a tapped notification.
+/// settings while the override is on), the wording, threads, category and interruption
+/// levels, asking for permission, playing the sounds, and what a tapped notification does:
+/// it stops what's playing, or opens Today when nothing is.
 @MainActor
 final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Every request identifier starts with the app's bundle identifier.
   nonisolated static let identifierPrefix = "io.github.salah-kit.Salah."
   /// The one namespace Salah's prayer alerts use.
   nonisolated static let namespace = "prayers"
-  /// The notification thread every prayer alert joins.
-  nonisolated static let threadIdentifier = "salah-prayers"
+  /// The start of every prayer alert's thread: each prayer day has its own thread,
+  /// ``threadIdentifier(for:)``.
+  nonisolated static let threadPrefix = "salah-prayers"
+  /// The category every prayer alert has: no actions, and the title stays visible when
+  /// previews are hidden.
+  nonisolated static let categoryIdentifier = "salah-prayer"
   /// How far ahead the plan looks: SalahAlerts' default budget horizon.
   static let horizon: TimeInterval = 14 * 86_400
   /// How far back the engine's schedule starts, so an alert due just before a replan
@@ -42,6 +47,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   private let preferences: Preferences
   private let center: any PrayerNotificationCenter
   private let audio: any PrayerAlertAudioPlaying
+  private let openToday: @MainActor () -> Void
   private let clock: any AlertClock
   /// The clock's time for the scheduler, whose actor can't read the main-actor clock.
   private let schedulerTime: SchedulerTime
@@ -74,11 +80,13 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   private var isWithdrawn = false
 
   /// The defaults are the app's wiring; tests inject the preferences, a fake
-  /// notification center, a recording audio player and a manual clock.
+  /// notification center, a recording audio player, what opening Today does and a
+  /// manual clock.
   init(
     preferences: Preferences = .shared,
     center: any PrayerNotificationCenter = UNUserNotificationCenter.current(),
     audio: any PrayerAlertAudioPlaying,
+    openToday: @escaping @MainActor () -> Void = { AppWindowCoordinator.shared.open(.today) },
     clock: any AlertClock = SystemAlertClock(),
     schedulerNow: (@Sendable () -> Date)? = nil,
     beforeDueDecision: (@Sendable () async -> Void)? = nil
@@ -86,6 +94,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     self.preferences = preferences
     self.center = center
     self.audio = audio
+    self.openToday = openToday
     self.clock = clock
     self.beforeDueDecision = beforeDueDecision
     // The scheduler drops alerts that fired before its batch starts and dates its report by
@@ -94,15 +103,33 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     self.schedulerTime = schedulerTime
     let handoffCenter = NotificationHandoffCenter(center: center)
     self.handoffCenter = handoffCenter
+    // No scheduler-wide thread: the content sets each prayer day's own.
     scheduler = NotificationScheduler(
       identifierPrefix: Self.identifierPrefix, namespace: Self.namespace,
-      threadIdentifier: Self.threadIdentifier, center: handoffCenter,
+      threadIdentifier: nil, center: handoffCenter,
       now: schedulerNow ?? { schedulerTime.now })
     super.init()
     engine = InProcessAlertEngine(catchUp: Self.catchUpPolicy, clock: clock) { [weak self] due in
       self?.handleDue(due)
     }
     center.delegate = self
+    center.setNotificationCategories([Self.category])
+  }
+
+  /// The prayer alerts' category: no actions, and with previews hidden the banner still
+  /// shows the prayer's name.
+  nonisolated static var category: UNNotificationCategory {
+    UNNotificationCategory(
+      identifier: categoryIdentifier, actions: [], intentIdentifiers: [],
+      options: .hiddenPreviewsShowTitle)
+  }
+
+  /// The thread of a prayer day's alerts, such as `salah-prayers-2026-06-02`: the day the
+  /// prayer belongs to in the location's time zone, so a prayer's reminder, adhan and
+  /// after-reminder stay together even when one of them falls on the other side of
+  /// midnight.
+  nonisolated static func threadIdentifier(for day: CivilDay) -> String {
+    "\(threadPrefix)-\(day)"
   }
 
   // MARK: - Planning
@@ -444,17 +471,26 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
     withCompletionHandler completionHandler: @escaping () -> Void
   ) {
     let identifier = response.notification.request.identifier
-    guard Self.isPrayerAlert(identifier) else {
+    guard Self.isPrayerAlert(identifier),
+      response.actionIdentifier == UNNotificationDefaultActionIdentifier
+    else {
       completionHandler()
       return
     }
-    // Tapping a prayer alert's banner stops the adhan that's playing, so one click
-    // hushes a long adhan.
-    Task { @MainActor in
-      self.audio.stop()
-      await self.center.removeDeliveredNotifications(withIdentifiers: [identifier])
-    }
+    Task { @MainActor in await self.didTapAlert(identifier) }
     completionHandler()
+  }
+
+  /// A tap on a prayer alert's banner stops what's playing, so one click hushes a long
+  /// adhan, or opens Today when nothing is. Either way the notification leaves
+  /// Notification Center.
+  func didTapAlert(_ identifier: String) async {
+    if audio.isPlaying {
+      audio.stop()
+    } else {
+      openToday()
+    }
+    await center.removeDeliveredNotifications(withIdentifiers: [identifier])
   }
 
   /// Whether a request identifier is one of Salah's prayer alerts.
@@ -516,7 +552,6 @@ nonisolated private final class NotificationHandoffCenter: AlertNotificationCent
       for alert in alerts where occurrences.contains(alert.occurrenceID) {
         let identifier = alert.id.requestIdentifier(prefix: PrayerAlertCoordinator.identifierPrefix)
         let body = content.make(alert)
-        body.threadIdentifier = PrayerAlertCoordinator.threadIdentifier
         retainableRequests[identifier] = RetainedRequest(
           occurrence: alert.occurrenceID,
           content: UNNotificationRequest(identifier: identifier, content: body, trigger: nil)
@@ -706,9 +741,9 @@ nonisolated private final class SchedulerTime: @unchecked Sendable {
 nonisolated struct PrayerAlertContent: Sendable {
   let names: PrayerNames
   let text: SalahText
-  let atTimeFormat: String
-  let beforeFormat: String
-  let afterFormat: String
+  /// The place the times are for, as the dropdown names it; empty without one.
+  let place: String
+  let bundle: LocalizedStringResource.BundleDescription
 
   @MainActor
   init(preferences: Preferences) {
@@ -716,46 +751,37 @@ nonisolated struct PrayerAlertContent: Sendable {
     names = PrayerNames(locale: locale)
     text = SalahText(
       locale: locale, timeZone: TimeZone(identifier: preferences.storedTimeZone) ?? .current)
-    atTimeFormat = localizedString("notification.atTime", locale: locale)
-    beforeFormat = localizedString("notification.preReminder.offset", locale: locale)
-    afterFormat = localizedString("notification.postReminder.offset", locale: locale)
+    place = preferences.prayerLocation.name ?? ""
+    bundle = AppResources.localizationBundle
   }
 
-  /// The content of one alert: the prayer's name as the title, the time or the
-  /// reminder's offset in the body, and Salah's interruption level and relevance. A
-  /// sound the app plays itself gives the notification no sound.
+  /// The content of one alert: the prayer's name as the title, the place as the
+  /// subtitle, the body for its kind, the prayer day's thread, Salah's category, and
+  /// Salah's interruption level and relevance. A sound the app plays itself gives the
+  /// notification no sound.
   func make(_ alert: PlannedAlert) -> UNMutableNotificationContent {
     let content = UNMutableNotificationContent()
     let name = names.name(of: alert.event)
-    let locale = text.locale
     let offset = alert.offsetMinutes
     content.title = name
-    switch alert.kind {
-    case .atTime:
-      content.body = String(
-        format: atTimeFormat, locale: locale, name,
-        text.timeFormatter().string(from: alert.event.time).bidiIsolated)
-    case .before:
-      content.body = String(
-        format: beforeFormat, locale: locale, name, text.digits(offset).bidiIsolated)
-    case .after:
-      content.body = String(
-        format: afterFormat, locale: locale, name, text.digits(offset).bidiIsolated)
-    }
+    content.subtitle = place
+    content.body = body(of: alert, name: name, offset: offset)
+    content.threadIdentifier = PrayerAlertCoordinator.threadIdentifier(
+      for: alert.event.scheduleDay)
+    content.categoryIdentifier = PrayerAlertCoordinator.categoryIdentifier
     content.userInfo = [
       "prayer": alert.event.kind.rawValue,
       "kind": alert.kind.legacyName,
       "offsetMinutes": alert.kind == .atTime ? 0 : offset,
     ]
-    // The before-reminder shares the prayer time's time-sensitive level so it can
-    // break through Focus before the prayer. The after-reminder stays standard since
-    // the prayer window is already closing by then.
+    // Only the prayer time is time-sensitive, so it can break through Focus. The
+    // reminders before and after it are standard notifications.
     switch alert.kind {
     case .atTime:
       content.interruptionLevel = .timeSensitive
       content.relevanceScore = 1.0
     case .before:
-      content.interruptionLevel = .timeSensitive
+      content.interruptionLevel = .active
       content.relevanceScore = 0.7
     case .after:
       content.interruptionLevel = .active
@@ -766,14 +792,41 @@ nonisolated struct PrayerAlertContent: Sendable {
     }
     return content
   }
+
+  /// "It’s time for Maghrib (7:00 PM).", "Maghrib in 10 minutes, at 7:00 PM." or "Maghrib
+  /// began 5 minutes ago.". The minutes go in as a number, so each language picks its
+  /// plural form and writes the number in its own digits. In a right-to-left language,
+  /// Foundation isolates each argument.
+  private func body(of alert: PlannedAlert, name: String, offset: Int) -> String {
+    let locale = text.locale
+    let time = text.timeFormatter().string(from: alert.event.time)
+    let resource: LocalizedStringResource
+    switch alert.kind {
+    case .atTime:
+      resource = LocalizedStringResource(
+        "notification.atTime", defaultValue: "It’s time for \(name) (\(time)).", locale: locale,
+        bundle: bundle)
+    case .before:
+      resource = LocalizedStringResource(
+        "notification.before", defaultValue: "\(name) in \(offset) minutes, at \(time).",
+        locale: locale, bundle: bundle)
+    case .after:
+      resource = LocalizedStringResource(
+        "notification.after", defaultValue: "\(name) began \(offset) minutes ago.",
+        locale: locale, bundle: bundle)
+    }
+    return String(localized: resource)
+  }
 }
 
 // MARK: - Seams and mappings
 
 /// The part of `UNUserNotificationCenter` the coordinator uses beyond what the scheduler
-/// does: the delegate and asking for permission. Test seam: tests pass a fake.
+/// does: the delegate, the categories and asking for permission. Test seam: tests pass a
+/// fake.
 nonisolated protocol PrayerNotificationCenter: AlertNotificationCenter {
   var delegate: (any UNUserNotificationCenterDelegate)? { get set }
+  func setNotificationCategories(_ categories: Set<UNNotificationCategory>)
   func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
 }
 
@@ -782,11 +835,15 @@ extension UNUserNotificationCenter: PrayerNotificationCenter {}
 /// The part of `AudioPlaybackController` the coordinator uses. Test seam: tests record
 /// the requests instead of playing them.
 protocol PrayerAlertAudioPlaying: AnyObject {
+  /// Whether something plays: an adhan, a reminder's sound or the du'a.
+  var isPlaying: Bool { get }
   func play(_ request: AudioPlaybackRequest, followUp: AudioPlaybackRequest?)
   func stop()
 }
 
-extension AudioPlaybackController: PrayerAlertAudioPlaying {}
+extension AudioPlaybackController: PrayerAlertAudioPlaying {
+  var isPlaying: Bool { state != .idle }
+}
 
 extension AdhanSound {
   /// The alert sound SalahAlerts plans with: the system sound or none as they are, and a

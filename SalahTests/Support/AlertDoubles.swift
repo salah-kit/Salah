@@ -98,6 +98,7 @@ nonisolated final class FakeNotificationCenter: PrayerNotificationCenter, @unche
   private var pendingRequests: [UNNotificationRequest]
   private var deliveredRecords: [DeliveredNotificationRecord] = []
   private var postedRequests: [UNNotificationRequest] = []
+  private var registeredCategories: Set<UNNotificationCategory> = []
   private var log: [Call] = []
   private let normalizePriority: Bool
   private let rejectCalendarAdds: Bool
@@ -145,6 +146,8 @@ nonisolated final class FakeNotificationCenter: PrayerNotificationCenter, @unche
   var posted: [UNNotificationRequest] { lock.withLock { postedRequests } }
   /// Every call, in order.
   var calls: [Call] { lock.withLock { log } }
+  /// The categories last registered, outside the call log.
+  var categories: Set<UNNotificationCategory> { lock.withLock { registeredCategories } }
 
   /// The pending request with `identifier`, if any.
   func pendingRequest(_ identifier: String) -> UNNotificationRequest? {
@@ -165,6 +168,10 @@ nonisolated final class FakeNotificationCenter: PrayerNotificationCenter, @unche
   }
 
   // MARK: PrayerNotificationCenter
+
+  func setNotificationCategories(_ categories: Set<UNNotificationCategory>) {
+    lock.withLock { registeredCategories = categories }
+  }
 
   func authorizationStatus() async -> UNAuthorizationStatus {
     lock.withLock {
@@ -255,6 +262,8 @@ final class RecordingAudioPlayer: PrayerAlertAudioPlaying {
 
   private(set) var plays: [Play] = []
   private(set) var stopCount = 0
+  /// What `isPlaying` reports; tests set it.
+  var isPlaying = false
 
   func play(_ request: AudioPlaybackRequest, followUp: AudioPlaybackRequest?) {
     plays.append(Play(request: request, followUp: followUp))

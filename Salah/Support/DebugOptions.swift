@@ -93,6 +93,7 @@ import UserNotifications
       set { lock.withLock { storedDelegate = newValue } }
     }
 
+    func setNotificationCategories(_ categories: Set<UNNotificationCategory>) {}
     func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool { false }
     func authorizationStatus() async -> UNAuthorizationStatus { .denied }
     func pendingNotificationRequests() async throws -> [UNNotificationRequest] { [] }
