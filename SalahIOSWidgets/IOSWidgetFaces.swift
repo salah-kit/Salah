@@ -481,12 +481,27 @@ private struct ExtraLargeFace: View {
             .minimumScaleFactor(0.7)
             .lineBox(34)
           WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
-            .fixedSize()
+            .frame(width: 170, alignment: .leading)
         }
       } else {
         WidgetUnknownFace(display: display, style: style)
       }
     }
+  }
+}
+
+/// The extra-large design fits inside the host's finite proposal, without unbounded columns.
+nonisolated struct ExtraLargeWidgetMetrics {
+  let leadingWidth: CGFloat
+  let contentHeight: CGFloat
+  let separatorHeight: CGFloat
+  let arcScale: CGFloat
+
+  init(size: CGSize) {
+    leadingWidth = max(0, size.width - 40 - 40 - 1 - 220)
+    contentHeight = max(0, size.height - 36)
+    separatorHeight = min(300, contentHeight)
+    arcScale = min(0.98, leadingWidth / SunArcLayout.size.width)
   }
 }
 
@@ -497,22 +512,24 @@ private struct ExtraLargeLayout<Hero: View>: View {
   @ViewBuilder let hero: () -> Hero
 
   var body: some View {
-    HStack(alignment: .top, spacing: 20) {
-      VStack(alignment: .leading, spacing: 2) {
-        ExtraLargeHeader(display: display, style: style)
-        hero()
-        WidgetSunArc(display: display, style: style, scale: 0.98)
+    GeometryReader { proxy in
+      let metrics = ExtraLargeWidgetMetrics(size: proxy.size)
+      HStack(alignment: .top, spacing: 20) {
+        VStack(alignment: .leading, spacing: 2) {
+          ExtraLargeHeader(display: display, style: style)
+          hero()
+          WidgetSunArc(display: display, style: style, scale: metrics.arcScale)
+        }
+        .frame(width: metrics.leadingWidth, height: metrics.contentHeight, alignment: .topLeading)
+        Rectangle()
+          .fill(style.separator)
+          .frame(width: 1, height: metrics.separatorHeight)
+        WidgetTimes(display: display, rowHeight: 38, nameSize: 17, style: style, isExtraLarge: true)
+          .frame(width: 220, height: metrics.contentHeight)
       }
-      .topAligned()
-      Rectangle()
-        .fill(style.separator)
-        .frame(width: 1, height: 300)
-      WidgetTimes(display: display, rowHeight: 38, nameSize: 17, style: style, isExtraLarge: true)
-        .frame(width: 220)
-        .frame(maxHeight: .infinity)
+      .padding(.horizontal, 20)
+      .padding(.vertical, 18)
     }
-    .padding(.horizontal, 20)
-    .padding(.vertical, 18)
   }
 }
 

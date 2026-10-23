@@ -39,6 +39,47 @@ struct WidgetSurfaceRenderTests {
     }
   }
 
+  @Test func extraLargeRendersAtCompactIPadBoundsAndKeepsItsMarkersHollow() throws {
+    let size = CGSize(width: 628, height: 300)
+    for proposal in [size, CGSize(width: 715.735294, height: 341.911765)] {
+      let metrics = ExtraLargeWidgetMetrics(size: proposal)
+      #expect(metrics.leadingWidth.isFinite && metrics.contentHeight.isFinite)
+      #expect(abs(metrics.leadingWidth + 220 + 1 + 40 + 40 - proposal.width) < 0.001)
+      #expect(SunArcLayout.size.width * metrics.arcScale <= metrics.leadingWidth)
+      #expect(metrics.separatorHeight + 36 <= proposal.height)
+    }
+    let center = CGPoint(x: 100, y: 100)
+    let clip = SunArcStrokeClip(holes: [center], radius: 4.5)
+      .path(in: CGRect(origin: .zero, size: size))
+    #expect(!clip.contains(center, eoFill: true))
+    #expect(clip.contains(CGPoint(x: 120, y: 100), eoFill: true))
+
+    AppResources.bundle = Bundle(for: WidgetResourceProbe.self)
+    let directory = try evidenceDirectory()
+    for isArabic in [false, true] {
+      let display = try display(isArabic: isArabic)
+      let event = try #require(display.focus?.event)
+      let playing = SalahDisplay(
+        date: display.date, settings: display.settings, schedule: display.settings.schedule,
+        playback: SalahPlayback(event: event, slot: .alert))
+      let stop = try #require(WidgetStopContent(display: playing, size: .extraLarge))
+      for (content, state) in [
+        (AnyView(WidgetContentView(display: display, size: .extraLarge)), "schedule"),
+        (AnyView(stop), "stop"),
+      ] {
+        try render(
+          content.background(WidgetSky(phase: display.phase))
+            .environment(\.locale, display.locale)
+            .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
+            .environment(\.colorScheme, .light)
+            .environment(\.salahTimerPause, display.date),
+          size: size,
+          to: directory.appendingPathComponent(
+            "extra-large-ipad-628x300-\(state)-\(isArabic ? "ar" : "en").png"))
+      }
+    }
+  }
+
   @Test func liveActivityAndRecoveryRenderTheirRealStates() throws {
     AppResources.bundle = Bundle(for: WidgetResourceProbe.self)
     let directory = try evidenceDirectory()

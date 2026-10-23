@@ -106,6 +106,23 @@ nonisolated struct SunArcLayout: Equatable {
   }
 }
 
+/// A vector clip keeps the unreached markers hollow without an offscreen erase blend.
+/// WidgetKit archives this as ordinary path geometry, including in its tinted rendering.
+nonisolated struct SunArcStrokeClip: Shape {
+  let holes: [CGPoint]
+  let radius: CGFloat
+
+  func path(in rect: CGRect) -> Path {
+    var path = Path(rect)
+    for center in holes {
+      path.addEllipse(
+        in: CGRect(
+          x: center.x - radius, y: center.y - radius, width: 2 * radius, height: 2 * radius))
+    }
+    return path
+  }
+}
+
 // MARK: - View
 
 /// The day as the sun's height, for the extra-large face: the night before sunrise and
@@ -151,18 +168,11 @@ struct WidgetSunArc: View {
     }
     // The rings are hollow where the system removes their fill, in accented and vibrant
     // rendering: the horizon and the path stop at them instead of showing through.
-    .mask {
-      ZStack {
-        Rectangle()
-        ForEach(layout.markers.filter { $0.style != .reached }, id: \.event.id) { marker in
-          Circle()
-            .frame(width: 9 * scale, height: 9 * scale)
-            .position(place(marker.point))
-            .blendMode(.destinationOut)
-        }
-      }
-      .compositingGroup()
-    }
+    .clipShape(
+      SunArcStrokeClip(
+        holes: layout.markers.filter { $0.style != .reached }.map { place($0.point) },
+        radius: 4.5 * scale),
+      style: FillStyle(eoFill: true))
     ForEach(layout.markers, id: \.event.id) { marker in
       markerView(marker.style)
         .position(place(marker.point))

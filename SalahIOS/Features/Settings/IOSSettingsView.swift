@@ -141,6 +141,7 @@ private struct IOSRegularSettingsComposition: View {
             .toolbarBackground(.hidden, for: .navigationBar)
         }
         .id(store.selectedSettingsDestination ?? .calculation)
+        .id(store.settingsNavigationRequestID)
         .frame(width: detailWidth)
       }
       .padding(.leading, 48)
@@ -148,7 +149,6 @@ private struct IOSRegularSettingsComposition: View {
       .frame(maxHeight: .infinity, alignment: .top)
     }
     .background(IOSTheme.groupedBackground.ignoresSafeArea())
-    .accessibilityIdentifier("settings.split")
   }
 }
 
@@ -171,7 +171,8 @@ private struct IOSRegularSettingsMaster: View {
         section(copy.text("Display", "العرض"), [.appearance, .hijri, .language])
         card([.about])
       }
-      .padding(.top, 8)
+      // This column has no navigation bar to reserve the floating tab bar's height.
+      .padding(.top, 72)
       .padding(.bottom, 24)
     }
     .scrollIndicators(.hidden)
