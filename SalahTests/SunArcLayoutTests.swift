@@ -41,15 +41,49 @@ struct SunArcLayoutTests {
     #expect(styles == [.reached, .reached, .reached, .next, .upcoming, .upcoming])
   }
 
-  /// After Maghrib the whole day is travelled; once the sun is past the night drawn after
-  /// Maghrib, it leaves the arc.
+  /// The fixture day's rows, all upcoming.
+  private func today() -> [(event: PrayerEvent, role: WidgetTimes.Role)] {
+    Fixture.day().events.map { (event: $0, role: WidgetTimes.Role.upcoming) }
+  }
+
+  /// After Maghrib the whole day is travelled; once now is past the night drawn after
+  /// Maghrib, the sun leaves the arc. Tomorrow's arc, after Isha, has nothing travelled.
   @Test func theSunLeavesTheArcAtNight() throws {
     let dusk = try layout(.playingAdhan)
-    #expect(dusk.travelledEndX == SunArcLayout.maghribX)
+    #expect(dusk.travelledEndX == dusk.maghribX)
     #expect(dusk.sun != nil)
 
-    let night = try layout(.endOfDay)
-    #expect(night.sun == nil)
+    let late = try #require(
+      SunArcLayout(rows: today(), now: Fixture.time(.maghrib).adding(minutes: 150)))
+    #expect(late.travelledEndX == late.maghribX)
+    #expect(late.sun == nil)
+
+    let tomorrow = try layout(.endOfDay)
+    #expect(tomorrow.travelledEndX == tomorrow.sunriseX)
+    #expect(tomorrow.sun == nil)
+  }
+
+  /// On a short day, such as a winter day far from the equator, Fajr and Isha fall further
+  /// from sunrise and Maghrib than the design's 15% of night: the arc widens its night to
+  /// keep them, and the night stays inside the frame.
+  @Test func aShortDayKeepsFajrAndIsha() throws {
+    let day = Fixture.civilDay()
+    let times: [(PrayerKind, Int, Int)] = [
+      (.fajr, 6, 0), (.sunrise, 8, 0), (.dhuhr, 12, 0), (.asr, 14, 0), (.maghrib, 16, 0),
+      (.isha, 18, 0),
+    ]
+    let rows = times.map { kind, hour, minute in
+      (
+        event: PrayerEvent(scheduleDay: day, kind: kind, time: Fixture.date(hour, minute)),
+        role: WidgetTimes.Role.upcoming
+      )
+    }
+    let arc = try #require(SunArcLayout(rows: rows, now: Fixture.date(12, 0)))
+    #expect(arc.markers.map(\.event.kind) == PrayerKind.allCases)
+    expectNear(try marker(.fajr, in: arc).point, SunArcLayout.startX, 168)
+    expectNear(try marker(.isha, in: arc).point, SunArcLayout.endX, 168)
+    expectNear(try marker(.dhuhr, in: arc).point, 185, 24)
+    #expect(abs(arc.sunriseX - (16 + 338.0 * 2 / 12)) < 0.15)
   }
 
   /// Without sunrise or Maghrib there's no day to draw.

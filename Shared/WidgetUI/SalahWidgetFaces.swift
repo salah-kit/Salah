@@ -514,15 +514,19 @@ private struct ExtraLargeHeader: View {
 
   var body: some View {
     let header = display.header
-    Text(
-      verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear) · \(header.location)"
-    )
+    // Two texts, so a redacted widget hides only the place.
+    HStack(spacing: 0) {
+      Text(verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear) · ")
+        .layoutPriority(1)
+      Text(verbatim: header.location)
+        .privacySensitive()
+    }
     .font(.system(size: 15, weight: .semibold))
     .foregroundStyle(style.primary)
     .lineLimit(1)
     .minimumScaleFactor(0.7)
     .lineBox(20)
-    .privacySensitive()
+    .accessibilityElement(children: .combine)
   }
 }
 
@@ -623,7 +627,7 @@ nonisolated struct WidgetTimes: View {
               .monospacedDigit()
             )
             .lineLimit(1)
-            // The row drops the day period; VoiceOver says it: "5:03 AM".
+            // The smaller faces drop the day period; VoiceOver says it: "5:03 AM".
             .accessibilityLabel(
               Text(verbatim: display.text.timeFormatter().string(from: row.event.time)))
         }

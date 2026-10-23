@@ -44,7 +44,7 @@ struct WidgetPreviewContainer: View {
 
 // MARK: - Verification gallery (previews only)
 
-/// All three sizes for one display, for side-by-side design review. Renders at
+/// All four sizes for one display, for side-by-side design review. Renders at
 /// the real "now" so the live relative timer (which always counts from the system
 /// clock) agrees with the now-anchored preview prayer times.
 private struct WidgetSizeGallery: View {

@@ -32,7 +32,7 @@ struct WidgetPlaybackGapTests {
 
   /// Compare the Stop face with the same display given a known state. A countdown's
   /// availability must not change what is rendered while audio plays.
-  @Test(arguments: [SalahWidgetSize.small, .medium, .large])
+  @Test(arguments: [SalahWidgetSize.small, .medium, .large, .extraLarge])
   func activePlaybackRendersStopDuringAPolarGap(size: SalahWidgetSize) throws {
     let polar = try Self.polarPlayback()
     var known = polar

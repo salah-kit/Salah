@@ -5,20 +5,24 @@ import WidgetKit
 // MARK: - Layout
 
 /// Where the sun arc draws the day, in the design's 370 × 190 points, left to right. The
-/// x axis is time: sunrise at 55 and Maghrib at 315, with 15% of the day's width of night
-/// drawn on each side. The y axis is the sun's height, `sin(π · (t − sunrise) / (Maghrib −
-/// sunrise))` above a horizon at 120, so Dhuhr peaks midway and Fajr and Isha fall below.
+/// x axis is time, from 16 to 354: the day from sunrise to Maghrib, with night on each side,
+/// 15% of the day's length or as far as Fajr and Isha when they're further out (in Makkah
+/// in June, sunrise lands at 55 and Maghrib at 315, as the design draws it). The y axis is
+/// the sun's height, `sin(π · (t − sunrise) / (Maghrib − sunrise))` above a horizon at 120,
+/// so Dhuhr peaks midway and Fajr and Isha fall below; the night is no deeper than half the
+/// day's height, so a long night stays inside the frame.
 nonisolated struct SunArcLayout: Equatable {
   static let size = CGSize(width: 370, height: 190)
   static let horizonY: CGFloat = 120
   static let horizonInset: CGFloat = 8
   static let amplitude: CGFloat = 96
-  static let sunriseX: CGFloat = 55
-  static let maghribX: CGFloat = 315
-  /// The night drawn beyond sunrise and Maghrib, as a share of the day's width.
-  static let nightShare: CGFloat = 0.15
-  static var nightStartX: CGFloat { sunriseX - nightShare * (maghribX - sunriseX) }
-  static var nightEndX: CGFloat { maghribX + nightShare * (maghribX - sunriseX) }
+  /// The curve's ends.
+  static let startX: CGFloat = 16
+  static let endX: CGFloat = 354
+  /// The night drawn beyond sunrise and Maghrib at least, as a share of the day's length.
+  static let nightShare = 0.15
+  /// How far below the horizon the night goes at most, as a share of `amplitude`.
+  static let nightDepth: CGFloat = 0.5
 
   /// How a prayer's marker is drawn.
   enum MarkerStyle: Equatable {
@@ -36,6 +40,9 @@ nonisolated struct SunArcLayout: Equatable {
     let style: MarkerStyle
   }
 
+  /// Where sunrise and Maghrib fall: the day between them is above the horizon.
+  let sunriseX: CGFloat
+  let maghribX: CGFloat
   let markers: [Marker]
   /// Where the travelled path ends: now, held between sunrise and Maghrib.
   let travelledEndX: CGFloat
@@ -48,14 +55,22 @@ nonisolated struct SunArcLayout: Equatable {
       let maghrib = rows.first(where: { $0.event.kind == .maghrib })?.event.time,
       maghrib > sunrise
     else { return nil }
-    let span = maghrib.timeIntervalSince(sunrise)
+    let night = maghrib.timeIntervalSince(sunrise) * Self.nightShare
+    let times = rows.map(\.event.time)
+    let start = min(sunrise.addingTimeInterval(-night), times.min() ?? sunrise)
+    let end = max(maghrib.addingTimeInterval(night), times.max() ?? maghrib)
+    let length = end.timeIntervalSince(start)
     func x(_ time: Date) -> CGFloat {
-      Self.sunriseX + CGFloat(time.timeIntervalSince(sunrise) / span)
-        * (Self.maghribX - Self.sunriseX)
+      Self.startX + CGFloat(time.timeIntervalSince(start) / length) * (Self.endX - Self.startX)
     }
-    markers = rows.compactMap { row in
+    sunriseX = x(sunrise)
+    maghribX = x(maghrib)
+    let nowX = x(now)
+    travelledEndX = min(max(nowX, sunriseX), maghribX)
+    let (dayStart, dayEnd) = (sunriseX, maghribX)
+    func y(_ x: CGFloat) -> CGFloat { Self.y(atX: x, sunriseX: dayStart, maghribX: dayEnd) }
+    markers = rows.map { row in
       let markerX = x(row.event.time)
-      guard markerX >= Self.nightStartX, markerX <= Self.nightEndX else { return nil }
       let style: MarkerStyle =
         switch row.role {
         case .passed, .current: .reached
@@ -63,22 +78,25 @@ nonisolated struct SunArcLayout: Equatable {
         case .upcoming: .upcoming
         }
       return Marker(
-        event: row.event, point: CGPoint(x: markerX, y: Self.y(atX: markerX)), style: style)
+        event: row.event, point: CGPoint(x: markerX, y: y(markerX)), style: style)
     }
-    let nowX = x(now)
-    travelledEndX = min(max(nowX, Self.sunriseX), Self.maghribX)
-    sun =
-      nowX >= Self.nightStartX && nowX <= Self.nightEndX
-      ? CGPoint(x: nowX, y: Self.y(atX: nowX)) : nil
+    sun = nowX >= Self.startX && nowX <= Self.endX ? CGPoint(x: nowX, y: y(nowX)) : nil
   }
 
   /// The curve's height at `x`.
-  static func y(atX x: CGFloat) -> CGFloat {
-    horizonY - amplitude * sin(.pi * (x - sunriseX) / (maghribX - sunriseX))
+  func y(atX x: CGFloat) -> CGFloat {
+    Self.y(atX: x, sunriseX: sunriseX, maghribX: maghribX)
+  }
+
+  private static func y(atX x: CGFloat, sunriseX: CGFloat, maghribX: CGFloat) -> CGFloat {
+    let angle = .pi * (x - sunriseX) / (maghribX - sunriseX)
+    if angle >= 0, angle <= .pi { return horizonY - amplitude * sin(angle) }
+    let past = min(angle < 0 ? -angle : angle - .pi, .pi / 2)
+    return horizonY + amplitude * min(sin(past), nightDepth)
   }
 
   /// The curve from `start` to `end`, as points one design point apart.
-  static func curve(from start: CGFloat, to end: CGFloat) -> [CGPoint] {
+  func curve(from start: CGFloat, to end: CGFloat) -> [CGPoint] {
     guard end > start else { return [] }
     let steps = max(Int((end - start).rounded(.up)), 1)
     return (0...steps).map { step in
@@ -123,20 +141,28 @@ struct WidgetSunArc: View {
       CGPoint(x: SunArcLayout.size.width - SunArcLayout.horizonInset, y: SunArcLayout.horizonY),
     ]
     stroke(horizon, style.separator, width: 1)
-    stroke(
-      SunArcLayout.curve(from: SunArcLayout.nightStartX, to: SunArcLayout.sunriseX),
-      style.tertiary, width: 2)
-    stroke(
-      SunArcLayout.curve(from: SunArcLayout.maghribX, to: SunArcLayout.nightEndX),
-      style.tertiary, width: 2)
-    stroke(
-      SunArcLayout.curve(from: layout.travelledEndX, to: SunArcLayout.maghribX),
-      style.quaternary, width: 3)
-    stroke(
-      SunArcLayout.curve(from: SunArcLayout.sunriseX, to: layout.travelledEndX),
-      style.mark, width: 3
-    )
-    .widgetAccentable()
+    Group {
+      stroke(layout.curve(from: SunArcLayout.startX, to: layout.sunriseX), style.tertiary, width: 2)
+      stroke(layout.curve(from: layout.maghribX, to: SunArcLayout.endX), style.tertiary, width: 2)
+      stroke(
+        layout.curve(from: layout.travelledEndX, to: layout.maghribX), style.quaternary, width: 3)
+      stroke(layout.curve(from: layout.sunriseX, to: layout.travelledEndX), style.mark, width: 3)
+        .widgetAccentable()
+    }
+    // The rings are hollow where the system removes their fill, in accented and vibrant
+    // rendering: the path stops at them instead of showing through.
+    .mask {
+      ZStack {
+        Rectangle()
+        ForEach(layout.markers.filter { $0.style != .reached }, id: \.event.id) { marker in
+          Circle()
+            .frame(width: 9 * scale, height: 9 * scale)
+            .position(place(marker.point))
+            .blendMode(.destinationOut)
+        }
+      }
+      .compositingGroup()
+    }
     ForEach(layout.markers, id: \.event.id) { marker in
       markerView(marker.style)
         .position(place(marker.point))
@@ -186,6 +212,15 @@ struct WidgetSunArc: View {
     }
   }
 
+  /// The top of the Sunrise and Maghrib labels, under the horizon.
+  private static let horizonLabelTop = SunArcLayout.horizonY + 6
+
+  /// The top of Fajr's or Isha's label: under its marker, and never on the line of the
+  /// Sunrise and Maghrib labels when the prayer falls close to them.
+  private static func nightLabelTop(_ marker: SunArcLayout.Marker) -> CGFloat {
+    max(marker.point.y + 8, horizonLabelTop + 13 + 2)
+  }
+
   /// A prayer's label: Sunrise and Maghrib with their times under the horizon, Fajr and
   /// Isha under their markers and a little toward the day, Dhuhr above its own, Asr beside
   /// it toward the evening. The
@@ -201,11 +236,11 @@ struct WidgetSunArc: View {
     let center: CGPoint =
       switch kind {
       case .sunrise, .maghrib:
-        CGPoint(x: marker.point.x, y: SunArcLayout.horizonY + 6 + lineHeight / 2)
+        CGPoint(x: marker.point.x, y: Self.horizonLabelTop + lineHeight / 2)
       case .fajr:
-        CGPoint(x: marker.point.x + 6, y: marker.point.y + 8 + lineHeight / 2)
+        CGPoint(x: marker.point.x + 6, y: Self.nightLabelTop(marker) + lineHeight / 2)
       case .isha:
-        CGPoint(x: marker.point.x - 6, y: marker.point.y + 8 + lineHeight / 2)
+        CGPoint(x: marker.point.x - 6, y: Self.nightLabelTop(marker) + lineHeight / 2)
       case .dhuhr:
         CGPoint(x: marker.point.x, y: marker.point.y - 22 + lineHeight / 2)
       case .asr:
