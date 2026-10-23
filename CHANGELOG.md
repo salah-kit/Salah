@@ -6,7 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Salah's window: Today, an overview with the next prayer, the day's timeline and its
+  prayers, and the six settings panes in a sidebar. Open Salah in the dropdown, ⌘, (at
+  General), Finder, Spotlight, the Dock icon and a widget's tap open it, or bring it
+  forward; it opens on Today the first time, then on the last pane.
+- While the window is open, Salah has a Dock icon, a place in ⌘-Tab and its own menus,
+  hidden and minimized included. A login launch stays in the menu bar.
+
 ### Changed
+
+- Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first
+  time a note says so. Quit Salah, the power button in the dropdown and the button on
+  Today, turns Salah off: it removes the alerts Salah scheduled, so nothing alerts until
+  Salah opens again, and quits. Logout, restart and shutdown quit and keep the alerts.
+- The dropdown's footer is Silent, Open Salah and Quit Salah. The window replaces the
+  Settings window, so Help and About are in its menus.
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.

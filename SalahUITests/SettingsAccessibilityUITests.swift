@@ -32,23 +32,22 @@ final class SettingsAccessibilityUITests: XCTestCase {
       names: ["صغير", "متوسط", "كبير"])
   }
 
-  /// Xcode's accessibility audit finds nothing in what each Settings pane shows when it opens:
-  /// every control there has a description and can be found and hit, and its text has enough
-  /// contrast. `isSetAside` lists, with reasons, what the test doesn't hold the panes to.
+  /// Xcode's accessibility audit finds nothing in what each pane of the window, Today and the
+  /// settings, shows when it opens: every control there has a description and can be found
+  /// and hit, and its text has enough contrast. `isSetAside` lists, with reasons, what the
+  /// test doesn't hold the panes to.
   @MainActor
-  func testEverySettingsPanePassesTheAccessibilityAudit() throws {
+  func testEveryPanePassesTheAccessibilityAudit() throws {
     let app = XCUIApplication()
     app.launchArguments = SalahUITests.quietLaunch + ["-salah.debug.withoutSystemPrompts", "YES"]
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
 
-    let settings = app.windows["Salah Settings"]
+    let settings = app.salahWindow
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
     var issues: [String] = []
-    for pane in Self.panes {
-      let tab = settings.buttons[pane]
-      XCTAssertTrue(tab.waitForExistence(timeout: 10), settings.debugDescription)
-      tab.click()
+    for pane in ["Today"] + Self.panes {
+      settings.selectPane(pane)
       let preview = settings.descendants(matching: .any)["appearance.preview"]
       let previewFrame =
         pane == "Appearance" && preview.waitForExistence(timeout: 5)
@@ -66,9 +65,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
 
-    let settings = app.windows["Salah Settings"]
+    let settings = app.salahWindow
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    settings.buttons["Location"].click()
+    settings.selectPane("Location")
     let picker = settings.popUpButtons["Time zone"]
     XCTAssertTrue(picker.waitForExistence(timeout: 10), settings.debugDescription)
   }
@@ -191,9 +190,12 @@ final class SettingsAccessibilityUITests: XCTestCase {
     var issues: [String] = []
     let windowFrame = window?.frame
     let windowTitle = window?.title
+    let sidebar = window?.outlines["Sidebar"]
+    let sidebarFrame = sidebar?.exists == true ? sidebar?.frame : nil
     try app.performAccessibilityAudit { issue in
       if Self.isSetAside(
-        issue, windowFrame: windowFrame, windowTitle: windowTitle, preview: preview)
+        issue, windowFrame: windowFrame, windowTitle: windowTitle, sidebar: sidebarFrame,
+        preview: preview)
       {
         return true
       }
@@ -208,6 +210,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// What the test sets aside:
   /// - parts Salah doesn't draw: the system's Touch Bar element, the window's title, which
   ///   macOS draws, and the window's own content group, which has the window's frame;
+  /// - the window's sidebar, which `NavigationSplitView` draws: its column's group, the
+  ///   Settings header in the system's secondary style, and the text of a row while its
+  ///   selection changes, which the audit reads without a description;
   /// - the missing press action the audit reports for SwiftUI's own pop-up and disclosure
   ///   controls, and the description it wants for a slider's knob. Whether VoiceOver
   ///   operates those controls is a step in #17;
@@ -225,12 +230,18 @@ final class SettingsAccessibilityUITests: XCTestCase {
   @MainActor
   private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
-    preview: CGRect?
+    sidebar: CGRect? = nil, preview: CGRect?
   ) -> Bool {
     guard let element = issue.element else { return false }
     let type = element.elementType
     let frame = element.frame
     if type == .touchBar { return true }
+    if let sidebar, type == .group || type == .staticText,
+      issue.auditType == .sufficientElementDescription || issue.auditType == .contrast,
+      frame.minX >= sidebar.minX - 1, frame.maxX <= sidebar.maxX + 1
+    {
+      return true
+    }
     if issue.auditType == .sufficientElementDescription, type == .group, frame == windowFrame {
       return true
     }
@@ -278,11 +289,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
 
-    let settings = app.windows.firstMatch
+    let settings = app.salahWindow
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    let appearance = settings.buttons[pane]
-    XCTAssertTrue(appearance.waitForExistence(timeout: 10), settings.debugDescription)
-    appearance.click()
+    settings.selectPane(pane)
 
     let sizes = settings.radioGroups[sizeLabel]
     XCTAssertTrue(sizes.waitForExistence(timeout: 10), settings.debugDescription)
@@ -392,11 +401,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
 
-    let settings = app.windows.firstMatch
+    let settings = app.salahWindow
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    let notifications = settings.buttons[pane]
-    XCTAssertTrue(notifications.waitForExistence(timeout: 10), settings.debugDescription)
-    notifications.click()
+    settings.selectPane(pane)
 
     let volume = settings.sliders.firstMatch
     XCTAssertTrue(volume.waitForExistence(timeout: 10), settings.debugDescription)

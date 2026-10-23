@@ -7,7 +7,7 @@ struct SalahApp: App {
 
   // Run BEFORE @State property initialization so the AppleLanguages override
   // is in place before any Bundle.preferredLocalizations cache forms. This is
-  // what makes the macOS Settings window title use the localized
+  // what makes the system's menus and windows use the localized
   // CFBundleDisplayName (صلاة / Salah) instead of always English.
   init() {
     let defaults = Preferences.sharedDefaults
@@ -30,16 +30,18 @@ struct SalahApp: App {
     appLocale.preferredLayoutDirection
   }
 
+  /// Salah's name in the app's language: صلاة in Arabic.
+  private var appName: String {
+    String(
+      localized: LocalizedStringResource(
+        "CFBundleDisplayName", table: "InfoPlist", locale: appLocale,
+        bundle: AppResources.localizationBundle))
+  }
+
   var body: some Scene {
     MenuBarExtra {
       MenuBarDropdownView(prayerManager: prayerManager)
-        .background(
-          WindowTitleSetter(
-            title: String(
-              localized: LocalizedStringResource(
-                "CFBundleDisplayName", table: "InfoPlist", locale: appLocale,
-                bundle: AppResources.localizationBundle)))
-        )
+        .background(WindowTitleSetter(title: appName))
         .environment(\.locale, appLocale)
         .environment(\.layoutDirection, appLayoutDirection)
     } label: {
@@ -50,15 +52,22 @@ struct SalahApp: App {
         tint: menuBarTint,
         layoutDirection: appLayoutDirection
       )
-      .background(SettingsOpenerBridge())
+      .background(WindowOpenerBridge())
     }
     .menuBarExtraStyle(.window)
 
-    Settings {
-      SettingsView()
-        .environment(\.locale, appLocale)
-        .environment(\.layoutDirection, appLayoutDirection)
+    // Salah's one window. It opens only when a person asks (`AppWindowCoordinator`), and
+    // gives Salah its Dock icon and menus while it's open.
+    Window(Text(verbatim: appName), id: AppWindowCoordinator.windowID) {
+      SalahWindowView(
+        prayerManager: prayerManager, navigation: AppWindowCoordinator.shared.navigation
+      )
+      .environment(\.locale, appLocale)
+      .environment(\.layoutDirection, appLayoutDirection)
     }
+    .defaultSize(width: 888, height: 520)
+    .windowResizability(.contentMinSize)
+    .commands { SalahCommands(locale: appLocale) }
   }
 
   /// Menu-bar tint for the current state, or `nil` for the normal state. `nil`
@@ -82,62 +91,63 @@ struct SalahApp: App {
   }
 }
 
-/// Receives the widget's tap URL and opens the app's Settings window. A menu-bar
-/// (`LSUIElement`) app has no API to open its `MenuBarExtra` popover, so the tap
-/// routes to Settings - the app's only window.
+/// Salah's lifecycle callbacks, handed to `AppWindowCoordinator`: the launch, Finder's and
+/// the Dock's reopen, a widget's link, and quitting.
 final class SalahAppDelegate: NSObject, NSApplicationDelegate {
+  private var coordinator: AppWindowCoordinator { .shared }
+
+  func applicationDidFinishLaunching(_ notification: Notification) {
+    coordinator.didFinishLaunching(
+      asLoginItem: AppWindowCoordinator.isLoginItemLaunch(
+        NSAppleEventManager.shared().currentAppleEvent))
+  }
+
+  /// Finder, Spotlight or the Dock icon, while Salah runs: open or focus the window.
+  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool
+  {
+    coordinator.open()
+    return false
+  }
+
+  /// A widget's tap opens Salah's window, as Open Salah does.
   func application(_ application: NSApplication, open urls: [URL]) {
     guard urls.contains(where: { $0.scheme == SalahWidgetConstants.deepLinkScheme }) else { return }
-    // Bring the app forward (the tap should steal focus), then open Settings via
-    // SwiftUI's `openSettings` action. The AppKit `showSettingsWindow:` selector
-    // only *focuses* an existing window - it can't *create* one for this menu-bar
-    // app, which is why a tap did nothing while Settings was closed.
-    NSApp.activate(ignoringOtherApps: true)
-    SettingsOpener.shared.requestOpen()
+    coordinator.open()
+  }
+
+  /// Salah keeps running in the menu bar when its last window closes.
+  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    false
+  }
+
+  /// ⌘Q closes the window to the menu bar; Quit Salah, logout, restart and shutdown quit.
+  func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+    coordinator.shouldTerminate(appleEvent: NSAppleEventManager.shared().currentAppleEvent)
   }
 }
 
-/// Bridges SwiftUI's `openSettings` action to AppKit so the deep-link handler
-/// above (which has no SwiftUI environment) can open the Settings scene,
-/// creating the window when none is open.
-@MainActor
-final class SettingsOpener {
-  static let shared = SettingsOpener()
-  private init() {}
+/// The window's menu commands: About and Help open Salah's own, and Settings… (⌘,) opens
+/// the window at General.
+private struct SalahCommands: Commands {
+  let locale: Locale
 
-  private var open: (() -> Void)?
-  private var hasPendingRequest = false
-
-  /// Registered by `SettingsOpenerBridge` once `openSettings` is available.
-  func register(_ action: @escaping () -> Void) {
-    open = action
-    if hasPendingRequest {
-      hasPendingRequest = false
-      action()
+  var body: some Commands {
+    CommandGroup(replacing: .appInfo) {
+      Button(localizedString("menu.about.help", locale: locale)) {
+        AppSupportActions.openAboutPanel()
+      }
     }
-  }
-
-  /// Opens Settings now if the action is ready, else defers until it registers
-  /// (covers a cold launch where the tap arrives before the scene sets up).
-  func requestOpen() {
-    if let open {
-      open()
-    } else {
-      hasPendingRequest = true
+    CommandGroup(replacing: .appSettings) {
+      Button(localizedString("menu.settingsEllipsis", locale: locale)) {
+        AppWindowCoordinator.shared.open(.general)
+      }
+      .keyboardShortcut(",", modifiers: .command)
     }
-  }
-}
-
-/// Zero-size view that captures `openSettings` from a live scene (the menu-bar
-/// label, and the popover) into `SettingsOpener`.
-private struct SettingsOpenerBridge: View {
-  @Environment(\.openSettings) private var openSettings
-
-  var body: some View {
-    Color.clear
-      .frame(width: 0, height: 0)
-      .accessibilityHidden(true)
-      .onAppear { SettingsOpener.shared.register { openSettings() } }
+    CommandGroup(replacing: .help) {
+      Button(localizedString("menu.help.help", locale: locale)) {
+        AppSupportActions.openHelp()
+      }
+    }
   }
 }
 

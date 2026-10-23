@@ -288,7 +288,7 @@ extension VoiceOverSpeechUITests {
 
   /// Opens Settings on `pane` and turns VoiceOver on, with its cursor moved into the pane.
   ///
-  /// VoiceOver starts on the window's first item, the sidebar's General. The pane is the
+  /// VoiceOver starts on the window's first item, in the sidebar. The pane is the
   /// window's scroll area, after the sidebar; moving into it, VoiceOver says the scroll
   /// area and the pane's first heading, `heading`.
   @available(macOS 27.0, *)
@@ -300,11 +300,9 @@ extension VoiceOverSpeechUITests {
     app.launchArguments = arguments
     app.open(try XCTUnwrap(URL(string: "salah://settings")))
     addTeardownBlock { @MainActor in app.terminate() }
-    let settings = app.windows["Salah Settings"]
+    let settings = app.salahWindow
     XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    let tab = settings.buttons[pane]
-    XCTAssertTrue(tab.waitForExistence(timeout: 10), settings.debugDescription)
-    tab.click()
+    settings.selectPane(pane)
     app.activate()
     let isOpen: @MainActor () -> Bool = {
       app.state == .runningForeground && settings.exists
@@ -312,13 +310,10 @@ extension VoiceOverSpeechUITests {
     XCTAssertTrue(isOpen(), "Settings closed, or Salah isn't in front.")
 
     let speech = try Speech.start(in: self, reading: "Settings", while: isOpen)
-    // The window's title, or one of the sidebar's items.
-    let sidebar =
-      SettingsAccessibilityUITests.panes.map { "\($0) button" } + [
-        "Salah Help button", "About Salah button",
-      ]
+    // The window's title, the pane's name, or one of the sidebar's items.
+    let sidebar = ["Today"] + SettingsAccessibilityUITests.panes
     try speech.confirm(timeout: 3) { said in
-      said.contains("Salah Settings") || sidebar.contains(said)
+      sidebar.contains { said.contains($0) }
     }
     try speech.next(within: 12) { $0 == "scroll area" }
     let opening = try speech.enter()

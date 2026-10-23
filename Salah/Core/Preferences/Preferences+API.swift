@@ -26,6 +26,14 @@ extension Preferences {
     }
   }
 
+  /// Flips an event's alert. Friday-aware, so toggling Jumu'ah edits the Jumu'ah settings
+  /// while the override is on, matching the row's name and state.
+  func toggleAlert(for event: PrayerEvent) {
+    var config = config(for: event.kind, on: event.time)
+    config.alertEnabled.toggle()
+    setConfig(config, for: event.kind, on: event.time)
+  }
+
   var jumuahConfig: PrayerNotificationConfig {
     (notificationSettings[PrayerKind.jumuahSettingsKey] ?? config(for: .dhuhr)).sanitized()
   }

@@ -11,7 +11,7 @@ import SwiftUI
 struct MenuBarDropdownView: View {
   var prayerManager: PrayerManager
 
-  @Environment(\.openSettings) private var openSettings
+  @Environment(\.dismiss) private var dismiss
 
   var body: some View {
     // `.everyMinute` advances the schedule at each minute boundary (so the focus,
@@ -25,10 +25,11 @@ struct MenuBarDropdownView: View {
         onToggleAlert: toggleAlert,
         onToggleSilent: toggleSilent,
         onStop: stopAudio,
-        onOpenSettings: openSettingsRequested,
-        onQuit: { NSApp.terminate(nil) })
+        onOpenSalah: { openWindow(nil) },
+        onOpenSettings: { openWindow(.general) },
+        onQuit: { prayerManager.quitSalah() })
     }
-    .onAppear { SettingsOpener.shared.register { openSettings() } }
+    .background(WindowOpenerBridge())
   }
 
   // MARK: - Actions
@@ -37,10 +38,7 @@ struct MenuBarDropdownView: View {
   /// settings while the override is on, matching the row's name and state. (Sunrise
   /// never reaches here - `MenuDropdownContent` gives it no toggle.)
   private func toggleAlert(_ event: PrayerEvent) {
-    let prefs = prayerManager.preferences
-    var config = prefs.config(for: event.kind, on: event.time)
-    config.alertEnabled.toggle()
-    prefs.setConfig(config, for: event.kind, on: event.time)
+    prayerManager.preferences.toggleAlert(for: event)
   }
 
   private func toggleSilent() {
@@ -51,8 +49,9 @@ struct MenuBarDropdownView: View {
     prayerManager.audioPlaybackController.stop()
   }
 
-  private func openSettingsRequested() {
-    NSApp.activate(ignoringOtherApps: true)
-    openSettings()
+  /// Closes the dropdown, then opens Salah's window at `pane`, or at the last pane.
+  private func openWindow(_ pane: WindowPane?) {
+    dismiss()
+    AppWindowCoordinator.shared.open(pane)
   }
 }

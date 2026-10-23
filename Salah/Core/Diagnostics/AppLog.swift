@@ -13,6 +13,7 @@ enum AppLog {
   static let notifications = Logger(subsystem: subsystem, category: "Notifications")
   static let audio = Logger(subsystem: subsystem, category: "Audio")
   static let widgets = Logger(subsystem: subsystem, category: "Widgets")
+  static let lifecycle = Logger(subsystem: subsystem, category: "Lifecycle")
 
   /// Emits a failure's diagnostic line (plus its underlying error, if any) to
   /// the given category logger.

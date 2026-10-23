@@ -106,7 +106,7 @@ final class AlertSettingsUITests: XCTestCase {
     addTeardownBlock { @MainActor in app.terminate() }
     XCTAssertTrue(app.statusItems.firstMatch.waitForExistence(timeout: 30))
     XCTAssertTrue(
-      app.windows["Salah Settings"].waitForExistence(timeout: 30), app.windows.debugDescription)
+      app.salahWindow.waitForExistence(timeout: 30), app.windows.debugDescription)
     XCTAssertEqual(
       NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
         .count, 1, "Only the launched app runs, so only its settings can alert")
@@ -117,8 +117,8 @@ final class AlertSettingsUITests: XCTestCase {
   /// toggle.
   @MainActor
   private func alertToggle(of kind: PrayerKind, in app: XCUIApplication) -> XCUIElement {
-    let settings = app.windows["Salah Settings"]
-    settings.buttons["Notifications"].click()
+    let settings = app.salahWindow
+    settings.selectPane("Notifications")
 
     let name = PrayerNames(locale: Locale(identifier: "en")).name(of: kind)
     let segment = settings.radioGroups["Prayer"].radioButtons[name]

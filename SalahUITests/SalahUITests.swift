@@ -2,12 +2,19 @@ import AppKit
 import XCTest
 
 /// Drives the real app on this Mac under its own identity: its status item, its menu-bar
-/// dropdown, and the `salah://settings` link the widget opens when tapped.
+/// dropdown, its window, and the `salah://settings` link the widget opens when tapped.
 ///
 /// The app opens its App Group container at launch, so it must be signed with a team (see
 /// CONTRIBUTING.md); run it with the `SalahUITests` scheme. CI only builds this target.
 final class SalahUITests: XCTestCase {
-  static let prayerNames = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+  /// The day's names as Salah shows them in Makkah, its default place: on Friday, Dhuhr is
+  /// Jumuah.
+  static var prayerNames: [String] {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Riyadh") ?? .current
+    let isFriday = calendar.component(.weekday, from: Date()) == 6
+    return ["Fajr", "Sunrise", isFriday ? "Jumuah" : "Dhuhr", "Asr", "Maghrib", "Isha"]
+  }
 
   /// Every prayer's alert off, as the JSON the app stores, in the property-list form a
   /// launch argument takes (`<hex>` is data).
@@ -136,13 +143,14 @@ final class SalahUITests: XCTestCase {
     XCTAssertEqual(alert.value as? String, "Alert off")
 
     app.typeKey(",", modifierFlags: .command)
-    XCTAssertTrue(app.windows["Salah Settings"].waitForExistence(timeout: 10))
+    XCTAssertTrue(app.salahWindow.waitForExistence(timeout: 10), app.debugDescription)
+    XCTAssertEqual(app.salahWindow.title, "General")
   }
 
-  /// The link a widget tap opens brings up Settings, which carries Salah's name: the
-  /// window title, the sidebar's help and about rows and the version.
+  /// The link a widget tap opens brings up Salah's window in the running app, with Salah's
+  /// own About and Help in its menus.
   @MainActor
-  func testSettingsLinkOpensSalahSettings() throws {
+  func testSettingsLinkOpensSalahsWindow() throws {
     let app = launchQuietly()
     let link = try XCTUnwrap(URL(string: "salah://settings"))
     let running = NSRunningApplication.runningApplications(
@@ -194,11 +202,10 @@ final class SalahUITests: XCTestCase {
       applicationURL.standardizedFileURL.resolvingSymlinksInPath())
     XCTAssertFalse(original.isTerminated)
 
-    let settings = app.windows["Salah Settings"]
-    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    XCTAssertTrue(settings.buttons["Salah Help"].exists, settings.debugDescription)
-    XCTAssertTrue(settings.buttons["About Salah"].exists, settings.debugDescription)
-    XCTAssertTrue(settings.staticTexts["Salah 1.1.2"].exists, settings.debugDescription)
+    let window = app.salahWindow
+    XCTAssertTrue(window.waitForExistence(timeout: 30), app.windows.debugDescription)
+    XCTAssertTrue(app.menuItems["Salah Help"].exists, app.menuBars.debugDescription)
+    XCTAssertTrue(app.menuItems["About Salah"].exists, app.menuBars.debugDescription)
     XCTAssertFalse(original.isTerminated)
     XCTAssertEqual(
       NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
@@ -209,11 +216,9 @@ final class SalahUITests: XCTestCase {
   @MainActor
   func testAboutPanelCreditsSalahsAuthors() throws {
     let app = launchQuietly()
-    let link = try XCTUnwrap(URL(string: "salah://settings"))
-    app.open(link)
-    let settings = app.windows["Salah Settings"]
-    XCTAssertTrue(settings.waitForExistence(timeout: 30), app.windows.debugDescription)
-    settings.buttons["About Salah"].click()
+    XCTAssertTrue(app.salahWindow.waitForExistence(timeout: 30), app.windows.debugDescription)
+    app.menuBars.menuBarItems["Salah"].click()
+    app.menuItems["About Salah"].click()
 
     let name = app.staticTexts["Salah"].firstMatch
     XCTAssertTrue(name.waitForExistence(timeout: 10), app.windows.debugDescription)

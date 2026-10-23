@@ -70,6 +70,8 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// pending. Keep that request's responsibility across later unchanged refreshes, while
   /// the exact enabled occurrence remains in the schedule's catch-up range.
   private var onTimeReports: Set<AlertOccurrenceID> = []
+  /// Set by `withdraw()` when Salah quits: nothing is planned or posted again.
+  private var isWithdrawn = false
 
   /// The defaults are the app's wiring; tests inject the preferences, a fake
   /// notification center, a recording audio player and a manual clock.
@@ -111,6 +113,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// clock change. The coordinator also replans from the latest schedule itself when the
   /// engine reports an alert late, which it can do before the app sees a wake.
   func update(schedule: PrayerSchedule) {
+    guard !isWithdrawn else { return }
     let wasReplanning = replanning
     replanning = true
     defer { replanning = wasReplanning }
@@ -169,6 +172,21 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Reports what's due now and re-arms the engine's wake-up.
   func resync() {
     engine.resync()
+  }
+
+  /// Quit Salah turns everything off: after the installation in flight, removes every
+  /// request Salah left pending, and plans and posts nothing more, so nothing alerts until
+  /// Salah opens again. Notifications already delivered stay in Notification Center.
+  func withdraw() async {
+    isWithdrawn = true
+    _ = await installation?.value
+    await delivery?.value
+    let pending = (try? await center.pendingNotificationRequests()) ?? []
+    let identifiers = pending.map(\.identifier).filter { $0.hasPrefix(Self.identifierPrefix) }
+    if !identifiers.isEmpty {
+      await center.removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+    AppLog.notifications.notice("withdrew requests=\(identifiers.count, privacy: .public)")
   }
 
   /// The alert settings of a prayer: Friday's Dhuhr takes the Jumu'ah settings while the
@@ -287,6 +305,7 @@ final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Posts the due alerts the system won't deliver itself, and plays the preferred
   /// app-played sound among them.
   private func handleDue(_ due: [PlannedAlert]) {
+    guard !isWithdrawn else { return }
     let now = clock.now
     onTimeReports.formUnion(
       due.filter { now.timeIntervalSince($0.fireDate) <= Self.onTimeReportDelay }

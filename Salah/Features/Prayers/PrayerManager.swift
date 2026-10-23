@@ -40,6 +40,7 @@ final class PrayerManager {
   /// sub-minute, so the per-second cadence lasts only the ~60s it matters.
   private var secondTimer: Timer?
   private var notificationObservers: [NSObjectProtocol] = []
+  private var isQuitting = false
   private var currentDay: CivilDay
   /// Why today's times aren't available, as last logged.
   private var reportedUnavailable: UnavailableCause?
@@ -248,6 +249,25 @@ final class PrayerManager {
           self?.mirror.publish(playback: nil)
         }
       })
+  }
+
+  /// Quit Salah: turns everything off. Removes the pending alerts, so nothing alerts until
+  /// Salah opens again, then quits; it waits for the notification center two seconds at
+  /// most. ⌘Q only closes the window, and logout, restart and shutdown quit without this,
+  /// so their alerts stay scheduled.
+  func quitSalah() {
+    guard !isQuitting else { return }
+    isQuitting = true
+    let alerts = alerts
+    Task {
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask { await alerts.withdraw() }
+        group.addTask { try? await Task.sleep(for: .seconds(2)) }
+        await group.next()
+        group.cancelAll()
+      }
+      AppWindowCoordinator.shared.quitSalah()
+    }
   }
 
   /// Replans from the new time, then catches up on alerts a clock change or sleep

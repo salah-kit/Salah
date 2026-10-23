@@ -27,6 +27,7 @@ struct MenuDropdownContent: View {
   var onToggleAlert: (PrayerEvent) -> Void = { _ in }
   var onToggleSilent: () -> Void = {}
   var onStop: () -> Void = {}
+  var onOpenSalah: () -> Void = {}
   var onOpenSettings: () -> Void = {}
   var onQuit: () -> Void = {}
 
@@ -47,7 +48,8 @@ struct MenuDropdownContent: View {
           .frame(height: 1)
         MenuDropdownFooter(
           display: display, colors: colors,
-          onToggleSilent: onToggleSilent, onOpenSettings: onOpenSettings, onQuit: onQuit)
+          onToggleSilent: onToggleSilent, onOpenSalah: onOpenSalah,
+          onOpenSettings: onOpenSettings, onQuit: onQuit)
       }
       .padding(.horizontal, 12)
       .padding(.top, 12)

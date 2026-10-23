@@ -83,7 +83,10 @@ visual baselines depend on the machine's language list.
 ### UI tests
 
 `SalahUITests` launches the real app and checks its status item, the menu-bar dropdown,
-the `salah://settings` link a widget tap opens, the Settings window and the About panel.
+the `salah://settings` link a widget tap opens, Salah's window and the About panel.
+`LifecycleUITests` checks how the window opens, closes and quits: the Dock icon while it's
+open (hidden or minimized included), ⌘Q closing it to the menu bar, the one-time note,
+Quit Salah, and a login launch staying quiet.
 Two of them change an alert in Settings → Notifications and wait for its minute: they
 move a prayer about two minutes ahead with Salah's own adjustments, turn its alert on
 (the Alafasy adhan then plays at that minute) or off (nothing plays). They read what the

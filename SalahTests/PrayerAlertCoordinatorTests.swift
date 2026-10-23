@@ -197,6 +197,28 @@ struct PrayerAlertCoordinatorTests {
     #expect(covered > now)
   }
 
+  /// Quit Salah turns everything off: Salah's pending alerts go, another app's request
+  /// stays, and nothing is planned, posted or played afterwards, even when an alert comes due.
+  @Test func withdrawingForQuitRemovesThePendingAlertsAndPlansNoMore() async throws {
+    let foreign = Self.foreignRequest("com.example.other")
+    let harness = Harness(now: Fixture.date(13, 0), pending: [foreign])
+    await harness.update()
+    #expect(harness.pendingIdentifiers.count > 1)
+    let armed = try #require(harness.clock.armed)
+
+    await harness.coordinator.withdraw()
+    #expect(harness.pendingIdentifiers == [foreign.identifier])
+
+    harness.center.forgetCalls()
+    await harness.update()
+    harness.clock.now = armed
+    harness.clock.fireLate()
+    await harness.settle()
+    #expect(harness.pendingIdentifiers == [foreign.identifier])
+    #expect(harness.center.calls.isEmpty, "Nothing reaches the center after Quit Salah")
+    #expect(harness.audio.plays.isEmpty)
+  }
+
   /// The English content: the prayer's name as the title; the at-time body with Salah's
   /// clock text; the reminders' bodies with their offsets; Salah's interruption levels,
   /// relevance and `userInfo`; and a notification sound only for the system sound.

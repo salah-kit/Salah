@@ -12,7 +12,8 @@ A calm macOS menu-bar app for the five daily prayers, with desktop widgets and a
 
 Salah lives in your menu bar. It shows how long until the next prayer, opens a dropdown
 with the day's schedule, brings the same schedule to desktop and Notification Center
-widgets, and sounds the adhan when a prayer begins.
+widgets, and sounds the adhan when a prayer begins. Its window, with Today and the
+settings, gives it a Dock icon while it's open.
 
 | Menu bar | Arabic, right to left | Widgets |
 | :---: | :---: | :---: |
@@ -24,6 +25,11 @@ checked on every change, so they show what the app draws today.
 - **The menu bar.** A countdown or the next prayer's time, which turns red in the last
   15 minutes and green for a 15-minute count-up after the adhan. The dropdown shows the
   Hijri date, the six times, per-prayer alert toggles, silent mode and a stop button.
+- **One window.** Open Salah shows Today (the next prayer, the day's timeline and its
+  prayers) and the settings in a sidebar. While the window is open Salah has a Dock
+  icon, a place in ⌘-Tab and its own menus. Closing it, ⌘Q included, keeps Salah in the
+  menu bar; Quit Salah, in the dropdown and on Today, turns it off, scheduled alerts
+  included.
 - **Widgets** in small, medium and large sizes, with a stop button while audio plays.
   The widget calculates its own times, so it stays right on days Salah isn't running.
 - **Alerts.** Per-prayer adhan alerts with before and after reminders, a Jumu'ah
@@ -85,11 +91,12 @@ Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
 ## Quick start
 
-1. Open Salah. A moon-and-stars icon and the time to the next prayer appear in the menu
-   bar; click them for the day's schedule.
-2. Open Settings (the gear in the dropdown, or ⌘,). In **Location**, use your current
-   location or search for a city. **Calculation** picks a method from your country; you
-   can change it.
+1. Open Salah. Its window opens on Today, and a moon-and-stars icon with the time to the
+   next prayer appears in the menu bar; click it for the day's schedule. Salah keeps
+   running there when you close the window.
+2. Click **Open Salah** in the dropdown, or press ⌘, for the settings. In **Location**,
+   use your current location or search for a city. **Calculation** picks a method from
+   your country; you can change it.
 3. In **Notifications**, choose each prayer's alert and reminders. macOS asks for
    permission the first time Salah has an alert to schedule.
 4. To add a widget, right-click the desktop, choose **Edit Widgets**, and search for
