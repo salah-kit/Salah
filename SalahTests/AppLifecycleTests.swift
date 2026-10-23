@@ -361,15 +361,58 @@ struct AppWindowCoordinatorTests {
     #expect(presence.presences == [.regular], "The Dock icon never goes")
   }
 
-  /// ⌘Q while the welcome is open closes it to the menu bar, as it does Salah's window.
+  /// ⌘Q while the welcome is open closes it to the menu bar, as it does Salah's window,
+  /// without the note, which stays for Salah's own window.
   @Test func commandQClosesTheWelcome() {
-    let coordinator = makeCoordinator(startOnboarding: { _ in })
+    let notes = NoteCounter()
+    let coordinator = makeCoordinator(notes: notes, startOnboarding: { _ in })
     coordinator.didFinishLaunching(asLoginItem: false)
     let welcome = makeWindow()
     coordinator.attachOnboarding(welcome)
     #expect(coordinator.shouldTerminate(appleEvent: nil) == .terminateCancel)
     #expect(!welcome.isVisible)
     #expect(presence.presences == [.regular, .menuBar])
+    #expect(notes.count == 0)
+    #expect(!scratch.defaults.bool(forKey: AppWindowCoordinator.closeNoteShownKey))
+  }
+
+  /// A login launch offers an unfinished welcome the first time Salah is opened. Closed
+  /// early, it doesn't come back in the same run: opening Salah again opens the window.
+  @Test func aLoginLaunchOffersTheWelcomeWhenSalahFirstOpens() {
+    let offers = OpenCounter()
+    let coordinator = makeCoordinator(startOnboarding: { _ in offers.count += 1 })
+    let opener = OpenCounter()
+    coordinator.register { opener.count += 1 }
+    coordinator.didFinishLaunching(asLoginItem: true)
+    #expect(offers.count == 0, "A login launch shows nothing by itself")
+
+    coordinator.open()
+    #expect(offers.count == 1)
+    #expect(opener.count == 0, "The welcome comes first")
+    let welcome = makeWindow()
+    coordinator.attachOnboarding(welcome)
+    welcome.close()
+    #expect(presence.presences == [.regular, .menuBar])
+
+    coordinator.open()
+    #expect(offers.count == 1, "Once per run")
+    #expect(opener.count == 1)
+  }
+
+  /// With the welcome done (or nothing to ask), the first open goes straight to the window.
+  @Test func aFinishedWelcomeOpensTheWindowAtOnce() {
+    let offers = OpenCounter()
+    let coordinator = makeCoordinator(startOnboarding: {
+      offers.count += 1
+      $0()
+    })
+    let opener = OpenCounter()
+    coordinator.register { opener.count += 1 }
+    coordinator.didFinishLaunching(asLoginItem: true)
+    coordinator.open(.notifications)
+    #expect(offers.count == 1)
+    #expect(opener.count == 1)
+    #expect(coordinator.navigation.pane == .notifications, "The pane asked for is kept")
   }
 
   @Test func readsALoginItemLaunch() {

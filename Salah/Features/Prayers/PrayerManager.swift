@@ -94,22 +94,25 @@ final class PrayerManager {
       self?.stopFromWidget()
     }
 
-    // When the network returns, re-run any pending reverse-geocode so a stale
-    // city label (from a failed geocode while offline) self-heals. Prayer times
-    // are unaffected either way - they come from stored coordinates.
+    // When the network returns, re-run any pending reverse-geocode, so a fix whose
+    // geocode failed offline is applied and its city label self-heals.
     reachability.onBecameSatisfied = { [weak self] in
-      // Not during a first launch's welcome: the retry can ask macOS for the location.
-      guard let self, self.preferences.onboardingCompleted else { return }
+      // The retry can ask macOS for the location: not before the welcome has.
+      guard let self, self.mayFollowLocation else { return }
       self.locationManager.retryPendingGeocodeOnReconnect()
     }
     reachability.start()
 
-    // A first launch asks for the location on the welcome's page, not at once.
-    if preferences.useCurrentLocation
-      && (preferences.onboardingCompleted || locationManager.authorizationStatus != .notDetermined)
-    {
+    if preferences.useCurrentLocation && mayFollowLocation {
       locationManager.startUpdating()
     }
+  }
+
+  /// Whether Salah may follow the location on its own (`OnboardingFlow.mayFollowLocation`).
+  private var mayFollowLocation: Bool {
+    OnboardingFlow.mayFollowLocation(
+      onboardingCompleted: preferences.onboardingCompleted,
+      locationDecided: locationManager.authorizationStatus != .notDetermined)
   }
 
   // MARK: - Timer

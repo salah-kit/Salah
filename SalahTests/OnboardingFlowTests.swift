@@ -53,6 +53,7 @@ struct OnboardingFlowTests {
     let scratch = ScratchDefaults()
     let preferences = Preferences(defaults: scratch.defaults)
     preferences.useCurrentLocation = true
+    #expect(!preferences.onboardingCompleted)
     #expect(
       OnboardingFlow.complete(at: .today, locationWasDenied: false, preferences: preferences)
         == .today)

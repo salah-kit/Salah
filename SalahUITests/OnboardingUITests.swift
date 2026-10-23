@@ -1,8 +1,8 @@
 import AppKit
 import XCTest
 
-/// The first launch's welcome in the real app: its own window with the Dock icon, a page
-/// at a time, and Salah's window when it ends, on Today or on the Location pane.
+/// The first launch's welcome in the real app: its own window, a page at a time, and
+/// Salah's window when it ends, on Today or on the Location pane.
 final class OnboardingUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false

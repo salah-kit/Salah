@@ -11,6 +11,8 @@ struct OnboardingView: View {
   let allowLocation: () async -> Void
   /// Asks macOS to alert, and returns once it has answered.
   let allowNotifications: () async -> Void
+  /// Choose a City… on the location page.
+  let chooseCity: () -> Void
   /// Not Now on the notifications page.
   let deferNotifications: () -> Void
   /// The welcome is over; Salah's window opens on the destination.
@@ -103,10 +105,10 @@ struct OnboardingView: View {
         prominent("onboarding.continue") { advance() }
       case .location:
         Button("onboarding.location.chooseCity") {
+          chooseCity()
           if let destination = flow.chooseCity() { finish(destination) }
         }
         .buttonStyle(.bordered)
-        .keyboardShortcut(.cancelAction)
         prominent("onboarding.location.allow") {
           ask(allowLocation)
         }

@@ -5,51 +5,75 @@ import SalahAlerts
 import SwiftUI
 import UserNotifications
 
-/// Shows the first launch's welcome in a small window of its own, which gives Salah its
-/// Dock icon while it's open, and opens Salah's window when it ends.
+/// Shows the welcome in a small window of its own, which gives Salah its Dock icon while
+/// it's open, and opens Salah's window when it ends. Until it ends, Salah asks for no
+/// permission on its own.
 @MainActor
 final class OnboardingPresenter {
   static let shared = OnboardingPresenter()
 
   private var window: NSWindow?
   private var closeObserver: (any NSObjectProtocol)?
-  /// The welcome is ending on its own terms, not closed early.
+  /// The welcome is ending through its buttons; a later close changes nothing.
   private var isFinishing = false
   /// macOS refused the location: the welcome ends on the Location pane, to choose a city.
   private var locationWasDenied = false
   private let preferences: Preferences
+  private let coordinator: () -> AppWindowCoordinator
+  /// Whether macOS hasn't asked for the location yet.
+  private let locationUndetermined: () -> Bool
+  /// Whether macOS hasn't asked to post notifications yet.
+  private let notificationsUndetermined: () async -> Bool
 
-  init(preferences: Preferences = .shared) {
+  /// The defaults are the running app's; the tests pass their own.
+  init(
+    preferences: Preferences = .shared,
+    coordinator: @escaping () -> AppWindowCoordinator = { .shared },
+    locationUndetermined: (() -> Bool)? = nil,
+    notificationsUndetermined: (() async -> Bool)? = nil
+  ) {
     self.preferences = preferences
+    self.coordinator = coordinator
+    self.locationUndetermined =
+      locationUndetermined ?? { CLLocationManager().authorizationStatus == .notDetermined }
+    self.notificationsUndetermined =
+      notificationsUndetermined ?? {
+        await Self.notificationCenter.authorizationStatus() == .notDetermined
+      }
   }
 
-  /// Shows the welcome when this is the first launch and there's a permission to ask for;
-  /// otherwise marks it done and calls `otherwise`, which opens Salah's window.
+  /// Shows the welcome while it's unfinished and there's a permission to ask for; otherwise
+  /// calls `otherwise`, which opens Salah's window.
   func start(otherwise: @escaping @MainActor () -> Void) {
-    let forced = Self.isForced(preferences)
-    guard forced || !preferences.onboardingCompleted else {
+    guard Self.isForced(preferences) || !preferences.onboardingCompleted else {
       otherwise()
       return
     }
     Task {
-      let asksForLocation =
-        forced
-        || (preferences.useCurrentLocation
-          && CLLocationManager().authorizationStatus == .notDetermined)
-      let notificationStatus = await notificationCenter.authorizationStatus()
-      let asksForNotifications = forced || notificationStatus == .notDetermined
-      guard
-        OnboardingFlow.isNeeded(
-          asksForLocation: asksForLocation, asksForNotifications: asksForNotifications)
-      else {
-        preferences.onboardingCompleted = true
+      if let flow = await decide() {
+        present(flow)
+      } else {
         otherwise()
-        return
       }
-      present(
-        OnboardingFlow(
-          asksForLocation: asksForLocation, asksForNotifications: asksForNotifications))
     }
+  }
+
+  /// The welcome to show, or nil when it's done. An unfinished welcome with nothing left to
+  /// ask, as on a Mac that answered both already, is marked done.
+  func decide() async -> OnboardingFlow? {
+    let forced = Self.isForced(preferences)
+    guard forced || !preferences.onboardingCompleted else { return nil }
+    let asksForLocation = forced || (preferences.useCurrentLocation && locationUndetermined())
+    let asksForNotifications = await notificationsUndetermined() || forced
+    guard
+      OnboardingFlow.isNeeded(
+        asksForLocation: asksForLocation, asksForNotifications: asksForNotifications)
+    else {
+      preferences.onboardingCompleted = true
+      return nil
+    }
+    return OnboardingFlow(
+      asksForLocation: asksForLocation, asksForNotifications: asksForNotifications)
   }
 
   // MARK: - Window
@@ -59,6 +83,7 @@ final class OnboardingPresenter {
       flow: flow,
       allowLocation: { [weak self] in await self?.requestLocation() },
       allowNotifications: { [weak self] in await self?.requestNotifications() },
+      chooseCity: { [weak self] in self?.choseCity() },
       deferNotifications: { [weak self] in self?.preferences.notificationPromptDeferred = true },
       finish: { [weak self] destination in self?.finish(at: destination) }
     )
@@ -83,7 +108,7 @@ final class OnboardingPresenter {
       MainActor.assumeIsolated { self?.windowWillClose() }
     }
     self.window = window
-    AppWindowCoordinator.shared.attachOnboarding(window)
+    coordinator().attachOnboarding(window)
     NSApp.activate()
     window.makeKeyAndOrderFront(nil)
     AppLog.lifecycle.notice("onboarding shown pages=\(flow.pages.count, privacy: .public)")
@@ -91,20 +116,26 @@ final class OnboardingPresenter {
 
   /// The welcome ends: it's done for good, and Salah's window opens on the destination. The
   /// welcome closes once that window is up, so Salah keeps its Dock icon throughout.
-  private func finish(at destination: OnboardingFlow.Destination) {
+  func finish(at destination: OnboardingFlow.Destination) {
     // Closed while macOS was asking: nothing more opens.
     guard window != nil, !isFinishing else { return }
     isFinishing = true
     let pane = OnboardingFlow.complete(
       at: destination, locationWasDenied: locationWasDenied, preferences: preferences)
-    AppWindowCoordinator.shared.endOnboarding()
-    AppWindowCoordinator.shared.open(pane)
+    coordinator().endOnboarding()
+    coordinator().open(pane)
   }
 
-  /// Closing the welcome early leaves it unfinished: Salah stays in the menu bar, asks for
-  /// nothing on its own, and shows the welcome again at the next launch while there's still
-  /// a permission to ask for.
-  private func windowWillClose() {
+  /// Choose a City… is a decision, kept at once: Salah stops following the location, so
+  /// nothing asks for it later, even if the welcome then closes early.
+  func choseCity() {
+    preferences.useCurrentLocation = false
+  }
+
+  /// Closing the welcome early leaves it unfinished: Salah stays in the menu bar and asks for
+  /// nothing on its own. The welcome shows again the first time Salah opens in a later run
+  /// (`AppWindowCoordinator.open`), while there's still a permission to ask for.
+  func windowWillClose() {
     if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) }
     closeObserver = nil
     window = nil
@@ -124,7 +155,7 @@ final class OnboardingPresenter {
   private func requestNotifications() async {
     if Self.withoutPrompts(preferences) { return }
     do {
-      _ = try await notificationCenter.requestAuthorization(options: [.alert, .sound])
+      _ = try await Self.notificationCenter.requestAuthorization(options: [.alert, .sound])
     } catch {
       AppLog.notifications.error(
         "Failed to request notification authorization: \(error.localizedDescription, privacy: .public)"
@@ -134,7 +165,7 @@ final class OnboardingPresenter {
     notifyChange()
   }
 
-  private var notificationCenter: any PrayerNotificationCenter {
+  private static var notificationCenter: any PrayerNotificationCenter {
     #if DEBUG
       DebugOptions.notificationCenter() ?? UNUserNotificationCenter.current()
     #else

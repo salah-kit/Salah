@@ -96,14 +96,15 @@ Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
 ## Quick start
 
-1. Open Salah. Its window opens on Today, and a moon-and-stars icon with the time to the
-   next prayer appears in the menu bar; click it for the day's schedule. Salah keeps
-   running there when you close the window.
+1. Open Salah. A welcome explains what Salah does and asks for the location and
+   notifications, each on its own page; then Salah's window opens on Today, and a
+   moon-and-stars icon with the time to the next prayer appears in the menu bar; click it
+   for the day's schedule. Salah keeps running there when you close the window.
 2. Press ⌘, for the settings, or click **Open Salah** in the dropdown and pick a pane
    under Settings. In **Location**, use your current location or search for a city. **Calculation** picks a method from
    your country; you can change it.
-3. In **Notifications**, choose each prayer's alert and reminders. macOS asks for
-   permission the first time Salah has an alert to schedule.
+3. In **Notifications**, choose each prayer's alert and reminders. If you chose Not Now
+   in the welcome, macOS asks for permission when you open this pane with an alert on.
 4. To add a widget, right-click the desktop, choose **Edit Widgets**, and search for
    Salah.
 

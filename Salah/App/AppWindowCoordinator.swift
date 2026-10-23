@@ -61,7 +61,7 @@ final class AppWindowCoordinator {
   private let showCloseNote: @MainActor () -> Bool
   /// Closes the note if it's showing.
   private let dismissCloseNote: @MainActor () -> Void
-  /// Shows the first launch's welcome, or calls its argument when there's none to show.
+  /// Shows the welcome while it's unfinished, or calls its argument when there's none to show.
   private let startOnboarding: @MainActor (_ otherwise: @escaping @MainActor () -> Void) -> Void
 
   private var openWindow: (() -> Void)?
@@ -75,6 +75,9 @@ final class AppWindowCoordinator {
   private var welcomeAwaitingWindow: NSWindow?
   /// From launch until the welcome shows or isn't needed: asking for Salah's window waits.
   private var isDecidingOnboarding = false
+  /// Whether this run has offered the welcome: at launch, or for a login launch the first
+  /// time Salah's window is asked for. A welcome closed early comes back in a later run.
+  private var hasOfferedOnboarding = false
   private var closeObservers: [ObjectIdentifier: any NSObjectProtocol] = [:]
   /// A login launch or the first launch's welcome, until Salah's window is asked for: a
   /// window SwiftUI opens by itself meanwhile closes again (macOS 14 opens the window scene
@@ -123,11 +126,7 @@ final class AppWindowCoordinator {
       // The first launch welcomes first; the window opens when the welcome ends. Until
       // then, a window SwiftUI opens by itself closes again, as on a login launch.
       isQuietLaunch = true
-      isDecidingOnboarding = true
-      startOnboarding { [weak self] in
-        self?.isDecidingOnboarding = false
-        self?.open()
-      }
+      offerOnboarding(then: nil)
     } else {
       isQuietLaunch = true
     }
@@ -148,6 +147,10 @@ final class AppWindowCoordinator {
   /// second one. It shows `pane`, or the last pane without one (Today the first time).
   func open(_ pane: WindowPane? = nil) {
     if isDecidingOnboarding { return }
+    if !hasOfferedOnboarding {
+      offerOnboarding(then: pane)
+      return
+    }
     if let onboardingWindow {
       presence.bringForward()
       if onboardingWindow.isMiniaturized { onboardingWindow.deminiaturize(nil) }
@@ -166,6 +169,17 @@ final class AppWindowCoordinator {
       openWindow()
     } else {
       hasPendingOpen = true
+    }
+  }
+
+  /// Shows the welcome if it's unfinished with something left to ask; otherwise opens the
+  /// window on `pane`. Asking for the window meanwhile waits.
+  private func offerOnboarding(then pane: WindowPane?) {
+    hasOfferedOnboarding = true
+    isDecidingOnboarding = true
+    startOnboarding { [weak self] in
+      self?.isDecidingOnboarding = false
+      self?.open(pane)
     }
   }
 

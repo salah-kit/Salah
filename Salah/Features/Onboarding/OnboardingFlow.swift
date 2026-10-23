@@ -65,6 +65,13 @@ struct OnboardingFlow: Equatable {
     return destination == .location || locationWasDenied ? .location : .today
   }
 
+  /// Whether Salah may follow the location on its own, which can bring up macOS's prompt:
+  /// once the welcome is done, or once macOS has answered. Until then the welcome's location
+  /// page is the first to ask.
+  static func mayFollowLocation(onboardingCompleted: Bool, locationDecided: Bool) -> Bool {
+    onboardingCompleted || locationDecided
+  }
+
   /// Choose a City… on the location page: no prompt, and the welcome ends on the Location
   /// pane.
   mutating func chooseCity() -> Destination? {
