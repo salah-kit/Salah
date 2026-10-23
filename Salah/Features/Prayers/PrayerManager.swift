@@ -517,11 +517,24 @@ enum MenuBarStatusTone {
 }
 
 extension PrayerManager {
-  /// The glyph the status item shows: the prayer that just began while it counts up, else
-  /// the next event's.
+  /// The glyph the status item shows: the prayer whose count-up the text shows, else the
+  /// next event's, so the glyph and the text name the same prayer.
   var menuBarGlyph: PrayerKind? {
-    let state = state.prayerState
-    return (state?.justStarted ?? state?.next)?.kind
+    (menuBarCountUp ?? state.prayerState?.next)?.kind
+  }
+
+  /// Whether adhan, du'a or a reminder is playing: the status item shows the speaker.
+  var menuBarIsPlaying: Bool {
+    if case .playing = audioPlaybackController.state { return true }
+    return false
+  }
+
+  /// The status item's text: while a prayer's audio plays, only that prayer's name.
+  var menuBarText: String {
+    guard preferences.displayNextPrayer,
+      case .playing(let context) = audioPlaybackController.state, let event = context.event
+    else { return statusBarText }
+    return nameComponent(for: event, names: PrayerNames(locale: .app))
   }
 
   var menuBarStatusTone: MenuBarStatusTone {

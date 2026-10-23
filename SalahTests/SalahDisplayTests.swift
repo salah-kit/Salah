@@ -181,6 +181,34 @@ struct SalahDisplayTests {
     #expect(display.rowState(for: fajr, status: display.prayerState?.status(of: fajr)) == .passed)
   }
 
+  /// The prayer one is in while something plays: the adhan's prayer, and the prayer a
+  /// reminder after it plays for, but not the prayer a reminder before it plays for, which
+  /// is still to come.
+  @Test func thePlayingPrayerHasStarted() {
+    let asr = event(.asr)
+    let before = Self.display(
+      at: asr.time.adding(minutes: -10),
+      playback: SalahPlayback(event: asr, slot: .preReminder, offsetMinutes: 10))
+    #expect(before.playingPrayer == nil)
+    let adhan = Self.display(
+      at: asr.time.adding(minutes: 1), playback: SalahPlayback(event: asr, slot: .alert))
+    #expect(adhan.playingPrayer == asr)
+    let after = Self.display(
+      at: asr.time.adding(minutes: 5),
+      playback: SalahPlayback(event: asr, slot: .postReminder, offsetMinutes: 5))
+    #expect(after.playingPrayer == asr)
+    #expect(Self.display(at: asr.time.adding(minutes: 1)).playingPrayer == nil)
+  }
+
+  /// Without the day's times, the sky is neutral: there's no prayer period to follow.
+  @Test func anUnknownDayHasTheNeutralSky() {
+    var display = Self.display(at: event(.asr).time)
+    #expect(display.phase == .asr)
+    display.day = .unavailable(.calculationUnavailable)
+    #expect(display.listedDay == nil)
+    #expect(display.phase == .neutral)
+  }
+
   @Test func silentModeMutesEveryToneButKeepsTheFocus() {
     let display = Self.display(at: event(.asr).time.adding(minutes: -10)) { $0.silentMode = true }
     #expect(display.tone == .silent)

@@ -229,12 +229,6 @@ nonisolated enum SalahAppearance: String, Codable, CaseIterable, Sendable {
 
 // MARK: - In SwiftUI
 
-/// Whether Salah follows the time of day, which the surfaces read to choose their phase.
-/// On by default.
-nonisolated extension EnvironmentValues {
-  @Entry var salahFollowsTimeOfDay = true
-}
-
 /// Stills of a face, such as the visual baselines, pause its live timers at this moment, so
 /// they read as they would then rather than against the clock. Unset, timers run.
 nonisolated extension EnvironmentValues {

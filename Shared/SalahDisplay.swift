@@ -61,17 +61,24 @@ nonisolated struct SalahDisplay: Sendable {
     playback: SalahPlayback? = nil
   ) {
     let day = schedule.day(containing: date)
-    var calendar = Calendar(identifier: .gregorian)
-    calendar.timeZone = settings.location.timeZone
-    let tomorrow = day.day.flatMap { listed in
-      calendar.date(byAdding: .day, value: 1, to: listed.day.start(in: settings.location.timeZone))
-    }
     self.init(
       date: date, settings: settings, day: day,
       state: schedule.state(
         at: date, through: date.addingTimeInterval(Self.lookahead), policy: Self.policy),
       playback: playback,
-      nextDay: tomorrow.flatMap { schedule.day(containing: $0).day })
+      nextDay: Self.day(after: day, in: schedule, zone: settings.location.timeZone))
+  }
+
+  /// The day after `day` in `schedule`, which the widgets list after Isha.
+  static func day(after day: PrayerDayAvailability, in schedule: PrayerSchedule, zone: TimeZone)
+    -> PrayerDay?
+  {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = zone
+    guard let listed = day.day,
+      let tomorrow = calendar.date(byAdding: .day, value: 1, to: listed.day.start(in: zone))
+    else { return nil }
+    return schedule.day(containing: tomorrow).day
   }
 
   // MARK: - Text
@@ -81,10 +88,18 @@ nonisolated struct SalahDisplay: Sendable {
   var text: SalahText { SalahText(locale: locale, timeZone: settings.location.timeZone) }
   var labels: SalahWidgetLabels { text.labels }
   /// The time of day the surfaces draw in: the prayer period now, or the neutral sky when
-  /// Salah doesn't follow the time of day.
+  /// Salah doesn't follow the time of day or the day's times aren't known.
   var phase: SalahPhase {
-    guard settings.followsTimeOfDay else { return .neutral }
-    return SalahPhase.at(date, events: listedDay?.events ?? [])
+    guard settings.followsTimeOfDay, let events = listedDay?.events else { return .neutral }
+    return SalahPhase.at(date, events: events)
+  }
+
+  /// The prayer whose adhan or du'a plays, or the one a reminder after it plays for: the
+  /// prayer one is in while it plays. `nil` for a reminder before a prayer, which plays
+  /// while the prayer is still to come, and when nothing plays.
+  var playingPrayer: PrayerEvent? {
+    guard let event = playback?.event, event.time <= date else { return nil }
+    return event
   }
 
   /// The known state, or `nil` when the schedule can't establish one.

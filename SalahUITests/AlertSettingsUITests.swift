@@ -10,7 +10,7 @@ import XCTest
 /// (`Launch`: Makkah, muted, English, no consent prompt), changes the prayer's alert in
 /// Settings → Notifications, and waits past its minute. The runner is sandboxed in Salah's
 /// App Group, so it reads what the app publishes there the way the widget does: the
-/// settings mirror (`SalahSettings.v1`) and what's playing (`SalahPlayback.v1`).
+/// settings mirror (`SalahSettings.v2`) and what's playing (`SalahPlayback.v1`).
 ///
 /// The launch keeps the app's preferences in a scratch suite
 /// (`-salah.debug.scratchPreferences`) and its alerts out of the system's notification
@@ -192,7 +192,7 @@ nonisolated enum AppGroup {
 
   /// Whether the mirror shows `kind`'s at-time alert on; `nil` without a mirror.
   static func alertIsOn(for kind: PrayerKind) -> Bool? {
-    let settings: Settings? = load("SalahSettings.v1")
+    let settings: Settings? = load("SalahSettings.v2")
     return settings.map { $0.alerts[kind]?.alert ?? false }
   }
 

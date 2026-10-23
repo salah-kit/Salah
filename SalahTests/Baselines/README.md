@@ -18,15 +18,15 @@ The first renders every image but the Arabic menu dropdown; the second, whose `-
 - SwiftUI `ImageRenderer` at scale 1 (one pixel per point), written as PNG. Each image is the render that repeats: the first render of a face in a process can differ slightly while glyphs are first rasterized.
 - Each state at a fixed moment (below), with the process in the Asia/Riyadh time zone and the language set through the app's own language preference (English, Arabic, French). The setup face has no settings to take a language from: the extension shows it in the device's language, here US English, whatever the language set in the app.
 - Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages.
-- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it.
-- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `SalahWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off.
+- Light and dark through the `colorScheme` environment, with the sky of the time of day at each moment; the `phase` images show each time of day's sky, and the neutral one.
+- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The dropdown reads Reduce Motion (the approaching card's rim stops breathing), and a render can't override it, so record with both off.
 - Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)). The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host.
 - The menu-bar dropdown is `MenuDropdownContent`, 300 points wide.
 - Compared pixel by pixel. A channel difference of up to 2/255 counts as equal, and up to 16 pixels per image may differ by more, none of them by more than 32/255: antialiasing can shift a pixel or two by a few levels between processes, while a changed digit, glyph, diacritic, icon or color moves pixels far more. Recording keeps a PNG that still matches, so a re-render only rewrites real changes. Comparisons run only on the macOS major version in `environment.json`, because fonts and text rendering change between releases.
 
 ## Fixture
 
-The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the Nocturne theme. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):
+The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):
 
 | Day | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
 |---|---|---|---|---|---|---|
@@ -40,14 +40,14 @@ The states the widget and the menu bar show, built from the fixture by the app's
 | State | Shows | Moment (Riyadh) | Setup |
 |---|---|---|---|
 | `idle` | idle/normal | 2026-06-02 13:19 | Dhuhr + 60 min |
-| `imminent` | imminent (fixed 15-min red, not before Sunrise) | 2026-06-02 15:25 | Asr − 10 min |
-| `countUp` | Iqama count-up (green, leads 15 min, next prayer secondary) | 2026-06-02 12:23 | Dhuhr + 4 min |
-| `countUpSilent` | count-up in silent mode (the count-up stays green, with its badge, timer and row, while silent mode mutes the rest) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
-| `countUpImminent` | count-up overlapping an imminent next (count-up leads, next line red) | 2026-06-02 19:04 | Maghrib + 4 min, Isha adjusted −78 min (19:12) |
+| `imminent` | imminent (15 min before, gold, not before Sunrise) | 2026-06-02 15:25 | Asr − 10 min |
+| `countUp` | Iqama count-up (the time of day's mark, leads 15 min, next prayer secondary) | 2026-06-02 12:23 | Dhuhr + 4 min |
+| `countUpSilent` | count-up in silent mode (the count-up keeps its badge, timer and row, while silent mode mutes the rest) | 2026-06-02 12:23 | Dhuhr + 4 min, silent mode on |
+| `countUpImminent` | count-up overlapping an imminent next (count-up leads, next line follows) | 2026-06-02 19:04 | Maghrib + 4 min, Isha adjusted −78 min (19:12) |
 | `endOfDay` | end-of-day Tomorrow card | 2026-06-02 21:30 | Isha + 60 min |
-| `playingAdhan` | playing audio (stop control): adhan, green | 2026-06-02 19:02 | Maghrib + 2 min, Maghrib's adhan playing |
-| `playingPreReminder` | playing audio (stop control): before-reminder, orange | 2026-06-02 18:50 | Maghrib − 10 min, Maghrib's 10-min before-reminder playing |
-| `playingPostReminder` | playing audio (stop control): after-reminder, purple | 2026-06-02 19:05 | Maghrib + 5 min, Maghrib's 5-min after-reminder playing |
+| `playingAdhan` | playing audio (stop control): adhan | 2026-06-02 19:02 | Maghrib + 2 min, Maghrib's adhan playing |
+| `playingPreReminder` | playing audio (stop control): before-reminder | 2026-06-02 18:50 | Maghrib − 10 min, Maghrib's 10-min before-reminder playing |
+| `playingPostReminder` | playing audio (stop control): after-reminder | 2026-06-02 19:05 | Maghrib + 5 min, Maghrib's 5-min after-reminder playing |
 | `silent` | silent mode | 2026-06-02 13:19 | Dhuhr + 60 min, silent mode on |
 | `setupNeeded` | setup-needed | 2026-06-02 13:19 | no settings mirrored: the extension's setup entry, in the device's language, at Dhuhr + 60 min |
 | `stale` | stale | 2026-06-03 00:10 | the expired entry of a timeline that ran out, at 00:10 the next day |
@@ -59,8 +59,8 @@ The `WidgetPreviewData` scenarios behind the widget's Xcode previews (`Salah/Fea
 | Scenario | Shows |
 |---|---|
 | `idle` | A normal day; the next prayer, Maghrib, is 2 h 42 min away and carries both reminders. |
-| `imminent` | 10 minutes before Maghrib: imminent red. |
-| `countUp` | 4 minutes after Dhuhr: the green count-up leads; Asr is the secondary next. |
+| `imminent` | 10 minutes before Maghrib: imminent, in gold. |
+| `countUp` | 4 minutes after Dhuhr: the count-up leads; Asr is the secondary next. |
 | `countUpEnded` | 16 minutes after Dhuhr: the count-up has ended; back to Asr's countdown. |
 | `since` | 90 minutes after Dhuhr: the resting countdown to Asr with the “since” treatment. |
 | `tomorrow` | After Isha: the focus is tomorrow's Fajr. |

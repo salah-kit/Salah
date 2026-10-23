@@ -53,8 +53,11 @@ nonisolated struct WidgetStyle {
   var tertiary: AnyShapeStyle { token(colors.palette.labelTertiary, else: .tertiary) }
   /// `widget/accent`: the one accentable element, the countdown or the next row.
   var accent: AnyShapeStyle { token(colors.palette.accentText, else: .primary) }
-  /// `widget/mark`: glyphs, the progress bar, the prayer one is in.
+  /// `widget/mark`: glyphs and the progress bar.
   var mark: AnyShapeStyle { token(colors.phase.tint, else: .secondary) }
+  /// Text in the mark's hue, the prayer one is in, its count-up and Now: `Phase/text`,
+  /// which holds 4.5:1 on the sky where the mark holds 3:1.
+  var markText: AnyShapeStyle { token(colors.phase.text, else: .secondary) }
   /// `widget/track`: the progress bar's track and the next row's wash.
   var track: AnyShapeStyle { token(colors.palette.fillSecondary, else: .quaternary) }
   /// `widget/separator`.
@@ -178,7 +181,7 @@ private struct WidgetTimer: View {
               countsDown: false, showsHours: true)
           }
         }
-        .foregroundStyle(style.mark)
+        .foregroundStyle(style.markText)
       } else {
         Group {
           if let pause {
@@ -198,13 +201,14 @@ private struct WidgetTimer: View {
     .minimumScaleFactor(0.6)
   }
 
-  /// The timer's reading at the pause, as the live timer shows it: `2:16:00`. A paused
-  /// timer text doesn't render it in a still.
+  /// The timer's reading at the pause, as the live timer shows it: `2:16:00`, or `10:00`
+  /// under an hour. A paused timer text doesn't render it in a still.
   private func still(_ seconds: TimeInterval) -> Text {
-    let duration = Duration.seconds(max(seconds, 0).rounded(.down))
-    return Text(
-      verbatim: duration.formatted(
-        .time(pattern: .hourMinuteSecond(padHourToLength: 1)).locale(locale)))
+    let seconds = max(seconds, 0).rounded(.down)
+    let duration = Duration.seconds(seconds)
+    let pattern: Duration.TimeFormatStyle.Pattern =
+      seconds >= 3600 ? .hourMinuteSecond(padHourToLength: 1) : .minuteSecond(padMinuteToLength: 1)
+    return Text(verbatim: duration.formatted(.time(pattern: pattern).locale(locale)))
   }
 }
 
@@ -252,7 +256,7 @@ private struct WidgetEyebrow: View {
     } else {
       Text(verbatim: hero.eyebrow)
         .font(.system(size: 11, weight: .semibold))
-        .foregroundStyle(hero.kind == .justStarted ? style.mark : style.secondary)
+        .foregroundStyle(hero.kind == .justStarted ? style.markText : style.secondary)
         .lineLimit(1)
     }
   }
@@ -425,7 +429,7 @@ private struct WidgetProgress: View {
   private var fraction: CGFloat {
     let start: Date
     let end: Date
-    if let playing = display.playback?.event {
+    if let playing = display.playingPrayer {
       guard let next = display.listedDay?.events.first(where: { $0.time > playing.time })
       else { return 0 }
       (start, end) = (playing.time, next.time)
@@ -483,7 +487,7 @@ nonisolated struct WidgetTimes: View {
   private func color(_ role: Role) -> AnyShapeStyle {
     switch role {
     case .passed: style.tertiary
-    case .current: style.mark
+    case .current: style.markText
     case .next: style.accent
     case .upcoming: style.primary
     }
@@ -495,7 +499,7 @@ nonisolated struct WidgetTimes: View {
       return tomorrow.events.map { ($0, $0.id == display.focus?.event.id ? .next : .upcoming) }
     }
     guard let day = display.listedDay else { return [] }
-    if let playing = display.playback?.event {
+    if let playing = display.playingPrayer {
       // While a prayer plays, the roles follow it, whatever the countdown knows.
       let next = day.events.first { $0.time > playing.time }
       return day.events.map { event in

@@ -20,12 +20,16 @@ final class SettingsAccessibilityUITests: XCTestCase {
 
   @MainActor
   func testAppearancePreviewShowsTheMediumWidgetInEnglish() throws {
-    try assertAppearancePreview(language: "english", code: "en", pane: "Appearance")
+    try assertAppearancePreview(
+      language: "english", code: "en", pane: "Appearance", mode: "Appearance",
+      followsTimeOfDay: "Follow the time of day")
   }
 
   @MainActor
   func testAppearancePreviewShowsTheMediumWidgetInArabic() throws {
-    try assertAppearancePreview(language: "arabic", code: "ar", pane: "المظهر")
+    try assertAppearancePreview(
+      language: "arabic", code: "ar", pane: "المظهر", mode: "المظهر",
+      followsTimeOfDay: "اتباع وقت اليوم")
   }
 
   /// Xcode's accessibility audit finds nothing in what each pane of the window, Today and the
@@ -218,10 +222,10 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// - contrast of the text in the Appearance preview, which draws the widget on its sky.
   ///   The audit reports every text element of the preview, passed rows included, so the
   ///   test can't tell a real failure there from one it would report anyway.
-  ///   `PaletteContrastTests` (SalahTests) covers that text instead: it measures every text
-  ///   and mark color the widget draws against each time of day's sky, in light and dark,
-  ///   with and without Increase Contrast, holding text to 4.5:1 and marks and passed rows
-  ///   to 3:1.
+  ///   `PaletteContrastTests` (SalahTests) covers that text instead: it measures the text
+  ///   and mark tokens the widget draws against each time of day's sky and the next row's
+  ///   wash, in light and dark, with and without Increase Contrast, holding text to 4.5:1
+  ///   and marks and passed rows to 3:1.
   @MainActor
   private static func isSetAside(
     _ issue: XCUIAccessibilityAuditIssue, windowFrame: CGRect?, windowTitle: String?,
@@ -272,7 +276,9 @@ final class SettingsAccessibilityUITests: XCTestCase {
   /// switch off and on keeps the preview whole. The preview's accessibility container fills
   /// the form's width; the rendered baselines check the widget's exact width and colors.
   @MainActor
-  private func assertAppearancePreview(language: String, code: String, pane: String) throws {
+  private func assertAppearancePreview(
+    language: String, code: String, pane: String, mode: String, followsTimeOfDay label: String
+  ) throws {
     let app = XCUIApplication()
     var arguments = SalahUITests.quietLaunch
     let languageIndex = try XCTUnwrap(arguments.firstIndex(of: "-salah.appLanguage"))
@@ -291,8 +297,8 @@ final class SettingsAccessibilityUITests: XCTestCase {
     settings.selectPane(pane)
 
     XCTAssertTrue(
-      settings.popUpButtons.firstMatch.waitForExistence(timeout: 10), settings.debugDescription)
-    let followsTimeOfDay = settings.switches.firstMatch
+      settings.popUpButtons[mode].waitForExistence(timeout: 10), settings.debugDescription)
+    let followsTimeOfDay = settings.switches[label]
     XCTAssertTrue(followsTimeOfDay.waitForExistence(timeout: 10), settings.debugDescription)
     let preview = settings.descendants(matching: .any)["appearance.preview"]
     XCTAssertTrue(preview.waitForExistence(timeout: 10), settings.debugDescription)

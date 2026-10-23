@@ -406,6 +406,8 @@ final class Preferences {
     {
       return stored
     }
+    // The presets followed the system; only the custom theme drew a pinned appearance.
+    guard defaults.string(forKey: Key.retiredWidgetThemeID) == "custom" else { return .system }
     switch defaults.string(forKey: Key.retiredWidgetAppearance) {
     case "alwaysDark": return .dark
     case "alwaysLight": return .light

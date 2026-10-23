@@ -47,6 +47,9 @@ final class WidgetMirror {
   /// mirrored effect.
   func start(preferences: Preferences) {
     self.preferences = preferences
+    // The previous version's mirror, which nothing reads any more.
+    UserDefaults(suiteName: settings.appGroup)?
+      .removeObject(forKey: SalahWidgetConstants.retiredSettingsKey)
     publish(preferences.mirroredSettings)
     guard observer == nil else { return }
     // Preferences post on the main thread, synchronously from their didSets.

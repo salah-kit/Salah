@@ -32,7 +32,7 @@ All notable changes to this project are documented here. The format follows
 - Settings → Appearance is now Light, Dark or System, for the window, the dropdown and the
   widgets, with a switch to keep the sky neutral instead of following the time of day,
   and a preview of the medium widget. It replaces the widget themes, sizes and colors; a
-  theme set to always light or always dark carries over.
+  custom theme set to always light or always dark carries over.
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.
@@ -43,11 +43,10 @@ All notable changes to this project are documented here. The format follows
   large widgets are installed together ([#52](https://github.com/salah-kit/Salah/issues/52)).
   Recheck playback after planning a refresh, archive the static Stop face only once, and
   return to the schedule at its exact playback expiry.
-- Draw the Appearance widget preview at the normal desktop sizes measured on macOS 27.0.1
+- Draw the Appearance widget preview at the desktop size measured on macOS 27.0.1
   ([#28](https://github.com/salah-kit/Salah/issues/28)).
-- Keep menu-bar prayer names, times and countdowns readable on their themed backgrounds,
-  including passed prayers and Increase Contrast. With Increase Contrast enabled, use a
-  solid themed menu background instead of decorative gradients and glows.
+- Keep menu-bar prayer names, times and countdowns readable, including passed prayers and
+  Increase Contrast.
 - Expose the menu-bar countdown and count-up as read-only accessible text while retaining
   the full duration in the selected language.
 - Preserve a scheduled prayer notification while macOS is delivering it, including a
@@ -71,13 +70,9 @@ All notable changes to this project are documented here. The format follows
 - Draw the version line under the Settings sidebar and the menu bar preview's caption in the
   secondary label colour; they had too little contrast.
 - Group the Appearance preview's rows for VoiceOver, in a group named "Preview".
-- Give the widget's text enough contrast on every theme, in the widget and the Appearance
-  preview ([#35](https://github.com/salah-kit/Salah/issues/35)). Secondary text uses the
-  design system's secondary label; the system's was about 3.6:1 in light. Text in the
-  theme's or a state's color, such as the next prayer's row, the countdown and the count-up,
-  keeps its hue, and lightens or darkens only as far as the sky, glow and tint under that
-  text need for 4.5:1; on the presets it was as low as 2.3:1. Passed prayers stay dimmed, but
-  with Increase Contrast they draw undimmed in the secondary label.
+- Give the widget's text enough contrast in the widget and the Appearance preview
+  ([#35](https://github.com/salah-kit/Salah/issues/35)): text draws in the design system's
+  text colors, held to 4.5:1 on every time of day's sky, and passed prayers to 3:1.
 - Keep the next prayer prominent in accented and vibrant widgets by using the system's
   text hierarchy and making its name the accent element
   ([#38](https://github.com/salah-kit/Salah/issues/38)).

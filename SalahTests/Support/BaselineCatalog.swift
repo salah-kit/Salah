@@ -71,15 +71,16 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
   var specName: String {
     switch self {
     case .idle: "idle/normal"
-    case .imminent: "imminent (fixed 15-min red, not before Sunrise)"
-    case .countUp: "Iqama count-up (green, leads 15 min, next prayer secondary)"
+    case .imminent: "imminent (15 min before, gold, not before Sunrise)"
+    case .countUp: "Iqama count-up (the time of day's mark, leads 15 min, next prayer secondary)"
     case .countUpSilent:
-      "count-up in silent mode (the count-up stays green, with its badge, timer and row, while silent mode mutes the rest)"
-    case .countUpImminent: "count-up overlapping an imminent next (count-up leads, next line red)"
+      "count-up in silent mode (the count-up keeps its badge, timer and row, while silent mode mutes the rest)"
+    case .countUpImminent:
+      "count-up overlapping an imminent next (count-up leads, next line follows)"
     case .endOfDay: "end-of-day Tomorrow card"
-    case .playingAdhan: "playing audio (stop control): adhan, green"
-    case .playingPreReminder: "playing audio (stop control): before-reminder, orange"
-    case .playingPostReminder: "playing audio (stop control): after-reminder, purple"
+    case .playingAdhan: "playing audio (stop control): adhan"
+    case .playingPreReminder: "playing audio (stop control): before-reminder"
+    case .playingPostReminder: "playing audio (stop control): after-reminder"
     case .silent: "silent mode"
     case .setupNeeded: "setup-needed"
     case .stale: "stale"
@@ -116,8 +117,6 @@ nonisolated enum SpecState: String, Sendable, CaseIterable {
 nonisolated enum PreviewScenario: String, Sendable, CaseIterable {
   case idle, imminent, countUp, countUpEnded, since, tomorrow, silent, playing
 }
-
-/// The theme presets the "Presets" previews show (`SalahWidgetTheme.allPresets`).
 
 nonisolated enum BaselineCatalog {
   /// The images this test process renders: those whose process languages are its own.

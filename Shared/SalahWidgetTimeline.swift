@@ -77,7 +77,12 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       let civilDay = CivilDay(containing: date, in: zone)
       let day = days[civilDay] ?? schedule.day(civilDay)
       days[civilDay] = day
-      return SalahDisplay(date: date, settings: settings, day: day, state: state)
+      // Only an entry after Isha, with tomorrow's Fajr in focus, lists the next day.
+      var display = SalahDisplay(date: date, settings: settings, day: day, state: state)
+      if display.focusIsTomorrow {
+        display.nextDay = SalahDisplay.day(after: day, in: schedule, zone: zone)
+      }
+      return display
     }
 
     let planned: PrayerTimeline
@@ -124,8 +129,8 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     return timeline.applyingPlayback(loadPlayback())
   }
 
-  /// Applies playback to a complete normal plan. The Stop face has no countdown
-  /// or day header: its title, subtitle and tone stay identical for one playback.
+  /// Applies playback to a complete normal plan. The Stop face shows no countdown: its
+  /// title, subtitle and tone stay identical for one playback.
   /// Keep only its first entry, then resume the original schedule at the exact
   /// playback bound. Never derive a cleared plan from an already compacted one.
   private func applyingPlayback(_ playback: SalahPlayback?) -> SalahWidgetTimeline {

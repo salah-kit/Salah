@@ -31,6 +31,18 @@ struct SettingsMirrorTests {
     #expect(group.reloads.kinds.count == 1)
   }
 
+  /// The previous version's mirror, under its old key, is gone once the app starts.
+  @Test func startRemovesThePreviousMirror() throws {
+    let group = MirrorGroup()
+    let defaults = try #require(UserDefaults(suiteName: group.suite))
+    defaults.set(Data([1]), forKey: SalahWidgetConstants.retiredSettingsKey)
+    let scratch = ScratchDefaults()
+    let preferences = Preferences(defaults: scratch.defaults)
+    group.mirror().start(preferences: preferences)
+    #expect(defaults.object(forKey: SalahWidgetConstants.retiredSettingsKey) == nil)
+    #expect(group.settings.load() == preferences.mirroredSettings)
+  }
+
   /// A language-only change (`.localization`) republishes at once: the widget draws the
   /// same times in the new language, with its names, digits and direction.
   @Test func aLanguageOnlyChangeRepublishes() throws {
@@ -121,17 +133,29 @@ struct SettingsMirrorTests {
 
   /// The retired widget themes' Always Dark carries over to the appearance, and their keys
   /// go.
-  @Test func theRetiredThemeAppearanceCarriesOver() {
+  @Test(arguments: [("alwaysDark", SalahAppearance.dark), ("alwaysLight", .light)])
+  func theRetiredCustomThemesAppearanceCarriesOver(
+    retired: String, appearance: SalahAppearance
+  ) {
     let scratch = ScratchDefaults()
-    scratch.defaults.set("alwaysDark", forKey: "salah.widgetAppearance")
-    scratch.defaults.set("dawn", forKey: "salah.widgetThemeID")
+    scratch.defaults.set(retired, forKey: "salah.widgetAppearance")
+    scratch.defaults.set("custom", forKey: "salah.widgetThemeID")
     let preferences = Preferences(defaults: scratch.defaults)
-    #expect(preferences.appearance == .dark)
+    #expect(preferences.appearance == appearance)
     #expect(preferences.followsTimeOfDay, "On by default")
     #expect(scratch.defaults.object(forKey: "salah.widgetThemeID") == nil)
     #expect(scratch.defaults.object(forKey: "salah.widgetAppearance") == nil)
     // Saved once, it stays after the retired key is gone.
-    #expect(Preferences(defaults: scratch.defaults).appearance == .dark)
+    #expect(Preferences(defaults: scratch.defaults).appearance == appearance)
+  }
+
+  /// A preset followed the system, whatever the custom theme's appearance had been left at.
+  @Test func aPresetThemeLeavesTheSystemAppearance() {
+    let scratch = ScratchDefaults()
+    scratch.defaults.set("alwaysDark", forKey: "salah.widgetAppearance")
+    scratch.defaults.set("dawn", forKey: "salah.widgetThemeID")
+    #expect(Preferences(defaults: scratch.defaults).appearance == .system)
+    #expect(scratch.defaults.object(forKey: "salah.widgetAppearance") == nil)
   }
 
   // MARK: - Reminder summaries

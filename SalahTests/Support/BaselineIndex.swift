@@ -85,8 +85,8 @@ enum BaselineIndex {
     [
       .idle:
         "A normal day; the next prayer, Maghrib, is 2 h 42 min away and carries both reminders.",
-      .imminent: "10 minutes before Maghrib: imminent red.",
-      .countUp: "4 minutes after Dhuhr: the green count-up leads; Asr is the secondary next.",
+      .imminent: "10 minutes before Maghrib: imminent, in gold.",
+      .countUp: "4 minutes after Dhuhr: the count-up leads; Asr is the secondary next.",
       .countUpEnded: "16 minutes after Dhuhr: the count-up has ended; back to Asr's countdown.",
       .since: "90 minutes after Dhuhr: the resting countdown to Asr with the “since” treatment.",
       .tomorrow: "After Isha: the focus is tomorrow's Fajr.",
@@ -129,10 +129,10 @@ enum BaselineIndex {
       "- Each image renders in a process with fixed preferred languages, because with a tall script such as Arabic among them macOS gives system-font text taller lines in every language. The main run prefers US English only (the scheme's test arguments pass `-AppleLanguages (en-US)`; `environment.json` records the list): the widget faces as the extension shows them on a Mac whose languages are English, and the previews. The menu-bar dropdown runs in the app's own process, which the app gives its chosen language, so the Arabic dropdown renders in a second run preferring Arabic (`-testLanguage ar`); English and French render the same in their own languages as under US English. `index.json` lists each image's process languages."
     )
     add(
-      "- Light and dark through the `colorScheme` environment; the default Nocturne theme follows it."
+      "- Light and dark through the `colorScheme` environment, with the sky of the time of day at each moment; the `phase` images show each time of day's sky, and the neutral one."
     )
     add(
-      "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The views read both (`MenuHeroCard` drops the imminent face's breathing border under Reduce Motion, `SalahWidgetBackground` its glows under Reduce Transparency), and a render can't override them, so record with both off."
+      "- Accessibility settings at the macOS defaults, as on the hosted runners: Reduce Motion and Reduce Transparency off. The dropdown reads Reduce Motion (the approaching card's rim stops breathing), and a render can't override it, so record with both off."
     )
     add(
       "- Widget faces render in `WidgetPreviewContainer` at normal desktop reference sizes (164×164, 344×164 and 344×344 points), measured on Mac14,10 with macOS 27.0.1 ([#28](https://github.com/salah-kit/Salah/issues/28)). The extension uses its host's actual bounds, which can vary. The setup and stale (timeline expired) faces mirror the extension shell's message branches in that same reference container (`WidgetShellMessage` in the tests), since WidgetKit's container renders only in a widget host."
@@ -145,7 +145,7 @@ enum BaselineIndex {
     add("## Fixture")
     add()
     add(
-      "The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the Nocturne theme. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):"
+      "The app's default settings: Makkah (21.4167, 39.8167), Asia/Riyadh, Umm al-Qura, Shafi, middle of the night, the System appearance, following the time of day. Fajr has a 30-minute before-reminder, and Maghrib a 10-minute before and a 5-minute after reminder. The day is Tuesday 2 June 2026 (16 Dhuʻl-Hijjah 1447). SalahCalculation gives (the times adhan-swift 1.4.0 gave too, minute for minute):"
     )
     add()
     add("| Day | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |")

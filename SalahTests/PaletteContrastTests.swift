@@ -1,10 +1,12 @@
 import SalahUI
 import Testing
 
-/// Salah's color tokens keep the contrast the design promises, on every surface they're
-/// drawn on, in light and dark, with and without Increase Contrast: text 4.5:1, marks and
-/// passed rows 3:1. The widgets, the dropdown and Today draw only these tokens, so this holds
-/// for every face, whatever the time of day.
+/// Salah's color tokens keep the contrast the design promises on the surfaces the widgets,
+/// the dropdown and Today draw them on, in light and dark, with and without Increase
+/// Contrast: text tokens 4.5:1; marks, glyphs and passed rows (`labelTertiary`) 3:1. The
+/// faces draw text only in text tokens; the time of day's mark (`tint`) only in glyphs
+/// and bars, and its text in `Phase/text`. The baselines show which token each element
+/// draws in.
 @Suite("Palette contrast")
 struct PaletteContrastTests {
   /// Every appearance: light and dark, standard and increased contrast.
@@ -40,12 +42,16 @@ struct PaletteContrastTests {
         #expect(Self.ratio(palette.accentText, on: sky) >= 4.5, "\(label) accent text")
         #expect(Self.ratio(colors.text, on: sky) >= 4.5, "\(label) phase text")
         #expect(Self.ratio(colors.tint, on: sky) >= 3, "\(label) phase tint")
+        // The widget's next row: the accent on the track's wash over the sky.
+        let nextRow = Self.over(palette.fillSecondary, sky)
+        #expect(Self.ratio(palette.accentText, on: nextRow) >= 4.5, "\(label) next row")
       }
       // The current prayer's row: its wash, with its detail in the phase's text.
       let window = palette.elevated
       let wash = Self.over(colors.tintSubtle, window)
       #expect(Self.ratio(colors.text, on: wash) >= 4.5, "\(label) phase text on its wash")
       #expect(Self.ratio(palette.labelPrimary, on: wash) >= 4.5, "\(label) primary on its wash")
+      #expect(Self.ratio(colors.tint, on: wash) >= 3, "\(label) glyph on its wash")
     }
   }
 
@@ -72,6 +78,7 @@ struct PaletteContrastTests {
       let wash = Self.over(palette.accentSubtle, palette.elevated)
       #expect(Self.ratio(palette.accentText, on: wash) >= 4.5, "\(label) accent text on the wash")
       #expect(Self.ratio(palette.labelPrimary, on: wash) >= 4.5, "\(label) primary on the wash")
+      #expect(Self.ratio(palette.accent, on: wash) >= 3, "\(label) accent glyph on the wash")
       // Open Salah, Stop, Got It and the Now badge: dark ink on the gold fill.
       #expect(
         Self.ratio(palette.labelOnAccent, on: palette.accentFill) >= 4.5,

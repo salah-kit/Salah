@@ -49,11 +49,10 @@ struct SalahApp: App {
         .preferredColorScheme(preferences.appearance.colorScheme)
     } label: {
       MenuBarLabel(
-        text: prayerManager.statusBarText,
+        text: prayerManager.menuBarText,
         showIcon: prayerManager.preferences.displayIcon || hasLocationAttention,
         glyph: prayerManager.menuBarGlyph,
-        isPlaying: prayerManager.menuBarStatusTone != .normal
-          && prayerManager.menuBarStatusTone != .imminent,
+        isPlaying: prayerManager.menuBarIsPlaying,
         isApproaching: prayerManager.menuBarStatusTone == .imminent,
         attention: hasLocationAttention,
         layoutDirection: appLayoutDirection

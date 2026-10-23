@@ -131,11 +131,10 @@ Not done yet: a signed and notarized download, a Mac App Store listing, and conf
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language
 review includes the new volume accessibility label.
 
-Custom-theme guardrails use SalahUI's default 3:1 contrast floor against an opaque base
-surface, intended for the large countdown. Caption headings and the silent-mode label use separate semantic ink, checked at 4.5:1
-against their composed preset surfaces in light/dark and Increase Contrast. Decorative
-accents retain the chosen palette. This focused check does not certify every secondary,
-functional-tone or custom-theme text/background combination.
+Salah's colors are the design system's tokens. A test holds their text to 4.5:1 and their
+glyphs, marks and passed prayers to 3:1 on the skies and surfaces they're drawn on, in light
+and dark, with and without Increase Contrast. It checks the token pairs, not every rendered
+pixel; the visual baselines show what each face draws.
 
 ## Contributing
 

@@ -110,6 +110,8 @@ struct WidgetTimelineTests {
     let before = try #require(displays.last { $0.0 < midnight }?.1)
     #expect(before.listedDay?.day == Fixture.civilDay())
     #expect(before.focusIsTomorrow)
+    // After Isha the widgets list tomorrow's times, Fajr first.
+    #expect(before.nextDay?.day == Fixture.civilDay(offset: 1))
     #expect(!atMidnight.focusIsTomorrow)
     #expect(atMidnight.focus == .countdown(Fixture.event(.fajr, dayOffset: 1)))
   }

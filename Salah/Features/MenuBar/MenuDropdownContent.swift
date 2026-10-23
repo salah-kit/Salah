@@ -104,7 +104,7 @@ struct MenuDropdownContent: View {
       MenuPrayerRow(
         event: fajr, name: Text(verbatim: display.name(of: fajr)),
         time: Text(verbatim: display.timeText(of: fajr)), role: .next, display: display,
-        colors: colors, onToggleAlert: { onToggleAlert(fajr) })
+        colors: colors, onToggleAlert: { onToggleAlert(fajr) }, day: display.labels.tomorrow)
     }
   }
 }
@@ -242,9 +242,6 @@ struct MenuHero: View {
   let colors: SalahColors
   var onStop: () -> Void = {}
 
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
-  @State private var breathing = false
-
   private var palette: SalahPalette { colors.palette }
 
   var body: some View {
@@ -264,17 +261,7 @@ struct MenuHero: View {
     .background(colors.sky, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     .overlay {
       if approaching {
-        RoundedRectangle(cornerRadius: 14, style: .continuous)
-          .strokeBorder(
-            palette.accent.color.opacity(reduceMotion ? 1 : (breathing ? 1 : 0.45)),
-            lineWidth: 1.5
-          )
-          .animation(
-            reduceMotion ? nil : .easeInOut(duration: 1.2).repeatForever(autoreverses: true),
-            value: breathing
-          )
-          .onAppear { breathing = true }
-          .allowsHitTesting(false)
+        MenuBreathingRim(color: palette.accent)
       }
     }
   }
@@ -376,18 +363,29 @@ struct MenuHero: View {
       countdown(
         event, countingUp: false, color: isApproaching ? palette.accentText : palette.labelPrimary)
       let alerts = display.alerts(for: event)
-      if isApproaching, alerts.alert, !display.settings.silentMode {
+      // In silent mode nothing sounds, so the hero promises no adhan or reminder.
+      if display.settings.silentMode {
+        EmptyView()
+      } else if isApproaching, alerts.alert {
         footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
       } else if let before = alerts.beforeMinutes, !isApproaching {
         footer(
-          symbol: "alarm",
-          text: format(
-            "menu.hero.reminderBefore",
-            MenuDuration.string(TimeInterval(before * 60), locale: display.locale)))
+          symbol: "alarm", text: format("menu.hero.reminderBefore", reminderLength(before)))
       } else if alerts.alert, event.kind.isPrayer {
         footer(symbol: "bell.fill", text: format("menu.hero.adhanAt", time(event)))
       }
     }
+  }
+
+  /// A reminder's lead: "10 min", "1 hr, 30 min".
+  private func reminderLength(_ minutes: Int) -> String {
+    let formatter = DateComponentsFormatter()
+    formatter.unitsStyle = .short
+    formatter.allowedUnits = [.hour, .minute]
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.locale = display.locale
+    formatter.calendar = calendar
+    return formatter.string(from: TimeInterval(minutes * 60)) ?? ""
   }
 
   private func countdown(_ event: PrayerEvent, countingUp: Bool, color: ThemeColor) -> some View {
@@ -459,6 +457,27 @@ struct MenuHero: View {
   }
 }
 
+/// The approaching card's rim, breathing in the accent. Each approach inserts a new rim,
+/// whose own state starts the breath again.
+private struct MenuBreathingRim: View {
+  let color: ThemeColor
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @State private var breathing = false
+
+  var body: some View {
+    RoundedRectangle(cornerRadius: 14, style: .continuous)
+      .strokeBorder(
+        color.color.opacity(reduceMotion ? 1 : (breathing ? 1 : 0.45)), lineWidth: 1.5
+      )
+      .animation(
+        reduceMotion ? nil : .easeInOut(duration: 1.2).repeatForever(autoreverses: true),
+        value: breathing
+      )
+      .onAppear { breathing = true }
+      .allowsHitTesting(false)
+  }
+}
+
 // MARK: - Rows
 
 /// A prayer's role in the list, which sets its look.
@@ -483,7 +502,7 @@ struct MenuRowStyle: PrayerRowStyle {
   }
 
   private func role(of event: PrayerEvent, status: PrayerEventStatus?) -> MenuRowRole {
-    if display.playback?.event.id == event.id { return .current }
+    if display.playingPrayer?.id == event.id { return .current }
     switch status {
     case .justStarted?: return .current
     case .next?: return display.focusIsTomorrow ? .upcoming : .next
@@ -502,6 +521,9 @@ struct MenuPrayerRow: View {
   let display: SalahDisplay
   let colors: SalahColors
   let onToggleAlert: () -> Void
+  /// The day the row belongs to when it isn't the listed one, "Tomorrow", which names its
+  /// alert toggle apart from the same prayer's today.
+  var day: String? = nil
 
   @State private var hovering = false
 
@@ -604,7 +626,10 @@ struct MenuPrayerRow: View {
     if event.kind.isPrayer {
       // Silent mode draws every bell off: nothing sounds.
       let isOn = display.alerts(for: event).alert && !display.settings.silentMode
-      let label = "\(display.name(of: event)) · \(localizedString("settings.notif.alert.toggle"))"
+      let label =
+        ([day, display.name(of: event)].compactMap { $0 } + [
+          localizedString("settings.notif.alert.toggle")
+        ]).joined(separator: " · ")
       Button(action: onToggleAlert) {
         Image(systemName: isOn ? "bell.fill" : "bell.slash")
           .font(.system(size: 12))
@@ -613,6 +638,8 @@ struct MenuPrayerRow: View {
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
+      // In silent mode the bells draw off and turn nothing on or off.
+      .disabled(display.settings.silentMode)
       .menuPointerCursor()
       .help(Text(verbatim: label))
       .accessibilityLabel(Text(verbatim: label))

@@ -38,11 +38,13 @@ extension Preferences {
     static let appearance = "salah.appearance"
     static let followsTimeOfDay = "salah.followsTimeOfDay"
     /// The retired widget theme's appearance, read once to carry an Always Dark or Always
-    /// Light choice over to `appearance`.
+    /// Light choice over to `appearance`. Only the custom theme drew it.
     static let retiredWidgetAppearance = "salah.widgetAppearance"
+    /// The retired widget theme, `custom` when `retiredWidgetAppearance` was in effect.
+    static let retiredWidgetThemeID = "salah.widgetThemeID"
     /// The retired widget theme's keys, removed at launch.
     static let retiredWidgetTheme = [
-      "salah.widgetThemeID", "salah.widgetCustomAccent", "salah.widgetCustomPrimary",
+      retiredWidgetThemeID, "salah.widgetCustomAccent", "salah.widgetCustomPrimary",
       "salah.widgetCustomBase", retiredWidgetAppearance,
     ]
   }
