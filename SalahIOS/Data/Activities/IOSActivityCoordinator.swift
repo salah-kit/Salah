@@ -3,6 +3,25 @@ import Foundation
 import SalahCore
 import SalahWidgets
 
+nonisolated struct IOSActivityPublication: Sendable {
+  var state: SalahActivityAttributes.ContentState
+  var isApproaching: Bool
+}
+
+/// The activity lifecycle boundary is replaceable without requesting system activities in tests.
+@MainActor struct IOSActivityLifecycle {
+  var activities: () -> [Activity<SalahActivityAttributes>]
+  var end: ([Activity<SalahActivityAttributes>]) async -> Void
+
+  static var system: Self {
+    Self(
+      activities: { Activity<SalahActivityAttributes>.activities },
+      end: { activities in
+        for activity in activities { await activity.end(nil, dismissalPolicy: .immediate) }
+      })
+  }
+}
+
 /// Starts only a relevant foreground prayer activity and maintains its bounded state.
 /// Background suspension is expected: staleDate makes the extension show recovery rather
 /// than promising updates the process cannot deliver.
@@ -12,18 +31,44 @@ final class IOSActivityCoordinator {
   private var dismissedEventIDs: Set<String> = []
   private var lastPublished: SalahActivityAttributes.ContentState?
   private var revision: UInt64 = 0
+  private let now: @Sendable () -> Date
+  private let loadPlaybackSession: @MainActor () -> IOSPlaybackSession?
+  private let lifecycle: IOSActivityLifecycle
   private(set) var lastError: String?
 
-  func refresh(display: SalahDisplay?, isForeground: Bool) async {
+  init(
+    now: @escaping @Sendable () -> Date = { Date() },
+    loadPlaybackSession: @escaping @MainActor () -> IOSPlaybackSession? = {
+      SharedValue<IOSPlaybackSession>.iosPlayback.load()
+    },
+    lifecycle: IOSActivityLifecycle = .system
+  ) {
+    self.now = now
+    self.loadPlaybackSession = loadPlaybackSession
+    self.lifecycle = lifecycle
+  }
+
+  /// System activities use the service clock, independently of the screen's last render or fixture.
+  /// Playback is read after schedule construction so a concurrent external Stop is observed.
+  func publication(settings: SalahSettings?) -> IOSActivityPublication? {
+    guard let settings else { return nil }
+    let display = SalahDisplay(date: now(), settings: settings, schedule: settings.schedule)
+    guard
+      let state = SalahActivityAttributes.ContentState(
+        display: display, playbackSession: loadPlaybackSession())
+    else { return nil }
+    return IOSActivityPublication(
+      state: state, isApproaching: display.prayerState?.isApproaching == true)
+  }
+
+  func refresh(settings: SalahSettings?, isForeground: Bool) async {
     revision &+= 1
     let mine = revision
-    guard let display,
-      let state = SalahActivityAttributes.ContentState(
-        display: display, playbackSession: SharedValue<IOSPlaybackSession>.iosPlayback.load())
-    else {
+    guard let publication = publication(settings: settings) else {
       await finishCurrent()
       return
     }
+    let state = publication.state
     let eventID = SalahActivityAttributes.eventID(for: state)
     reconcileActivity(eventID: eventID)
     if let activity, activity.attributes.eventID != eventID {
@@ -45,19 +90,17 @@ final class IOSActivityCoordinator {
       }
     }
     guard activity == nil, isForeground, !dismissedEventIDs.contains(eventID) else { return }
-    let relevant = state.mode != .countdown || display.prayerState?.isApproaching == true
+    let relevant = state.mode != .countdown || publication.isApproaching
     guard relevant else { return }
     request(state)
   }
 
   /// Explicitly following a prayer may start earlier than the automatic 15-minute window.
-  func start(display: SalahDisplay) async {
+  func start(settings: SalahSettings) async {
     revision &+= 1
     let mine = revision
-    guard
-      let state = SalahActivityAttributes.ContentState(
-        display: display, playbackSession: SharedValue<IOSPlaybackSession>.iosPlayback.load())
-    else { return }
+    guard let publication = publication(settings: settings) else { return }
+    let state = publication.state
     await finishCurrent()
     guard mine == revision else { return }
     dismissedEventIDs.remove(SalahActivityAttributes.eventID(for: state))
@@ -72,17 +115,15 @@ final class IOSActivityCoordinator {
   /// Clear references before waiting. A concurrent foreground refresh may create a new
   /// activity, so the old completion must not clear or end that new reference.
   private func finishCurrent() async {
-    let current = Activity<SalahActivityAttributes>.activities
+    let current = lifecycle.activities()
     activity = nil
     lastPublished = nil
-    for activity in current {
-      await activity.end(nil, dismissalPolicy: .immediate)
-    }
+    await lifecycle.end(current)
   }
 
   private func reconcileActivity(eventID: String) {
     if activity == nil {
-      let existing = Activity<SalahActivityAttributes>.activities
+      let existing = lifecycle.activities()
       activity = existing.first { $0.attributes.eventID == eventID } ?? existing.first
     }
   }

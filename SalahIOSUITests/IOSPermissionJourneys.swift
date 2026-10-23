@@ -113,16 +113,49 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     tap("onboarding.notification.openSettings", in: app)
     XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 15))
 
-    let notificationsButton = settings.buttons["Notifications"].firstMatch
-    let notifications =
-      notificationsButton.exists
-      ? notificationsButton
-      : settings.cells.containing(.staticText, identifier: "Notifications").firstMatch
-    XCTAssertTrue(
-      notifications.exists || notifications.waitForExistence(timeout: 10), settings.debugDescription
-    )
-    notifications.tap()
-    let allow = settings.switches["Allow Notifications"].firstMatch
+    let allow = settings.switches.matching(
+      NSPredicate(
+        format: "identifier == %@ OR label == %@", "ALLOW_NOTIFICATIONS_ID", "Allow Notifications")
+    ).firstMatch
+    if !allow.exists && !allow.waitForExistence(timeout: 4) {
+      // iOS 27 Simulator can leave a public Settings URL pending at its root.
+      // Follow the measured Settings → Apps → exact Salah bundle route; this
+      // journey proves real authorization and reconciliation on returning.
+      let appSettings = settings.navigationBars["Salah"].firstMatch
+      if !appSettings.exists {
+        let appsPage = settings.navigationBars["Apps"].firstMatch
+        if !appsPage.exists {
+          let root = settings.navigationBars["Settings"].firstMatch
+          XCTAssertTrue(
+            root.exists || root.waitForExistence(timeout: 10),
+            "Expected the Settings root or its retained Apps list.\n\(settings.debugDescription)")
+          captureSystem("System-Settings-Root-Pending-Destination")
+          tap("com.apple.settings.apps", in: settings)
+        }
+        XCTAssertTrue(
+          appsPage.exists || appsPage.waitForExistence(timeout: 10),
+          "The measured fallback must reach the Apps list.\n\(settings.debugDescription)")
+        captureSystem("System-Settings-Apps-List-For-Salah")
+        tap("io.github.salah-kit.Salah.iOS", in: settings)
+      }
+      XCTAssertTrue(
+        appSettings.exists || appSettings.waitForExistence(timeout: 10),
+        "The selected app settings must belong to Salah.\n\(settings.debugDescription)"
+      )
+      captureSystem("System-Settings-Salah-App-Selected")
+      let identifiedNotifications = settings.buttons["NOTIFICATIONS"].firstMatch
+      let notificationsButton =
+        identifiedNotifications.exists
+        ? identifiedNotifications : settings.buttons["Notifications"].firstMatch
+      let notifications =
+        notificationsButton.exists
+        ? notificationsButton
+        : settings.cells.containing(.staticText, identifier: "Notifications").firstMatch
+      XCTAssertTrue(
+        notifications.exists || notifications.waitForExistence(timeout: 10),
+        settings.debugDescription)
+      notifications.tap()
+    }
     XCTAssertTrue(allow.exists || allow.waitForExistence(timeout: 10), settings.debugDescription)
     if (allow.value as? String) != "1" {
       let thumb = allow.switches.firstMatch

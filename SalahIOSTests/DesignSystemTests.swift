@@ -7,6 +7,42 @@ import UIKit
 @Suite("iOS sun chart geometry")
 struct DesignSystemTests {
   @Test @MainActor
+  func readyArtworkKeepsThePrayerMarkInsideItsOpticalDesignSize() throws {
+    let renderer = ImageRenderer(
+      content: IOSOnboardingArtwork(
+        step: .ready, readyKind: .asr, resourceBundle: Bundle(for: DesignSystemTestResources.self)
+      )
+      .environment(\.colorScheme, .light))
+    renderer.scale = 1
+    let image = try #require(renderer.uiImage?.cgImage)
+    let mark = try #require(
+      Self.drawnBounds(of: image) { red, green, blue, alpha in
+        alpha > 0 && red < 150 && Int(green) - Int(red) > 25 && Int(blue) - Int(green) > 15
+      })
+    #expect(
+      (45...65).contains(mark.width),
+      "The 84-point symbol slot draws a 58-point prayer mark, not a 102-point mark.")
+    #expect(mark.minX >= 70 && mark.maxX <= 150)
+  }
+
+  @Test @MainActor
+  func onboardingLatticeRendersVisiblePixelsInBothAppearances() throws {
+    for scheme in [ColorScheme.light, .dark] {
+      let renderer = ImageRenderer(
+        content: Image("OnboardingGeometry", bundle: Bundle(for: DesignSystemTestResources.self))
+          .resizable()
+          .frame(width: 220, height: 220)
+          .environment(\.colorScheme, scheme))
+      renderer.scale = 1
+      let image = try #require(renderer.uiImage?.cgImage)
+      let geometry = try #require(Self.drawnBounds(of: image) { _, _, _, alpha in alpha > 0 })
+      #expect(
+        geometry.width > 120 && geometry.height > 120,
+        "The bundled lattice must decode to visible strokes rather than an empty mask.")
+    }
+  }
+
+  @Test @MainActor
   func sunCardNeverExpandsAParentToTheReferenceChartWidth() throws {
     var preferences = IOSPreferences()
     let zone = try #require(TimeZone(identifier: "Asia/Riyadh"))
@@ -130,6 +166,41 @@ struct DesignSystemTests {
 
   private static let day = CivilDay(year: 2026, month: 6, day: 2)
 
+  @MainActor
+  private static func drawnBounds(
+    of image: CGImage, matching predicate: (UInt8, UInt8, UInt8, UInt8) -> Bool
+  ) throws -> CGRect? {
+    let width = image.width
+    let height = image.height
+    var pixels = [UInt8](repeating: 0, count: width * height * 4)
+    try pixels.withUnsafeMutableBytes { bytes in
+      let context = try #require(
+        CGContext(
+          data: bytes.baseAddress, width: width, height: height, bitsPerComponent: 8,
+          bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            | CGBitmapInfo.byteOrder32Big.rawValue))
+      context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+    }
+    var left = width
+    var top = height
+    var right = -1
+    var bottom = -1
+    for y in 0..<height {
+      for x in 0..<width {
+        let offset = (y * width + x) * 4
+        if predicate(pixels[offset], pixels[offset + 1], pixels[offset + 2], pixels[offset + 3]) {
+          left = min(left, x)
+          top = min(top, y)
+          right = max(right, x)
+          bottom = max(bottom, y)
+        }
+      }
+    }
+    guard right >= left, bottom >= top else { return nil }
+    return CGRect(x: left, y: top, width: right - left + 1, height: bottom - top + 1)
+  }
+
   private static func time(_ hour: TimeInterval) -> Date {
     day.start(in: .gmt).addingTimeInterval(hour * 3_600)
   }
@@ -144,3 +215,6 @@ struct DesignSystemTests {
     IOSSunArcLayout(events: events(), now: time(hour), nextID: nil)
   }
 }
+
+/// The asset catalog belongs to this unhosted test bundle, not Xcode's xctest agent.
+private final class DesignSystemTestResources: NSObject {}

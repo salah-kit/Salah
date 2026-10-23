@@ -1,3 +1,4 @@
+import Foundation
 import SalahUI
 import SwiftUI
 
@@ -78,9 +79,10 @@ struct IOSCard<Content: View>: View {
 struct IOSPrayerGlyph: View {
   let name: String
   var size: CGFloat = IOSMetrics.rowGlyph
+  var resourceBundle: Bundle? = nil
 
   var body: some View {
-    Image(name.hasPrefix("salah.") ? name : "salah.\(name)")
+    Image(name.hasPrefix("salah.") ? name : "salah.\(name)", bundle: resourceBundle)
       .symbolRenderingMode(.hierarchical)
       // The custom-symbol template includes its optical margins. Its font em is
       // smaller than the layout slot: 26 points contains an 18-point drawn mark.

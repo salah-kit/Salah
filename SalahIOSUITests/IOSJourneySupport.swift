@@ -47,6 +47,10 @@ extension XCTestCase {
       "tab.settings": ["Settings", "الإعدادات"],
     ]
     if let labels = tabLabels[identifier] {
+      // The regular-width sidebar exposes each native tab destination as a
+      // cell and preserves its identifier, unlike the phone's tab button.
+      let sidebarCell = app.cells.matching(identifier: identifier).firstMatch
+      if sidebarCell.exists { return sidebarCell }
       let predicate = NSPredicate(format: "label IN %@", labels)
       let tab = app.tabBars.buttons.matching(predicate).firstMatch
       if tab.exists { return tab }

@@ -21,7 +21,10 @@ struct IOSRootView: View {
               )
               .preferredColorScheme(preferredColorScheme)
               .tint(IOSTheme.accentText)
-              .presentationSizing(IOSOnboardingFormSizing())
+              // Fitted sizing adopts this viewport, rather than letting a navigation
+              // container grow beyond a raw size proposal. A smaller window can constrain it.
+              .frame(idealWidth: 540, maxWidth: 540, idealHeight: 760, maxHeight: 760)
+              .presentationSizing(.fitted)
               .presentationCornerRadius(38)
               .presentationDragIndicator(.hidden)
               .interactiveDismissDisabled(store.needsOnboarding)
@@ -90,18 +93,7 @@ struct IOSRootView: View {
         .accessibilityIdentifier("tab.qibla")
       }
       Tab(value: IOSTab.settings) {
-        NavigationStack(path: $store.settingsPath) {
-          IOSSettingsView()
-            .navigationDestination(for: IOSSettingsDestination.self) { destination in
-              switch destination {
-              case .location: IOSLocationSettingsView()
-              case .calculation: IOSCalculationSettingsView()
-              case .alerts: IOSPrayerAlertsSettingsView()
-              case .sound: IOSSoundSettingsView()
-              case .appearance: IOSAppearanceSettingsView()
-              }
-            }
-        }
+        IOSSettingsNavigationView()
       } label: {
         Label(
           IOSL10n.text("Settings", arabic: "الإعدادات", locale: store.locale),
@@ -111,6 +103,7 @@ struct IOSRootView: View {
       }
     }
     .tabViewStyle(.sidebarAdaptable)
+    .defaultAdaptableTabBarPlacement(.tabBar)
     .accessibilityIdentifier("app.tabs")
   }
 
@@ -120,14 +113,5 @@ struct IOSRootView: View {
     case .light: .light
     case .dark: .dark
     }
-  }
-}
-
-/// The design's form size is a proposal; the system adapts it to a smaller window.
-nonisolated struct IOSOnboardingFormSizing: PresentationSizing, Sendable {
-  func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext)
-    -> ProposedViewSize
-  {
-    ProposedViewSize(width: 540, height: 760)
   }
 }

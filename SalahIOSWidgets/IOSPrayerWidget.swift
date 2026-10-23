@@ -196,19 +196,16 @@ extension WidgetFamily {
 private struct IOSAccessoryFace: View {
   let display: SalahDisplay
   let family: WidgetFamily
+  @Environment(\.salahTimerPause) private var pause
 
   var body: some View {
     if let focus = display.focus {
       let name = display.name(of: focus.event)
       switch family {
       case .accessoryInline:
-        HStack(spacing: 4) {
-          PrayerGlyph(kind: focus.event.kind, observance: focus.event.observance)
-          Text(verbatim: name)
-          IOSAccessoryTimer(display: display, focus: focus)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: accessibilityLabel))
+        IOSAccessoryCopy.inlineText(display: display, pause: pause)
+          .accessibilityElement(children: .ignore)
+          .accessibilityLabel(accessibilityLabel)
       case .accessoryCircular:
         Gauge(value: progress) {
           PrayerGlyph(kind: focus.event.kind, observance: focus.event.observance)
@@ -221,7 +218,7 @@ private struct IOSAccessoryFace: View {
           }
         }
         .gaugeStyle(.accessoryCircularCapacity)
-        .accessibilityLabel(Text(verbatim: accessibilityLabel))
+        .accessibilityLabel(accessibilityLabel)
       default:
         VStack(alignment: .leading, spacing: 2) {
           HStack(spacing: 4) {
@@ -231,30 +228,23 @@ private struct IOSAccessoryFace: View {
             Spacer(minLength: 2)
             Text(verbatim: display.timeText(of: focus.event)).font(.caption2)
           }
-          HStack(spacing: 3) {
-            Text(
-              verbatim: focus.isCountUp
-                ? "+" : IOSAccessoryCopy.countdownPrefix(locale: display.locale))
-            IOSAccessoryTimer(display: display, focus: focus)
-          }
-          .font(.title3.weight(.medium)).monospacedDigit()
+          IOSAccessoryCopy.clockText(display: display, focus: focus, pause: pause)
+            .font(.title3.weight(.medium)).monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
           ProgressView(value: progress).tint(.primary)
         }
         .padding(.horizontal, 4)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: accessibilityLabel))
+        .accessibilityLabel(accessibilityLabel)
       }
     } else {
       Text(verbatim: display.labels.nextUnknown).font(.caption)
     }
   }
 
-  private var accessibilityLabel: String {
-    guard let focus = display.focus else { return display.labels.nextUnknown }
-    let duration = display.text.duration(
-      abs(focus.event.time.timeIntervalSince(display.date)),
-      direction: focus.isCountUp ? .elapsed : .remaining)
-    return "\(display.name(of: focus.event)), \(display.timeText(of: focus.event)), \(duration)"
+  private var accessibilityLabel: Text {
+    IOSAccessoryCopy.accessibilityLabel(display: display, pause: pause)
   }
 
   private var progress: Double {
@@ -273,30 +263,81 @@ private struct IOSAccessoryTimer: View {
   @Environment(\.salahTimerPause) private var pause
 
   var body: some View {
-    Group {
-      if let pause {
-        Text(
-          verbatim: display.text.duration(
-            abs(focus.event.time.timeIntervalSince(pause)),
-            direction: focus.isCountUp ? .elapsed : .remaining))
-      } else if focus.isCountUp {
-        Text(
-          timerInterval: focus.event.time...focus.event.time.addingTimeInterval(15 * 60),
-          countsDown: false, showsHours: true)
-      } else {
-        Text(
-          timerInterval: display.date...max(display.date, focus.event.time),
-          countsDown: true, showsHours: true)
-      }
-    }
-    .monospacedDigit()
-    .lineLimit(1)
-    .minimumScaleFactor(0.6)
+    IOSAccessoryCopy.timer(display: display, focus: focus, pause: pause)
+      .monospacedDigit()
+      .lineLimit(1)
+      .minimumScaleFactor(0.6)
   }
 }
 
 /// Direction does not identify a language: Persian, Urdu and Arabic use their own catalog copy.
 nonisolated enum IOSAccessoryCopy {
+  /// The inline host extracts one text value rather than laying out sibling views.
+  /// Keep the image and advancing timer inside that same value.
+  @MainActor
+  static func inlineText(display: SalahDisplay, pause: Date? = nil, bundle: Bundle = .main)
+    -> Text
+  {
+    guard let focus = display.focus else { return Text(verbatim: display.labels.nextUnknown) }
+    let glyph = Image(
+      PrayerGlyph(kind: focus.event.kind, observance: focus.event.observance).assetName,
+      bundle: AppResources.bundle
+    ).symbolRenderingMode(.hierarchical)
+    let clock = clockText(display: display, focus: focus, pause: pause, bundle: bundle)
+    return Text("\(glyph) \(display.name(of: focus.event)) \(clock)")
+  }
+
+  /// A single run keeps the prefix and digits on the same baseline and scaling factor.
+  @MainActor
+  static func clockText(
+    display: SalahDisplay, focus: SalahDisplay.Focus, pause: Date? = nil, bundle: Bundle = .main
+  ) -> Text {
+    let duration = timer(display: display, focus: focus, pause: pause)
+    if focus.isCountUp { return Text("+\(duration)") }
+    let prefix = countdownPrefix(locale: display.locale, bundle: bundle)
+    return Text("\(prefix) \(duration)")
+  }
+
+  @MainActor
+  static func timer(display: SalahDisplay, focus: SalahDisplay.Focus, pause: Date? = nil) -> Text {
+    if let pause {
+      return Text(
+        verbatim: display.text.duration(
+          abs(focus.event.time.timeIntervalSince(pause)),
+          direction: focus.isCountUp ? .elapsed : .remaining))
+    }
+    return liveTimer(display: display, focus: focus)
+  }
+
+  /// Visible and spoken values use the same native timer, which WidgetKit advances itself.
+  @MainActor
+  static func liveTimer(display: SalahDisplay, focus: SalahDisplay.Focus) -> Text {
+    let interval =
+      focus.isCountUp
+      ? focus.event.time...focus.event.time.addingTimeInterval(15 * 60)
+      : display.date...max(display.date, focus.event.time)
+    return Text(timerInterval: interval, countsDown: !focus.isCountUp, showsHours: true)
+  }
+
+  @MainActor
+  static func accessibilityLabel(display: SalahDisplay, pause: Date? = nil) -> Text {
+    guard let focus = display.focus else { return Text(verbatim: display.labels.nextUnknown) }
+    let duration: Text
+    if let pause {
+      let seconds =
+        focus.isCountUp
+        ? pause.timeIntervalSince(focus.event.time) : focus.event.time.timeIntervalSince(pause)
+      duration = Text(
+        verbatim: PrayerDurationFormat.string(
+          max(0, seconds), direction: focus.isCountUp ? .elapsed : .remaining,
+          width: .spoken, locale: display.locale))
+    } else {
+      duration = liveTimer(display: display, focus: focus)
+    }
+    return Text(
+      "\(display.name(of: focus.event)), \(display.timeText(of: focus.event)), \(duration)")
+  }
+
   static func countdownPrefix(locale: Locale, bundle: Bundle = .main) -> String {
     IOSL10n.text("in", locale: locale, bundle: bundle)
   }

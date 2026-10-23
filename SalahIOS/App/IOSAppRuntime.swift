@@ -63,7 +63,7 @@ final class IOSAppRuntime {
       }
       self.publishPlayback()
       Task {
-        await self.activities.refresh(display: self.store.display, isForeground: self.foreground)
+        await self.activities.refresh(settings: self.store.settings, isForeground: self.foreground)
       }
     }
     stopObservation = DarwinSignal.stopAudio.observe { [weak self] in self?.audio.stop() }
@@ -84,7 +84,7 @@ final class IOSAppRuntime {
     await notifications.refreshAuthorization()
     publishSettings()
     await notifications.refresh(schedule: store.schedule, preferences: store.preferences)
-    await activities.refresh(display: store.display, isForeground: true)
+    await activities.refresh(settings: store.settings, isForeground: true)
     submitBackgroundRefresh()
   }
 
@@ -103,7 +103,7 @@ final class IOSAppRuntime {
       if previousDay != store.today { preferencesChanged() }
       seconds += 1
       if seconds.isMultiple(of: 30) {
-        await activities.refresh(display: store.display, isForeground: foreground)
+        await activities.refresh(settings: store.settings, isForeground: foreground)
       }
       do { try await Task.sleep(for: .seconds(1)) } catch { return }
     }
@@ -124,7 +124,7 @@ final class IOSAppRuntime {
       guard let self else { return }
       await notifications.refresh(schedule: store.schedule, preferences: store.preferences)
       guard !Task.isCancelled else { return }
-      await activities.refresh(display: store.display, isForeground: foreground)
+      await activities.refresh(settings: store.settings, isForeground: foreground)
     }
   }
 
@@ -175,7 +175,7 @@ final class IOSAppRuntime {
     store.setPlayback(
       SalahPlayback(event: event, slot: .alert), hasQueuedDua: audio.hasQueuedDua)
     publishPlayback()
-    Task { await activities.refresh(display: store.display, isForeground: foreground) }
+    Task { await activities.refresh(settings: store.settings, isForeground: foreground) }
   }
 
   func registerBackgroundRefresh() {

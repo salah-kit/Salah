@@ -136,6 +136,16 @@ struct WidgetSurfaceRenderTests {
         IOSActivityCard(state: state).environment(\.salahTimerPause, now),
         size: CGSize(width: 374, height: 86),
         to: directory.appendingPathComponent("friday-activity-\(isArabic ? "ar" : "en").png"))
+      try render(
+        IOSAccessoryCopy.inlineText(
+          display: display, pause: now, bundle: AppResources.bundle
+        )
+        .foregroundStyle(.white)
+        .environment(\.locale, locale)
+        .environment(\.layoutDirection, direction)
+        .background(.black),
+        size: CGSize(width: 250, height: 24),
+        to: directory.appendingPathComponent("friday-inline-\(isArabic ? "ar" : "en").png"))
     }
   }
 
@@ -146,6 +156,90 @@ struct WidgetSurfaceRenderTests {
         IOSAccessoryCopy.countdownPrefix(locale: Locale(identifier: language), bundle: bundle)
           == expected)
     }
+  }
+
+  @Test func accessorySpokenCountdownAndCountUpAdvancePastTheEntrySnapshot() throws {
+    for isArabic in [false, true] {
+      let base = try display(isArabic: isArabic)
+      let dhuhr = try #require(base.listedDay?[.dhuhr])
+      let countUp = SalahDisplay(
+        date: dhuhr.time.addingTimeInterval(60), settings: base.settings,
+        schedule: base.settings.schedule)
+      for display in [base, countUp] {
+        let first = IOSAccessoryCopy.accessibilityLabel(display: display, pause: display.date)
+        let later = IOSAccessoryCopy.accessibilityLabel(
+          display: display, pause: display.date.addingTimeInterval(4 * 60))
+        let initialImage = try accessoryAccessibilityImage(first, display: display)
+        let laterImage = try accessoryAccessibilityImage(later, display: display)
+        #expect(
+          initialImage != laterImage,
+          "The spoken timer must advance after the timeline entry, for countdowns and count-ups in either direction"
+        )
+      }
+    }
+  }
+
+  @Test func inlineAndRectangularAccessoriesKeepTheirClockInOneTextValue() throws {
+    let bundle = Bundle(for: WidgetResourceProbe.self)
+    AppResources.bundle = bundle
+    let directory = try evidenceDirectory()
+    for isArabic in [false, true] {
+      let base = try display(isArabic: isArabic)
+      let dhuhr = try #require(base.listedDay?[.dhuhr])
+      let countUp = SalahDisplay(
+        date: dhuhr.time.addingTimeInterval(60), settings: base.settings,
+        schedule: base.settings.schedule)
+      for display in [base, countUp] {
+        let focus = try #require(display.focus)
+        let later = display.date.addingTimeInterval(4 * 60)
+        // Text is the inline host's extraction boundary. A stack of separate name and
+        // timer views renders in ImageRenderer but loses the timer on the Lock Screen.
+        let inline: Text = IOSAccessoryCopy.inlineText(
+          display: display, pause: display.date, bundle: bundle)
+        let laterInline: Text = IOSAccessoryCopy.inlineText(
+          display: display, pause: later, bundle: bundle)
+        let clock: Text = IOSAccessoryCopy.clockText(
+          display: display, focus: focus, pause: display.date, bundle: bundle)
+        let laterClock: Text = IOSAccessoryCopy.clockText(
+          display: display, focus: focus, pause: later, bundle: bundle)
+        for (first, advanced) in [(inline, laterInline), (clock, laterClock)] {
+          #expect(
+            try accessoryAccessibilityImage(first, display: display)
+              != accessoryAccessibilityImage(advanced, display: display),
+            "The single extracted text value must contain the advancing countdown or elapsed clock")
+        }
+        let state = focus.isCountUp ? "elapsed" : "countdown"
+        let language = isArabic ? "ar" : "en"
+        for (text, name, size, font) in [
+          (inline, "inline", CGSize(width: 250, height: 24), Font.body),
+          (clock, "rectangular-clock", CGSize(width: 148, height: 26), .title3.weight(.medium)),
+        ] {
+          try render(
+            text.font(font).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
+              .foregroundStyle(.white)
+              .environment(\.locale, display.locale)
+              .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
+              .background(.black),
+            size: size,
+            to: directory.appendingPathComponent("accessory-\(name)-\(state)-\(language).png"))
+        }
+      }
+    }
+  }
+
+  private func accessoryAccessibilityImage(_ text: Text, display: SalahDisplay) throws -> Data {
+    let renderer = ImageRenderer(
+      content:
+        text
+        .font(.body)
+        .foregroundStyle(.black)
+        .environment(\.locale, display.locale)
+        .environment(\.layoutDirection, display.isRightToLeft ? .rightToLeft : .leftToRight)
+        .frame(width: 500, height: 70)
+        .background(.white))
+    renderer.scale = 1
+    let image = try #require(renderer.uiImage)
+    return try #require(image.pngData())
   }
 
   @Test func activityRegionEnvironmentOverridesTheDeviceLanguageAndTimeZone() throws {

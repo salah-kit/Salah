@@ -205,7 +205,9 @@ change.
 The iOS app is part of the Unreleased source on the same SalahKit version. Its source
 availability does not mean an iOS App Store release, a signed download, or completed
 physical-device validation. The simulator build and test commands are in
-[CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados).
+[CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados). The
+[iOS validation notes](docs/ios-validation.md) link the remaining hardware, VoiceOver
+and native-language reviews and explain the notification and background-refresh limits.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language
@@ -225,7 +227,7 @@ pixel; the visual baselines show what each face draws.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for building, testing, formatting and releasing. The
 org-wide code of conduct and security policy live in
-[salah-kit/.github](https://github.com/salah-kit/.github). Checks that need a real Mac, time
+[salah-kit/.github](https://github.com/salah-kit/.github). Checks that need a real device, time
 or a native speaker are open issues labelled
 [`help wanted`](https://github.com/salah-kit/Salah/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
 

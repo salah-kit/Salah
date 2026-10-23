@@ -132,6 +132,22 @@ All notable changes to this project are documented here. The format follows
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish
   "önce", and Persian, Urdu and Bengali put their word on the wrong side of the time.
 
+### Pending
+
+- Physical iPhone/iPad sensor, audio-route, locked-delivery and elapsed-time checks
+  ([#65](https://github.com/salah-kit/Salah/issues/65)); StandBy sizing remains in
+  [#28](https://github.com/salah-kit/Salah/issues/28).
+- iOS VoiceOver listening and action review
+  ([#17](https://github.com/salah-kit/Salah/issues/17)), and native-speaker review of
+  draft iOS translations ([Arabic #18](https://github.com/salah-kit/Salah/issues/18),
+  [French #19](https://github.com/salah-kit/Salah/issues/19),
+  [Urdu #20](https://github.com/salah-kit/Salah/issues/20),
+  [Indonesian #21](https://github.com/salah-kit/Salah/issues/21),
+  [Turkish #22](https://github.com/salah-kit/Salah/issues/22),
+  [Persian #23](https://github.com/salah-kit/Salah/issues/23),
+  [Bengali #24](https://github.com/salah-kit/Salah/issues/24) and
+  [Malay #25](https://github.com/salah-kit/Salah/issues/25)).
+
 ## [1.1.2] - 2026-10-14
 
 ### Fixed

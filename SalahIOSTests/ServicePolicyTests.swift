@@ -10,6 +10,83 @@ import UIKit
 
 @Suite("iOS location, audio and alert boundaries")
 struct ServicePolicyTests {
+  @Test @MainActor
+  func activityPublicationUsesTheServiceClockForImmediatePlaybackDuaAndStop() throws {
+    let settings = try activitySettings()
+    let prayer = try #require(
+      settings.schedule.day(CivilDay(year: 2026, month: 6, day: 2)).day?[.asr])
+    let uiDate = prayer.time.addingTimeInterval(-60)
+    let staleScreen = SalahDisplay(date: uiDate, settings: settings, schedule: settings.schedule)
+    let startedAt = uiDate.addingTimeInterval(0.75)
+    let clock = ServiceActivityClock(startedAt.addingTimeInterval(0.01))
+    var session: IOSPlaybackSession? = IOSPlaybackSession(
+      playback: SalahPlayback(event: prayer, slot: .alert), startedAt: startedAt, duration: 0.2)
+    // Reproduces the old construction: the last UI tick incorrectly rejects this new session.
+    #expect(
+      SalahActivityAttributes.ContentState(display: staleScreen, playbackSession: session)?.mode
+        == .countdown)
+    let coordinator = IOSActivityCoordinator(
+      now: { clock.read() }, loadPlaybackSession: { session })
+    let playing = try #require(coordinator.publication(settings: staleScreen.settings)?.state)
+    #expect(playing.mode == .playing)
+    #expect(playing.updatedAt == clock.read())
+    #expect(playing.progressStart == startedAt)
+    #expect(staleScreen.date == uiDate)
+    session?.playback.isDua = true
+    clock.set(startedAt.addingTimeInterval(0.05))
+    let dua = try #require(coordinator.publication(settings: settings)?.state)
+    #expect(dua.mode == .playing)
+    #expect(dua.eyebrow == staleScreen.labels.playingDua)
+    #expect(dua.updatedAt == clock.read())
+    session = nil
+    clock.set(startedAt.addingTimeInterval(0.1))
+    #expect(coordinator.publication(settings: settings)?.state.mode == .countdown)
+  }
+
+  @Test @MainActor
+  func activityPublicationStillRejectsFutureAndExpiredSessions() throws {
+    let settings = try activitySettings()
+    let prayer = try #require(
+      settings.schedule.day(CivilDay(year: 2026, month: 6, day: 2)).day?[.asr])
+    let startedAt = prayer.time.addingTimeInterval(-60)
+    let clock = ServiceActivityClock(startedAt.addingTimeInterval(-0.01))
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: prayer, slot: .alert), startedAt: startedAt, duration: 0.2)
+    let coordinator = IOSActivityCoordinator(
+      now: { clock.read() }, loadPlaybackSession: { session })
+    #expect(coordinator.publication(settings: settings)?.state.mode == .countdown)
+    clock.set(startedAt)
+    #expect(coordinator.publication(settings: settings)?.state.mode == .playing)
+    clock.set(session.expiresAt)
+    #expect(coordinator.publication(settings: settings)?.state.mode == .countdown)
+  }
+
+  @Test @MainActor
+  func removingActivitySettingsInvokesTheActualRefreshCleanupPath() async {
+    var ended = 0
+    var sessionReads = 0
+    let coordinator = IOSActivityCoordinator(
+      loadPlaybackSession: {
+        sessionReads += 1
+        return nil
+      },
+      lifecycle: IOSActivityLifecycle(activities: { [] }, end: { _ in ended += 1 }))
+    #expect(coordinator.publication(settings: nil) == nil)
+    await coordinator.refresh(settings: nil, isForeground: false)
+    #expect(ended == 1)
+    #expect(sessionReads == 0)
+  }
+
+  private func activitySettings() throws -> SalahSettings {
+    var preferences = IOSPreferences()
+    preferences.language = .english
+    preferences.location = PrayerLocation(
+      latitude: 21.4225, longitude: 39.8262,
+      timeZone: try #require(TimeZone(identifier: "Asia/Riyadh")), countryCode: "SA", name: "Makkah"
+    )
+    return try #require(preferences.mirror)
+  }
+
   @Test func recordingAndDuaDurationsShareTheExternalStopLifetimeBoundaries() throws {
     let maximum = IOSPlaybackSession.maximumRecordingDuration
     #expect(
@@ -305,6 +382,15 @@ struct ServicePolicyTests {
       audioDirectory: directory.appendingPathComponent("Audio"),
       soundsDirectory: directory.appendingPathComponent("Sounds"))
   }
+}
+
+/// A service clock shared by a Sendable closure; the lock protects every access.
+nonisolated private final class ServiceActivityClock: @unchecked Sendable {
+  private let lock = NSLock()
+  private var date: Date
+  init(_ date: Date) { self.date = date }
+  func read() -> Date { lock.withLock { date } }
+  func set(_ value: Date) { lock.withLock { date = value } }
 }
 
 /// A valid sparse PCM file exercises native duration parsing without rendering long audio.
