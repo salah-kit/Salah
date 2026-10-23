@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- An iPhone and iPad app for iOS and iPadOS 26 or later, available as source: Today,
+  day and week prayer times, Qibla, setup and settings; automatic or manual location;
+  fourteen calculation methods and custom angles; per-prayer reminders and a Friday
+  override; English and Arabic, light and dark appearance; Home Screen and Lock Screen
+  widgets, Live Activities, Dynamic Island and Control Center controls. iOS includes
+  licensed regular and Fajr adhan recordings, system sounds, a synthesized tone and
+  imported audio, with short notification excerpts, explicit in-app full playback and
+  an optional spoken du'a. Simulator builds need no paid developer membership; App Store
+  distribution is not included.
 - A welcome on the first launch, in a small window of its own: what Salah does, then why it
   wants the location (Allow Location Access, or Choose a City…) and to alert (Allow
   Notifications, or Not Now). Each asks macOS only from its own page, and only while macOS

@@ -42,6 +42,46 @@ recordings with ones whose terms are clear, before any App Store or other binary
 release. The MIT License of this repository does not cover them.
 
 
+IOS BUNDLED RECORDINGS (SalahIOS/Resources/Audio/)
+
+Salah for iOS bundles two original recordings by Ahmed Khalaf, copyright 2026,
+under Creative Commons Attribution 4.0 International (CC BY 4.0). They are separate
+from the macOS recordings listed above and from Salah's MIT-licensed source code.
+
+  Bundled file                    Original title
+  adhan-ahmed-khalaf.mp3          Developer_Athan-1.mp3
+  fajr-adhan-ahmed-khalaf.mp3     Developer_Athan-3_Fajr.mp3
+
+Source: Athan, https://github.com/nandxorandor/Athan
+Source revision: 821da16cfef191c2d4749c4a5b2f31a37c49ae81
+The original recorder's explicit license grant:
+https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/LICENSE
+
+Original files:
+https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/app/src/main/assets/athan/developer/Developer_Athan-1.mp3
+https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/app/src/main/assets/athan/fajr/Developer_Athan-3_Fajr.mp3
+
+License: https://creativecommons.org/licenses/by/4.0/
+Legal terms: https://creativecommons.org/licenses/by/4.0/legalcode.en
+
+The bundled full recordings are byte-identical to the originals; only their
+filenames changed. Salah creates shorter excerpts for notification sounds on
+the device. Those excerpts are adaptations of the same recordings and remain
+available under CC BY 4.0. The recordings may be copied, adapted and redistributed,
+including commercially, under that license. Salah's software license and any
+distribution terms do not restrict the rights the audio license grants.
+
+No endorsement by the recorder is implied. The source's other recordings and
+artwork are not included in Salah for iOS. The same audio notice is bundled in
+SalahIOS/Resources/Audio/NOTICE for offline attribution.
+
+SHA-256 of the bundled full recordings:
+adhan-ahmed-khalaf.mp3
+48ce7a63922bc666be0d4919056a31445ace775b3b7ffc4ab07325d8edf9ddb6
+fajr-adhan-ahmed-khalaf.mp3
+18b43fca35558ed05de0cbf8fcf468fd606e17cacb688bfed065e45787f56378
+
+
 LINKED CODE
 
 SalahKit 0.4.0 (https://github.com/salah-kit/SalahKit) and SalahTimes 0.1.0
