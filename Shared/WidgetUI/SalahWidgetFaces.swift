@@ -1,3 +1,4 @@
+import AppKit
 import SalahCore
 import SalahUI
 import SwiftUI
@@ -53,11 +54,9 @@ nonisolated struct WidgetStyle {
   var tertiary: AnyShapeStyle { token(colors.palette.labelTertiary, else: .tertiary) }
   /// `widget/accent`: the one accentable element, the countdown or the next row.
   var accent: AnyShapeStyle { token(colors.palette.accentText, else: .primary) }
-  /// `widget/mark`: glyphs and the progress bar.
+  /// `widget/mark`: glyphs, the progress bar, and the prayer one is in: its row, its
+  /// count-up and Now.
   var mark: AnyShapeStyle { token(colors.phase.tint, else: .secondary) }
-  /// Text in the mark's hue, the prayer one is in, its count-up and Now: `Phase/text`,
-  /// which holds 4.5:1 on the sky where the mark holds 3:1.
-  var markText: AnyShapeStyle { token(colors.phase.text, else: .secondary) }
   /// `widget/track`: the progress bar's track and the next row's wash.
   var track: AnyShapeStyle { token(colors.palette.fillSecondary, else: .quaternary) }
   /// `widget/separator`.
@@ -75,6 +74,43 @@ nonisolated struct WidgetSky: View {
 
   var body: some View {
     SalahColors(phase: phase, scheme: scheme, contrast: contrast).sky
+  }
+}
+
+// MARK: - Metrics
+
+/// The design's sizes for what the faces draw, so they match the widget components.
+nonisolated enum WidgetMetrics {
+  /// A prayer glyph's point size in a box `side` points square: the design draws the
+  /// glyph about two-thirds of the box wide.
+  static func glyphFontSize(side: CGFloat) -> CGFloat { side * 0.585 }
+  /// The Stop symbol's circle in a box `side` points square, as the design draws it.
+  static func stopDiameter(side: CGFloat) -> CGFloat { side * 0.83 }
+  /// The medium face's hairline between the hero and the times.
+  static let mediumHairlineHeight: CGFloat = 128
+}
+
+extension View {
+  /// One line of text in a box of the design's line height, centered in it as the
+  /// design sets it, so the faces' rows land where the components put them.
+  func lineBox(_ height: CGFloat) -> some View {
+    frame(height: height)
+  }
+
+  /// Fills the space it's offered and pins its content to the top leading corner, even
+  /// when the content is taller: the design's large face runs 2 points into its bottom
+  /// padding, which a centered overflow would shift up instead.
+  func topAligned() -> some View {
+    frame(
+      minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+  }
+
+  /// Lines of `fontSize`-point system text at the design's line `height`: the extra
+  /// leading goes between the lines and half of it above the first and below the last.
+  func designLineHeight(_ height: CGFloat, fontSize: CGFloat, weight: NSFont.Weight) -> some View {
+    let font = NSFont.systemFont(ofSize: fontSize, weight: weight)
+    let extra = max(height - (font.ascender - font.descender + font.leading), 0)
+    return lineSpacing(extra).padding(.vertical, extra / 2)
   }
 }
 
@@ -181,7 +217,7 @@ private struct WidgetTimer: View {
               countsDown: false, showsHours: true)
           }
         }
-        .foregroundStyle(style.markText)
+        .foregroundStyle(style.mark)
       } else {
         Group {
           if let pause {
@@ -199,7 +235,11 @@ private struct WidgetTimer: View {
     .font(.system(size: size, weight: .semibold, design: .rounded).monospacedDigit())
     .lineLimit(1)
     .minimumScaleFactor(0.6)
+    .lineBox(lineHeight)
   }
+
+  /// The countdown's line height: 34 for the 28-point timer, 28 for the 22-point one.
+  private var lineHeight: CGFloat { size >= 28 ? 34 : 28 }
 
   /// The timer's reading at the pause, as the live timer shows it: `2:16:00`, or `10:00`
   /// under an hour. A paused timer text doesn't render it in a still.
@@ -220,7 +260,7 @@ private struct WidgetGlyph: View {
 
   var body: some View {
     PrayerGlyph(kind: kind)
-      .font(.system(size: side * 0.8))
+      .font(.system(size: WidgetMetrics.glyphFontSize(side: side)))
       .foregroundStyle(style.mark)
       .frame(width: side, height: side)
       .accessibilityHidden(true)
@@ -250,15 +290,43 @@ private struct WidgetEyebrow: View {
       Text(verbatim: hero.eyebrow)
         .font(.system(size: 11, weight: .semibold))
         .foregroundStyle(style.onBadge)
+        .lineBox(13)
         .padding(.horizontal, 7)
         .padding(.vertical, 1)
         .background(Capsule().fill(style.badge))
     } else {
       Text(verbatim: hero.eyebrow)
         .font(.system(size: 11, weight: .semibold))
-        .foregroundStyle(hero.kind == .justStarted ? style.markText : style.secondary)
+        .foregroundStyle(hero.kind == .justStarted ? style.mark : style.secondary)
         .lineLimit(1)
+        .lineBox(13)
     }
+  }
+}
+
+/// The line under the timer: "at 3:35 PM", or "Next: Asr 3:35 PM" after a prayer began.
+private struct WidgetFooter: View {
+  let hero: WidgetHero
+  let style: WidgetStyle
+
+  var body: some View {
+    Text(verbatim: hero.footer)
+      .font(.system(size: 12))
+      .foregroundStyle(style.secondary)
+      .lineLimit(1)
+      .minimumScaleFactor(0.7)
+      .lineBox(16)
+  }
+}
+
+/// The medium face's hairline beside the times, as tall as the design draws it.
+private struct WidgetHairline: View {
+  let style: WidgetStyle
+
+  var body: some View {
+    Rectangle()
+      .fill(style.separator)
+      .frame(width: 1, height: WidgetMetrics.mediumHairlineHeight)
   }
 }
 
@@ -281,12 +349,9 @@ private struct SmallFace: View {
           .foregroundStyle(style.primary)
           .lineLimit(1)
           .minimumScaleFactor(0.7)
+          .lineBox(28)
         WidgetTimer(hero: hero, date: display.date, size: 22, style: style)
-        Text(verbatim: hero.footer)
-          .font(.system(size: 12))
-          .foregroundStyle(style.secondary)
-          .lineLimit(1)
-          .minimumScaleFactor(0.7)
+        WidgetFooter(hero: hero, style: style)
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 15)
@@ -316,21 +381,16 @@ private struct MediumFace: View {
               .foregroundStyle(style.primary)
               .lineLimit(1)
               .minimumScaleFactor(0.7)
+              .lineBox(28)
             WidgetTimer(hero: hero, date: display.date, size: 22, style: style)
-            Text(verbatim: hero.footer)
-              .font(.system(size: 12))
-              .foregroundStyle(style.secondary)
-              .lineLimit(1)
-              .minimumScaleFactor(0.7)
+            WidgetFooter(hero: hero, style: style)
           }
         } else {
           WidgetUnknownFace(display: display, style: style)
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
-      Rectangle()
-        .fill(style.separator)
-        .frame(width: 1)
+      WidgetHairline(style: style)
       WidgetTimes(display: display, rowHeight: 21, nameSize: 13, style: style)
         .frame(width: 132)
     }
@@ -359,23 +419,19 @@ private struct LargeFace: View {
             .foregroundStyle(style.primary)
             .lineLimit(1)
             .minimumScaleFactor(0.7)
+            .lineBox(34)
           WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
-          Text(verbatim: hero.footer)
-            .font(.system(size: 12))
-            .foregroundStyle(style.secondary)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
+          WidgetFooter(hero: hero, style: style)
         }
         WidgetProgress(display: display, style: style)
       } else {
         WidgetUnknownFace(display: display, style: style)
       }
       WidgetTimes(display: display, rowHeight: 26, nameSize: 15, style: style)
-      Spacer(minLength: 0)
     }
+    .topAligned()
     .padding(.horizontal, 16)
     .padding(.vertical, 15)
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
   }
 }
 
@@ -392,6 +448,7 @@ private struct WidgetHeader: View {
         .foregroundStyle(style.primary)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
+        .lineBox(20)
       Spacer(minLength: 6)
       Image(systemName: "location.fill")
         .font(.system(size: 10))
@@ -401,6 +458,7 @@ private struct WidgetHeader: View {
         .font(.system(size: 12))
         .foregroundStyle(style.secondary)
         .lineLimit(1)
+        .lineBox(16)
         .privacySensitive()
     }
     .accessibilityElement(children: .combine)
@@ -487,7 +545,7 @@ nonisolated struct WidgetTimes: View {
   private func color(_ role: Role) -> AnyShapeStyle {
     switch role {
     case .passed: style.tertiary
-    case .current: style.markText
+    case .current: style.mark
     case .next: style.accent
     case .upcoming: style.primary
     }
@@ -562,12 +620,14 @@ struct WidgetMessageContent: View {
           .font(.system(size: 26))
           .foregroundStyle(style.accent)
           .widgetAccentable()
+          .frame(width: 30, height: 30)
           .accessibilityHidden(true)
         message
           .font(.system(size: 13, weight: .semibold))
           .foregroundStyle(style.primary)
           .multilineTextAlignment(.center)
-          .frame(maxWidth: 140)
+          .designLineHeight(18, fontSize: 13, weight: .semibold)
+          .frame(width: 126)
           .minimumScaleFactor(0.8)
       }
       .padding(.horizontal, 16)
@@ -609,7 +669,7 @@ struct WidgetStopContent: View {
         HStack(alignment: .top, spacing: 14) {
           hero(side: 34, titleSize: 17, style: style)
             .frame(maxWidth: .infinity, alignment: .leading)
-          Rectangle().fill(style.separator).frame(width: 1)
+          WidgetHairline(style: style)
           WidgetTimes(display: display, rowHeight: 21, nameSize: 13, style: style)
             .frame(width: 132)
         }
@@ -622,11 +682,10 @@ struct WidgetStopContent: View {
           hero(side: 40, titleSize: 20, style: style)
           WidgetProgress(display: display, style: style)
           WidgetTimes(display: display, rowHeight: 26, nameSize: 15, style: style)
-          Spacer(minLength: 0)
         }
+        .topAligned()
         .padding(.horizontal, 16)
         .padding(.vertical, 15)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
       }
     }
     .accessibilityElement(children: .combine)
@@ -648,6 +707,7 @@ struct WidgetStopContent: View {
           .font(.system(size: 11, weight: .semibold))
           .foregroundStyle(style.secondary)
           .lineLimit(1)
+          .lineBox(13)
       }
       HStack(spacing: 6) {
         stopSymbol(side: side, style: style)
@@ -661,8 +721,10 @@ struct WidgetStopContent: View {
   }
 
   private func stopSymbol(side: CGFloat, style: WidgetStyle) -> some View {
-    Image(systemName: "stop.circle.fill")
+    let diameter = WidgetMetrics.stopDiameter(side: side)
+    return Image(systemName: "stop.circle.fill")
       .resizable()
+      .frame(width: diameter, height: diameter)
       .frame(width: side, height: side)
       .foregroundStyle(style.accent)
       .widgetAccentable()
@@ -675,6 +737,8 @@ struct WidgetStopContent: View {
       .foregroundStyle(style.primary)
       .lineLimit(1)
       .minimumScaleFactor(0.7)
+      // The design's line heights: 22 for the 17-point title, 25 for the 20-point one.
+      .lineBox(size >= 20 ? 25 : 22)
   }
 
   private func tapToStop(style: WidgetStyle) -> some View {
@@ -683,5 +747,6 @@ struct WidgetStopContent: View {
       .foregroundStyle(style.secondary)
       .lineLimit(1)
       .minimumScaleFactor(0.7)
+      .lineBox(16)
   }
 }

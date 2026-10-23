@@ -327,9 +327,10 @@ private var secondary: AnyShapeStyle {
 The macOS app draws these tokens through `SalahPalette` and `SalahPhase`
 (`Shared/WidgetUI/SalahPalette.swift`): the widgets, their Settings → Appearance preview,
 the dropdown and Today. The sky is the phase's pair, top to bottom, or Neutral when the
-user turns off Follow the time of day or the day's times aren't known. The prayer one is
-in carries the phase's mark on its glyph and `Phase/text` on its text, since the mark holds
-only 3:1; the next prayer carries the accent on its wash.
+user turns off Follow the time of day or the day's times aren't known. In the dropdown, the
+prayer one is in carries the phase's mark on its glyph and `Phase/text` on its text, since
+the mark holds only 3:1; on the widgets, as the widget components draw it, its row, count-up
+and Now take the mark itself. The next prayer carries the accent on its wash.
 
 `PaletteContrastTests` in SalahTests holds the tokens to their promises in light and dark,
 with and without Increase Contrast: primary, secondary and accent text and each phase's
