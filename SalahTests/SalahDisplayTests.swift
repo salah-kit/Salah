@@ -54,7 +54,7 @@ struct SalahDisplayTests {
     #expect(atAsr.focus == .countUp(event(.asr)), "at its start a prayer counts up")
   }
 
-  /// The imminent red: the next prayer's last 15 minutes, start inclusive; never before
+  /// The approach: the next prayer's last 15 minutes, start inclusive; never before
   /// sunrise, which isn't a prayer.
   @Test func theNextPrayerIsImminentInItsLastFifteenMinutes() {
     let asr = event(.asr).time
@@ -66,7 +66,7 @@ struct SalahDisplayTests {
     #expect(beforeSunrise.focus == .countdown(event(.sunrise)))
   }
 
-  /// A prayer that just started leads as the green count-up for exactly 15 minutes (end
+  /// A prayer that just started leads as the count-up for exactly 15 minutes (end
   /// exclusive); its row reads "Now", then the next prayer's countdown takes over and
   /// the row dims. Sunrise never counts up.
   @Test func aPrayerCountsUpForFifteenMinutesAndSunriseNever() {
@@ -84,7 +84,7 @@ struct SalahDisplayTests {
   }
 
   /// When the next prayer is already imminent during a count-up, the count-up keeps the
-  /// focus and the next row turns red.
+  /// focus and the next row the approach.
   @Test func theCountUpKeepsTheFocusWhileTheNextPrayerIsImminent() {
     let settings = Self.settings { $0.ishaAdjustment = -78 }
     let maghrib = Fixture.event(.maghrib, ishaAdjustment: -78)

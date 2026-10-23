@@ -495,7 +495,8 @@ nonisolated struct WidgetTimes: View {
 
   private var rows: [(event: PrayerEvent, role: Role)] { Self.rows(of: display) }
 
-  /// The listed day's events with their roles, or tomorrow's while its Fajr is next.
+  /// The listed day's events with their roles, or tomorrow's while its Fajr is next and
+  /// none of today's prayers plays.
   static func rows(of display: SalahDisplay) -> [(event: PrayerEvent, role: Role)] {
     let day = display.listedDay
     let playing = display.playingPrayer.flatMap { event in

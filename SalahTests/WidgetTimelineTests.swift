@@ -65,7 +65,7 @@ struct WidgetTimelineTests {
   }
 
   /// Salah's cadence for its static countdowns: an entry every five minutes, and every
-  /// minute within 15 minutes of a prayer, so the imminent red and the count-up advance
+  /// minute within 15 minutes of a prayer, so the approach and the count-up advance
   /// minute by minute; a minute before the prayer the live timer takes over.
   @Test func theCadenceIsFiveMinutesAndEveryMinuteAroundAPrayer() throws {
     let start = Fixture.date(13, 0)

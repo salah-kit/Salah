@@ -620,7 +620,8 @@ struct MenuPrayerRow: View {
       let formatter = RelativeDateTimeFormatter()
       formatter.locale = display.locale
       formatter.unitsStyle = .short
-      return formatter.localizedString(for: event.time, relativeTo: display.date)
+      // An adhan can start a moment before its time; it has begun all the same.
+      return formatter.localizedString(for: min(event.time, display.date), relativeTo: display.date)
     case .upcoming:
       return nil
     }

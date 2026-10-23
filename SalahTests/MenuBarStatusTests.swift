@@ -12,7 +12,7 @@ struct MenuBarStatusTests {
     let status = MenuBarStatus(
       audio: .idle, countUp: Fixture.event(.dhuhr), next: Fixture.event(.asr))
     #expect(!status.isPlaying)
-    #expect(status.playingPrayer == nil)
+    #expect(status.playingEvent == nil)
     #expect(status.glyph == .dhuhr)
   }
 
@@ -30,6 +30,6 @@ struct MenuBarStatusTests {
       audio: .playing(AudioPlaybackContext(source: .prayerAlert, slot: .preReminder, event: asr)),
       countUp: nil, next: asr)
     #expect(status.isPlaying)
-    #expect(status.playingPrayer == asr)
+    #expect(status.playingEvent == asr)
   }
 }

@@ -533,7 +533,7 @@ extension PrayerManager {
 
   /// The status item's text: while a prayer's audio plays, only that prayer's name.
   var menuBarText: String {
-    guard preferences.displayNextPrayer, let event = menuBarStatus.playingPrayer else {
+    guard preferences.displayNextPrayer, let event = menuBarStatus.playingEvent else {
       return statusBarText
     }
     return nameComponent(for: event, names: PrayerNames(locale: .app))
@@ -553,11 +553,11 @@ extension PrayerManager {
       }
     }
 
-    // Iqama count-up window: green, reusing the playing-adhan tone so the menu
+    // Iqama count-up window: the playing-adhan tone, so the menu
     // bar matches the widget. Countdown style only (see `menuBarCountUp`).
     if menuBarCountUp != nil { return .playingPrayerAudio }
 
-    // Imminent red in the 15 min before the next prayer - never before Sunrise,
+    // The approach in the 15 min before the next prayer - never before Sunrise,
     // which is not one.
     return state.prayerState?.isApproaching == true ? .imminent : .normal
   }
@@ -584,8 +584,9 @@ struct MenuBarStatus: Equatable {
     return false
   }
 
-  /// The prayer whose audio plays, whose name the text shows alone.
-  var playingPrayer: PrayerEvent? {
+  /// The prayer any audio plays for, a reminder before it included, whose name the text
+  /// shows alone.
+  var playingEvent: PrayerEvent? {
     if case .playing(let context) = audio { return context.event }
     return nil
   }
