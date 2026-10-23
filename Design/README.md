@@ -476,3 +476,12 @@ image shows otherwise.
 - `watchos.png`: the watch app, in English and Arabic.
 - `ios-home-screen-widgets.png`: Home Screen widgets in light, dark, tinted and Arabic.
 - `ios-lock-screen.png`: Lock Screen accessories and the Live Activity.
+- `app-icon.png`: the app icon at 256 px, for the README.
+
+`app-icon.png` is the icon's 256 px rendition. After changing the icon, compile it as
+[App icon](#app-icon) shows, then extract that rendition:
+
+```sh
+iconutil -c iconset "$out/Salah.icns" -o "$out/Salah.iconset"
+cp "$out/Salah.iconset/icon_128x128@2x.png" Design/Previews/app-icon.png
+```

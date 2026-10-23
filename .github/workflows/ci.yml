@@ -37,6 +37,9 @@ jobs:
               -configuration "$configuration" -destination 'platform=macOS' \
               -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
             test -d ".derived/Build/Products/$configuration/Salah.app/Contents/PlugIns/SalahWidgetsExtension.appex"
+            # actool succeeds silently without the icon, so check the app carries it.
+            test "$(plutil -extract CFBundleIconName raw -o - \
+              ".derived/Build/Products/$configuration/Salah.app/Contents/Info.plist")" = Salah
           done
 
       # SalahTests is a non-hosted bundle: it compiles the app's sources and never
