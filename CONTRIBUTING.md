@@ -6,7 +6,8 @@ org-wide code of conduct, security policy and support page live in
 
 ## What you need
 
-- macOS with Xcode 27 (the app itself runs on macOS 14 or later).
+- macOS with Xcode 27. The Mac app runs on macOS 14 or later; the iPhone and iPad
+  app runs on iOS and iPadOS 26 or later.
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) 2.46, only if you change `project.yml`
   or add, move or remove a file.
 - `swift format`, which ships with Xcode.
@@ -27,6 +28,10 @@ match `project.yml`.
 | `SalahUITests` | UI tests that drive the real app (their own `SalahUITests` scheme) |
 | `SalahRoundTripTests` | Tests that run the real app and the stop harness as processes (their own scheme) |
 | `SalahStopHarness` | A stand-in for the widget extension in those tests (`io.github.salah-kit.Salah.StopHarness`) |
+| `SalahIOS` | The iPhone and iPad app (`io.github.salah-kit.Salah.iOS`) |
+| `SalahIOSWidgets` | Home Screen, Lock Screen, Live Activity and Control Center extension (`io.github.salah-kit.Salah.iOS.Widgets`) |
+| `SalahIOSTests` | iOS logic and adapter tests (the `SalahIOS` scheme) |
+| `SalahIOSUITests` | Journeys through the running iOS app (their own scheme) |
 
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
@@ -35,6 +40,14 @@ draw from (`SalahDisplay`), the widget's timeline, and the palette and views. Th
 the App Group `group.io.github.salah-kit.Salah`. Prayer times, the schedule, widget
 timelines, alerts and the UI components come from
 [SalahKit](https://github.com/salah-kit/SalahKit), through its public API only.
+
+`SalahIOS/` contains the iOS app. Its domain and data layers own preferences, prayer
+selection and platform services; its design system and feature views build on those
+contracts. `SalahIOSShared/` contains the iOS contracts compiled into the app and the
+extension in `SalahIOSWidgets/`. Both reuse the portable settings, prayer, display and
+timeline models from `Shared/`, and mirror preferences through the same App Group
+identifier. This is local sharing between the app and its extension, without a sync
+service between devices.
 
 ## Signing
 
@@ -61,6 +74,65 @@ xcodebuild build -project Salah.xcodeproj -scheme Salah -configuration Debug \
 
 Building the app registers it, and its widget extension, with LaunchServices. Delete
 build products you no longer need, so an old build doesn't serve your widget.
+
+### iOS and iPadOS
+
+Simulator builds and journeys need no paid Apple Developer membership or provisioning
+profile. Simulator apps are signed ad hoc so their App Group entitlements are available;
+they are not distribution builds. Install an iOS 26 or later simulator runtime through
+Xcode's Components settings.
+The app's App Group and Time Sensitive notification entitlements are generated from
+its `project.yml` declaration; keep the widget's App Group identifier matching.
+Run the shared CI entry point from the repository root:
+
+```sh
+# Builds an unsigned Release app and extension for a generic iOS device, then
+# runs unit tests and real-app journeys on an iPhone simulator.
+bash scripts/verify-ios.sh
+
+# Runs unit tests and the iPad journeys on an iPad simulator.
+SALAH_IOS_SIMULATOR_FAMILY=iPad bash scripts/verify-ios.sh
+```
+
+The script selects a compatible device from installed runtimes, creates a simulator,
+boots it without opening Simulator.app, and deletes that device on success or failure.
+It leaves build products and test results in `.derived/ios-iPhone` or
+`.derived/ios-iPad`; remove those directories when they are no longer needed. Each test
+run has its own `Results` directory containing the unit and journey result bundles.
+The phone and tablet have separate core journey classes. Permission journeys uninstall
+and reinstall only the app on the task's simulator before each case, so both Allow and
+Don't Allow encounter a fresh system prompt. A fixed simulator location supplies a real
+Core Location fix. CI runs both device families and uploads those bundles.
+
+To build a simulator app without running tests:
+
+```sh
+xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug \
+  -destination 'generic/platform=iOS Simulator' -derivedDataPath .derived/ios \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run on a physical device, configure your team in `Config/Local.xcconfig` and use
+`-allowProvisioningUpdates`. Enable the existing App Group for the app and extension.
+App Store distribution needs a paid membership; device notification delivery, compass
+accuracy and system scheduling should also be checked on the intended device. Follow
+the steps in [#65](https://github.com/salah-kit/Salah/issues/65) and record the commit,
+device, OS version and observed results. The [iOS validation notes](docs/ios-validation.md)
+also link VoiceOver and native-language review; leave checks that require hardware,
+elapsed time or another person open until their evidence is recorded.
+
+iOS includes licensed regular and Fajr adhan recordings, a synthesized tone and system
+sounds, and accepts imported audio. [NOTICE](NOTICE) records the licenses; Audio credits
+in the app reads the bundled notice. Notification excerpts are shorter than thirty
+seconds. Imported recordings can be up to thirty minutes long; longer files are
+rejected before copying and checked again at playback. A scheduled notification does
+not launch full adhan playback. Full playback
+starts from an explicit app action and uses the background audio mode to continue when
+the app leaves the foreground. The optional du'a uses speech synthesis after a built-in
+or imported adhan and lasts at most two minutes. Shared playback and external Stop
+controls cover the whole session, up to thirty-two minutes including the du'a.
+Background refresh replenishes the rolling schedule when iOS grants execution time;
+the system controls when it runs.
 
 ## Tests
 
@@ -254,9 +326,11 @@ Code is formatted with `swift format` and the shared `.swift-format` (2-space in
 
 ```sh
 swift format format --in-place --recursive Salah SalahWidgetsExtension Shared \
-  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
+  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
 swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
-  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
+  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
 ```
 
 ## Strings and languages

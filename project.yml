@@ -82,6 +82,47 @@ settings:
       ENABLE_NS_ASSERTIONS: NO
       MTL_ENABLE_DEBUG_INFO: NO
       SWIFT_COMPILATION_MODE: wholemodule
+# Portable app contracts are compiled into both iOS processes. The macOS-specific
+# widget faces and Stop intent stay with the existing macOS targets.
+targetTemplates:
+  IOSShared:
+    sources:
+      - path: Shared/AppLanguage.swift
+      - path: Shared/AppResources.swift
+      - path: Shared/SalahSettings.swift
+      - path: Shared/SalahPlayback.swift
+      - path: Shared/SalahDisplay.swift
+      - path: Shared/SalahPrayerSource.swift
+      - path: Shared/SalahWidgetModels.swift
+      - path: Shared/SalahWidgetTimeline.swift
+      - path: Shared/SalahText.swift
+      - path: Shared/SalahWidgetConstants.swift
+      - path: Shared/WidgetUI/SalahPalette.swift
+      - path: Shared/Glyphs.xcassets
+      - path: SalahIOSShared
+    dependencies:
+      - package: SalahKit
+        product: SalahCore
+      - package: SalahKit
+        product: SalahCalculation
+      - package: SalahKit
+        product: SalahWidgets
+      - package: SalahKit
+        product: SalahUI
+      - package: SalahKit
+        product: SalahAlerts
+      - sdk: ActivityKit.framework
+    settings:
+      base:
+        IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+        SDKROOT: iphoneos
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        SUPPORTS_MACCATALYST: NO
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
 targets:
   Salah:
     type: application
@@ -337,6 +378,150 @@ targets:
         SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
         SWIFT_VERSION: "6.0"
         TEST_HOST: ""
+  SalahIOS:
+    templates: [IOSShared]
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahIOS
+        excludes:
+          - Info.plist
+          - SalahIOS.entitlements
+          - Resources/Audio/NOTICE
+      - path: SalahIOS/Resources/Audio/NOTICE
+        type: file
+        buildPhase: resources
+      - path: Salah/Assets.xcassets
+      - path: Design/AppIcon/Salah.icon
+        type: file
+        buildPhase: resources
+    dependencies:
+      - target: SalahIOSWidgets
+        codeSign: false
+    entitlements:
+      path: SalahIOS/SalahIOS.entitlements
+      properties:
+        com.apple.developer.usernotifications.time-sensitive: true
+        com.apple.security.application-groups:
+          - group.io.github.salah-kit.Salah
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: Salah
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: SalahIOS/SalahIOS.entitlements
+        CURRENT_PROJECT_VERSION: "4"
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SalahIOS/Info.plist
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS
+        PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_EMIT_LOC_STRINGS: YES
+  SalahIOSWidgets:
+    templates: [IOSShared]
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahIOSWidgets
+        excludes:
+          - Info.plist
+          - SalahIOSWidgets.entitlements
+      - path: SalahWidgetsExtension/Assets.xcassets
+      - path: SalahIOS/Assets.xcassets
+      - path: SalahIOS/Resources/Localizable.xcstrings
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+      - sdk: AppIntents.framework
+    settings:
+      base:
+        APPLICATION_EXTENSION_API_ONLY: YES
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
+        CODE_SIGN_ENTITLEMENTS: SalahIOSWidgets/SalahIOSWidgets.entitlements
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SalahIOSWidgets/Info.plist
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.Widgets
+        PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
+        SKIP_INSTALL: YES
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) SALAH_WIDGET_EXTENSION"
+        SWIFT_EMIT_LOC_STRINGS: YES
+  # A non-hosted simulator bundle, like SalahTests: it compiles the app's sources
+  # directly and exercises logic and adapters without a signed App Group or UI launch.
+  SalahIOSTests:
+    templates: [IOSShared]
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahIOS
+        excludes:
+          - Info.plist
+          - SalahIOS.entitlements
+          - PrivacyInfo.xcprivacy
+      - path: SalahIOSTests
+      - path: SalahIOSWidgets/IOSWidgetFaces.swift
+      - path: SalahIOSWidgets/IOSWidgetSunArc.swift
+      - path: SalahIOSWidgets/IOSPrayerWidget.swift
+      - path: SalahIOSWidgets/IOSPrayerLiveActivity.swift
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    settings:
+      base:
+        BUNDLE_LOADER: ""
+        CODE_SIGN_IDENTITY: "-"
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.Tests
+        PRODUCT_NAME: $(TARGET_NAME)
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_EMIT_LOC_STRINGS: NO
+        TEST_HOST: ""
+  SalahIOSUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahIOSUITests
+    dependencies:
+      - target: SalahIOS
+    settings:
+      base:
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.UITests
+        PRODUCT_NAME: $(TARGET_NAME)
+        SDKROOT: iphoneos
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        SUPPORTS_MACCATALYST: NO
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        TEST_TARGET_NAME: SalahIOS
 schemes:
   Salah:
     build:
@@ -376,3 +561,29 @@ schemes:
       config: Debug
       targets:
         - SalahRoundTripTests
+  SalahIOS:
+    build:
+      targets:
+        SalahIOS: [running, profiling, archiving, analyzing]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SalahIOSTests
+      commandLineArguments:
+        "-AppleLanguages (en-US)": true
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  SalahIOSUITests:
+    build:
+      targets:
+        SalahIOSUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - SalahIOSUITests

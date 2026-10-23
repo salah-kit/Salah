@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- An iPhone and iPad app for iOS and iPadOS 26 or later, available as source: Today,
+  day and week prayer times, Qibla, setup and settings; automatic or manual location;
+  fourteen calculation methods and custom angles; per-prayer reminders and a Friday
+  override; English and Arabic, light and dark appearance; Home Screen and Lock Screen
+  widgets, Live Activities, Dynamic Island and Control Center controls. iOS includes
+  licensed regular and Fajr adhan recordings, system sounds, a synthesized tone and
+  imported audio, with short notification excerpts, explicit in-app full playback and
+  an optional spoken du'a. Simulator builds need no paid developer membership; App Store
+  distribution is not included.
 - A welcome on the first launch, in a small window of its own: what Salah does, then why it
   wants the location (Allow Location Access, or Choose a City…) and to alert (Allow
   Notifications, or Not Now). Each asks macOS only from its own page, and only while macOS
@@ -122,6 +131,22 @@ All notable changes to this project are documented here. The format follows
   line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish
   "önce", and Persian, Urdu and Bengali put their word on the wrong side of the time.
+
+### Pending
+
+- Physical iPhone/iPad sensor, audio-route, locked-delivery and elapsed-time checks
+  ([#65](https://github.com/salah-kit/Salah/issues/65)); StandBy sizing remains in
+  [#28](https://github.com/salah-kit/Salah/issues/28).
+- iOS VoiceOver listening and action review
+  ([#17](https://github.com/salah-kit/Salah/issues/17)), and native-speaker review of
+  draft iOS translations ([Arabic #18](https://github.com/salah-kit/Salah/issues/18),
+  [French #19](https://github.com/salah-kit/Salah/issues/19),
+  [Urdu #20](https://github.com/salah-kit/Salah/issues/20),
+  [Indonesian #21](https://github.com/salah-kit/Salah/issues/21),
+  [Turkish #22](https://github.com/salah-kit/Salah/issues/22),
+  [Persian #23](https://github.com/salah-kit/Salah/issues/23),
+  [Bengali #24](https://github.com/salah-kit/Salah/issues/24) and
+  [Malay #25](https://github.com/salah-kit/Salah/issues/25)).
 
 ## [1.1.2] - 2026-10-14
 
