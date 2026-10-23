@@ -514,19 +514,16 @@ private struct ExtraLargeHeader: View {
 
   var body: some View {
     let header = display.header
-    // Two texts, so a redacted widget hides only the place.
-    HStack(spacing: 0) {
-      Text(verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear) · ")
-        .layoutPriority(1)
-      Text(verbatim: header.location)
-        .privacySensitive()
-    }
+    // One line that scales as one, as the design sets it; a redacted widget hides it whole.
+    Text(
+      verbatim: "\(header.hijriDay) \(header.hijriMonth) \(header.hijriYear) · \(header.location)"
+    )
     .font(.system(size: 15, weight: .semibold))
     .foregroundStyle(style.primary)
     .lineLimit(1)
     .minimumScaleFactor(0.7)
     .lineBox(20)
-    .accessibilityElement(children: .combine)
+    .privacySensitive()
   }
 }
 

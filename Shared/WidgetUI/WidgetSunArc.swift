@@ -140,8 +140,8 @@ struct WidgetSunArc: View {
       CGPoint(x: SunArcLayout.horizonInset, y: SunArcLayout.horizonY),
       CGPoint(x: SunArcLayout.size.width - SunArcLayout.horizonInset, y: SunArcLayout.horizonY),
     ]
-    stroke(horizon, style.separator, width: 1)
     Group {
+      stroke(horizon, style.separator, width: 1)
       stroke(layout.curve(from: SunArcLayout.startX, to: layout.sunriseX), style.tertiary, width: 2)
       stroke(layout.curve(from: layout.maghribX, to: SunArcLayout.endX), style.tertiary, width: 2)
       stroke(
@@ -150,7 +150,7 @@ struct WidgetSunArc: View {
         .widgetAccentable()
     }
     // The rings are hollow where the system removes their fill, in accented and vibrant
-    // rendering: the path stops at them instead of showing through.
+    // rendering: the horizon and the path stop at them instead of showing through.
     .mask {
       ZStack {
         Rectangle()
