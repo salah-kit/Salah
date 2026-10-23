@@ -228,9 +228,9 @@ Code is formatted with `swift format` and the shared `.swift-format` (2-space in
 
 ```sh
 swift format format --in-place --recursive Salah SalahWidgetsExtension Shared \
-  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
 swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
-  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
+  SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
 ```
 
 ## Strings and languages
@@ -251,12 +251,8 @@ The app's name is "Salah" in Latin script in every language except Arabic, where
 
 ## The app icon
 
-`Scripts/render-app-icon.swift` draws the icon from one vector drawing and writes every
-size the asset catalog needs:
-
-```sh
-swift Scripts/render-app-icon.swift Salah/Assets.xcassets/AppIcon.appiconset
-```
+The app's icon is `Design/AppIcon/Salah.icon`, an Icon Composer document that Xcode compiles
+with the app; [Design/README.md](Design/README.md#app-icon) says how to edit and check it.
 
 ## Pull requests
 

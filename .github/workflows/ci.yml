@@ -99,7 +99,7 @@ jobs:
       - name: swift format lint
         run: |
           swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
-            SalahTests SalahUITests SalahRoundTripTests SalahStopHarness Scripts
+            SalahTests SalahUITests SalahRoundTripTests SalahStopHarness
 
       # Salah.xcodeproj is generated from project.yml; this fails when they differ. The
       # XcodeGen release is pinned by version and checksum, so its output can't drift.

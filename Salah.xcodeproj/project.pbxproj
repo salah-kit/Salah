@@ -10,6 +10,7 @@
 		013A014D8B961982DBCAFA99 /* Numbers+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFE2197A0A0548742324EA8 /* Numbers+Localized.swift */; };
 		01C343C2B2B40F4F2E0FBC82 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		01D8B6E95751D5DB2F3D2F20 /* ReachabilityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */; };
+		03A850B01175A17F82A17E1F /* Salah.icon in Resources */ = {isa = PBXBuildFile; fileRef = A53CF69859A0DB3A7AB1285D /* Salah.icon */; };
 		044D6547BD33DB22ECEDAFB8 /* WindowTitleSetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */; };
 		050A8765832930123F3090C3 /* ReachabilityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */; };
 		05B2A290CBCD4C5C4942A01A /* WindowTitleSetterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29130D6BD5DC3DDBA925DAAF /* WindowTitleSetterTests.swift */; };
@@ -397,6 +398,7 @@
 		A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
 		A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTarget.swift; sourceTree = "<group>"; };
 		A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDropdownView.swift; sourceTree = "<group>"; };
+		A53CF69859A0DB3A7AB1285D /* Salah.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = Salah.icon; sourceTree = "<group>"; };
 		A67B8BDD4455BBE154FEBDA9 /* SettingsAccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityUITests.swift; sourceTree = "<group>"; };
 		A7DCC7A2F4757D75D6E16FC5 /* WindowTitleSetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowTitleSetter.swift; sourceTree = "<group>"; };
 		AB09C03A424F943C26D488DE /* PrayerAlertCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAlertCoordinator.swift; sourceTree = "<group>"; };
@@ -521,6 +523,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0221F53EE4697B2E0A4CCAB8 /* AppIcon */ = {
+			isa = PBXGroup;
+			children = (
+				A53CF69859A0DB3A7AB1285D /* Salah.icon */,
+			);
+			path = AppIcon;
+			sourceTree = "<group>";
+		};
 		0730D5B48A1B00C4041DEBA2 /* Location */ = {
 			isa = PBXGroup;
 			children = (
@@ -621,6 +631,7 @@
 			isa = PBXGroup;
 			children = (
 				7AB7C0BA3AF75781B8BBA553 /* Config */,
+				C4FFF03D80B4134E1964F965 /* Design */,
 				F0718792249B6E6563D0F8FC /* Salah */,
 				E7E6A231F0342B30C7B2E404 /* SalahRoundTripTests */,
 				E3B36568F44A2F25B19B6B9D /* SalahStopHarness */,
@@ -842,6 +853,14 @@
 				D34D87BE592637BB56E8E8CC /* VoiceOverSpeechUITests.swift */,
 			);
 			path = SalahUITests;
+			sourceTree = "<group>";
+		};
+		C4FFF03D80B4134E1964F965 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				0221F53EE4697B2E0A4CCAB8 /* AppIcon */,
+			);
+			path = Design;
 			sourceTree = "<group>";
 		};
 		C600859509FCCF480A4D44ED /* Window */ = {
@@ -1184,6 +1203,7 @@
 				A8B3326B21E457B02951E17F /* InfoPlist.xcstrings in Resources */,
 				7358628DC89AD7804F2E6C63 /* Localizable.xcstrings in Resources */,
 				14EAF1E793B94A15C3DA55B9 /* PrivacyInfo.xcprivacy in Resources */,
+				03A850B01175A17F82A17E1F /* Salah.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1469,7 +1489,7 @@
 		0285469BC1EFE3AB274D71AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Salah;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1800,7 +1820,7 @@
 		CB842037D8611F7106218EA9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Salah;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Salah/Salah.entitlements;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
