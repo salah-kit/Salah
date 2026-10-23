@@ -1472,7 +1472,7 @@
         "ur": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%1$@ کو شروع ہوئے %2$#@minutes@ ہو گئے۔"
+            "value": "%1$@ کو شروع ہوئے %2$#@minutes@۔"
           },
           "substitutions": {
             "minutes": {
@@ -1483,13 +1483,13 @@
                   "one": {
                     "stringUnit": {
                       "state": "needs_review",
-                      "value": "%arg منٹ"
+                      "value": "%arg منٹ ہو گیا"
                     }
                   },
                   "other": {
                     "stringUnit": {
                       "state": "needs_review",
-                      "value": "%arg منٹ"
+                      "value": "%arg منٹ ہو گئے"
                     }
                   }
                 }
@@ -1528,7 +1528,7 @@
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "C’est l’heure de %1$@ (%2$@)."
+            "value": "C’est l’heure : %1$@ (%2$@)."
           }
         },
         "id": {
@@ -1804,7 +1804,7 @@
         "ur": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%1$@ میں %2$#@minutes@ باقی ہیں، %3$@ پر۔"
+            "value": "%1$@ میں %2$#@minutes@، %3$@ پر۔"
           },
           "substitutions": {
             "minutes": {
@@ -1815,13 +1815,13 @@
                   "one": {
                     "stringUnit": {
                       "state": "needs_review",
-                      "value": "%arg منٹ"
+                      "value": "%arg منٹ باقی ہے"
                     }
                   },
                   "other": {
                     "stringUnit": {
                       "state": "needs_review",
-                      "value": "%arg منٹ"
+                      "value": "%arg منٹ باقی ہیں"
                     }
                   }
                 }

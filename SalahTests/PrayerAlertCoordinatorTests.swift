@@ -348,7 +348,7 @@ struct PrayerAlertCoordinatorTests {
     let frenchAsr = try #require(french.center.pendingRequest(Self.identifier(.asr, .atTime)))
     #expect(
       frenchAsr.content.body
-        == "C’est l’heure de Asr (\(frenchText.timeFormatter().string(from: Self.asr.time))).")
+        == "C’est l’heure : Asr (\(frenchText.timeFormatter().string(from: Self.asr.time))).")
     let frenchBefore = try #require(
       french.center.pendingRequest(Self.identifier(.maghrib, .before)))
     #expect(
@@ -1732,6 +1732,44 @@ struct PrayerAlertCoordinatorTests {
     #expect(harness.audio.stopCount == 1)
     #expect(harness.todayOpenCount == 0)
     #expect(harness.center.calls.contains(.removeDelivered([identifier])))
+  }
+
+  /// After Quit Salah, a tap neither opens the window nor reaches the center.
+  @Test func tappingAnAlertAfterQuitSalahDoesNothing() async {
+    let harness = Harness(now: Fixture.date(13, 0))
+    await harness.coordinator.withdraw()
+    harness.center.forgetCalls()
+
+    await harness.coordinator.didTapAlert(Self.identifier(.maghrib, .atTime))
+
+    #expect(harness.todayOpenCount == 0)
+    #expect(harness.audio.stopCount == 0)
+    #expect(harness.center.calls.isEmpty)
+  }
+
+  /// The app's player counts as playing for every sound it plays, and not while idle.
+  @Test func theAppsPlayerPlaysWhileItsStateIsPlaying() {
+    let player = AudioPlaybackController()
+    #expect(!player.isPlaying)
+    player.state = .playing(
+      AudioPlaybackContext(source: .prayerAlert, slot: .alert, event: Self.asr))
+    #expect(player.isPlaying)
+    player.state = .playing(AudioPlaybackContext(source: .dua, slot: .alert, event: Self.asr))
+    #expect(player.isPlaying)
+    player.state = .idle
+    #expect(!player.isPlaying)
+  }
+
+  /// The bodies are looked up in the app's locale when Salah ships its language, digits
+  /// included, and in English otherwise, so an unshipped system language doesn't give
+  /// the English fallback its plural rules ("1 minutes").
+  @Test func bodiesFallBackToEnglishForALanguageSalahDoesntShip() {
+    let arabic = AppLanguage.arabic.locale
+    #expect(PrayerAlertContent.bodyLocale(for: arabic) == arabic)
+    let canadianFrench = Locale(identifier: "fr-CA")
+    #expect(PrayerAlertContent.bodyLocale(for: canadianFrench) == canadianFrench)
+    #expect(PrayerAlertContent.bodyLocale(for: Locale(identifier: "zh-Hans-CN")).identifier == "en")
+    #expect(PrayerAlertContent.bodyLocale(for: Locale(identifier: "ja")).identifier == "en")
   }
 
   // MARK: - The fake center
