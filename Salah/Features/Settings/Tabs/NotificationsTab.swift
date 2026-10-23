@@ -194,10 +194,6 @@ struct NotificationsContent: View {
         }
       }
       .settingsRow(last: true, grows: permissionMessage != nil)
-    } header: {
-      // An empty header: without one, the form puts the group nearer the one above than
-      // it puts a headed section.
-      Color.clear.frame(height: 1)
     }
   }
 
