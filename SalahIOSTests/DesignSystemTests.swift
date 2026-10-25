@@ -43,6 +43,34 @@ struct DesignSystemTests {
   }
 
   @Test @MainActor
+  func welcomeIconDrawsTheAppIconSkyOfEachAppearance() throws {
+    for scheme in [ColorScheme.light, .dark] {
+      let renderer = ImageRenderer(
+        content: IOSOnboardingArtwork(
+          step: .welcome, resourceBundle: Bundle(for: DesignSystemTestResources.self)
+        )
+        .environment(\.colorScheme, scheme))
+      renderer.scale = 1
+      let image = try #require(renderer.uiImage?.cgImage)
+      let pixels = try Self.pixels(of: image)
+      // The 112-point icon is centered in the 220-point artwork; this is its sky below the arch.
+      let offset = (160 * image.width + 110) * 4
+      let (red, blue, alpha) = (Int(pixels[offset]), Int(pixels[offset + 2]), pixels[offset + 3])
+      #expect(alpha == 255, "The icon must draw an opaque sky, not an empty image.")
+      switch scheme {
+      case .dark:
+        #expect(
+          blue - red > 25 && red < 70,
+          "Dark draws Salah.icon's dark night sky, not the light dusk (red \(red), blue \(blue)).")
+      default:
+        #expect(
+          red - blue > 30 && red > 150,
+          "Light draws Salah.icon's dusk at the horizon (red \(red), blue \(blue)).")
+      }
+    }
+  }
+
+  @Test @MainActor
   func sunCardNeverExpandsAParentToTheReferenceChartWidth() throws {
     var preferences = IOSPreferences()
     let zone = try #require(TimeZone(identifier: "Asia/Riyadh"))
@@ -166,10 +194,9 @@ struct DesignSystemTests {
 
   private static let day = CivilDay(year: 2026, month: 6, day: 2)
 
+  /// RGBA bytes, top row first.
   @MainActor
-  private static func drawnBounds(
-    of image: CGImage, matching predicate: (UInt8, UInt8, UInt8, UInt8) -> Bool
-  ) throws -> CGRect? {
+  private static func pixels(of image: CGImage) throws -> [UInt8] {
     let width = image.width
     let height = image.height
     var pixels = [UInt8](repeating: 0, count: width * height * 4)
@@ -182,6 +209,16 @@ struct DesignSystemTests {
             | CGBitmapInfo.byteOrder32Big.rawValue))
       context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
     }
+    return pixels
+  }
+
+  @MainActor
+  private static func drawnBounds(
+    of image: CGImage, matching predicate: (UInt8, UInt8, UInt8, UInt8) -> Bool
+  ) throws -> CGRect? {
+    let width = image.width
+    let height = image.height
+    let pixels = try pixels(of: image)
     var left = width
     var top = height
     var right = -1

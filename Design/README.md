@@ -373,6 +373,19 @@ generates flat images for older system versions.
 keeps its own copies in `Salah.icon/Assets/`, so after editing a layer, replace it in Icon
 Composer as well.
 
+The iOS welcome screen draws the icon inside the app, and iOS has no API that gives an app
+its own icon. So `flatten_icon.py` stacks the layers of `Salah.icon` with their opacities into
+flat light and dark SVGs in the app's `OnboardingIcon` image set, and the view clips the
+corners. Liquid Glass comes only from the system. After changing the icon, run it again:
+
+```sh
+python3 Design/AppIcon/flatten_icon.py
+```
+
+CI runs it with `--check` and fails if the image set no longer matches `Salah.icon`. The
+script stops if the icon uses something a flat copy can't reproduce, such as a moved or
+blended layer, a layer fill or a group opacity; extend the script before using one.
+
 The canvas is 1024 × 1024 pt, but watchOS's circle reaches about 3% past the canvas at the
 middle of each side. So the layers that fill the icon (`background`, `background-dark` and
 `texture`) are 1152 pt square, 64 pt past the canvas on every side. If one of them stopped at
