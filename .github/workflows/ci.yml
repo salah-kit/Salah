@@ -140,6 +140,9 @@ jobs:
             SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
             SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
 
+      - name: Check the flat app icon
+        run: python3 Design/AppIcon/flatten_icon.py --check
+
       # Salah.xcodeproj is generated from project.yml; this fails when they differ. The
       # XcodeGen release is pinned by version and checksum, so its output can't drift.
       - name: Check the generated project

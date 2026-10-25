@@ -6,7 +6,20 @@
   "images": [
     {
       "idiom": "universal",
-      "filename": "icon.png"
+      "filename": "icon-light.svg"
+    },
+    {
+      "idiom": "universal",
+      "filename": "icon-dark.svg",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
     }
-  ]
+  ],
+  "properties": {
+    "preserves-vector-representation": true
+  }
 }
