@@ -7,9 +7,9 @@ listing or signed iOS download yet. Simulator builds need no paid developer memb
 ## Reproducible checks
 
 [`scripts/verify-ios.sh`](../scripts/verify-ios.sh) builds the app and extension, runs
-logic and adapter tests, and drives the installed app through XCUITest. The iPhone and
-iPad CI jobs upload their result bundles. The script keeps each simulator run separate
-and uses fresh app installations for permission cases.
+logic and adapter tests, and drives the installed app through XCUITest. The iPhone, iPad
+and iPhone Duo CI jobs upload their result bundles. The script keeps each simulator run
+separate and uses fresh app installations for permission cases.
 
 - Logic and adapter tests cover calculation and presentation state, preference
   transactions, notification plans, audio bounds, localized text and shared widget and
@@ -17,6 +17,18 @@ and uses fresh app installations for permission cases.
 - App journeys cover setup, location and calculation choices, day and week navigation,
   Qibla recovery, independent alert settings, explicit playback and Stop, and preference
   persistence across relaunch. iPad journeys exercise the settings list and detail.
+- iPhone Duo journeys check, in English and Arabic, that the outer display's side bar
+  holds the tabs, Back and Times' calendar beside the content. The tent and the open
+  display's poses need Device Hub, so their journeys run locally
+  ([CONTRIBUTING](../CONTRIBUTING.md#ios-and-ipados)). On its side, flat or folded, each
+  screen's pages meet at the fold without text or controls in it, in English and Arabic.
+  At accessibility text sizes each screen leaves the fold empty too, and Times keeps to
+  the first page. Without a location, Today's and Times' recovery keeps to the first page
+  and Qibla's to the second, beside its dial. Upright, Today's and Qibla's pages stack at
+  the fold, Stop starts Today's lower page, and their recovery stays clear of the fold. Unit
+  tests cover the page and week-column arithmetic.
+  A rendered test keeps the vertical Dynamic Island's drawn views inside its 28-point circle
+  and its trailing view empty; the live progress ring is drawn by the system, in the host.
 - Permission journeys use the actual system prompts, including Allow, Don't Allow and
   returning after notification access changes in Settings. Production storage journeys
   use the actual App Group rather than an isolated preferences fixture.
@@ -33,6 +45,9 @@ Keep the build's commit and OS version with any reported native-host evidence.
   interruptions, real system presentation and OS-granted refresh across days.
   [StandBy measurements (#28)](https://github.com/salah-kit/Salah/issues/28) remain in
   the existing design-size issue.
+- [Physical iPhone Duo validation (#67)](https://github.com/salah-kit/Salah/issues/67):
+  the layouts in the hand in each pose, opening and closing on each screen, the vertical
+  Dynamic Island and the compass while open, folded or in the tent.
 - [VoiceOver review (#17)](https://github.com/salah-kit/Salah/issues/17): spoken
   wording, navigation order and actions across the app and system surfaces. Automated
   label and structure assertions do not complete this listening review.

@@ -17,6 +17,12 @@ All notable changes to this project are documented here. The format follows
   imported audio, with short notification excerpts, explicit in-app full playback and
   an optional spoken du'a. Simulator builds need no paid developer membership; App Store
   distribution is not included.
+- iPhone Duo support. On the outer display, content stays clear of the side bar that holds
+  the tabs, Back and Times' calendar. Open on its side, Today, Times, Qibla and Settings each
+  show two pages that meet at the fold and don't move when it folds; the week's times split
+  between Dhuhr and Asr. Upright, Today and Qibla show their pages above and below the fold,
+  and a playing sound's Stop starts the lower page. Live Activities fit the vertical Dynamic
+  Island's 28-point circle.
 - A welcome on the first launch, in a small window of its own: what Salah does, then why it
   wants the location (Allow Location Access, or Choose a City…) and to alert (Allow
   Notifications, or Not Now). Each asks macOS only from its own page, and only while macOS

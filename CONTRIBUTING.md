@@ -92,17 +92,42 @@ bash scripts/verify-ios.sh
 
 # Runs unit tests and the iPad journeys on an iPad simulator.
 SALAH_IOS_SIMULATOR_FAMILY=iPad bash scripts/verify-ios.sh
+
+# Runs unit tests and the iPhone Duo journeys on its outer display. Needs the
+# iOS 27.1 simulator runtime, the first with iPhone Duo.
+SALAH_IOS_SIMULATOR_FAMILY=Duo bash scripts/verify-ios.sh
 ```
 
 The script selects a compatible device from installed runtimes, creates a simulator,
 boots it without opening Simulator.app, and deletes that device on success or failure.
-It leaves build products and test results in `.derived/ios-iPhone` or
-`.derived/ios-iPad`; remove those directories when they are no longer needed. Each test
+It leaves build products and test results in `.derived/ios-iPhone`, `.derived/ios-iPad`
+or `.derived/ios-Duo`; remove those directories when they are no longer needed. Each test
 run has its own `Results` directory containing the unit and journey result bundles.
-The phone and tablet have separate core journey classes. Permission journeys uninstall
-and reinstall only the app on the task's simulator before each case, so both Allow and
-Don't Allow encounter a fresh system prompt. A fixed simulator location supplies a real
-Core Location fix. CI runs both device families and uploads those bundles.
+The phone, tablet and iPhone Duo have separate core journey classes. Permission journeys
+uninstall and reinstall only the app on the task's simulator before each case, so both
+Allow and Don't Allow encounter a fresh system prompt. A fixed simulator location supplies
+a real Core Location fix. CI runs all three and uploads those bundles.
+
+An iPhone Duo simulator starts closed, so its journeys check the outer display. XCTest
+can't fold or turn it, but Device Hub, which Xcode installs in
+`Xcode.app/Contents/Applications`, can. `IOSDuoPoseJourneys` checks the other poses.
+Create an iPhone Duo simulator, choose it in Device Hub, and use its hinge and rotation
+controls to set each of these poses, running the class after each:
+
+- Closed and turned on its side: the tent.
+- Open on its side, flat, then partly folded like a book.
+- Open upright, flat, then partly folded like a laptop.
+
+```sh
+xcrun simctl create "Salah Duo" com.apple.CoreSimulator.SimDeviceType.iPhone-Duo \
+  com.apple.CoreSimulator.SimRuntime.iOS-27-1
+xcodebuild test -project Salah.xcodeproj -scheme SalahIOSUITests \
+  -destination 'platform=iOS Simulator,id=<simulator id>' \
+  -only-testing:SalahIOSUITests/IOSDuoPoseJourneys -derivedDataPath .derived/ios-Duo \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+Each test skips unless the simulator is in its pose. Delete the simulator when you're done.
 
 To build a simulator app without running tests:
 
@@ -116,7 +141,8 @@ To run on a physical device, configure your team in `Config/Local.xcconfig` and 
 `-allowProvisioningUpdates`. Enable the existing App Group for the app and extension.
 App Store distribution needs a paid membership; device notification delivery, compass
 accuracy and system scheduling should also be checked on the intended device. Follow
-the steps in [#65](https://github.com/salah-kit/Salah/issues/65) and record the commit,
+the steps in [#65](https://github.com/salah-kit/Salah/issues/65), or
+[#67](https://github.com/salah-kit/Salah/issues/67) on iPhone Duo, and record the commit,
 device, OS version and observed results. The [iOS validation notes](docs/ios-validation.md)
 also link VoiceOver and native-language review; leave checks that require hardware,
 elapsed time or another person open until their evidence is recorded.
