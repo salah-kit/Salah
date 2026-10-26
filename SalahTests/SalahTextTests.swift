@@ -82,4 +82,16 @@ struct SalahTextTests {
     #expect(arabic.gregorianDate(date) == "الثلاثاء، ٢ يونيو ٢٠٢٦")
     #expect(french.gregorianDate(date) == "mardi 2 juin 2026")
   }
+
+  /// A region that counts in Hijri, such as Saudi Arabia, still gets the Gregorian date
+  /// beside the Hijri one, not the Hijri date twice. Other calendars stay the locale's own.
+  @Test func theCivilDateIsGregorianWhereTheRegionCountsInHijri() {
+    let date = Fixture.date(13, 19)
+    let saudi = SalahText(locale: Locale(identifier: "ar_SA"), timeZone: Fixture.timeZone)
+    #expect(saudi.gregorianDate(date).contains("يونيو"))
+    let saudiEnglish = SalahText(locale: Locale(identifier: "en_SA"), timeZone: Fixture.timeZone)
+    #expect(saudiEnglish.gregorianDate(date).contains("2 June 2026"))
+    let persian = SalahText(locale: Locale(identifier: "fa_IR"), timeZone: Fixture.timeZone)
+    #expect(persian.gregorianDate(date).contains("خرداد"))
+  }
 }

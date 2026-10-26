@@ -117,11 +117,13 @@ nonisolated struct SalahText: Sendable {
     )
   }
 
-  /// The Gregorian date in full: "Tuesday, June 2, 2026". Arabic has no comma before the
-  /// year: "الثلاثاء، ٢ يونيو ٢٠٢٦".
+  /// The civil date in full: "Tuesday, June 2, 2026", in the locale's calendar, or the
+  /// Gregorian one where the locale counts in Hijri, as ar_SA does. Arabic has no comma
+  /// before the year: "الثلاثاء، ٢ يونيو ٢٠٢٦".
   func gregorianDate(_ date: Date) -> String {
     let formatter = DateFormatter()
     formatter.locale = locale
+    formatter.calendar = locale.civilCalendar
     formatter.timeZone = timeZone
     formatter.dateStyle = .full
     formatter.timeStyle = .none
@@ -137,5 +139,17 @@ nonisolated extension String {
   /// so it keeps its own direction inside text of the other direction.
   var bidiIsolated: String {
     "\u{2068}\(self)\u{2069}"
+  }
+}
+
+nonisolated extension Locale {
+  /// The calendar for the civil date beside the Hijri one: the locale's own, unless it
+  /// counts in Hijri itself, as Saudi Arabia's does, which would show the Hijri date twice.
+  var civilCalendar: Calendar {
+    switch calendar.identifier {
+    case .islamic, .islamicCivil, .islamicTabular, .islamicUmmAlQura:
+      Calendar(identifier: .gregorian)
+    default: calendar
+    }
   }
 }
