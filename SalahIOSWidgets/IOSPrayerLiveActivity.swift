@@ -56,22 +56,29 @@ struct IOSPrayerLiveActivity: Widget {
           .modifier(IOSActivityEnvironment(state: context.state))
         }
       } compactLeading: {
-        IOSActivityGlyph(state: context.state, side: 22)
-          .modifier(IOSActivityEnvironment(state: context.state))
-      } compactTrailing: {
-        Group {
-          if context.isStale {
-            Image(systemName: "arrow.clockwise").foregroundStyle(.secondary)
+        IOSActivityIslandWidthReader { isLimitedInWidth in
+          if isLimitedInWidth {
+            IOSActivityLimitedIsland(state: context.state, isStale: context.isStale)
           } else {
-            IOSActivityTimer(state: context.state, compact: true)
-              .foregroundStyle(activityAccent)
-              .frame(maxWidth: 54)
+            IOSActivityGlyph(state: context.state, side: 22)
           }
         }
         .modifier(IOSActivityEnvironment(state: context.state))
+      } compactTrailing: {
+        IOSActivityIslandWidthReader { isLimitedInWidth in
+          IOSActivityCompactTrailing(
+            state: context.state, isStale: context.isStale, isLimitedInWidth: isLimitedInWidth)
+        }
+        .modifier(IOSActivityEnvironment(state: context.state))
       } minimal: {
-        IOSActivityGlyph(state: context.state, side: 22)
-          .modifier(IOSActivityEnvironment(state: context.state))
+        IOSActivityIslandWidthReader { isLimitedInWidth in
+          if isLimitedInWidth {
+            IOSActivityLimitedIsland(state: context.state, isStale: context.isStale)
+          } else {
+            IOSActivityGlyph(state: context.state, side: 22)
+          }
+        }
+        .modifier(IOSActivityEnvironment(state: context.state))
       }
       .widgetURL(IOSSurfaceLink.activity)
       .keylineTint(activityAccent)
@@ -200,7 +207,7 @@ private struct IOSActivityTimer: View {
     )
     .lineLimit(1)
     .minimumScaleFactor(0.65)
-    .accessibilityLabel(spokenLabel)
+    .accessibilityLabel(spokenTimer(state, pause: pause))
   }
 
   private var timerRange: ClosedRange<Date> { state.timerInterval }
@@ -215,13 +222,6 @@ private struct IOSActivityTimer: View {
   private var elapsedUnits: Duration.UnitsFormatStyle {
     Duration.UnitsFormatStyle(allowedUnits: [.hours, .minutes], width: .narrow)
       .locale(Locale(identifier: state.languageIdentifier))
-  }
-
-  private var spokenLabel: Text {
-    if let pause { return Text(verbatim: state.spokenLabel(at: pause)) }
-    let timer = Text(
-      timerInterval: timerRange, countsDown: state.mode == .countdown, showsHours: true)
-    return Text("\(state.prayerName), \(state.eyebrow), \(timer)")
   }
 }
 
@@ -277,6 +277,13 @@ private struct IOSActivityStopButton: View {
   }
 }
 
+private func spokenTimer(_ state: SalahActivityAttributes.ContentState, pause: Date?) -> Text {
+  if let pause { return Text(verbatim: state.spokenLabel(at: pause)) }
+  let timer = Text(
+    timerInterval: state.timerInterval, countsDown: state.mode == .countdown, showsHours: true)
+  return Text("\(state.prayerName), \(state.eyebrow), \(timer)")
+}
+
 private func localized(
   _ english: String, _ arabic: String, state: SalahActivityAttributes.ContentState
 ) -> String {
@@ -293,5 +300,100 @@ struct IOSActivityEnvironment: ViewModifier {
       .environment(\.locale, Locale(identifier: state.languageIdentifier))
       .environment(\.timeZone, TimeZone(identifier: state.timeZoneIdentifier) ?? .current)
       .environment(\.layoutDirection, state.isRightToLeft ? .rightToLeft : .leftToRight)
+  }
+}
+
+/// iPhone Duo's vertical Dynamic Island, like the island on iPhone in landscape, fits compact
+/// and minimal presentations in a 28-point circle and shows the leading view alone.
+private struct IOSActivityIslandWidthReader<Content: View>: View {
+  @ViewBuilder let content: (Bool) -> Content
+
+  var body: some View {
+    if #available(iOS 27.0, *) {
+      IOSActivityIslandWidth(content: content)
+    } else {
+      content(false)
+    }
+  }
+}
+
+@available(iOS 27.0, *)
+private struct IOSActivityIslandWidth<Content: View>: View {
+  let content: (Bool) -> Content
+  @Environment(\.isDynamicIslandLimitedInWidth) private var isLimitedInWidth
+
+  var body: some View { content(isLimitedInWidth) }
+}
+
+/// The limited-width island's only view: progress toward the prayer, or through the playing
+/// sound, around its glyph. Stale content keeps its last progress and asks for a refresh.
+struct IOSActivityLimitedIsland: View {
+  let state: SalahActivityAttributes.ContentState
+  var isStale = false
+  @Environment(\.salahTimerPause) private var pause
+
+  var body: some View {
+    ZStack {
+      if isStale || pause != nil {
+        Circle().strokeBorder(SalahPalette(isDark: true).fillSecondary.color, lineWidth: 3)
+        Circle()
+          .inset(by: 1.5)
+          .trim(from: 0, to: state.progress(at: pause ?? state.updatedAt))
+          .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+          .rotationEffect(.degrees(-90))
+      } else {
+        ProgressView(timerInterval: state.progressStart...state.progressEnd, countsDown: false) {
+          EmptyView()
+        } currentValueLabel: {
+          EmptyView()
+        }
+        .progressViewStyle(.circular)
+        .tint(tint)
+      }
+      symbol
+    }
+    .frame(width: 28, height: 28)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(isStale ? Text(verbatim: staleLabel) : spokenTimer(state, pause: pause))
+  }
+
+  private var staleLabel: String {
+    localized("Update needed", "بحاجة إلى تحديث", state: state) + ", "
+      + localized("Refresh in Salah", "حدّث في صلاة", state: state)
+  }
+
+  @ViewBuilder private var symbol: some View {
+    if isStale {
+      Image(systemName: "arrow.clockwise")
+        .font(.system(size: 11, weight: .semibold))
+        .foregroundStyle(SalahPalette(isDark: true).labelSecondary.color)
+    } else if state.mode == .playing {
+      Image(systemName: "speaker.wave.2.fill")
+        .font(.system(size: 10, weight: .semibold))
+        .foregroundStyle(tint)
+    } else {
+      IOSActivityGlyph(state: state, side: 18)
+    }
+  }
+
+  private var tint: Color { state.phase.colors(isDark: true).tint.color }
+}
+
+/// With limited width only the leading view shows, so the trailing view stays empty.
+struct IOSActivityCompactTrailing: View {
+  let state: SalahActivityAttributes.ContentState
+  let isStale: Bool
+  let isLimitedInWidth: Bool
+
+  var body: some View {
+    if isLimitedInWidth {
+      EmptyView()
+    } else if isStale {
+      Image(systemName: "arrow.clockwise").foregroundStyle(.secondary)
+    } else {
+      IOSActivityTimer(state: state, compact: true)
+        .foregroundStyle(SalahPalette(isDark: true).accentFill.color)
+        .frame(maxWidth: 54)
+    }
   }
 }
