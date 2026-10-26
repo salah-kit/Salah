@@ -100,6 +100,34 @@ notification plan in the app process. Stop clears shared playback and signals th
 running audio owner. The shared contracts define these actions; the extension does not
 construct the app's views or own its audio player.
 
+## iPhone Duo
+
+iPhone Duo has two displays. Closed, its outer display has a vertical bar along one long
+edge. The system moves the tab bar, Back and icon toolbar items, such as Times' calendar,
+into it. Beside the bar, Salah's screens use the system's container margins rather than
+the design system's 16 points.
+
+Open, the inner display has a fold.
+[`IOSDisplayGeometryReader`](../SalahIOS/DesignSystem/IOSDisplayGeometry.swift) reads the
+hinge's division region, including it while it's inactive, so a flat and a folded device
+report the same 40-point region. [`IOSFoldLayout`](../SalahIOS/DesignSystem/IOSFoldLayout.swift)
+divides a screen into the pages on either side of it. On its side:
+
+- Today shows the next prayer on one page and the day's prayers on the other.
+- Times shows the date on one page and the day or week choice on the other. The week
+  table's columns leave the fold between Dhuhr and Asr. At accessibility text sizes Times
+  keeps to the first page, and without a location its recovery does.
+- Qibla shows the dial beside its facts.
+- Settings shows the list beside the selected pane.
+
+In right-to-left languages the first page is the one beside the bar. Upright, Today and
+Qibla put their pages above and below the fold, and while a prayer sound plays Today's
+lower page starts with Stop; Times and Settings scroll through the fold as on a taller
+display. Folding or unfolding moves nothing. The system's split containers meet the fold only while
+it's folded, so these screens lay out around the region themselves. Live Activities read
+`isDynamicIslandLimitedInWidth` and draw one 28-point view in the vertical Dynamic Island,
+leaving the trailing view empty.
+
 ## Presentation and verification boundaries
 
 Semantic assets in [`SalahIOS/Assets.xcassets`](../SalahIOS/Assets.xcassets) and
@@ -111,8 +139,8 @@ direction are applied at the view root.
 
 [`SalahIOSTests`](../SalahIOSTests) exercises logic and adapter contracts in a non-hosted
 simulator bundle. [`SalahIOSUITests`](../SalahIOSUITests) drives the constructed app,
-including persistence across relaunch, phone and tablet navigation, Arabic layout and
-real permission alerts. Each permission case requires a fresh app installation.
+including persistence across relaunch, phone and tablet navigation, iPhone Duo's displays,
+Arabic layout and real permission alerts. Each permission case requires a fresh app installation.
 [CONTRIBUTING.md](../CONTRIBUTING.md#ios-and-ipados) defines the build and journey commands.
 These source boundaries describe what the tests target; a passing run does not establish
 physical compass accuracy, eventual background scheduling or App Store availability.

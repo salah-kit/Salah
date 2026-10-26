@@ -10,6 +10,12 @@ read the saved changes. Screenshots are kept as result-bundle attachments.
   dark appearance, accessibility text sizes, and explicit prayer playback/stop.
 - `IOSIPadJourneys` covers the regular-width layout in landscape and first-run form-sheet
   geometry over the app. Run it on an iPad.
+- `IOSDuoJourneys` covers iPhone Duo's outer display: its side bar holds the tabs, Back and
+  icon controls beside the content, in English and Arabic. Run it on iPhone Duo, closed.
+- `IOSDuoPoseJourneys` covers the poses XCTest can't choose: the tent, and the open display
+  on its side and upright, where screens with two pages keep the fold empty. Choose each
+  pose in Device Hub first ([CONTRIBUTING](../CONTRIBUTING.md#ios-and-ipados)); each test
+  skips unless the simulator is in its pose.
 - `IOSProductionJourneys` completes first-run setup and verifies shared-container
   persistence without Debug launch overrides. Run it after a fresh installation.
 - `IOSPermissionJourneys` answers the actual SpringBoard alerts and completes onboarding.

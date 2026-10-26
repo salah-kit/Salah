@@ -13,8 +13,10 @@ A calm prayer app for iPhone, iPad and macOS, with prayer times, widgets and rem
 ### On iPhone and iPad
 
 The iOS app has Today, Times, Qibla and Settings, with tabs on iPhone and adaptive
-navigation on iPad. It calculates prayer times on the device from your current location
-or a city you choose, with no account or subscription.
+navigation on iPad. On iPhone Duo, the tabs and controls sit in the outer display's side
+bar, and the open display shows two pages that meet at the fold. It calculates prayer
+times on the device from your current location or a city you choose, with no account or
+subscription.
 
 - **Today and Times.** The next prayer, a live countdown, the day's schedule and sun
   arc, with day and week views for other dates. The sky follows the prayer period, or
