@@ -42,11 +42,11 @@ recordings with ones whose terms are clear, before any App Store or other binary
 release. The MIT License of this repository does not cover them.
 
 
-IOS BUNDLED RECORDINGS (SalahIOS/Resources/Audio/)
+IOS AND TVOS BUNDLED RECORDINGS (SalahIOS/Resources/Audio/)
 
-Salah for iOS bundles two original recordings by Ahmed Khalaf, copyright 2026,
-under Creative Commons Attribution 4.0 International (CC BY 4.0). They are separate
-from the macOS recordings listed above and from Salah's MIT-licensed source code.
+Salah for iOS and Salah for Apple TV bundle two original recordings by Ahmed Khalaf,
+copyright 2026, under Creative Commons Attribution 4.0 International (CC BY 4.0). They are
+separate from the macOS recordings listed above and from Salah's MIT-licensed source code.
 
   Bundled file                    Original title
   adhan-ahmed-khalaf.mp3          Developer_Athan-1.mp3
@@ -72,8 +72,9 @@ including commercially, under that license. Salah's software license and any
 distribution terms do not restrict the rights the audio license grants.
 
 No endorsement by the recorder is implied. The source's other recordings and
-artwork are not included in Salah for iOS. The same audio notice is bundled in
-SalahIOS/Resources/Audio/NOTICE for offline attribution.
+artwork are not included in Salah for iOS or Apple TV. Each app bundles its own audio
+notice, SalahIOS/Resources/Audio/NOTICE and SalahTV/Resources/Audio/NOTICE, for offline
+attribution. Salah for Apple TV plays the full recordings only; it makes no excerpts.
 
 SHA-256 of the bundled full recordings:
 adhan-ahmed-khalaf.mp3

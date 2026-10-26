@@ -2,7 +2,7 @@
 
 <img src="Design/Previews/app-icon.png" alt="" width="96" align="right">
 
-A calm prayer app for iPhone, iPad and macOS, with prayer times, widgets and reminders.
+A calm prayer app for iPhone, iPad, Apple TV and macOS, with prayer times, widgets and reminders.
 
 [![CI](https://github.com/salah-kit/Salah/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/salah-kit/Salah/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/salah-kit/Salah?sort=semver)](https://github.com/salah-kit/Salah/releases)
@@ -101,6 +101,32 @@ SalahUI's components in Salah's own styles; and SalahAlerts plans the alerts, in
 the ones macOS can keep and follows every one while the app runs. Salah's look, settings,
 sounds and wording stay in the app.
 
+### On Apple TV
+
+The Apple TV app has Today, Week and Settings, made for the Siri Remote and for a room. It
+calculates prayer times on the Apple TV from its location, found once, or from a city you
+choose.
+
+- **Today.** The next prayer and its countdown beside the day's prayers. Pressing a
+  prayer opens its sound. The sky follows the prayer period, or stays neutral.
+- **The room display.** Keep on Screen shows the day's times, a clock and the next prayer
+  across a room, at home or in a musalla, and holds off the screen saver while it's open.
+- **Week.** Seven days of times, a column a day. Moving past either end turns the week.
+- **The adhan while Salah is open.** At each prayer, the regular or Fajr adhan or a soft
+  tone, with the optional spoken du'a, over whatever is on screen. Stop, Play/Pause or
+  Back ends it. Apple TV can't play it while Salah is closed.
+- **Top Shelf.** With Salah in the top row of the Home Screen, banners for the next
+  prayer, today's prayers and the room display; pressing one opens it.
+- **Settings.** Location, the calculation method and its options, each prayer's sound,
+  volume, appearance, language and the Hijri date, in tvOS's own lists. Right-to-left
+  languages lay out right to left with their own digits, and Larger Text gives Today one
+  column.
+
+The Apple TV app is available as source in the Unreleased changes. There is no App Store
+listing or download yet. See [Installation](#apple-tv) to run a simulator build without a
+paid developer membership. The [privacy policy](docs/privacy.md) covers the Apple TV app
+too.
+
 ## Installation
 
 ### macOS
@@ -146,6 +172,24 @@ simulator, then Run. [CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados) covers th
 simulator journeys and unsigned device build. Installing on a physical device needs
 your local signing configuration; App Store distribution needs a paid membership.
 
+### Apple TV
+
+Build with Xcode 27 on a Mac. The app requires tvOS 26 or later. A simulator build needs
+no paid Apple Developer membership, signing team or provisioning profile:
+
+```sh
+git clone https://github.com/salah-kit/Salah.git
+cd Salah
+xcodebuild build -project Salah.xcodeproj -scheme SalahTV -configuration Debug \
+  -destination 'generic/platform=tvOS Simulator' -derivedDataPath .derived/tvos \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run it, open `Salah.xcodeproj`, choose the `SalahTV` scheme and an Apple TV simulator,
+then Run. [CONTRIBUTING.md](CONTRIBUTING.md#tvos) covers the command-line simulator
+journeys and the unsigned device build. Installing on an Apple TV needs your local signing
+configuration.
+
 ## Quick start
 
 ### macOS
@@ -178,6 +222,17 @@ your local signing configuration; App Store distribution needs a paid membership
    control gallery includes mute and Stop. Live Activities follow a prayer while it is
    relevant; iOS controls their availability and presentation.
 
+### Apple TV
+
+1. Open Salah and choose **Use This Apple TV's Location**; Allow Once is enough. Or
+   choose **Choose a City** and search. Salah picks the calculation method for the country.
+2. **Today** shows the next prayer beside the day's prayers. Press a prayer to choose its
+   sound, or **Keep on Screen** for the room display; Back leaves it.
+3. **Week** shows seven days; move past Monday or Sunday for another week. **Settings**
+   has the location, the calculation, the sounds, volume, appearance and language.
+4. Keep Salah open at prayer time to hear the adhan; Stop, Play/Pause or Back ends it.
+   Move Salah into the top row of the Home Screen to see its Top Shelf.
+
 ## Documentation
 
 This README and [CONTRIBUTING.md](CONTRIBUTING.md) cover using and building the app. The
@@ -188,7 +243,8 @@ repos: [SalahKit](https://github.com/salah-kit/SalahKit) and
 The design system for the apps (tokens, the prayer symbols, the app icon and previews of
 key screens) is described in [Design](Design/README.md).
 The [iOS architecture](docs/ios-architecture.md) describes state, persistence, platform
-services and the app's system surfaces.
+services and the app's system surfaces. The [tvOS architecture](docs/tvos-architecture.md)
+describes the Apple TV app, its sound and its Top Shelf.
 
 ## Supported platforms
 
@@ -197,6 +253,7 @@ services and the app's system surfaces.
 | macOS menu-bar app | macOS 14 Sonoma, on Apple silicon and Intel Macs |
 | iPhone app | iOS 26 |
 | iPad app | iPadOS 26 |
+| Apple TV app | tvOS 26 |
 
 ## Status and versioning
 
@@ -210,13 +267,16 @@ physical-device validation. The simulator build and test commands are in
 [CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados). The
 [iOS validation notes](docs/ios-validation.md) link the remaining hardware, VoiceOver
 and native-language reviews and explain the notification and background-refresh limits.
+The Apple TV app is Unreleased source in the same way; the
+[tvOS validation notes](docs/tvos-validation.md) link its remaining hardware, VoiceOver
+and native-language reviews and explain why the adhan plays only while Salah is open.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language
 review includes the new volume accessibility label.
 
-The iOS target includes two recordings under CC BY 4.0, with full attribution in
-[NOTICE](NOTICE) and the app's Audio credits. System sounds, a synthesized tone and
+The iOS and tvOS targets include two recordings under CC BY 4.0, with full attribution in
+[NOTICE](NOTICE) and each app's audio credits. System sounds, a synthesized tone and
 imported recordings are also available. It does not bundle the macOS recordings whose
 redistribution rights are still unconfirmed.
 

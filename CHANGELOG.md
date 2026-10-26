@@ -39,6 +39,15 @@ All notable changes to this project are documented here. The format follows
 - An extra-large desktop widget: the next prayer and its countdown, the day's sun arc,
   and the day's six times.
 - A soft tone, a generated sound, for alerts and reminders. No du’a follows it.
+- An Apple TV app for tvOS 26 or later, available as source: Today, with the next prayer
+  beside the day's prayers; a week of times; and Settings, all made for the Siri Remote. A
+  room display keeps the day's times on screen and the screen saver off. The adhan plays
+  at each prayer while Salah is open, and Stop, Play/Pause or Back ends it. The Top Shelf
+  shows the next prayer, today's prayers and the room display. It's built on the iPhone
+  app's settings, calculation and city search, and bundles the same CC BY 4.0 recordings;
+  each device keeps its own settings.
+  Simulator builds need no paid developer membership; App Store distribution is not
+  included.
 
 ### Changed
 
@@ -87,6 +96,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Show the Gregorian date in the Gregorian calendar where the region counts in the Islamic
+  calendar, such as Saudi Arabia; the date line showed the Hijri date a second time.
 - Appearance set back to System follows macOS again after Light or Dark, in the window,
   the dropdown and the note, which now follows the setting too.
 - In Arabic, Urdu and Persian, Salah's window lays out right to left with its panes at full
@@ -153,6 +164,11 @@ All notable changes to this project are documented here. The format follows
   [Persian #23](https://github.com/salah-kit/Salah/issues/23),
   [Bengali #24](https://github.com/salah-kit/Salah/issues/24) and
   [Malay #25](https://github.com/salah-kit/Salah/issues/25)).
+- Apple TV checks on a real device: sound through a television, the Siri Remote, the room
+  display and the screen saver, and the Top Shelf over time
+  ([#69](https://github.com/salah-kit/Salah/issues/69)); VoiceOver on Apple TV
+  ([#17](https://github.com/salah-kit/Salah/issues/17)); and native-speaker
+  review of the draft tvOS translations, in the language issues above.
 
 ## [1.1.2] - 2026-10-14
 
