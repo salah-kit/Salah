@@ -1,6 +1,6 @@
-# Salah for iPhone and iPad: Privacy Policy
+# Salah for iPhone, iPad and Apple TV: Privacy Policy
 
-Effective date: 23 October 2026
+Effective date: 26 October 2026
 
 Salah calculates prayer times and the Qibla direction on your device. It has no
 account, advertising, analytics or tracking. Salah does not operate a service that
@@ -61,6 +61,28 @@ Deleting the app does not remove an existing backup. You can manage or delete
 backups in iCloud settings; [Apple's backup instructions](https://support.apple.com/en-us/108922)
 explain the available controls. Salah has no server copy to access or delete and
 does not provide cloud sync.
+
+## On Apple TV
+
+Salah for Apple TV also calculates prayer times on the device, with no account,
+advertising, analytics or tracking. It stores your selected location, including its
+coordinates, city, country and time zone; the cities you chose recently; your calculation,
+sound and appearance choices; and setup progress on the Apple TV. It keeps a copy of the
+settings the Top Shelf needs in a local App Group shared with its Top Shelf extension. The
+extension draws the day's times and your city's name on the Home Screen while Salah's icon
+is in the top row, where anyone watching can see them, and keeps those images in the App
+Group's caches.
+
+If you choose **Use This Apple TV's Location**, Salah asks for location access while you
+use the app and requests one location. As on iPhone, it sends the coordinates to Apple's
+geocoding service to resolve the city, country and time zone, and a city search sends what
+you type to Apple Maps. Salah for Apple TV doesn't schedule notifications or import
+recordings; its sounds play only while it's open.
+
+To use a city instead, open **Salah → Settings → Location**. To stop location access,
+turn it off for Salah in the Apple TV's Location Services settings; the selected location
+remains available for offline calculations. Deleting Salah from the Apple TV removes its
+settings, the Top Shelf's copy of them and its images.
 
 ## Questions and changes
 

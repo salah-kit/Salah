@@ -12,7 +12,7 @@ labels and materials, plus one gold accent.
 | --- | --- |
 | [`tokens/`](tokens) | The design tokens, in the W3C Design Tokens format, and a checker with its tests |
 | [`Icons/`](Icons) | Custom symbols for the prayers, as SF Symbols templates |
-| [`AppIcon/`](AppIcon) | The app icon as an Icon Composer document, and its layer sources |
+| [`AppIcon/`](AppIcon) | The app icon as an Icon Composer document, its layer sources, and the Apple TV icon's layers |
 | [`Previews/`](Previews) | Rendered images of key screens |
 
 ## The Figma library
@@ -29,7 +29,8 @@ Pages:
   App Icon.
 - **Components:** System references, Components · Prayer, Components · Settings & States,
   Components · Widgets & Surfaces, Patterns.
-- **Screens:** iPhone, iPad, macOS, watchOS, Widgets & System Surfaces.
+- **Screens:** iPhone, iPad, macOS, tvOS, watchOS, Widgets & System Surfaces. The tvOS
+  page keeps its components on the page and adds no variables or styles.
 - **Accessibility.**
 
 Variable collections and their modes:
@@ -419,6 +420,25 @@ xcrun actool --compile "$(mktemp -d)" --platform iphoneos --minimum-deployment-t
 
 `actool` prints a property list that lists any errors and warnings, and exits with a nonzero
 status when compiling fails.
+
+### Apple TV icon and Top Shelf
+
+tvOS draws an app icon as a stack of layers that shift with focus, so the Apple TV app has
+its own brand assets in `SalahTV/Assets.xcassets`: an icon of five layers (Crescent,
+Mihrab, Glow, Texture and Sky, front to back) at 400 × 240 pt for the Home Screen and
+1280 × 768 px for the App Store, and the static Top Shelf images at 1920 × 720 and
+2320 × 720 pt. The layers are drawn on the library's tvOS page from the square icon's
+arch, crescent and evening sky. `AppIcon/tvOS/` holds each layer's SVG at the Home Screen
+icon's 2x size; the back layer, Sky, is opaque, as tvOS requires. After editing a layer,
+render the assets again. The script needs `rsvg-convert` (librsvg) and `ffmpeg`:
+
+```sh
+Design/AppIcon/tvOS/render.sh
+```
+
+The static Top Shelf images are exports of the tvOS page: the wide image's frame, and the
+standard image cut from its center. Replace both scales together. They show only until
+Salah has a location; then the Top Shelf extension draws banners of the day's times.
 
 ## Updating tokens
 

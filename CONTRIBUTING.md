@@ -7,7 +7,7 @@ org-wide code of conduct, security policy and support page live in
 ## What you need
 
 - macOS with Xcode 27. The Mac app runs on macOS 14 or later; the iPhone and iPad
-  app runs on iOS and iPadOS 26 or later.
+  app runs on iOS and iPadOS 26 or later, and the Apple TV app on tvOS 26 or later.
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) 2.46, only if you change `project.yml`
   or add, move or remove a file.
 - `swift format`, which ships with Xcode.
@@ -32,6 +32,10 @@ match `project.yml`.
 | `SalahIOSWidgets` | Home Screen, Lock Screen, Live Activity and Control Center extension (`io.github.salah-kit.Salah.iOS.Widgets`) |
 | `SalahIOSTests` | iOS logic and adapter tests (the `SalahIOS` scheme) |
 | `SalahIOSUITests` | Journeys through the running iOS app (their own scheme) |
+| `SalahTV` | The Apple TV app (`io.github.salah-kit.Salah.tvOS`) |
+| `SalahTVTopShelf` | The Top Shelf extension (`io.github.salah-kit.Salah.tvOS.TopShelf`) |
+| `SalahTVTests` | tvOS logic tests (the `SalahTV` scheme) |
+| `SalahTVUITests` | Journeys through the running Apple TV app (their own scheme) |
 
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
@@ -48,6 +52,13 @@ extension in `SalahIOSWidgets/`. Both reuse the portable settings, prayer, displ
 timeline models from `Shared/`, and mirror preferences through the same App Group
 identifier. This is local sharing between the app and its extension, without a sync
 service between devices.
+
+`SalahTV/` contains the Apple TV app and `SalahTVTopShelf/` its Top Shelf extension.
+`SalahTVShared/` holds what both compile: the theme, the wording helpers, the Top Shelf's
+snapshot and banners, and the String Catalog. The app also compiles the iOS app's store,
+preferences, preference storage, city search and audio files from `SalahIOS/` and
+`SalahIOSShared/`, so a change there builds and tests on both. The
+[tvOS architecture](docs/tvos-architecture.md) describes the split.
 
 ## Signing
 
@@ -159,6 +170,54 @@ or imported adhan and lasts at most two minutes. Shared playback and external St
 controls cover the whole session, up to thirty-two minutes including the du'a.
 Background refresh replenishes the rolling schedule when iOS grants execution time;
 the system controls when it runs.
+
+### tvOS
+
+Simulator builds and journeys need no paid Apple Developer membership or provisioning
+profile. Install a tvOS 26 or later simulator runtime through Xcode's Components settings.
+The app and its Top Shelf extension share the App Group `group.io.github.salah-kit.Salah`;
+both entitlements are generated from `project.yml`. Run the shared CI entry point from the
+repository root:
+
+```sh
+# Builds an unsigned Release app and Top Shelf extension for a generic Apple TV, then
+# runs the logic tests and real-app journeys on an Apple TV simulator.
+bash scripts/verify-tvos.sh
+```
+
+The script selects an installed runtime and an Apple TV type, creates a simulator, boots it
+without opening Simulator.app, and deletes it on success or failure. It leaves build
+products and test results in `.derived/tvos`; each run has its own `Results` directory.
+A fixed simulator location supplies a Core Location fix. The permission journeys reset
+Salah's location permission before each case, so Allow Once and Don't Allow each meet a
+fresh system alert; the production journey runs after a fresh install. The city and
+location journeys use Apple Maps and need a network connection. The Top Shelf journey
+drives the simulator's Home Screen, where Salah's icon has to be in the top row, as it is
+on a new simulator. [`SalahTVUITests/README.md`](SalahTVUITests/README.md) lists the
+journeys and the Debug launch options they use.
+
+To build a simulator app without running tests:
+
+```sh
+xcodebuild build -project Salah.xcodeproj -scheme SalahTV -configuration Debug \
+  -destination 'generic/platform=tvOS Simulator' -derivedDataPath .derived/tvos \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run on an Apple TV, configure your team in `Config/Local.xcconfig`, use
+`-allowProvisioningUpdates`, and enable the App Group for the app and the extension.
+Sound through a television, the screen saver and the Siri Remote need a real device:
+follow [#69](https://github.com/salah-kit/Salah/issues/69) and record the commit,
+the Apple TV model, the tvOS version and what you observed. The
+[tvOS validation notes](docs/tvos-validation.md) link the VoiceOver and native-language
+reviews too.
+
+The Apple TV app bundles the same two CC BY 4.0 recordings as iOS and generates the soft
+tone; [NOTICE](NOTICE) records the licenses, and About in the app reads the bundled audio
+notice. A tvOS notification can't play a sound, so the adhan plays only while Salah is
+open, from SalahAlerts' in-process engine, and stops when Salah leaves the screen. tvOS
+keeps only an app's defaults across launches, so preferences live there, and the settings
+mirror for the Top Shelf goes through the App Group.
 
 ## Tests
 
@@ -353,16 +412,20 @@ Code is formatted with `swift format` and the shared `.swift-format` (2-space in
 ```sh
 swift format format --in-place --recursive Salah SalahWidgetsExtension Shared \
   SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
-  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
+  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests \
+  SalahTV SalahTVShared SalahTVTopShelf SalahTVTests SalahTVUITests
 swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
   SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
-  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
+  SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests \
+  SalahTV SalahTVShared SalahTVTopShelf SalahTVTests SalahTVUITests
 ```
 
 ## Strings and languages
 
 User-facing text lives in String Catalogs: `Salah/Resources/Localizable.xcstrings`,
-`Salah/Resources/InfoPlist.xcstrings` and `SalahWidgetsExtension/Localizable.xcstrings`.
+`Salah/Resources/InfoPlist.xcstrings` and `SalahWidgetsExtension/Localizable.xcstrings`;
+the Apple TV app's are `SalahTVShared/Resources/Localizable.xcstrings`, which its Top Shelf
+extension shares, and `SalahTV/Resources/InfoPlist.xcstrings`.
 The widget's own labels are in `SalahWidgetLabels` (`Shared/SalahWidgetModels.swift`),
 because the extension can't read the app's String Catalog; prayer names come from
 SalahCore's `PrayerNames`. Every change needs all nine
@@ -379,6 +442,9 @@ The app's name is "Salah" in Latin script in every language except Arabic, where
 
 The app's icon is `Design/AppIcon/Salah.icon`, an Icon Composer document that Xcode compiles
 with the app; [Design/README.md](Design/README.md#app-icon) says how to edit and check it.
+The Apple TV app's layered icon and Top Shelf images are brand assets in
+`SalahTV/Assets.xcassets`, rendered from the layers in `Design/AppIcon/tvOS`
+([Design/README.md](Design/README.md#apple-tv-icon-and-top-shelf) has the steps).
 
 ## Pull requests
 
