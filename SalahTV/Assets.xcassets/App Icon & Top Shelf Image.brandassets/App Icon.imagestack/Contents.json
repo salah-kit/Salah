@@ -1,0 +1,23 @@
+{
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "layers": [
+    {
+      "filename": "Crescent.imagestacklayer"
+    },
+    {
+      "filename": "Mihrab.imagestacklayer"
+    },
+    {
+      "filename": "Glow.imagestacklayer"
+    },
+    {
+      "filename": "Texture.imagestacklayer"
+    },
+    {
+      "filename": "Sky.imagestacklayer"
+    }
+  ]
+}

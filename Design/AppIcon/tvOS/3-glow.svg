@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480" fill="none">
+  <g id="3-glow" clip-path="url(#clip0_387_5855)">
+    <g id="Glow">
+      <path id="Vector" d="M312.428 421.495V240.209C312.428 210.549 320.632 181.467 336.132 156.18C351.633 130.892 373.826 110.385 400.256 96.9258C426.686 110.385 448.879 130.892 464.379 156.18C479.88 181.467 488.084 210.549 488.084 240.209V421.495H312.428Z" fill="url(#paint0_radial_387_5855)" />
+    </g>
+  </g>
+  <defs>
+    <radialGradient id="paint0_radial_387_5855" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(400.256 313.399) scale(129.49 129.49)">
+      <stop stop-color="#D99D63" stop-opacity="0.35" />
+      <stop offset="0.55" stop-color="#D99D63" stop-opacity="0.158" />
+      <stop offset="1" stop-color="#D99D63" stop-opacity="0" />
+    </radialGradient>
+    <clipPath id="clip0_387_5855">
+      <rect width="800" height="480" fill="white" />
+    </clipPath>
+  </defs>
+</svg>
