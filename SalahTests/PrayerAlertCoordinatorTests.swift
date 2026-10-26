@@ -567,7 +567,7 @@ struct PrayerAlertCoordinatorTests {
 
     let fridayAdhan = try #require(
       harness.center.pendingRequest(Self.identifier(.dhuhr, .atTime, dayOffset: 3)))
-    #expect(fridayAdhan.content.title == "Jumuah")
+    #expect(fridayAdhan.content.title == "Jumu’ah")
     let thursday = try #require(
       harness.center.pendingRequest(Self.identifier(.dhuhr, .atTime, dayOffset: 2)))
     #expect(thursday.content.title == "Dhuhr")
@@ -577,8 +577,8 @@ struct PrayerAlertCoordinatorTests {
     await harness.settle()
     let posted = try #require(harness.center.posted.first)
     #expect(posted.identifier == Self.identifier(.dhuhr, .before, dayOffset: 3))
-    #expect(posted.content.title == "Jumuah")
-    #expect(Self.plain(posted.content.body) == "Jumuah in 20 minutes, at 12:19 PM.")
+    #expect(posted.content.title == "Jumu’ah")
+    #expect(Self.plain(posted.content.body) == "Jumu’ah in 20 minutes, at 12:19 PM.")
     #expect(posted.content.threadIdentifier == "salah-prayers-2026-06-05")
   }
 

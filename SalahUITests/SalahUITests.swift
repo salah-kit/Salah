@@ -8,12 +8,12 @@ import XCTest
 /// CONTRIBUTING.md); run it with the `SalahUITests` scheme. CI only builds this target.
 final class SalahUITests: XCTestCase {
   /// The day's names as Salah shows them in Makkah, its default place: on Friday, Dhuhr is
-  /// Jumuah.
+  /// Jumu’ah.
   static var prayerNames: [String] {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = TimeZone(identifier: "Asia/Riyadh") ?? .current
     let isFriday = calendar.component(.weekday, from: Date()) == 6
-    return ["Fajr", "Sunrise", isFriday ? "Jumuah" : "Dhuhr", "Asr", "Maghrib", "Isha"]
+    return ["Fajr", "Sunrise", isFriday ? "Jumu’ah" : "Dhuhr", "Asr", "Maghrib", "Isha"]
   }
 
   /// Every prayer's alert off, as the JSON the app stores, in the property-list form a

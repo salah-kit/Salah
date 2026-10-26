@@ -6,7 +6,7 @@ import SalahCore
 /// Jumu'ah.
 ///
 /// SalahKit never infers Jumu'ah from the date; naming Friday's Dhuhr Jumu'ah is Salah's
-/// own policy, so this source declares it. Prayer names then read "Jumuah" on Fridays,
+/// own policy, so this source declares it. Prayer names then read "Jumu’ah" on Fridays,
 /// and the alert planner hands Friday's Dhuhr to the Jumu'ah settings when the user turned
 /// the override on (`SalahSettings.alerts(for:)`, `Preferences.alertSettings(for:)`).
 /// Everything else is the calculation's, unchanged: the same events, coverage and gaps,

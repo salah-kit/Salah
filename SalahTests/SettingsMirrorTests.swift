@@ -240,7 +240,7 @@ struct SettingsMirrorTests {
     #expect(friday.observance == .jumuah)
     #expect(Fixture.event(.dhuhr).observance == .ordinary)
     for (language, name) in [
-      (AppLanguage.english, "Jumuah"), (.arabic, "الجمعة"), (.french, "Joumouah"),
+      (AppLanguage.english, "Jumu’ah"), (.arabic, "الجمعة"), (.french, "Joumouah"),
     ] {
       let scratch = ScratchDefaults()
       let preferences = Preferences(defaults: scratch.defaults)
