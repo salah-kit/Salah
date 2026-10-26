@@ -36,10 +36,12 @@ xcrun simctl boot "$simulator_id"
 xcrun simctl bootstatus "$simulator_id" -b
 xcrun simctl location "$simulator_id" set 21.4225,39.8262
 
-core_class=IOSCoreJourneys
-if [[ "$family" == iPad ]]; then
-  core_class=IOSIPadJourneys
-fi
+# iPhone Duo starts closed, on its outer display, where its journeys run.
+case "$family" in
+  iPad) core_class=IOSIPadJourneys ;;
+  Duo) core_class=IOSDuoJourneys ;;
+  *) core_class=IOSCoreJourneys ;;
+esac
 
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahIOS \
   -destination "platform=iOS Simulator,id=$simulator_id" \

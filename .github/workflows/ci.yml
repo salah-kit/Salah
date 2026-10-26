@@ -97,7 +97,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        family: [iPhone, iPad]
+        family: [iPhone, iPad, Duo]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -109,7 +109,8 @@ jobs:
           xcrun simctl list runtimes
 
       # The iPhone job also builds the Release app and embedded widget for a
-      # generic device, unsigned. Both families run logic and real-app journeys.
+      # generic device, unsigned. Every family runs logic and real-app journeys;
+      # Duo runs on iPhone Duo, which needs the iOS 27.1 simulator runtime.
       # The script creates and deletes its own simulator and needs no paid team.
       - name: Build and test iOS
         env:
@@ -133,6 +134,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+
+      - name: Test the simulator selection
+        run: python3 -B -m unittest discover -s scripts
 
       - name: swift format lint
         run: |
