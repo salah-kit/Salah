@@ -126,6 +126,43 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
 
+  tvos-build-and-test:
+    name: tvOS
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      # A hosted image may come without the tvOS simulator; download it only then.
+      - name: Install the tvOS simulator
+        run: |
+          if ! xcrun simctl list --json runtimes devicetypes \
+            | python3 scripts/select-tvos-simulator.py >/dev/null; then
+            xcodebuild -downloadPlatform tvOS
+          fi
+
+      # Builds the Release app and its Top Shelf extension for a generic Apple TV,
+      # unsigned, then runs logic tests and real-app journeys on a simulator the script
+      # creates and deletes. It needs no paid team.
+      - name: Build and test tvOS
+        run: bash scripts/verify-tvos.sh
+
+      - name: Upload tvOS test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tvos-results
+          path: .derived/tvos/Results
+          include-hidden-files: true
+          if-no-files-found: ignore
+
   lint:
     name: Lint
     runs-on: xcode-27
@@ -142,7 +179,8 @@ jobs:
         run: |
           swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
             SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
-            SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests
+            SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests \
+            SalahTV SalahTVShared SalahTVTopShelf SalahTVTests SalahTVUITests
 
       - name: Check the flat app icon
         run: python3 Design/AppIcon/flatten_icon.py --check
