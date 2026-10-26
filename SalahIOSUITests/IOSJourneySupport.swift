@@ -8,11 +8,16 @@ struct IOSJourneyApp {
   let suite = "journey-" + UUID().uuidString
   let fixture: Bool
   let skipOnboarding: Bool
+  let now: String
   var extraArguments: [String] = []
 
-  init(fixture: Bool = true, skipOnboarding: Bool = true, extraArguments: [String] = []) {
+  init(
+    fixture: Bool = true, skipOnboarding: Bool = true, now: String = "2026-06-02T13:19:00+03:00",
+    extraArguments: [String] = []
+  ) {
     self.fixture = fixture
     self.skipOnboarding = skipOnboarding
+    self.now = now
     self.extraArguments = extraArguments
   }
 
@@ -23,7 +28,7 @@ struct IOSJourneyApp {
         "-salah.ios.fixture", fixture ? "true" : "false",
         "-salah.ios.skipOnboarding", skipOnboarding ? "true" : "false",
         "-salah.ios.reset", reset ? "true" : "false",
-        "-salah.ios.now", "2026-06-02T13:19:00+03:00",
+        "-salah.ios.now", now,
         "-AppleLanguages", "(en)", "-AppleLocale", "en_US",
       ] + extraArguments
     app.launch()
@@ -91,16 +96,56 @@ extension XCTestCase {
   @MainActor
   func reveal(_ target: XCUIElement, in app: XCUIApplication) {
     for _ in 0..<5 where !target.isHittable {
-      app.swipeUp()
+      swipe(up: true, alongside: target, in: app)
+    }
+    // A row scrolled under a navigation bar still reports itself hittable, but a tap at its
+    // middle reaches the bar or the status bar above it.
+    for _ in 0..<3 where isUnderNavigationBar(target, in: app) {
+      swipe(up: false, alongside: target, in: app)
+    }
+  }
+
+  /// Swipes the tallest scrolling view in the target's column, or the app before the target has
+  /// a frame. On iPhone Duo's open display the window's middle is the fold, where nothing
+  /// scrolls, and gestures placed by coordinates don't reach that display.
+  @MainActor
+  private func swipe(up: Bool, alongside target: XCUIElement, in app: XCUIApplication) {
+    var surface: XCUIElement = app
+    if target.exists {
+      let column = target.frame.midX
+      let window = app.windows.firstMatch.frame
+      let columns = [app.scrollViews, app.collectionViews, app.tables]
+        .flatMap { $0.allElementsBoundByIndex }
+        .map { (element: $0, frame: $0.frame) }
+        .filter {
+          $0.frame.minX <= column && column <= $0.frame.maxX && $0.frame.intersects(window)
+        }
+      if let tallest = columns.max(by: { $0.frame.height < $1.frame.height }) {
+        surface = tallest.element
+      }
+    }
+    up ? surface.swipeUp() : surface.swipeDown()
+  }
+
+  @MainActor
+  private func isUnderNavigationBar(_ target: XCUIElement, in app: XCUIApplication) -> Bool {
+    guard target.exists else { return false }
+    let frame = target.frame
+    return app.navigationBars.allElementsBoundByIndex.contains { bar in
+      bar.frame.minX < frame.maxX && frame.minX < bar.frame.maxX
+        && frame.midY < bar.frame.maxY && !bar.frame.contains(frame)
     }
   }
 
   @MainActor
   func back(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
-    let button = app.navigationBars.buttons.firstMatch
+    // Beside iPhone Duo's vertical bar, Back leaves the navigation bar for the side bar.
+    let navigationBack = app.navigationBars.buttons.firstMatch
+    let sideBack = app.buttons.matching(identifier: "BackButton").firstMatch
     XCTAssertTrue(
-      button.exists || button.waitForExistence(timeout: 5), "Missing Back", file: file, line: line)
-    button.tap()
+      waitUntil(timeout: 5) { navigationBack.exists || sideBack.exists }, "Missing Back",
+      file: file, line: line)
+    (navigationBack.exists ? navigationBack : sideBack).tap()
   }
 
   @MainActor

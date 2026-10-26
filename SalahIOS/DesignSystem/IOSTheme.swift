@@ -25,7 +25,7 @@ enum IOSTheme {
 }
 
 /// Shared dimensions are points, as in the Figma library and the token source.
-enum IOSMetrics {
+nonisolated enum IOSMetrics {
   static let screenMargin: CGFloat = 16
   static let cardPadding: CGFloat = 16
   static let cardRadius: CGFloat = 26
