@@ -19,51 +19,36 @@ struct IOSTimesView: View {
   private var wideLayout: Bool { sizeClass == .regular && !typeSize.isAccessibilitySize }
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 16) {
-        if wideLayout {
-          HStack {
-            Text(verbatim: copy("Times", "الأوقات"))
-              .font(.largeTitle.bold())
-              .accessibilityAddTraits(.isHeader)
-            Spacer()
-            modePicker.frame(width: 280)
-          }
-        } else {
-          modePicker
-        }
-        dateNavigator
-          .frame(maxWidth: wideLayout ? 560 : .infinity)
-          .frame(maxWidth: .infinity)
-        if store.preferences.location == nil {
-          ContentUnavailableView {
-            Label(copy("Choose your location", "اختر موقعك"), systemImage: "location.slash.fill")
-          } description: {
-            Text(
-              verbatim: copy(
-                "Choose a city to see its prayer times.", "اختر مدينة لعرض أوقات الصلاة فيها."))
-          } actions: {
-            Button(copy("Choose a City", "اختيار مدينة")) { showLocation() }
-              .buttonStyle(.glassProminent)
-              .accessibilityIdentifier("times.chooseCity")
-          }
-        } else if mode == .day {
-          dayList
-        } else {
-          weekTable
-        }
-        if store.preferences.location != nil { calculationFooter }
+    IOSDisplayGeometryReader { geometry in
+      // Beside iPhone Duo's vertical bar the navigation bar stays, so the calendar moves to the
+      // side bar with the title above the content; the tablet shows its own title row instead.
+      let barsAtSide = geometry.hasVerticalBar
+      let pages = geometry.pages.flatMap { $0.axis == .vertical ? $0 : nil }
+      let insets = contentInsets(geometry)
+      // At accessibility sizes Times keeps its one column, on the first page.
+      let firstPageColumn = typeSize.isAccessibilitySize ? pages?.first.length : nil
+      ScrollView {
+        content(
+          barsAtSide: barsAtSide, pages: firstPageColumn == nil ? pages : nil,
+          weekColumns: typeSize.isAccessibilitySize
+            ? nil
+            : IOSWeekColumns(
+              rowStart: insets.leading + 24, rowEnd: geometry.size.width - insets.trailing - 24,
+              fold: pages == nil ? nil : geometry.fold)
+        )
+        .frame(maxWidth: geometry.fold == nil && !barsAtSide ? 1_200 : .infinity)
+        .frame(width: firstPageColumn)
+        .padding(.leading, insets.leading)
+        .padding(.trailing, insets.trailing)
+        .padding(.top, max(8, geometry.topMargin))
+        .padding(.bottom, 24)
+        .frame(maxWidth: .infinity, alignment: firstPageColumn == nil ? .center : .leading)
       }
-      .frame(maxWidth: 1_200)
-      .padding(.horizontal, wideLayout ? 48 : 16)
-      .padding(.top, 8)
-      .padding(.bottom, 24)
-      .frame(maxWidth: .infinity)
+      .toolbar(wideLayout && !barsAtSide ? .hidden : .visible, for: .navigationBar)
     }
     .background { IOSSkyBackground(phase: store.display?.phase ?? .neutral) }
     .navigationTitle(copy("Times", "الأوقات"))
     .navigationBarTitleDisplayMode(.large)
-    .toolbar(wideLayout ? .hidden : .visible, for: .navigationBar)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         Button(copy("Choose date", "اختيار تاريخ"), systemImage: "calendar") {
@@ -75,6 +60,66 @@ struct IOSTimesView: View {
     }
     .sheet(isPresented: $showsDatePicker) { datePicker }
     .accessibilityIdentifier("times.screen")
+  }
+
+  /// The tablet's wide layout keeps its 48-point margins; iPhone Duo's displays follow the system.
+  private func contentInsets(_ geometry: IOSDisplayGeometry) -> IOSContentInsets {
+    if geometry.hasVerticalBar || geometry.fold != nil || !wideLayout { return geometry.insets }
+    return IOSContentInsets(leading: 48, trailing: 48)
+  }
+
+  @ViewBuilder
+  private func content(barsAtSide: Bool, pages: IOSFoldPages?, weekColumns: IOSWeekColumns?)
+    -> some View
+  {
+    VStack(alignment: .leading, spacing: 16) {
+      if wideLayout, barsAtSide, let pages {
+        // The fold separates the date's buttons from the day and week choice.
+        HStack(spacing: 0) {
+          dateNavigator.frame(width: pages.first.length)
+          Spacer(minLength: pages.second.lowerBound - pages.first.upperBound)
+          modePicker.frame(width: min(280, pages.second.length))
+        }
+      } else if wideLayout {
+        HStack {
+          if !barsAtSide {
+            Text(verbatim: copy("Times", "الأوقات"))
+              .font(.largeTitle.bold())
+              .accessibilityAddTraits(.isHeader)
+          }
+          Spacer()
+          modePicker.frame(width: 280)
+        }
+        dateNavigator
+          .frame(maxWidth: 560)
+          .frame(maxWidth: .infinity)
+      } else {
+        modePicker
+        dateNavigator
+      }
+      if store.preferences.location == nil {
+        ContentUnavailableView {
+          Label(copy("Choose your location", "اختر موقعك"), systemImage: "location.slash.fill")
+        } description: {
+          Text(
+            verbatim: copy(
+              "Choose a city to see its prayer times.", "اختر مدينة لعرض أوقات الصلاة فيها."))
+        } actions: {
+          Button(copy("Choose a City", "اختيار مدينة")) { showLocation() }
+            .buttonStyle(.glassProminent)
+            .accessibilityIdentifier("times.chooseCity")
+        }
+        .frame(maxWidth: pages?.first.length)
+      } else if mode == .day {
+        dayList.frame(maxWidth: selectedDisplay == nil ? pages?.first.length : nil)
+      } else {
+        weekTable(columns: weekColumns)
+      }
+      if store.preferences.location != nil {
+        // Beside a fold, the footer wraps on the first page.
+        calculationFooter.frame(maxWidth: pages?.first.length, alignment: .leading)
+      }
+    }
   }
 
   private var modePicker: some View {
@@ -134,13 +179,15 @@ struct IOSTimesView: View {
     }
   }
 
-  private var weekTable: some View {
+  /// `columns` puts iPhone Duo's fold between Dhuhr and Asr; without them, columns share the width.
+  private func weekTable(columns: IOSWeekColumns?) -> some View {
     IOSCard(padding: wideLayout ? 12 : 8) {
       ScrollView(.horizontal, showsIndicators: false) {
-        VStack(spacing: 2) {
+        // Rows start at the leading edge, where the week's columns are measured from.
+        VStack(alignment: .leading, spacing: 2) {
           HStack(alignment: .bottom, spacing: 0) {
-            Color.clear.frame(width: wideLayout ? 220 : 50, height: 1)
-            ForEach(PrayerKind.allCases, id: \.self) { kind in
+            Color.clear.frame(width: dayColumnWidth(columns), height: 1)
+            prayerCells(columns) { kind in
               VStack(spacing: 2) {
                 IOSPrayerGlyph(name: "salah." + kind.rawValue, size: wideLayout ? 22 : 18)
                 Text(verbatim: store.names.name(of: kind))
@@ -148,7 +195,6 @@ struct IOSTimesView: View {
                   .fixedSize(horizontal: false, vertical: true)
               }
               .foregroundStyle(IOSTheme.labelSecondary)
-              .frame(maxWidth: .infinity)
             }
           }
           .padding(.horizontal, wideLayout ? 12 : 6)
@@ -156,7 +202,7 @@ struct IOSTimesView: View {
           .padding(.bottom, 4)
           .accessibilityHidden(true)
           ForEach(store.weekDays, id: \.self) { day in
-            weekRow(day)
+            weekRow(day, columns: columns)
           }
         }
         .frame(
@@ -173,7 +219,25 @@ struct IOSTimesView: View {
     .accessibilityIdentifier("times.weekTable")
   }
 
-  private func weekRow(_ day: CivilDay) -> some View {
+  private func dayColumnWidth(_ columns: IOSWeekColumns?) -> CGFloat {
+    columns?.day ?? (wideLayout ? 220 : 50)
+  }
+
+  /// A header or day row's six prayer cells, leaving the fold's gap after Dhuhr.
+  private func prayerCells<Cell: View>(
+    _ columns: IOSWeekColumns?, @ViewBuilder cell: @escaping (PrayerKind) -> Cell
+  ) -> some View {
+    ForEach(PrayerKind.allCases, id: \.self) { kind in
+      if let columns {
+        cell(kind).frame(width: columns.prayer)
+        if kind == .dhuhr { Color.clear.frame(width: columns.gap, height: 1) }
+      } else {
+        cell(kind).frame(maxWidth: .infinity)
+      }
+    }
+  }
+
+  private func weekRow(_ day: CivilDay, columns: IOSWeekColumns?) -> some View {
     let events = store.schedule?.day(day).day?.events ?? []
     let isToday = day == store.today
     return Button {
@@ -182,7 +246,8 @@ struct IOSTimesView: View {
     } label: {
       HStack(spacing: 0) {
         VStack(alignment: .leading, spacing: 0) {
-          if wideLayout {
+          // Two pages leave the day column room for its short form.
+          if wideLayout && columns == nil {
             HStack(spacing: 6) {
               Text(verbatim: formatted(day, template: "EEEE"))
                 .font(.headline)
@@ -203,15 +268,15 @@ struct IOSTimesView: View {
               .foregroundStyle(IOSTheme.labelPrimary)
           }
         }
-        .frame(width: wideLayout ? 220 : 50, alignment: .leading)
-        ForEach(PrayerKind.allCases, id: \.self) { kind in
+        .frame(width: dayColumnWidth(columns), alignment: .leading)
+        prayerCells(columns) { kind in
           Text(verbatim: events.first(where: { $0.kind == kind }).map(weekTime(_:)) ?? "—")
             .font(wideLayout ? .body.monospacedDigit() : .footnote.monospacedDigit())
             .foregroundStyle(IOSTheme.labelPrimary)
             .fixedSize(horizontal: true, vertical: false)
-            .frame(maxWidth: .infinity)
         }
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, wideLayout ? 12 : 6)
       .padding(.vertical, wideLayout ? 9 : 7)
       .background(

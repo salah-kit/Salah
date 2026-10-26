@@ -27,38 +27,38 @@ struct IOSQiblaView: View {
   private var wideLayout: Bool { sizeClass == .regular && !typeSize.isAccessibilitySize }
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollView {
-        if wideLayout {
-          let factsWidth = min(420, geometry.size.width * 0.38)
-          let dialSize = min(480, max(300, geometry.size.width - factsWidth - 136))
-          HStack(alignment: .center, spacing: 40) {
-            dial(diameter: dialSize)
-              .frame(maxWidth: .infinity)
+    IOSDisplayGeometryReader { geometry in
+      if let pages = geometry.pages {
+        foldPages(pages, geometry: geometry)
+      } else {
+        ScrollView {
+          if wideLayout {
+            let factsWidth = min(420, geometry.size.width * 0.38)
+            let dialSize = min(480, max(300, geometry.size.width - factsWidth - 136))
+            HStack(alignment: .center, spacing: 40) {
+              dial(diameter: dialSize)
+                .frame(maxWidth: .infinity)
+              factsColumn
+                .frame(width: factsWidth)
+            }
+            .padding(.horizontal, 48)
+            .padding(.top, 24)
+            .padding(.bottom, 32)
+          } else {
             VStack(alignment: .leading, spacing: 16) {
-              Text(verbatim: copy("Qibla", "القبلة"))
-                .font(.largeTitle.bold())
-                .accessibilityAddTraits(.isHeader)
+              dial(diameter: 300)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
               locationDetails
             }
-            .frame(width: factsWidth)
+            .frame(maxWidth: 620)
+            .padding(.leading, geometry.insets.leading)
+            .padding(.trailing, geometry.insets.trailing)
+            .padding(.top, max(8, geometry.topMargin))
+            .padding(.bottom, 24)
+            .frame(maxWidth: .infinity)
           }
-          .padding(.horizontal, 48)
-          .padding(.top, 24)
-          .padding(.bottom, 32)
-        } else {
-          VStack(alignment: .leading, spacing: 16) {
-            dial(diameter: 300)
-              .frame(maxWidth: .infinity)
-              .padding(.top, 12)
-              .padding(.bottom, 8)
-            locationDetails
-          }
-          .frame(maxWidth: 620)
-          .padding(.horizontal, 16)
-          .padding(.top, 8)
-          .padding(.bottom, 24)
-          .frame(maxWidth: .infinity)
         }
       }
     }
@@ -77,6 +77,69 @@ struct IOSQiblaView: View {
       if phase == .active { location.startHeading() } else { location.stopHeading() }
     }
     .accessibilityIdentifier("qibla.screen")
+  }
+
+  /// On iPhone Duo's inner display the dial keeps one page and its facts the other, clear of the
+  /// fold, flat or folded. The pages' container takes the screen's identifier, so the dial keeps
+  /// its own.
+  private func foldPages(_ pages: IOSFoldPages, geometry: IOSDisplayGeometry) -> some View {
+    foldPageStack(pages, geometry: geometry)
+      .accessibilityElement(children: .contain)
+  }
+
+  @ViewBuilder
+  private func foldPageStack(_ pages: IOSFoldPages, geometry: IOSDisplayGeometry) -> some View {
+    let gap = pages.second.lowerBound - pages.first.upperBound
+    switch pages.axis {
+    case .vertical:
+      HStack(spacing: 0) {
+        dial(
+          diameter: min(
+            440, pages.first.length - 32, geometry.size.height - geometry.topMargin - 48)
+        )
+        .frame(width: pages.first.length, height: geometry.size.height)
+        Spacer(minLength: 0).frame(width: gap)
+        ScrollView {
+          factsColumn
+            .padding(.top, max(24, geometry.topMargin))
+            .padding(.bottom, 24)
+        }
+        .scrollIndicators(.hidden)
+        .frame(width: pages.second.length)
+      }
+      .padding(.leading, pages.first.lowerBound)
+      .frame(width: geometry.size.width, alignment: .leading)
+    case .horizontal:
+      VStack(spacing: 0) {
+        dial(diameter: min(440, pages.first.length - 48, geometry.contentWidth))
+          .frame(width: geometry.size.width, height: pages.first.length)
+        Spacer(minLength: 0).frame(height: gap)
+        ScrollView {
+          factsColumn
+            .frame(width: geometry.contentWidth, alignment: .leading)
+            .padding(.leading, geometry.insets.leading)
+            .padding(.trailing, geometry.insets.trailing)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+        }
+        .scrollIndicators(.hidden)
+        .frame(height: pages.second.length)
+      }
+      .padding(.top, pages.first.lowerBound)
+      .frame(height: geometry.size.height, alignment: .top)
+    }
+  }
+
+  /// Wide layouts hide the navigation bar and title the facts themselves.
+  private var factsColumn: some View {
+    VStack(alignment: .leading, spacing: 16) {
+      if wideLayout {
+        Text(verbatim: copy("Qibla", "القبلة"))
+          .font(.largeTitle.bold())
+          .accessibilityAddTraits(.isHeader)
+      }
+      locationDetails
+    }
   }
 
   private func dial(diameter: CGFloat) -> some View {

@@ -7,60 +7,230 @@ import UIKit
 struct IOSTodayView: View {
   @Environment(IOSAppStore.self) private var store
   @Environment(\.dynamicTypeSize) private var typeSize
+  @Environment(\.verticalSizeClass) private var verticalSizeClass
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.openURL) private var openURL
 
   private var copy: IOSPrayerScreenCopy { IOSPrayerScreenCopy(locale: store.locale) }
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollView {
+    IOSDisplayGeometryReader { geometry in
+      Group {
         if let display = store.display {
-          let wide = geometry.size.width >= 740 && !typeSize.isAccessibilitySize
-          if wide {
-            let columnsWidth = max(0, geometry.size.width - 120)
-            HStack(alignment: .top, spacing: 24) {
-              VStack(spacing: 16) {
-                dateHeader(display)
-                hero(display)
-                sun(display)
-              }
-              .frame(width: columnsWidth * 520 / 1_090)
-              VStack(alignment: .leading, spacing: 16) {
-                calculationGapBanner(display)
-                prayerList(display)
-                calculationSummary
-              }
-              .frame(maxWidth: .infinity)
-            }
-            .frame(width: max(0, geometry.size.width - 96))
-            .padding(.horizontal, 48)
-            .padding(.top, 8)
-            .padding(.bottom, 32)
-          } else {
-            VStack(alignment: .leading, spacing: 16) {
-              dateHeader(display)
-              hero(display)
-              calculationGapBanner(display)
-              prayerList(display)
-              sun(display)
-              calculationSummary
-            }
-            .frame(width: max(0, geometry.size.width - 32))
-            .padding(.horizontal, 16)
-            .padding(.bottom, 24)
+          switch layout(in: geometry) {
+          case .pages(let pages): foldPages(display, pages: pages, geometry: geometry)
+          case .wide: scrolling { wideColumns(display, width: geometry.size.width) }
+          case .sideBySide: scrolling { sideBySide(display, geometry: geometry) }
+          case .stacked: scrolling { stacked(display, geometry: geometry) }
           }
+        } else if let pages = geometry.pages {
+          // Beside a fold, the recovery keeps to the first page.
+          scrolling { locationRecovery.padding(16) }
+            .frame(
+              width: pages.axis == .vertical ? pages.first.length : nil,
+              height: pages.axis == .horizontal ? pages.first.length : nil
+            )
+            .padding(pages.axis == .vertical ? .leading : .top, pages.first.lowerBound)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
-          locationRecovery
-            .padding(16)
-            .frame(minHeight: max(0, geometry.size.height - 32), alignment: .top)
+          scrolling {
+            locationRecovery
+              .padding(16)
+              .frame(minHeight: max(0, geometry.size.height - 32), alignment: .top)
+          }
         }
       }
-      .frame(width: geometry.size.width)
+      .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
       .background { IOSSkyBackground(phase: store.display?.phase ?? .neutral) }
-      .scrollIndicators(.hidden)
     }
     .toolbar(.hidden, for: .navigationBar)
     .accessibilityIdentifier("today.screen")
+  }
+
+  private func layout(in geometry: IOSDisplayGeometry) -> IOSTodayLayout {
+    IOSTodayLayout.resolve(
+      size: geometry.size, pages: geometry.pages,
+      isCompactHeight: verticalSizeClass == .compact, hasVerticalBar: geometry.hasVerticalBar,
+      isAccessibilitySize: typeSize.isAccessibilitySize)
+  }
+
+  private func scrolling<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    ScrollView { content() }.scrollIndicators(.hidden)
+  }
+
+  private func stacked(_ display: SalahDisplay, geometry: IOSDisplayGeometry) -> some View {
+    VStack(alignment: .leading, spacing: 16) {
+      dateHeader(display)
+      hero(display)
+      calculationGapBanner(display)
+      prayerList(display)
+      sun(display)
+      calculationSummary
+    }
+    .frame(width: geometry.contentWidth)
+    .padding(.leading, geometry.insets.leading)
+    .padding(.trailing, geometry.insets.trailing)
+    .padding(.top, geometry.topMargin)
+    .padding(.bottom, 24)
+  }
+
+  private func wideColumns(_ display: SalahDisplay, width: CGFloat) -> some View {
+    let columnsWidth = max(0, width - 120)
+    return HStack(alignment: .top, spacing: 24) {
+      VStack(spacing: 16) {
+        dateHeader(display)
+        hero(display)
+        sun(display)
+      }
+      .frame(width: columnsWidth * 520 / 1_090)
+      VStack(alignment: .leading, spacing: 16) {
+        calculationGapBanner(display)
+        prayerList(display)
+        calculationSummary
+      }
+      .frame(maxWidth: .infinity)
+    }
+    .frame(width: max(0, width - 96))
+    .padding(.horizontal, 48)
+    .padding(.top, 8)
+    .padding(.bottom, 32)
+  }
+
+  /// iPhone Duo standing closed on its side keeps the next prayer large enough to read from a
+  /// distance, beside the day's prayers.
+  private func sideBySide(_ display: SalahDisplay, geometry: IOSDisplayGeometry) -> some View {
+    let column = max(0, (geometry.contentWidth - 16) / 2)
+    return VStack(alignment: .leading, spacing: 16) {
+      dateHeader(display)
+      HStack(alignment: .top, spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
+          hero(display)
+          sun(display)
+          calculationSummary
+        }
+        .frame(width: column)
+        VStack(alignment: .leading, spacing: 16) {
+          calculationGapBanner(display)
+          prayerList(display)
+        }
+        .frame(width: column)
+      }
+    }
+    .frame(width: geometry.contentWidth)
+    .padding(.leading, geometry.insets.leading)
+    .padding(.trailing, geometry.insets.trailing)
+    .padding(.top, max(8, geometry.topMargin))
+    .padding(.bottom, 24)
+  }
+
+  /// iPhone Duo's inner display, flat or folded, opens Today like a book: the next prayer on the
+  /// first page and the day on the second, beside each other or above and below. Each page
+  /// scrolls on its own and nothing sits in the fold. Propped like a laptop, the controls lie on
+  /// the lower half, so Stop moves there while audio plays.
+  @ViewBuilder
+  private func foldPages(
+    _ display: SalahDisplay, pages: IOSFoldPages, geometry: IOSDisplayGeometry
+  ) -> some View {
+    switch pages.axis {
+    case .vertical:
+      HStack(spacing: 0) {
+        scrolling {
+          VStack(alignment: .leading, spacing: 16) {
+            dateHeader(display)
+            hero(display)
+            sun(display)
+          }
+          .padding(.top, max(8, geometry.topMargin))
+          .padding(.bottom, 24)
+        }
+        .frame(width: pages.first.length)
+        Spacer(minLength: 0)
+          .frame(width: pages.second.lowerBound - pages.first.upperBound)
+        scrolling {
+          VStack(alignment: .leading, spacing: 16) {
+            calculationGapBanner(display)
+            prayerList(display)
+            calculationSummary
+          }
+          .padding(.top, max(8, geometry.topMargin))
+          .padding(.bottom, 24)
+        }
+        .frame(width: pages.second.length)
+      }
+      .padding(.leading, pages.first.lowerBound)
+      .frame(width: geometry.size.width, alignment: .leading)
+    case .horizontal:
+      VStack(spacing: 0) {
+        scrolling {
+          VStack(alignment: .leading, spacing: 16) {
+            dateHeader(display)
+            hero(display, showsStop: false)
+          }
+          .frame(width: geometry.contentWidth)
+          .padding(.leading, geometry.insets.leading)
+          .padding(.trailing, geometry.insets.trailing)
+          .padding(.top, max(8, geometry.topMargin))
+          .padding(.bottom, 16)
+        }
+        .frame(height: pages.first.length)
+        Spacer(minLength: 0)
+          .frame(height: pages.second.lowerBound - pages.first.upperBound)
+        ScrollViewReader { proxy in
+          scrolling {
+            VStack(alignment: .leading, spacing: 16) {
+              if display.playback != nil {
+                IOSNowPlayingCard(display: display, onStop: store.stopPlayback)
+                  .id(IOSNowPlayingCard.id)
+              }
+              calculationGapBanner(display)
+              prayerList(display)
+              calculationSummary
+              sun(display)
+            }
+            .frame(width: geometry.contentWidth)
+            .padding(.leading, geometry.insets.leading)
+            .padding(.trailing, geometry.insets.trailing)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+          }
+          .onAppear { reveal(lowerPageAnchor(display), with: proxy, animated: false) }
+          .onChange(of: lowerPageAnchor(display)) { _, anchor in
+            reveal(anchor, with: proxy, animated: true)
+          }
+        }
+        .frame(height: pages.second.length)
+      }
+      .padding(.top, pages.first.lowerBound)
+      .frame(height: geometry.size.height, alignment: .top)
+    }
+  }
+
+  /// What's playing, or else the prayer that has just started, or else the next one: the place
+  /// the lower page keeps in view.
+  private func lowerPageAnchor(_ display: SalahDisplay) -> String? {
+    if display.playback != nil { return IOSNowPlayingCard.id }
+    let model = IOSPrayerPresentation(display: display)
+    let events: [PrayerEvent] = display.slots.compactMap {
+      if case .event(let event) = $0 { event } else { nil }
+    }
+    let current = events.first {
+      if case .justStarted = model.rowStatus(for: $0) { true } else { false }
+    }
+    let next = events.first {
+      if case .next = model.rowStatus(for: $0) { true } else { false }
+    }
+    return (current ?? next).map { IOSPrayerDayCard.rowID($0.kind) }
+  }
+
+  private func reveal(_ anchor: String?, with proxy: ScrollViewProxy, animated: Bool) {
+    guard let anchor else { return }
+    Task { @MainActor in
+      // Without an anchor point, scrolling stops as soon as the anchor is in view.
+      withAnimation(animated && !reduceMotion ? .spring(response: 0.35, dampingFraction: 0.9) : nil)
+      {
+        proxy.scrollTo(anchor)
+      }
+    }
   }
 
   @ViewBuilder
@@ -104,8 +274,9 @@ struct IOSTodayView: View {
     }
   }
 
+  /// `showsStop` is false where Stop has moved to the lower half of a folded display.
   @ViewBuilder
-  private func hero(_ display: SalahDisplay) -> some View {
+  private func hero(_ display: SalahDisplay, showsStop: Bool = true) -> some View {
     let model = IOSPrayerPresentation(display: display)
     let state: IOSPrayerHeroState =
       display.playback != nil
@@ -113,16 +284,13 @@ struct IOSTodayView: View {
       : model.event == nil
         ? .unavailable
         : model.isCountingUp ? .current : model.isApproaching ? .approaching : .normal
+    let stops = showsStop && display.playback != nil
     IOSPrayerHero(
       eyebrow: model.eyebrow, name: model.name, subtitle: model.subtitle,
       countdown: model.countdown, glyph: model.event.map(model.glyph(for:)) ?? "salah.isha",
       phase: display.phase, state: state, footer: heroFooter(model, display: display),
-      stopTitle: display.playback == nil ? nil : display.labels.stopAudio,
-      onStop: display.playback == nil
-        ? nil
-        : {
-          store.stopPlayback()
-        }
+      stopTitle: stops ? display.labels.stopAudio : nil,
+      onStop: stops ? { store.stopPlayback() } : nil
     )
     .accessibilityIdentifier("today.nextPrayer")
   }
@@ -269,6 +437,9 @@ struct IOSPrayerDayCard: View {
 
   private var model: IOSPrayerPresentation { IOSPrayerPresentation(display: display) }
 
+  /// Both the scroll position and the journeys find a prayer's row by this identifier.
+  static func rowID(_ kind: PrayerKind) -> String { "prayer.row." + kind.rawValue }
+
   var body: some View {
     IOSCard(padding: 6) {
       VStack(alignment: .leading, spacing: 2) {
@@ -297,7 +468,8 @@ struct IOSPrayerDayCard: View {
                 + display.name(of: event),
               onAlert: { onAlert(event) }
             )
-            .accessibilityIdentifier("prayer.row." + event.kind.rawValue)
+            .id(Self.rowID(event.kind))
+            .accessibilityIdentifier(Self.rowID(event.kind))
             .contextMenu {
               if let onPlay {
                 Button(
@@ -335,5 +507,52 @@ struct IOSPrayerDayCard: View {
     case .next(let approaching): return approaching ? .approaching : .next
     case .upcoming: return .upcoming
     }
+  }
+}
+
+/// What's playing, and Stop, on the half of a folded display that lies on the table.
+private struct IOSNowPlayingCard: View {
+  static let id = "today.nowPlaying"
+  let display: SalahDisplay
+  let onStop: () -> Void
+  @Environment(\.colorScheme) private var scheme
+  @Environment(\.colorSchemeContrast) private var contrast
+
+  var body: some View {
+    let model = IOSPrayerPresentation(display: display)
+    let colors = SalahColors(phase: display.phase, scheme: scheme, contrast: contrast)
+    HStack(spacing: 12) {
+      Image(systemName: "speaker.wave.2.fill")
+        .font(.system(size: 20))
+        .foregroundStyle(colors.phase.tint.color)
+        .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 2) {
+        Text(verbatim: model.eyebrow + " · " + model.name)
+          .font(.headline)
+          .foregroundStyle(IOSTheme.labelPrimary)
+          .fixedSize(horizontal: false, vertical: true)
+        Text(verbatim: model.subtitle)
+          .font(.footnote)
+          .foregroundStyle(IOSTheme.labelSecondary)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .accessibilityElement(children: .combine)
+      Button(action: onStop) {
+        Text(verbatim: display.labels.stopAudio)
+          .foregroundStyle(IOSTheme.labelOnAccent)
+      }
+      .buttonStyle(.glassProminent)
+      .controlSize(.large)
+      .tint(IOSTheme.accentFill)
+      .accessibilityIdentifier("today.stopAudio")
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 12)
+    .background(
+      IOSTheme.groupedSecondary,
+      in: RoundedRectangle(cornerRadius: IOSMetrics.cardRadius, style: .continuous)
+    )
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier(Self.id)
   }
 }

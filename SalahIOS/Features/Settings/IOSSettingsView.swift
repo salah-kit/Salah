@@ -125,34 +125,59 @@ struct IOSSettingsNavigationView: View {
 /// The iPad composition keeps the documented 400 / 682 point content columns at 1210 points.
 /// The detail's native navigation and form each inset content by 20 points, so its enclosing
 /// frame starts 20 points earlier and is 40 points wider than the visible detail column.
+/// On iPhone Duo's inner display, the list and the detail meet the fold from either side.
 private struct IOSRegularSettingsComposition: View {
   @Environment(IOSAppStore.self) private var store
+  private static let formInset: CGFloat = 20
 
   var body: some View {
-    GeometryReader { geometry in
-      let masterWidth = min(400, max(280, (geometry.size.width - 96) * 400 / 1_114))
-      let detailWidth = max(0, geometry.size.width - masterWidth - 88)
-      HStack(alignment: .top, spacing: 12) {
-        IOSRegularSettingsMaster()
-          .frame(width: masterWidth)
-        NavigationStack {
-          IOSSettingsDestinationView(destination: store.selectedSettingsDestination ?? .calculation)
-            .toolbarTitleDisplayMode(.inlineLarge)
-            .toolbarBackground(.hidden, for: .navigationBar)
+    IOSDisplayGeometryReader { geometry in
+      if let pages = geometry.pages, pages.axis == .vertical {
+        let detailStart = pages.second.lowerBound - Self.formInset
+        HStack(alignment: .top, spacing: detailStart - pages.first.upperBound) {
+          IOSRegularSettingsMaster(topPadding: max(8, geometry.topMargin))
+            .frame(width: pages.first.length)
+          detail
+            .frame(width: geometry.size.width - detailStart)
         }
-        .id(store.selectedSettingsDestination ?? .calculation)
-        .id(store.settingsNavigationRequestID)
-        .frame(width: detailWidth)
+        .padding(.leading, pages.first.lowerBound)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+      } else {
+        // Inner portrait on iPhone Duo keeps the system's margins, its tab bar is at the bottom,
+        // and the fold crosses both lists, which may scroll through it.
+        let tablet = geometry.fold == nil
+        let leading = tablet ? 48 : geometry.insets.leading
+        let trailing = tablet ? 28 : max(0, geometry.insets.trailing - Self.formInset)
+        let masterWidth = min(400, max(280, (geometry.size.width - 96) * 400 / 1_114))
+        let detailWidth = max(0, geometry.size.width - masterWidth - leading - trailing - 12)
+        HStack(alignment: .top, spacing: 12) {
+          // On a tablet this column has no navigation bar to reserve the floating tab bar's height.
+          IOSRegularSettingsMaster(topPadding: tablet ? 72 : max(8, geometry.topMargin))
+            .frame(width: masterWidth)
+          detail
+            .frame(width: detailWidth)
+        }
+        .padding(.leading, leading)
+        .padding(.trailing, trailing)
+        .frame(maxHeight: .infinity, alignment: .top)
       }
-      .padding(.leading, 48)
-      .padding(.trailing, 28)
-      .frame(maxHeight: .infinity, alignment: .top)
     }
     .background(IOSTheme.groupedBackground.ignoresSafeArea())
+  }
+
+  private var detail: some View {
+    NavigationStack {
+      IOSSettingsDestinationView(destination: store.selectedSettingsDestination ?? .calculation)
+        .toolbarTitleDisplayMode(.inlineLarge)
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+    .id(store.selectedSettingsDestination ?? .calculation)
+    .id(store.settingsNavigationRequestID)
   }
 }
 
 private struct IOSRegularSettingsMaster: View {
+  let topPadding: CGFloat
   @Environment(IOSAppStore.self) private var store
   private var copy: IOSSettingsCopy { IOSSettingsCopy(locale: store.locale) }
 
@@ -171,8 +196,7 @@ private struct IOSRegularSettingsMaster: View {
         section(copy.text("Display", "العرض"), [.appearance, .hijri, .language])
         card([.about])
       }
-      // This column has no navigation bar to reserve the floating tab bar's height.
-      .padding(.top, 72)
+      .padding(.top, topPadding)
       .padding(.bottom, 24)
     }
     .scrollIndicators(.hidden)

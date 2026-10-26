@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		002197224D7D57CE57459F58 /* OnboardingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7329B8F428ECAB6DAC53B35 /* OnboardingPresenter.swift */; };
+		0066CA033514A7CC9357A8D0 /* IOSDuoPoseJourneys.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9D53506D73283E2FB4B4AF /* IOSDuoPoseJourneys.swift */; };
 		013A014D8B961982DBCAFA99 /* Numbers+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFE2197A0A0548742324EA8 /* Numbers+Localized.swift */; };
 		01C343C2B2B40F4F2E0FBC82 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		01D8B6E95751D5DB2F3D2F20 /* ReachabilityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCEBDB9192BCEE7526B7C4A /* ReachabilityMonitor.swift */; };
@@ -70,6 +71,7 @@
 		265DD7F82C046058B7528A00 /* PreferenceEffectsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65ED69414083ED778314A8E0 /* PreferenceEffectsTests.swift */; };
 		26E47C4315E221A0B216AA1F /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C72F7878DC2DF0477020ABD1 /* InfoPlist.xcstrings */; };
 		26F0012FBF1EA1102A1B3C51 /* MenuBarDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48A97EFF98F133BCADF45D6 /* MenuBarDropdownView.swift */; };
+		278DC41CAD2EFCA07CFE4C39 /* FoldLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473251E9708975543FEBCD1F /* FoldLayoutTests.swift */; };
 		27E3B697639243A42FE48ED7 /* ServicePolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13BF6A3DCC6D42AC88C2CE37 /* ServicePolicyTests.swift */; };
 		2895A74BC7E962BAC183F887 /* SalahIOSWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A2F30F4316FADDA7AB7C3D33 /* SalahIOSWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		289D3AEE561E95E876D40334 /* Salah.icon in Resources */ = {isa = PBXBuildFile; fileRef = A53CF69859A0DB3A7AB1285D /* Salah.icon */; };
@@ -88,6 +90,7 @@
 		2C72359F75FC70C2A83278E6 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D4311CC4D483159F1A0A2F5F /* Localizable.xcstrings */; };
 		2C7F8CE180AE7B44874CC1A3 /* IOSWidgetSunArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5017E729BF9D6F0196CFA0 /* IOSWidgetSunArc.swift */; };
 		2EAD108C48A09318D6560231 /* NotificationTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD392D2B9B7BF342295FA6 /* NotificationTarget.swift */; };
+		2EBBC8A861C5541A059F7217 /* IOSFoldLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108EA17E1820F8D1D8421F43 /* IOSFoldLayout.swift */; };
 		2FB00A193A448BC0993FC6A2 /* AlertSettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BFB38A99ABA216C97FFD2 /* AlertSettingsUITests.swift */; };
 		317A45852F57AAE7DA72F81D /* IOSPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15EDA4687B88C9BF7A9D07D /* IOSPrayerWidget.swift */; };
 		319632622D0A87F522CB13F6 /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
@@ -106,6 +109,7 @@
 		368DE4042B6E39935099DDF2 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		37084617F1244EDC8D50C556 /* AdjustmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7850779C111D56324DA71023 /* AdjustmentRow.swift */; };
 		3750321919FC31974FB8EA8D /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15B0A4E0B001592D768EDC /* SettingsForm.swift */; };
+		375F4F7CE5927A801A5946D0 /* IOSDisplayGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30212796EE2B8F0F9DF7F5E /* IOSDisplayGeometry.swift */; };
 		38282006C00E5F58947A6CB0 /* PreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */; };
 		38B7C5F2B6C46069D9B76CC0 /* AppClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A198BAFC5BE8CF4BC8F62E6 /* AppClock.swift */; };
 		390CAA1F35935A7CF5B9DBDA /* WidgetPreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FBA9F0E069647A5AC1D2BE /* WidgetPreviewContainer.swift */; };
@@ -120,6 +124,7 @@
 		4065B66168D9C32DCD7B290F /* SalahWidgetFaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC745E7139FFF1BF86597C /* SalahWidgetFaces.swift */; };
 		4156357497B7EDBB7A52F25E /* Locale+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85A1F9F52601F7605DFD353 /* Locale+App.swift */; };
 		416B99256CF372F98D5BA14F /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D360D0B254920E7A9920C /* AppAppearance.swift */; };
+		41A7DFCBAE4D66076029FBB2 /* IOSFoldLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108EA17E1820F8D1D8421F43 /* IOSFoldLayout.swift */; };
 		41BA9B4F95DBBAD3CFA5E33B /* IOSPrayerHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC693BA352F3F9F58EBA88C /* IOSPrayerHero.swift */; };
 		420272EE26A7A2D90871B04B /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15B0A4E0B001592D768EDC /* SettingsForm.swift */; };
 		43638BDC0CCC90A821AA6236 /* IOSCitySearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18FD9A65B0B2D7A47790F45 /* IOSCitySearchService.swift */; };
@@ -160,6 +165,7 @@
 		58B5877496419F310D467FDE /* IOSIPadJourneys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD236EB4E609593F24A779 /* IOSIPadJourneys.swift */; };
 		5963B6D62CC4DDBF83C3398C /* WindowPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47F84AE910533EB7EF97CEF /* WindowPalette.swift */; };
 		598836688756ADDE27900352 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B2AB7E705AE9D9A565B3D2 /* Assets.xcassets */; };
+		59D671FBFBA27D8B907DFFBE /* IOSDisplayGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30212796EE2B8F0F9DF7F5E /* IOSDisplayGeometry.swift */; };
 		5A5BF993197384F6D5BEBF46 /* Preferences+Mirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297B0CDED89F4F0926A05484 /* Preferences+Mirror.swift */; };
 		5B65515F00210D27923036DF /* IOSOnboardingArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEE0270E610C649B5E9A02 /* IOSOnboardingArtwork.swift */; };
 		5B7CBFA8B134412A6CBEC303 /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
@@ -240,6 +246,7 @@
 		8443920AE6ECD54215DFE3A8 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA83C474475F3E5CC3023A1A /* AppLanguage.swift */; };
 		84730EA8F8C0F9969AC77183 /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = E343A08774DBFCBC3BB96DFC /* SalahCalculation */; };
 		84C590505C4C1A85F41CA6C4 /* IOSAppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2284E1B4528DE297D9FAAA74 /* IOSAppStore.swift */; };
+		852B971E241F2BC979BE8B86 /* IOSDuoJourneys.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20076C31098DC9A6ABAFBDA /* IOSDuoJourneys.swift */; };
 		852ED85F11A9C1204BC3F970 /* Locale+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85A1F9F52601F7605DFD353 /* Locale+App.swift */; };
 		85987C462E7CA2E7FAA94FDD /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462BA70D21091BA0537CE7F8 /* AppResources.swift */; };
 		85EB9C3CAACE4F4E54A2645E /* WidgetMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB0C7DDE4C9B388DC7EC9FB /* WidgetMirror.swift */; };
@@ -568,6 +575,7 @@
 		0D2E519F24E6DB17B28FCADB /* GeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTab.swift; sourceTree = "<group>"; };
 		0DA4E51F88D694408BE9E0ED /* MenuDropdownFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDropdownFooter.swift; sourceTree = "<group>"; };
 		0FD12B29808D2CFB3C0BF7C4 /* MenuBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarItem.swift; sourceTree = "<group>"; };
+		108EA17E1820F8D1D8421F43 /* IOSFoldLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSFoldLayout.swift; sourceTree = "<group>"; };
 		1208CA936E7F7DDC80E23254 /* IOSLocationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSLocationSettingsView.swift; sourceTree = "<group>"; };
 		121F7E846934AA6DAB387F1E /* IOSPrayerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSPrayerRow.swift; sourceTree = "<group>"; };
 		13BF6A3DCC6D42AC88C2CE37 /* ServicePolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicePolicyTests.swift; sourceTree = "<group>"; };
@@ -618,6 +626,7 @@
 		44AFAAA3EE69676FBDF48432 /* PrayerKind+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrayerKind+Settings.swift"; sourceTree = "<group>"; };
 		462BA70D21091BA0537CE7F8 /* AppResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		4684DDFE610DED57ECEE7F0D /* SalahWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SalahWidgetsExtension.entitlements; sourceTree = "<group>"; };
+		473251E9708975543FEBCD1F /* FoldLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldLayoutTests.swift; sourceTree = "<group>"; };
 		4902533DB63CAA75CD4B8704 /* Glyphs.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Glyphs.xcassets; sourceTree = "<group>"; };
 		4A212F51F167FC8873FB22E5 /* IOSProductionJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSProductionJourneys.swift; sourceTree = "<group>"; };
 		4C2E4743D3482A42C8D6B055 /* IOSPrayerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSPrayerLiveActivity.swift; sourceTree = "<group>"; };
@@ -700,6 +709,8 @@
 		ABA58A6BEAC64F188DCC199F /* BaselineIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineIndex.swift; sourceTree = "<group>"; };
 		AD80627E90B010963831E2FF /* LocationNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotifications.swift; sourceTree = "<group>"; };
 		B1212563E6CAECE18AE64F60 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		B20076C31098DC9A6ABAFBDA /* IOSDuoJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDuoJourneys.swift; sourceTree = "<group>"; };
+		B30212796EE2B8F0F9DF7F5E /* IOSDisplayGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDisplayGeometry.swift; sourceTree = "<group>"; };
 		B47F84AE910533EB7EF97CEF /* WindowPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPalette.swift; sourceTree = "<group>"; };
 		B65442263194D4BF2AE0B016 /* OnboardingPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPresenterTests.swift; sourceTree = "<group>"; };
 		B83F3D7598CCC5FB071FFF7A /* IOSControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSControls.swift; sourceTree = "<group>"; };
@@ -761,6 +772,7 @@
 		E92EFCB2D485B9D0FA820FEF /* RealAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealAppTests.swift; sourceTree = "<group>"; };
 		E98AB7FD948538F72FEE681D /* IOSWidgetFaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSWidgetFaces.swift; sourceTree = "<group>"; };
 		E9E61E71AFF940C3AF83D8B2 /* SalahWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahWidgetsBundle.swift; sourceTree = "<group>"; };
+		EC9D53506D73283E2FB4B4AF /* IOSDuoPoseJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDuoPoseJourneys.swift; sourceTree = "<group>"; };
 		ED9652CCAB94DC78B40F0718 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		EDF31FA813FCF26B7F80C5E9 /* AudioPlaybackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackController.swift; sourceTree = "<group>"; };
 		EE641A6772CFF2B5D29315E8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -1161,6 +1173,7 @@
 				FFF16ED5FCBAD7EB8D816344 /* CorePreferencesTests.swift */,
 				276E8A1B5026999E9E272219 /* CoreStoreTests.swift */,
 				E33F55D1B5A03A6A036A0675 /* DesignSystemTests.swift */,
+				473251E9708975543FEBCD1F /* FoldLayoutTests.swift */,
 				8F6B63658613FA742236EF64 /* IOSLocalizationTests.swift */,
 				E085A216A4ADD2DA07753E34 /* PrayerPresentationTests.swift */,
 				1DBE1355D0CEDC10F038C2DE /* ServiceNotificationTests.swift */,
@@ -1523,6 +1536,8 @@
 			isa = PBXGroup;
 			children = (
 				6CC498E0A01D6FC352B97075 /* IOSCoreJourneys.swift */,
+				B20076C31098DC9A6ABAFBDA /* IOSDuoJourneys.swift */,
+				EC9D53506D73283E2FB4B4AF /* IOSDuoPoseJourneys.swift */,
 				94CD236EB4E609593F24A779 /* IOSIPadJourneys.swift */,
 				F3FB71F8E278418C1EF03E38 /* IOSJourneySupport.swift */,
 				8489AC4FE855EF23E3F441AF /* IOSPermissionJourneys.swift */,
@@ -1545,6 +1560,8 @@
 		EB08FE8AA3B4E898F23FBEC6 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				B30212796EE2B8F0F9DF7F5E /* IOSDisplayGeometry.swift */,
+				108EA17E1820F8D1D8421F43 /* IOSFoldLayout.swift */,
 				5AC693BA352F3F9F58EBA88C /* IOSPrayerHero.swift */,
 				121F7E846934AA6DAB387F1E /* IOSPrayerRow.swift */,
 				E6FE14A3C44C3B1F8BA13187 /* IOSRecoveryView.swift */,
@@ -2310,6 +2327,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E713AA06405E670E446D5CED /* IOSCoreJourneys.swift in Sources */,
+				852B971E241F2BC979BE8B86 /* IOSDuoJourneys.swift in Sources */,
+				0066CA033514A7CC9357A8D0 /* IOSDuoPoseJourneys.swift in Sources */,
 				58B5877496419F310D467FDE /* IOSIPadJourneys.swift in Sources */,
 				181B44D2726E1778BD6D946A /* IOSJourneySupport.swift in Sources */,
 				9396E43082FC6F590323F7AF /* IOSPermissionJourneys.swift in Sources */,
@@ -2355,6 +2374,8 @@
 				3619C99824C402128AA1F4FE /* IOSAudioService.swift in Sources */,
 				253CADE79178A0065B7CAAF5 /* IOSCalculationSettingsView.swift in Sources */,
 				9E0BD218076827F8AE78DD8F /* IOSCitySearchService.swift in Sources */,
+				59D671FBFBA27D8B907DFFBE /* IOSDisplayGeometry.swift in Sources */,
+				2EBBC8A861C5541A059F7217 /* IOSFoldLayout.swift in Sources */,
 				DC7C0A2CB54EC8E94182430F /* IOSLaunchConfiguration.swift in Sources */,
 				20A36E2F6B03AD7F5E574A8C /* IOSLocalization.swift in Sources */,
 				7CABA39040D245A2528423AA /* IOSLocationService.swift in Sources */,
@@ -2404,6 +2425,7 @@
 				5F78977524702D8B49AF5BE5 /* CorePreferencesTests.swift in Sources */,
 				9272F04930AF68BC47085C2E /* CoreStoreTests.swift in Sources */,
 				E59DED0027BB8F44B4EE5941 /* DesignSystemTests.swift in Sources */,
+				278DC41CAD2EFCA07CFE4C39 /* FoldLayoutTests.swift in Sources */,
 				880050901BBE1AC0B59B9BCF /* IOSActivityCoordinator.swift in Sources */,
 				E8C3C8E06CACC71D444DF284 /* IOSAppRuntime.swift in Sources */,
 				9B96CCD1408D4E0CA5EE6678 /* IOSAppStore.swift in Sources */,
@@ -2411,6 +2433,8 @@
 				22E98A35F26AFE08623B3F03 /* IOSAudioService.swift in Sources */,
 				F964C0F8A72072E10FA65FEE /* IOSCalculationSettingsView.swift in Sources */,
 				43638BDC0CCC90A821AA6236 /* IOSCitySearchService.swift in Sources */,
+				375F4F7CE5927A801A5946D0 /* IOSDisplayGeometry.swift in Sources */,
+				41A7DFCBAE4D66076029FBB2 /* IOSFoldLayout.swift in Sources */,
 				0BA8D14F84FBBF5F4A8D6130 /* IOSLaunchConfiguration.swift in Sources */,
 				E2414BEFFE3A352D7C352604 /* IOSLocalization.swift in Sources */,
 				89E5CB71095612DAA4F7D32A /* IOSLocalizationTests.swift in Sources */,
