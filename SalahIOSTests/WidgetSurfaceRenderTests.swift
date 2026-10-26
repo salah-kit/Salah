@@ -146,6 +146,60 @@ struct WidgetSurfaceRenderTests {
     }
   }
 
+  /// iPhone Duo's vertical Dynamic Island, like the island on iPhone in landscape, limits compact
+  /// and minimal presentations to a 28-point circle. Paused and stale rings are drawn here; the
+  /// live ring is the system's timer progress view, which only a Live Activity host draws.
+  @Test func limitedWidthIslandFitsItsCircleAndLeavesTheTrailingViewEmpty() throws {
+    AppResources.bundle = Bundle(for: WidgetResourceProbe.self)
+    let directory = try evidenceDirectory()
+    let display = try display(isArabic: false)
+    let countdown = try #require(SalahActivityAttributes.ContentState(display: display))
+    let dhuhr = try #require(display.listedDay?[.dhuhr])
+    let startedAt = dhuhr.time.addingTimeInterval(4 * 60)
+    let justStarted = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(
+          date: startedAt, settings: display.settings, schedule: display.settings.schedule)))
+    let maghrib = try #require(display.listedDay?[.maghrib])
+    let playingAt = maghrib.time.addingTimeInterval(2 * 60)
+    let playback = SalahPlayback(event: maghrib, slot: .alert)
+    let playing = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(
+          date: playingAt, settings: display.settings, schedule: display.settings.schedule,
+          playback: playback),
+        playbackSession: IOSPlaybackSession(
+          playback: playback, startedAt: playingAt, duration: 90)))
+    #expect(
+      [countdown.mode, justStarted.mode, playing.mode] == [.countdown, .justStarted, .playing])
+    for (state, date, name) in [
+      (countdown, display.date, "countdown"), (justStarted, startedAt, "now"),
+      (playing, playingAt, "playing"),
+    ] {
+      for isStale in [false, true] {
+        let renderer = ImageRenderer(
+          content: IOSActivityLimitedIsland(state: state, isStale: isStale)
+            .environment(\.salahTimerPause, date))
+        renderer.scale = 2
+        let image = try #require(renderer.uiImage)
+        #expect(image.size.width <= 28.5 && image.size.height <= 28.5, "\(name): \(image.size)")
+        #expect(drawnPixels(in: image) > 100, "\(name) must draw its ring and symbol")
+        #expect(
+          drawnPixels(in: image, outsideCircle: 28) == 0, "\(name) must stay inside its circle")
+        let data = try #require(image.pngData())
+        try data.write(
+          to: directory.appendingPathComponent(
+            "island-limited-\(name)\(isStale ? "-stale" : "").png"),
+          options: .atomic)
+      }
+      // With limited width only the leading view shows; the trailing one draws nothing.
+      let trailing = ImageRenderer(
+        content: IOSActivityCompactTrailing(state: state, isStale: false, isLimitedInWidth: true)
+          .environment(\.salahTimerPause, date))
+      #expect(trailing.uiImage == nil || trailing.uiImage?.size == .zero)
+    }
+  }
+
   @Test func fridayUsesTheActualJumuahSymbolOnWidgetsAndActivities() throws {
     AppResources.bundle = Bundle(for: WidgetResourceProbe.self)
     #expect(UIImage(named: "salah.jumuah", in: AppResources.bundle, compatibleWith: nil) != nil)
@@ -327,6 +381,37 @@ struct WidgetSurfaceRenderTests {
       .appendingPathComponent("SalahIOS-widget-rendering", isDirectory: true)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
+  }
+
+  /// Counts pixels with any coverage; with a diameter in points, only those outside the
+  /// centered circle, allowing one pixel of antialiasing.
+  private func drawnPixels(in image: UIImage, outsideCircle diameter: CGFloat? = nil) -> Int {
+    guard let cgImage = image.cgImage else { return 0 }
+    let width = cgImage.width
+    let height = cgImage.height
+    var bytes = [UInt8](repeating: 0, count: width * height * 4)
+    let drawn = bytes.withUnsafeMutableBytes { buffer in
+      guard
+        let context = CGContext(
+          data: buffer.baseAddress, width: width, height: height,
+          bitsPerComponent: 8, bytesPerRow: width * 4,
+          space: CGColorSpaceCreateDeviceRGB(),
+          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+      else { return false }
+      context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+      return true
+    }
+    guard drawn else { return 0 }
+    let radius = diameter.map { $0 / 2 * image.scale + 1 } ?? .infinity
+    var count = 0
+    for y in 0..<height {
+      for x in 0..<width where bytes[(y * width + x) * 4 + 3] > 0 {
+        let dx = CGFloat(x) + 0.5 - CGFloat(width) / 2
+        let dy = CGFloat(y) + 0.5 - CGFloat(height) / 2
+        if (dx * dx + dy * dy).squareRoot() > radius || diameter == nil { count += 1 }
+      }
+    }
+    return count
   }
 
   /// Native bridge views unsupported offscreen draw a bright yellow warning stripe.
