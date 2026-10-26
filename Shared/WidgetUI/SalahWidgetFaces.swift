@@ -209,7 +209,9 @@ nonisolated struct WidgetHero {
   }
 }
 
-/// The live countdown, or the count-up after a prayer began: `2:16:00`, `+0:04:00`.
+/// The live countdown, or the count-up after a prayer began: `2:16:00`, `+0:04:00`. Never fix
+/// its width, here or on a view around it: the desktop then draws nothing of the widget (see
+/// `WidgetCountdownTests`).
 private struct WidgetTimer: View {
   let hero: WidgetHero
   let date: Date
@@ -472,7 +474,6 @@ private struct ExtraLargeFace: View {
             .minimumScaleFactor(0.7)
             .lineBox(34)
           WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
-            .fixedSize()
         }
       } else {
         WidgetUnknownFace(display: display, style: style)
