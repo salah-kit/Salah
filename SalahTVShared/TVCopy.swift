@@ -57,23 +57,13 @@ nonisolated struct TVTimeText: Sendable {
   /// The civil date from a template in the locale's order, such as "EEEEMMMMd" →
   /// "Tuesday, June 2", in the same calendar as `SalahText.gregorianDate(_:)`.
   func date(_ date: Date, template: String) -> String {
-    let formatter = DateFormatter()
-    formatter.locale = text.locale
-    formatter.calendar = text.locale.civilCalendar
-    formatter.timeZone = text.timeZone
-    formatter.setLocalizedDateFormatFromTemplate(template)
-    return formatter.string(from: date)
+    text.civilDate(date, template: template)
   }
 
   /// A range of civil dates from a template, such as "d MMMM yyyy" → "1 – 7 June 2026", in
   /// the same calendar as `date(_:template:)`.
   func range(from start: Date, to end: Date, template: String) -> String {
-    let formatter = DateIntervalFormatter()
-    formatter.locale = text.locale
-    formatter.calendar = text.locale.civilCalendar
-    formatter.timeZone = text.timeZone
-    formatter.dateTemplate = template
-    return formatter.string(from: start, to: end)
+    text.civilRange(from: start, to: end, template: template)
   }
 
   /// The Hijri date with the person's offset: "16 Dhuʻl-Hijjah 1447".

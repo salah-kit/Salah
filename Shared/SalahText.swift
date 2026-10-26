@@ -132,6 +132,28 @@ nonisolated struct SalahText: Sendable {
     }
     return formatter.string(from: date)
   }
+
+  /// The civil date from a template in the locale's order, such as "EEEEMMMMd" →
+  /// "Tuesday, June 2", in the same calendar as `gregorianDate(_:)`.
+  func civilDate(_ date: Date, template: String) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = locale
+    formatter.calendar = locale.civilCalendar
+    formatter.timeZone = timeZone
+    formatter.setLocalizedDateFormatFromTemplate(template)
+    return formatter.string(from: date)
+  }
+
+  /// A range of civil dates from a template, such as "d MMMM yyyy" → "1 – 7 June 2026", in
+  /// the same calendar as `gregorianDate(_:)`.
+  func civilRange(from start: Date, to end: Date, template: String) -> String {
+    let formatter = DateIntervalFormatter()
+    formatter.locale = locale
+    formatter.calendar = locale.civilCalendar
+    formatter.timeZone = timeZone
+    formatter.dateTemplate = template
+    return formatter.string(from: start, to: end)
+  }
 }
 
 nonisolated extension String {

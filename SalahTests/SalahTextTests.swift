@@ -94,4 +94,19 @@ struct SalahTextTests {
     let persian = SalahText(locale: Locale(identifier: "fa_IR"), timeZone: Fixture.timeZone)
     #expect(persian.gregorianDate(date).contains("خرداد"))
   }
+
+  /// Dates from a template, and ranges of them, use the same calendar as the full date.
+  @Test func civilDatesAndRangesUseTheFullDatesCalendar() {
+    let start = Fixture.date(13, 19)
+    let end = start.addingTimeInterval(6 * 86_400)
+    let saudiEnglish = SalahText(locale: Locale(identifier: "en_SA"), timeZone: Fixture.timeZone)
+    #expect(saudiEnglish.civilDate(start, template: "EEEE d MMMM yyyy").contains("June 2026"))
+    #expect(
+      saudiEnglish.civilRange(from: start, to: end, template: "d MMMM yyyy").contains("June 2026"))
+    let saudi = SalahText(locale: Locale(identifier: "ar_SA"), timeZone: Fixture.timeZone)
+    #expect(saudi.civilDate(start, template: "d MMMM yyyy").contains("يونيو"))
+    #expect(saudi.civilRange(from: start, to: end, template: "d MMMM yyyy").contains("يونيو"))
+    let persian = SalahText(locale: Locale(identifier: "fa_IR"), timeZone: Fixture.timeZone)
+    #expect(persian.civilDate(start, template: "d MMMM yyyy").contains("خرداد"))
+  }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import SalahCore
 import Testing
 
 @Suite("iOS explicit language selection")
@@ -36,6 +37,18 @@ struct IOSLocalizationTests {
     #expect(
       IOSL10n.text("Readable missing copy", locale: Locale(identifier: "fr"), bundle: resources)
         == "Readable missing copy")
+  }
+
+  /// Where the region counts in Hijri, Times' title still gives the Gregorian date above the
+  /// Hijri one, for a day and for its week.
+  @Test(arguments: [("en_SA", "June 2026"), ("ar_SA", "يونيو")])
+  func timesTitleIsGregorianWhereTheRegionCountsInHijri(identifier: String, month: String) throws {
+    let timeZone = try #require(TimeZone(identifier: "Asia/Riyadh"))
+    let text = SalahText(locale: Locale(identifier: identifier), timeZone: timeZone)
+    let day = CivilDay(year: 2026, month: 6, day: 2)
+    let week = (0..<7).map { day.adding(days: $0) }
+    #expect(IOSTimesView.dateTitle(day: day, week: [], text: text).contains(month))
+    #expect(IOSTimesView.dateTitle(day: day, week: week, text: text).contains(month))
   }
 
   @Test func catalogTemplatesRetainTheChosenLanguagesWordOrder() {

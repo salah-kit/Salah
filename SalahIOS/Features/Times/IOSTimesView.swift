@@ -370,15 +370,9 @@ struct IOSTimesView: View {
   }
 
   private var dateTitle: String {
-    guard mode == .week, let first = store.weekDays.first, let last = store.weekDays.last else {
-      return formatted(store.selectedDay, template: "EEEE d MMMM yyyy")
-    }
-    let formatter = DateIntervalFormatter()
-    formatter.locale = store.locale
-    formatter.timeZone = store.timeZone
-    formatter.dateTemplate = "d MMMM yyyy"
-    return formatter.string(
-      from: first.start(in: store.timeZone), to: last.start(in: store.timeZone))
+    Self.dateTitle(
+      day: store.selectedDay, week: mode == .week ? store.weekDays : [],
+      text: SalahText(locale: store.locale, timeZone: store.timeZone))
   }
 
   private var hijriTitle: String {
@@ -400,11 +394,8 @@ struct IOSTimesView: View {
   }
 
   private func formatted(_ day: CivilDay, template: String) -> String {
-    let formatter = DateFormatter()
-    formatter.locale = store.locale
-    formatter.timeZone = store.timeZone
-    formatter.setLocalizedDateFormatFromTemplate(template)
-    return formatter.string(from: day.start(in: store.timeZone))
+    SalahText(locale: store.locale, timeZone: store.timeZone).civilDate(
+      day.start(in: store.timeZone), template: template)
   }
 
   private func weekTime(_ event: PrayerEvent) -> String {
@@ -443,4 +434,17 @@ struct IOSTimesView: View {
   }
 
   private func showLocation() { store.handle(url: URL(string: "salah://location")!) }
+}
+
+extension IOSTimesView {
+  /// The title's civil date: the day in full, or its week's range when `week` has days, in
+  /// the calendar of `SalahText.gregorianDate(_:)`, so the Hijri date below never repeats.
+  static func dateTitle(day: CivilDay, week: [CivilDay], text: SalahText) -> String {
+    guard let first = week.first, let last = week.last else {
+      return text.civilDate(day.start(in: text.timeZone), template: "EEEE d MMMM yyyy")
+    }
+    return text.civilRange(
+      from: first.start(in: text.timeZone), to: last.start(in: text.timeZone),
+      template: "d MMMM yyyy")
+  }
 }
