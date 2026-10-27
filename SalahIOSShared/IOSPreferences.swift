@@ -57,9 +57,14 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
       : highLatitudeRule
     parameters.adjustments = adjustments
     parameters.ramadanIsha =
-      delayedIshaInRamadan ? .interval(minutes: 120, hijriDayOffset: hijriOffset) : .off
+      delayedIshaInRamadan && offersDelayedIsha
+      ? .interval(minutes: 120, hijriDayOffset: hijriOffset) : .off
     return CalculationSettings(parameters: parameters)
   }
+
+  /// Whether the delayed Isha in Ramadan applies: only Umm al-Qura's timetables move Isha to
+  /// 120 minutes after Maghrib in Ramadan. Qatar's, the other interval Isha, keeps 90.
+  var offersDelayedIsha: Bool { method != .custom && resolvedMethod == .ummAlQura }
 
   /// No mirror is published until the user grants a fix or chooses a city.
   var mirror: SalahSettings? {

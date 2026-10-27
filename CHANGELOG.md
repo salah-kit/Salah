@@ -98,6 +98,9 @@ All notable changes to this project are documented here. The format follows
 
 - Show the Gregorian date in the Gregorian calendar where the region counts in the Islamic
   calendar, such as Saudi Arabia; the date line showed the Hijri date a second time.
+- In Ramadan, Qatar's Isha stays 90 minutes after Maghrib, as Qatar's timetables have it.
+  The delayed Isha, and its switch, now apply to Umm al-Qura only; before, it moved Qatar's
+  Isha to 120 minutes too.
 - Appearance set back to System follows macOS again after Light or Dark, in the window,
   the dropdown and the note, which now follows the setting too.
 - In Arabic, Urdu and Persian, Salah's window lays out right to left with its panes at full

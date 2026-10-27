@@ -65,9 +65,11 @@ struct TVSettingsView: View {
         row(
           .adjustments, copy.text("Adjustments", "التعديلات"),
           value: copy.adjustments(preferences.adjustments))
-        toggle(
-          .ramadanIsha, copy.text("Delay Isha in Ramadan", "تأخير العشاء في رمضان"),
-          \.delayedIshaInRamadan)
+        if preferences.offersDelayedIsha {
+          toggle(
+            .ramadanIsha, copy.text("Delay Isha in Ramadan", "تأخير العشاء في رمضان"),
+            \.delayedIshaInRamadan)
+        }
       }
       Section(copy.text("Sound", "الصوت")) {
         Toggle(

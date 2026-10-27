@@ -31,10 +31,26 @@ struct CorePreferencesTests {
     preferences.hijriOffset = 2
     #expect(preferences.calculation.parameters.fajr == .angle(17))
     #expect(preferences.calculation.parameters.isha == .angle(16))
+    #expect(preferences.calculation.parameters.ramadanIsha == .off)
+    preferences.method = .preset(.ummAlQura)
     #expect(
       preferences.calculation.parameters.ramadanIsha == .interval(minutes: 120, hijriDayOffset: 2))
     preferences.delayedIshaInRamadan = false
     #expect(preferences.calculation.parameters.ramadanIsha == .off)
+  }
+
+  /// Only Umm al-Qura's timetables delay Isha in Ramadan. Qatar's interval Isha keeps its 90
+  /// minutes, so a place in Qatar on the automatic method never gets the 120.
+  @Test func onlyUmmAlQuraDelaysIshaInRamadan() throws {
+    var preferences = IOSPreferences()
+    let doha = try #require(TimeZone(identifier: "Asia/Qatar"))
+    preferences.location = PrayerLocation(
+      latitude: 25.2854, longitude: 51.531, timeZone: doha, countryCode: "QA", name: "Doha")
+    #expect(preferences.resolvedMethod == .qatar)
+    #expect(preferences.calculation.parameters.ramadanIsha == .off)
+    preferences.method = .preset(.ummAlQura)
+    #expect(
+      preferences.calculation.parameters.ramadanIsha == .interval(minutes: 120, hijriDayOffset: 0))
   }
 
   @Test func normalizationCoversCorruptControlValuesAndEveryEvent() {

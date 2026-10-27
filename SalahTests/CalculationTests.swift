@@ -70,9 +70,9 @@ struct CalculationTests {
     }
   }
 
-  /// The delayed Isha: an interval Isha is 120 minutes after Maghrib in Ramadan (read
-  /// after the Hijri offset), 90 otherwise; with the toggle off it stays 90, and an
-  /// angle-based Isha never moves.
+  /// The delayed Isha: Umm al-Qura's Isha is 120 minutes after Maghrib in Ramadan (read
+  /// after the Hijri offset), 90 otherwise; with the toggle off it stays 90. Qatar's
+  /// interval Isha keeps 90, as its timetables do, and an angle-based Isha never moves.
   @Test func theDelayedIshaFollowsRamadanAndTheHijriOffset() throws {
     func ishaMinutes(
       _ day: CivilDay, delayed: Bool, offset: Int = 0, method: MethodPreference = .ummAlQura
@@ -97,6 +97,7 @@ struct CalculationTests {
     // An offset of 1 starts Ramadan a day earlier, as the Hijri date the app shows.
     #expect(try ishaMinutes(firstOfRamadan.adding(days: -1), delayed: true, offset: 1) == 120)
     #expect(try ishaMinutes(firstOfRamadan, delayed: true, method: .muslimWorldLeague) != 120)
+    #expect(try ishaMinutes(firstOfRamadan, delayed: true, method: .qatar) == 90)
   }
 
   /// Salah's source declares Friday's Dhuhr as Jumu'ah, on Fridays only, and changes

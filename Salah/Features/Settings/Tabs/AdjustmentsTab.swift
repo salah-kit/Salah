@@ -33,7 +33,7 @@ struct AdjustmentsContent: View {
       SettingsHeader("settings.adj.hijriHeader", isFirst: true)
     }
 
-    if hasIntervalIsha {
+    if prefs.calculationChoices.offersDelayedIsha {
       Section {
         Toggle(isOn: $prefs.delayedIshaInRamadan) {
           Text("settings.adj.delayedIsha")
@@ -57,13 +57,5 @@ struct AdjustmentsContent: View {
     } footer: {
       SettingsFooter("settings.adj.offsetsFooter")
     }
-  }
-
-  /// Whether the method's Isha is an interval after Maghrib, the only kind the
-  /// Ramadan delay changes.
-  private var hasIntervalIsha: Bool {
-    let isha = prefs.calculationChoices.calculationSettings.parameters.isha
-    if case .minutesAfterMaghrib(let minutes) = isha { return minutes > 0 }
-    return false
   }
 }

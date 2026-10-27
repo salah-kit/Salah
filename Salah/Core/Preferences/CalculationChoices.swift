@@ -16,7 +16,7 @@ nonisolated struct CalculationChoices: Equatable, Sendable {
   var customIshaAngle: Double
   /// The user's minutes, per prayer and sunrise.
   var adjustments: PrayerAdjustments
-  /// Whether an interval Isha is 120 minutes after Maghrib in Ramadan.
+  /// Whether Umm al-Qura's Isha is 120 minutes after Maghrib in Ramadan.
   var delayedIshaInRamadan: Bool
   /// The Hijri date's day offset, which also moves Ramadan for the delayed Isha.
   var hijriOffset: Int
@@ -27,9 +27,9 @@ nonisolated struct CalculationChoices: Equatable, Sendable {
   /// method is the user's two angles with SalahTimes' defaults otherwise: Maghrib at
   /// sunset, rounding to the nearest minute, no method minutes. The madhab, the
   /// high-latitude rule and the user's minutes apply to every method. The delayed Isha
-  /// is SalahTimes' Ramadan rule: an interval Isha becomes 120 minutes in the month of
+  /// is SalahTimes' Ramadan rule: Umm al-Qura's Isha becomes 120 minutes in the month of
   /// Ramadan, read in the Umm al-Qura calendar after the Hijri offset, as the Hijri date
-  /// Salah shows; an angle-based Isha doesn't change.
+  /// Salah shows. Other methods' Isha doesn't change.
   /// The minutes after Maghrib of an interval Isha in Ramadan, when it's delayed.
   static let ramadanIshaMinutes = 120
 
@@ -41,8 +41,12 @@ nonisolated struct CalculationChoices: Equatable, Sendable {
     parameters.highLatitudeRule = highLatitudeRule.rule
     parameters.adjustments = adjustments
     parameters.ramadanIsha =
-      delayedIshaInRamadan
+      delayedIshaInRamadan && offersDelayedIsha
       ? .interval(minutes: Self.ramadanIshaMinutes, hijriDayOffset: hijriOffset) : .off
     return CalculationSettings(parameters: parameters)
   }
+
+  /// Whether the delayed Isha applies to the method: only Umm al-Qura's timetables move Isha
+  /// to 120 minutes after Maghrib in Ramadan. Qatar's, the other interval Isha, keeps 90.
+  var offersDelayedIsha: Bool { method.method == .ummAlQura }
 }
