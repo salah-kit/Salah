@@ -85,9 +85,9 @@ fajr-adhan-ahmed-khalaf.mp3
 
 LINKED CODE
 
-SalahKit 0.4.0 (https://github.com/salah-kit/SalahKit) and SalahTimes 0.1.0
+SalahKit 0.4.1 (https://github.com/salah-kit/SalahKit) and SalahTimes 0.1.0
 (https://github.com/salah-kit/SalahTimes), fetched by Swift Package Manager and linked
-into the app and its widget extension: prayer-time calculation, the schedule, widget
+into each app and its extensions: prayer-time calculation, the schedule, widget
 timelines, alerts and UI building blocks. They are the salah-kit ecosystem's own
 packages, by The Salah Kit Authors, under the same MIT License as this repository.
 Salah links no third-party code. Until version 1.0.0, Salah calculated with adhan-swift

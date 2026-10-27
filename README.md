@@ -261,7 +261,7 @@ Salah 1.1.2 is a source release on SalahKit 0.4.0. Releases use a
 marketing version (1.1.2) and a build number; [CHANGELOG.md](CHANGELOG.md) records every
 change.
 
-The iOS app is part of the Unreleased source on the same SalahKit version. Its source
+The iOS app is part of the Unreleased source, on SalahKit 0.4.1. Its source
 availability does not mean an iOS App Store release, a signed download, or completed
 physical-device validation. The simulator build and test commands are in
 [CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados). The
@@ -270,6 +270,7 @@ and native-language reviews and explain the notification and background-refresh 
 The Apple TV app is Unreleased source in the same way; the
 [tvOS validation notes](docs/tvos-validation.md) link its remaining hardware, VoiceOver
 and native-language reviews and explain why the adhan plays only while Salah is open.
+[Remaining work](docs/remaining-work.md) lists what's left on each platform.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation
 of the rights to redistribute the bundled adhan recordings (see [NOTICE](NOTICE)). Native-language

@@ -167,11 +167,16 @@ All notable changes to this project are documented here. The format follows
   [Persian #23](https://github.com/salah-kit/Salah/issues/23),
   [Bengali #24](https://github.com/salah-kit/Salah/issues/24) and
   [Malay #25](https://github.com/salah-kit/Salah/issues/25)).
+- iPhone Duo checks on a real device: each pose in the hand, opening and closing on each
+  screen, the vertical Dynamic Island and the compass, and the pose journeys a person runs on
+  the simulator ([#67](https://github.com/salah-kit/Salah/issues/67)).
 - Apple TV checks on a real device: sound through a television, the Siri Remote, the room
   display and the screen saver, and the Top Shelf over time
   ([#69](https://github.com/salah-kit/Salah/issues/69)); VoiceOver on Apple TV
   ([#17](https://github.com/salah-kit/Salah/issues/17)); and native-speaker
   review of the draft tvOS translations, in the language issues above.
+- [Remaining work](docs/remaining-work.md) lists every pending check and open bug, by
+  platform.
 
 ## [1.1.2] - 2026-10-14
 
