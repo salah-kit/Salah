@@ -83,8 +83,9 @@ final class IOSAppRuntime {
     if store.preferences.useCurrentLocation { location.requestLocation() }
     await notifications.refreshAuthorization()
     publishSettings()
-    await notifications.refresh(schedule: store.schedule, preferences: store.preferences)
-    await activities.refresh(settings: store.settings, isForeground: true)
+    await refreshNotifications()
+    // The scene can leave the foreground while this waits.
+    await activities.refresh(settings: store.settings, isForeground: foreground)
     submitBackgroundRefresh()
   }
 
@@ -122,16 +123,23 @@ final class IOSAppRuntime {
     refreshTask?.cancel()
     refreshTask = Task { [weak self] in
       guard let self else { return }
-      await notifications.refresh(schedule: store.schedule, preferences: store.preferences)
+      await refreshNotifications()
       guard !Task.isCancelled else { return }
       await activities.refresh(settings: store.settings, isForeground: foreground)
     }
   }
 
+  private func refreshNotifications() async {
+    await notifications.refresh(schedule: store.schedule, preferences: store.preferences)
+  }
+
   private func publishSettings() {
+    // Without a location there are no settings to publish. Before setup the widgets have none,
+    // and when the stored settings can't be read, the published ones are still the user's.
+    guard let settings = store.settings else { return }
     do {
       let changed = try SharedValue.settings.save(
-        store.settings, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+        settings, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
       if changed { ControlCenter.shared.reloadControls(ofKind: IOSControlKind.muteSounds) }
       widgetError = nil
     } catch {
@@ -175,7 +183,8 @@ final class IOSAppRuntime {
     store.setPlayback(
       SalahPlayback(event: event, slot: .alert), hasQueuedDua: audio.hasQueuedDua)
     publishPlayback()
-    Task { await activities.refresh(settings: store.settings, isForeground: foreground) }
+    guard let settings = store.settings else { return }
+    Task { await activities.start(settings: settings) }
   }
 
   func registerBackgroundRefresh() {
@@ -189,19 +198,26 @@ final class IOSAppRuntime {
         }
         let work = Task { @MainActor in
           self.store.refresh()
-          await self.notifications.refresh(
-            schedule: self.store.schedule, preferences: self.store.preferences)
+          await self.refreshNotifications()
           self.publishSettings()
           self.submitBackgroundRefresh()
-          task.setTaskCompleted(success: !Task.isCancelled)
+          // An expired task was completed by its expiration handler.
+          guard !Task.isCancelled else { return }
+          task.setTaskCompleted(success: true)
         }
-        task.expirationHandler = { work.cancel() }
+        // iOS expects the task to end promptly once it expires, not after the work finishes.
+        task.expirationHandler = {
+          work.cancel()
+          task.setTaskCompleted(success: false)
+        }
       }
     }
   }
 
   private func submitBackgroundRefresh() {
-    guard !isTesting, store.preferences.location != nil else { return }
+    // Unreadable preferences keep the refresh, so a later read can still recover them.
+    guard !isTesting, store.preferences.location != nil || store.storedPreferencesUnreadable
+    else { return }
     let request = BGAppRefreshTaskRequest(identifier: Self.refreshIdentifier)
     request.earliestBeginDate = Date().addingTimeInterval(6 * 60 * 60)
     // iOS decides when refresh runs. Existing scheduled notifications remain valid if it declines.

@@ -82,7 +82,9 @@ final class TVLocationService: NSObject, @preconcurrency CLLocationManagerDelega
     // `requestLocation()` delivers one update, so a request without a usable fix ends here.
     guard
       let fix = locations.last(where: {
-        Self.isUsableFix(accuracy: $0.horizontalAccuracy, age: -$0.timestamp.timeIntervalSinceNow)
+        Self.isUsableFix(
+          accuracy: $0.horizontalAccuracy, age: -$0.timestamp.timeIntervalSinceNow,
+          reducedAccuracy: manager.accuracyAuthorization == .reducedAccuracy)
       })
     else {
       finish(with: .noFix)
@@ -127,8 +129,15 @@ final class TVLocationService: NSObject, @preconcurrency CLLocationManagerDelega
     errorMessage = error
   }
 
-  nonisolated static func isUsableFix(accuracy: Double, age: TimeInterval) -> Bool {
-    accuracy.isFinite && accuracy >= 0 && accuracy <= 5_000 && age >= -5 && age <= 120
+  /// Approximate location reports fixes about 5 km wide and up to 20 minutes old. Within 20 km,
+  /// prayer times usually move by under a minute.
+  nonisolated static func isUsableFix(
+    accuracy: Double, age: TimeInterval, reducedAccuracy: Bool = false
+  ) -> Bool {
+    let maximumAccuracy: Double = reducedAccuracy ? 20_000 : 5_000
+    let maximumAge: TimeInterval = reducedAccuracy ? 1_200 : 120
+    return accuracy.isFinite && accuracy >= 0 && accuracy <= maximumAccuracy && age >= -5
+      && age <= maximumAge
   }
 
   nonisolated static func permission(_ status: CLAuthorizationStatus) -> IOSPermissionStatus {

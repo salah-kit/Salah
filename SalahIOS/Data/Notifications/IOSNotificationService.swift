@@ -80,6 +80,9 @@ final class IOSNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
   /// Replans on launch, foreground, preferences, location, time-zone and background refresh.
   /// Read-back coverage proves installation, never presentation or audible delivery.
+  ///
+  /// A newer refresh supersedes this one. Cancellation doesn't stop it: it has already
+  /// superseded older refreshes, so stopping would leave no plan installed.
   func refresh(
     schedule: PrayerSchedule?, preferences: IOSPreferences, now: Date = Date()
   ) async {
@@ -94,34 +97,30 @@ final class IOSNotificationService: NSObject, UNUserNotificationCenterDelegate {
     isRefreshing = true
     defer { if generation == mine { isRefreshing = false } }
     await refreshAuthorization()
-    guard isCurrent(mine, system: systemMine), !Task.isCancelled else { return }
+    guard isCurrent(mine, system: systemMine) else { return }
+    // Without a location there's nothing to plan. Before setup nothing is installed, and when the
+    // stored settings can't be read, the installed alerts are still the user's, so they stay.
+    guard let schedule else { return }
     do {
       // Reserve room for other app notifications without ever exceeding the 64 total.
       let pending = try await center.pendingNotificationRequests()
-      guard isCurrent(mine, system: systemMine), !Task.isCancelled else { return }
+      guard isCurrent(mine, system: systemMine) else { return }
       let others = pending.filter { !Self.owns($0.identifier) }.count
       let budget = max(0, min(60, 64 - others))
       let planner = AlertPlanner()
       let end = now.addingTimeInterval(14 * 86_400)
-      let alertSchedule: AlertSchedule
-      if let schedule {
-        alertSchedule = try planner.schedule(
-          schedule, namespace: Self.namespace, from: now, to: end,
-          maximumReminderOffset: .seconds(120 * 60)
-        ) { subject in
-          IOSNotificationPolicy.settings(for: subject, preferences: preferences, files: files)
-        }
-      } else {
-        alertSchedule = AlertSchedule(
-          namespace: Self.namespace, alerts: [], requestedRange: DateInterval(start: now, end: end),
-          gaps: [])
+      let alertSchedule = try planner.schedule(
+        schedule, namespace: Self.namespace, from: now, to: end,
+        maximumReminderOffset: .seconds(120 * 60)
+      ) { subject in
+        IOSNotificationPolicy.settings(for: subject, preferences: preferences, files: files)
       }
       let plan = planner.notificationPlan(
         alertSchedule, from: now, budget: AlertBudget(maxPending: budget))
       let content = IOSPrayerNotificationContent(preferences: preferences)
-      guard isCurrent(mine, system: systemMine), !Task.isCancelled else { return }
+      guard isCurrent(mine, system: systemMine) else { return }
       let report = try await scheduler.apply(plan) { content.make($0) }
-      guard isCurrent(mine, system: systemMine), !Task.isCancelled else { return }
+      guard isCurrent(mine, system: systemMine) else { return }
       self.plan = plan
       self.report = report
       if !report.failures.isEmpty && status == .authorized {
@@ -139,6 +138,24 @@ final class IOSNotificationService: NSObject, UNUserNotificationCenterDelegate {
   static func refreshFromPreferences(_ preferences: IOSPreferences) async {
     let service = IOSNotificationService(installDelegate: false)
     await service.refresh(schedule: preferences.mirror?.schedule, preferences: preferences)
+  }
+
+  /// The last day the current report fully covers. Without notification access nothing is
+  /// scheduled, whatever coverage the report computed.
+  func lastFullyScheduledDay(in timeZone: TimeZone) -> CivilDay? {
+    guard status == .authorized, let report else { return nil }
+    return Self.lastFullyScheduledDay(report, in: timeZone)
+  }
+
+  /// The last day in `timeZone` whose every alert the read-back confirmed, from the day of the
+  /// read-back on. Coverage ends at the first missing alert, so that alert's own day isn't
+  /// complete.
+  nonisolated static func lastFullyScheduledDay(
+    _ report: NotificationApplyReport, in timeZone: TimeZone
+  ) -> CivilDay? {
+    guard let coverage = report.confirmedCoveredUntil else { return nil }
+    let day = CivilDay(containing: coverage, in: timeZone).adding(days: -1)
+    return day < CivilDay(containing: report.verifiedAt, in: timeZone) ? nil : day
   }
 
   private func isCurrent(_ mine: UInt, system: UInt) -> Bool {

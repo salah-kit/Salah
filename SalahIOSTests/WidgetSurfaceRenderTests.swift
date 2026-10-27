@@ -253,7 +253,12 @@ struct WidgetSurfaceRenderTests {
     }
   }
 
-  @Test func accessorySpokenCountdownAndCountUpAdvancePastTheEntrySnapshot() throws {
+  /// Paused at two moments, the spoken label reads two durations, so it carries one. The
+  /// extension never sets `salahTimerPause`, so unpaused it takes the live timer, which reads the
+  /// clock rather than its entry: two entries four minutes apart, both past the fixture's
+  /// interval, read the same, where a snapshot of each entry's own moment would differ.
+  @Test func accessorySpokenLabelsCarryADurationAndReadTheClockRatherThanTheEntry() throws {
+    #expect(EnvironmentValues().salahTimerPause == nil)
     for isArabic in [false, true] {
       let base = try display(isArabic: isArabic)
       let dhuhr = try #require(base.listedDay?[.dhuhr])
@@ -261,14 +266,21 @@ struct WidgetSurfaceRenderTests {
         date: dhuhr.time.addingTimeInterval(60), settings: base.settings,
         schedule: base.settings.schedule)
       for display in [base, countUp] {
-        let first = IOSAccessoryCopy.accessibilityLabel(display: display, pause: display.date)
-        let later = IOSAccessoryCopy.accessibilityLabel(
+        let paused = IOSAccessoryCopy.accessibilityLabel(display: display, pause: display.date)
+        let pausedLater = IOSAccessoryCopy.accessibilityLabel(
           display: display, pause: display.date.addingTimeInterval(4 * 60))
-        let initialImage = try accessoryAccessibilityImage(first, display: display)
-        let laterImage = try accessoryAccessibilityImage(later, display: display)
         #expect(
-          initialImage != laterImage,
-          "The spoken timer must advance after the timeline entry, for countdowns and count-ups in either direction"
+          try accessoryAccessibilityImage(paused, display: display)
+            != accessoryAccessibilityImage(pausedLater, display: display),
+          "The paused spoken label must carry its duration, for countdowns and count-ups in either direction"
+        )
+        let entry = laterEntry(after: display)
+        let first = IOSAccessoryCopy.accessibilityLabel(display: display)
+        let later = IOSAccessoryCopy.accessibilityLabel(display: entry)
+        #expect(
+          try accessoryAccessibilityImage(first, display: display)
+            == accessoryAccessibilityImage(later, display: entry),
+          "The spoken timer must read the clock, not its timeline entry, for countdowns and count-ups in either direction"
         )
       }
     }
@@ -301,7 +313,26 @@ struct WidgetSurfaceRenderTests {
           #expect(
             try accessoryAccessibilityImage(first, display: display)
               != accessoryAccessibilityImage(advanced, display: display),
-            "The single extracted text value must contain the advancing countdown or elapsed clock")
+            "The single extracted text value must contain the countdown or elapsed clock")
+        }
+        // The extension's own path, unpaused: the live clock in that value reads the same
+        // from an entry four minutes later, where a snapshot of each entry would differ.
+        let entry = laterEntry(after: display)
+        let entryFocus = try #require(entry.focus)
+        for (live, laterLive) in [
+          (
+            IOSAccessoryCopy.inlineText(display: display, bundle: bundle),
+            IOSAccessoryCopy.inlineText(display: entry, bundle: bundle)
+          ),
+          (
+            IOSAccessoryCopy.clockText(display: display, focus: focus, bundle: bundle),
+            IOSAccessoryCopy.clockText(display: entry, focus: entryFocus, bundle: bundle)
+          ),
+        ] {
+          #expect(
+            try accessoryAccessibilityImage(live, display: display)
+              == accessoryAccessibilityImage(laterLive, display: entry),
+            "The extracted text value must hold the live clock, not its timeline entry's reading")
         }
         let state = focus.isCountUp ? "elapsed" : "countdown"
         let language = isArabic ? "ar" : "en"
@@ -320,6 +351,15 @@ struct WidgetSurfaceRenderTests {
         }
       }
     }
+  }
+
+  /// The timeline entry four minutes after `display`, with the same focus.
+  private func laterEntry(after display: SalahDisplay) -> SalahDisplay {
+    let entry = SalahDisplay(
+      date: display.date.addingTimeInterval(4 * 60), settings: display.settings,
+      schedule: display.settings.schedule)
+    #expect(entry.focus == display.focus)
+    return entry
   }
 
   private func accessoryAccessibilityImage(_ text: Text, display: SalahDisplay) throws -> Data {

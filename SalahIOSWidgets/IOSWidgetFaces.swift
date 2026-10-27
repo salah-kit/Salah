@@ -586,7 +586,7 @@ private struct WidgetHeader: View {
 }
 
 /// Progress from the previous prayer to the next, in the time of day's mark.
-private struct WidgetProgress: View {
+nonisolated struct WidgetProgress: View {
   let display: SalahDisplay
   let style: WidgetStyle
 
@@ -595,21 +595,24 @@ private struct WidgetProgress: View {
       ZStack(alignment: .leading) {
         Capsule().fill(style.track)
         Capsule().fill(style.mark)
-          .frame(width: proxy.size.width * fraction)
+          .frame(width: proxy.size.width * Self.fraction(of: display))
       }
     }
     .frame(height: 4)
     .accessibilityHidden(true)
   }
 
-  /// From the prayer one is in to the next. While a prayer plays, from that prayer to the
-  /// listed one after it, so Stop looks the same when later times are unavailable.
-  private var fraction: CGFloat {
+  /// From the prayer one is in to the next. While that prayer plays, from it to the listed
+  /// one after it, so Stop looks the same when later times are unavailable. A prayer played
+  /// at another time leaves the bar to the real time.
+  static func fraction(of display: SalahDisplay) -> CGFloat {
     let start: Date
     let end: Date
-    if let playing = display.playingPrayer {
-      guard let next = display.listedDay?.events.first(where: { $0.time > playing.time })
-      else { return 0 }
+    let events = display.listedDay?.events ?? []
+    if let playing = display.playingPrayer,
+      events.last(where: { $0.time <= display.date })?.id == playing.id
+    {
+      guard let next = events.first(where: { $0.time > playing.time }) else { return 0 }
       (start, end) = (playing.time, next.time)
     } else {
       guard let state = display.prayerState, let next = state.next else { return 0 }
@@ -622,7 +625,7 @@ private struct WidgetProgress: View {
 }
 
 /// The day's six times (tomorrow's after Isha): passed ones step back, the prayer one is
-/// in carries the mark, and the next one the accent on a wash.
+/// in and the one playing carry the mark, and the next one the accent on a wash.
 nonisolated struct WidgetTimes: View {
   let display: SalahDisplay
   let rowHeight: CGFloat
@@ -687,29 +690,28 @@ nonisolated struct WidgetTimes: View {
     }
   }
 
-  private var rows: [(event: PrayerEvent, role: Role)] { Self.rows(of: display) }
+  private var rows: [(event: PrayerEvent, role: Role)] { Self.markedRows(of: display) }
 
-  /// The listed day's events with their roles, or tomorrow's while its Fajr is next and
-  /// none of today's prayers plays.
+  /// The rows as the list draws them: the playing prayer carries the mark, and the others
+  /// keep their roles at the real time.
+  static func markedRows(of display: SalahDisplay) -> [(event: PrayerEvent, role: Role)] {
+    let playing = display.playingPrayer?.id
+    return rows(of: display).map { ($0.event, $0.event.id == playing ? .current : $0.role) }
+  }
+
+  /// The listed day's events with their roles at the display's moment, or tomorrow's while
+  /// its Fajr is next and none of today's prayers plays. Playback doesn't move the roles:
+  /// a person can play any prayer at any time.
   static func rows(of display: SalahDisplay) -> [(event: PrayerEvent, role: Role)] {
     let day = display.listedDay
-    let playing = display.playingPrayer.flatMap { event in
-      day?.events.contains { $0.id == event.id } == true ? event : nil
-    }
+    let playsToday =
+      display.playingPrayer.map { event in day?.events.contains { $0.id == event.id } == true }
+      ?? false
     // Tomorrow's times after Isha, unless one of today's prayers still plays.
-    if playing == nil, display.focusIsTomorrow, let tomorrow = display.nextDay {
+    if !playsToday, display.focusIsTomorrow, let tomorrow = display.nextDay {
       return tomorrow.events.map { ($0, $0.id == display.focus?.event.id ? .next : .upcoming) }
     }
     guard let day else { return [] }
-    if let playing {
-      // While a prayer plays, the roles follow it, whatever the countdown knows.
-      let next = day.events.first { $0.time > playing.time }
-      return day.events.map { event in
-        if event.id == playing.id { return (event, .current) }
-        if event.id == next?.id { return (event, .next) }
-        return (event, event.time < playing.time ? .passed : .upcoming)
-      }
-    }
     let state = display.prayerState
     return day.events.map { event in
       switch state?.status(of: event) {

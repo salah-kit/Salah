@@ -63,12 +63,12 @@ struct IOSPrayerAlertsSettingsView: View {
             )
             .accessibilityIdentifier("alerts.scheduledCount")
             .accessibilityValue(String(report.confirmed.count))
-            if let coverage = report.confirmedCoveredUntil {
+            if let day = notifications.lastFullyScheduledDay(in: store.timeZone) {
               Text(
                 copy.format(
                   "Scheduled through %@. Open Salah regularly to keep alerts up to date.",
                   "مجدولة حتى %@. افتح تطبيق صلاة بانتظام لتحديث التنبيهات.",
-                  coverage.formatted(
+                  day.start(in: store.timeZone).formatted(
                     Date.FormatStyle(
                       date: .abbreviated, time: .omitted, locale: store.locale,
                       timeZone: store.timeZone)))

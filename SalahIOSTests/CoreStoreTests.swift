@@ -222,6 +222,30 @@ struct CoreStoreTests {
     #expect(repository.value?.appearance == .dark)
   }
 
+  @Test func unreadableStoredPreferencesStayMarkedUntilTheyAreReadOrReplaced() {
+    let repository = CoreMemoryPreferences()
+    repository.value = IOSPreferences()
+    repository.value?.location = Self.makkah
+    repository.failReads = true
+    let store = IOSAppStore(repository: repository)
+    #expect(store.storedPreferencesUnreadable)
+    #expect(store.settings == nil)
+    store.refresh()
+    #expect(store.storedPreferencesUnreadable)
+    repository.failReads = false
+    store.refresh()
+    #expect(!store.storedPreferencesUnreadable)
+    #expect(store.preferences.location == Self.makkah)
+    #expect(store.settings != nil)
+
+    repository.failReads = true
+    let replaced = IOSAppStore(repository: repository)
+    #expect(replaced.storedPreferencesUnreadable)
+    repository.failReads = false
+    replaced.updatePreferences { $0.appearance = .dark }
+    #expect(!replaced.storedPreferencesUnreadable)
+  }
+
   @Test func qiblaUsesTheConfiguredPlaceAndHasNoDirectionAtTheKaaba() throws {
     let store = IOSAppStore(repository: CoreMemoryPreferences())
     #expect(store.qiblaBearing == nil)
@@ -246,8 +270,12 @@ struct CoreStoreTests {
 @MainActor
 private final class CoreMemoryPreferences: IOSPreferencesRepository {
   var value: IOSPreferences?
+  var failReads = false
   var failWrites = false
-  func load() throws -> IOSPreferences? { value }
+  func load() throws -> IOSPreferences? {
+    if failReads { throw CocoaError(.fileReadCorruptFile) }
+    return value
+  }
   func save(_ preferences: IOSPreferences) throws {
     if failWrites { throw CocoaError(.fileWriteOutOfSpace) }
     value = preferences

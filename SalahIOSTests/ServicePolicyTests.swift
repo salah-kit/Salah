@@ -204,6 +204,69 @@ struct ServicePolicyTests {
     #expect(!IOSLocationService.isUsableFix(accuracy: 30_000, age: 0))
     #expect(!IOSLocationService.isUsableFix(accuracy: 100, age: 121))
     #expect(!IOSLocationService.isUsableFix(accuracy: 100, age: -100))
+    #expect(!IOSLocationService.isUsableFix(accuracy: 6_000, age: 900))
+    #expect(IOSLocationService.isUsableFix(accuracy: 6_000, age: 900, reducedAccuracy: true))
+    #expect(!IOSLocationService.isUsableFix(accuracy: 30_000, age: 0, reducedAccuracy: true))
+    #expect(!IOSLocationService.isUsableFix(accuracy: 6_000, age: 1_201, reducedAccuracy: true))
+    #expect(!IOSLocationService.isUsableFix(accuracy: .nan, age: 0, reducedAccuracy: true))
+  }
+
+  @Test @MainActor
+  func anApproximateLocationFixIsResolvedInsteadOfIgnored() {
+    let manager = ServiceLocationManager(accuracy: .reducedAccuracy)
+    let service = IOSLocationService(manager: manager)
+    defer { service.cancelLocation() }
+    service.requestLocation()
+    #expect(service.isLocating && manager.requests == 1)
+    // About 6 km wide and 15 minutes old, as approximate location reports.
+    service.locationManager(manager, didUpdateLocations: [locationFix(accuracy: 6_000, age: 900)])
+    #expect(manager.stops == 1)
+    #expect(service.errorMessage != couldNotLocate)
+  }
+
+  @Test(arguments: [false, true]) @MainActor
+  func anUnusableSingleFixEndsTheRequestWithAnError(reducedAccuracy: Bool) {
+    let manager = ServiceLocationManager(
+      accuracy: reducedAccuracy ? .reducedAccuracy : .fullAccuracy)
+    let service = IOSLocationService(manager: manager)
+    defer { service.cancelLocation() }
+    service.requestLocation()
+    service.locationManager(
+      manager, didUpdateLocations: [locationFix(accuracy: 30_000, age: 1_500)])
+    #expect(!service.isLocating)
+    #expect(service.errorMessage == couldNotLocate)
+    #expect(service.location == nil)
+  }
+
+  /// The interface orientation Qibla passes before iOS 27 names the device edge at the top of
+  /// the dial. The dial's own wiring needs an iOS 26 device (#65).
+  @Test @MainActor
+  func interfaceOrientationsNameTheDeviceEdgeAtTheTopOfTheDial() {
+    #expect(IOSLocationService.headingOrientation(for: .portrait) == .portrait)
+    #expect(IOSLocationService.headingOrientation(for: .portraitUpsideDown) == .portraitUpsideDown)
+    #expect(IOSLocationService.headingOrientation(for: .landscapeLeft) == .landscapeRight)
+    #expect(IOSLocationService.headingOrientation(for: .landscapeRight) == .landscapeLeft)
+    #expect(IOSLocationService.headingOrientation(for: .unknown) == nil)
+    // iOS 27 measures from the reference view's body instead.
+    if #unavailable(iOS 27.0) {
+      let manager = CLLocationManager()
+      let service = IOSLocationService(manager: manager)
+      service.setHeadingOrientation(.landscapeLeft)
+      #expect(manager.headingOrientation == .landscapeRight)
+      service.setHeadingOrientation(.unknown)
+      #expect(manager.headingOrientation == .landscapeRight)
+    }
+  }
+
+  private var couldNotLocate: String {
+    "Could not get your location. Try again outdoors or choose a city."
+  }
+
+  private func locationFix(accuracy: Double, age: TimeInterval) -> CLLocation {
+    CLLocation(
+      coordinate: CLLocationCoordinate2D(latitude: 21.4225, longitude: 39.8262), altitude: 0,
+      horizontalAccuracy: accuracy, verticalAccuracy: -1,
+      timestamp: Date(timeIntervalSinceNow: -age))
   }
 
   @Test func perSlotSoundsAndFridayOverrideRemainIndependentUnderMute() throws {
@@ -391,6 +454,25 @@ nonisolated private final class ServiceActivityClock: @unchecked Sendable {
   init(_ date: Date) { self.date = date }
   func read() -> Date { lock.withLock { date } }
   func set(_ value: Date) { lock.withLock { date = value } }
+}
+
+/// Reports granted access and records requests, so no prompt appears and no real fix arrives.
+nonisolated private final class ServiceLocationManager: CLLocationManager {
+  private let accuracy: CLAccuracyAuthorization
+  private(set) var requests = 0
+  private(set) var stops = 0
+
+  init(accuracy: CLAccuracyAuthorization) {
+    self.accuracy = accuracy
+    super.init()
+  }
+
+  override var authorizationStatus: CLAuthorizationStatus { .authorizedWhenInUse }
+  override var accuracyAuthorization: CLAccuracyAuthorization { accuracy }
+  override func requestWhenInUseAuthorization() {}
+  override func requestLocation() { requests += 1 }
+  override func startUpdatingLocation() {}
+  override func stopUpdatingLocation() { stops += 1 }
 }
 
 /// A valid sparse PCM file exercises native duration parsing without rendering long audio.

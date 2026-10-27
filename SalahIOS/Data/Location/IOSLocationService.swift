@@ -36,7 +36,6 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
   @ObservationIgnored private var requestGeneration = UUID()
   @ObservationIgnored private var wantsLocation = false
   @ObservationIgnored private var wantsHeading = false
-  @ObservationIgnored private var orientationObserver: NSObjectProtocol?
 
   override convenience init() { self.init(manager: CLLocationManager()) }
 
@@ -67,6 +66,7 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
     requestGeneration = UUID()
     geocoding?.cancel()
     resolveTask?.cancel()
+    resolveTask = nil
     wantsLocation = true
     isLocating = true
     errorMessage = nil
@@ -100,15 +100,6 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
       return
     }
     heading = .calibrating
-    setHeadingOrientation(UIDevice.current.orientation)
-    if orientationObserver == nil {
-      UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-      orientationObserver = NotificationCenter.default.addObserver(
-        forName: UIDevice.orientationDidChangeNotification, object: nil, queue: .main
-      ) { [weak self] _ in
-        Task { @MainActor in self?.setHeadingOrientation(UIDevice.current.orientation) }
-      }
-    }
     // Core Location needs a location fix to correct magnetic north to true north.
     manager.startUpdatingLocation()
     manager.startUpdatingHeading()
@@ -118,11 +109,6 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
     wantsHeading = false
     manager.stopUpdatingHeading()
     heading = .unavailable
-    if let orientationObserver {
-      NotificationCenter.default.removeObserver(orientationObserver)
-      self.orientationObserver = nil
-      UIDevice.current.endGeneratingDeviceOrientationNotifications()
-    }
     if !wantsLocation { manager.stopUpdatingLocation() }
   }
 
@@ -131,21 +117,27 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
     if #available(iOS 27.0, *) { manager.headingBody = view }
   }
 
-  func setHeadingOrientation(_ orientation: UIDeviceOrientation) {
+  /// Before iOS 27, heading follows the interface showing the dial, not the device: an interface
+  /// keeps its orientation when the device lies flat or turns to an unsupported orientation.
+  func setHeadingOrientation(_ orientation: UIInterfaceOrientation) {
     if #available(iOS 27.0, *) { return }
-    switch orientation {
-    case .portrait: manager.headingOrientation = .portrait
-    case .portraitUpsideDown: manager.headingOrientation = .portraitUpsideDown
-    case .landscapeLeft: manager.headingOrientation = .landscapeLeft
-    case .landscapeRight: manager.headingOrientation = .landscapeRight
-    default: break
+    if let reference = Self.headingOrientation(for: orientation) {
+      manager.headingOrientation = reference
     }
   }
 
-  isolated deinit {
-    if let orientationObserver {
-      NotificationCenter.default.removeObserver(orientationObserver)
-      UIDevice.current.endGeneratingDeviceOrientationNotifications()
+  /// The interface's top edge as a device orientation. Landscape names swap: the interface's
+  /// landscape left is the device's landscape right.
+  nonisolated static func headingOrientation(for orientation: UIInterfaceOrientation)
+    -> CLDeviceOrientation?
+  {
+    switch orientation {
+    case .portrait: .portrait
+    case .portraitUpsideDown: .portraitUpsideDown
+    case .landscapeLeft: .landscapeRight
+    case .landscapeRight: .landscapeLeft
+    case .unknown: nil
+    @unknown default: nil
     }
   }
 
@@ -160,13 +152,24 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
   }
 
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    guard wantsLocation, let fix = locations.last,
-      Self.isUsableFix(accuracy: fix.horizontalAccuracy, age: -fix.timestamp.timeIntervalSinceNow)
-    else { return }
+    guard wantsLocation, let fix = locations.last else { return }
+    guard
+      Self.isUsableFix(
+        accuracy: fix.horizontalAccuracy, age: -fix.timestamp.timeIntervalSinceNow,
+        reducedAccuracy: manager.accuracyAuthorization == .reducedAccuracy)
+    else {
+      // A single request delivers no other fix. If heading keeps updates running, a later usable
+      // fix still resolves, since the request stays wanted. While a usable fix resolves, a
+      // coarse one changes nothing.
+      if resolveTask == nil { failLocation() }
+      return
+    }
     if !wantsHeading { manager.stopUpdatingLocation() }
     let generation = requestGeneration
     geocoding?.cancel()
     resolveTask?.cancel()
+    isLocating = true
+    errorMessage = nil
     guard let request = MKReverseGeocodingRequest(location: fix) else {
       isLocating = false
       errorMessage = "This location could not be resolved. Try again or choose a city."
@@ -185,10 +188,13 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
         self.isLocating = false
         self.wantsLocation = false
         self.errorMessage = nil
+        self.resolveTask = nil
         self.onLocationChanged?(resolved)
       } catch is CancellationError {
       } catch {
-        guard let self, self.requestGeneration == generation else { return }
+        // A newer fix cancels this geocode, which can then throw MapKit's own error.
+        guard let self, !Task.isCancelled, self.requestGeneration == generation else { return }
+        self.resolveTask = nil
         self.isLocating = false
         self.errorMessage =
           "Could not find this location’s time zone. Check your connection or choose a city."
@@ -208,13 +214,24 @@ final class IOSLocationService: NSObject, @preconcurrency CLLocationManagerDeleg
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
     guard wantsLocation else { return }
+    failLocation()
+  }
+
+  private func failLocation() {
     isLocating = false
     refreshAuthorization()
     errorMessage = "Could not get your location. Try again outdoors or choose a city."
   }
 
-  nonisolated static func isUsableFix(accuracy: Double, age: TimeInterval) -> Bool {
-    accuracy.isFinite && accuracy >= 0 && accuracy <= 5_000 && age >= -5 && age <= 120
+  /// Approximate location reports fixes about 5 km wide and up to 20 minutes old. Within 20 km,
+  /// prayer times usually move by under a minute.
+  nonisolated static func isUsableFix(
+    accuracy: Double, age: TimeInterval, reducedAccuracy: Bool = false
+  ) -> Bool {
+    let maximumAccuracy: Double = reducedAccuracy ? 20_000 : 5_000
+    let maximumAge: TimeInterval = reducedAccuracy ? 1_200 : 120
+    return accuracy.isFinite && accuracy >= 0 && accuracy <= maximumAccuracy && age >= -5
+      && age <= maximumAge
   }
 
   nonisolated static func permission(_ status: CLAuthorizationStatus) -> IOSPermissionStatus {

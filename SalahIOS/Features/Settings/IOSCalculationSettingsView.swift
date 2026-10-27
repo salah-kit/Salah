@@ -245,8 +245,8 @@ struct IOSCustomAnglesSettingsView: View {
   var body: some View {
     Form {
       Section {
-        angleRow(.fajr, binding: store.settingsBinding(\.customFajrAngle))
-        angleRow(.isha, binding: store.settingsBinding(\.customIshaAngle))
+        angleRow(.fajr, binding: customAngle(\.customFajrAngle))
+        angleRow(.isha, binding: customAngle(\.customIshaAngle))
       } footer: {
         Text(
           copy.text(
@@ -268,7 +268,19 @@ struct IOSCustomAnglesSettingsView: View {
     .iosSettingsForm()
     .navigationTitle(copy.text("Custom angles", "زوايا مخصصة"))
     .navigationBarTitleDisplayMode(.large)
-    .onAppear { store.updatePreferences { $0.method = .custom } }
+  }
+
+  /// An angle's binding. Changing an angle chooses the custom method; opening the page to
+  /// look at the angles leaves the method as it was.
+  private func customAngle(_ angle: WritableKeyPath<IOSPreferences, Double>) -> Binding<Double> {
+    Binding(
+      get: { store.preferences[keyPath: angle] },
+      set: { value in
+        store.updatePreferences {
+          $0[keyPath: angle] = value
+          $0.method = .custom
+        }
+      })
   }
 
   private func angleRow(_ prayer: PrayerKind, binding: Binding<Double>) -> some View {
@@ -310,7 +322,7 @@ struct IOSAdjustmentsSettingsView: View {
           ))
       }
       IOSHijriSettingsSection()
-      if intervalIsha {
+      if store.preferences.offersDelayedIsha {
         Section {
           Toggle(
             copy.text("Delay Isha in Ramadan", "تأخير العشاء في رمضان"),
@@ -329,13 +341,6 @@ struct IOSAdjustmentsSettingsView: View {
     .iosSettingsForm()
     .navigationTitle(copy.text("Adjustments", "التعديلات"))
     .navigationBarTitleDisplayMode(.large)
-  }
-
-  private var intervalIsha: Bool {
-    if case .minutesAfterMaghrib(let interval) = store.preferences.calculation.parameters.isha {
-      return interval > 0
-    }
-    return false
   }
 
   private func adjustment(_ kind: PrayerKind) -> Binding<Int> {

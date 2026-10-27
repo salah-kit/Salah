@@ -120,8 +120,11 @@ final class RecordingIdleTimer: TVIdleTimerControlling {
 /// delivers the update itself.
 nonisolated final class StubLocationManager: CLLocationManager {
   private(set) var locationRequests = 0
+  /// The accuracy the person allowed: full unless a test chooses approximate location.
+  var accuracy: CLAccuracyAuthorization = .fullAccuracy
 
   override var authorizationStatus: CLAuthorizationStatus { .authorizedWhenInUse }
+  override var accuracyAuthorization: CLAccuracyAuthorization { accuracy }
 
   override func requestLocation() { locationRequests += 1 }
 }

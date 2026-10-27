@@ -30,6 +30,9 @@ final class IOSAppStore {
   private(set) var playback: SalahPlayback?
   private(set) var playbackHasQueuedDua = false
   private(set) var persistenceFailed = false
+  /// The stored preferences exist but can't be read, so the defaults in use aren't the user's.
+  /// Background refresh stays scheduled, so a later read can recover them.
+  private(set) var storedPreferencesUnreadable = false
   private(set) var notificationPermission: IOSPermissionStatus = .notDetermined
   private(set) var locationPermission: IOSPermissionStatus = .notDetermined
   var selectedTab: IOSTab = .today
@@ -72,6 +75,7 @@ final class IOSAppStore {
     } catch {
       loaded = IOSPreferences()
       persistenceFailed = true
+      storedPreferencesUnreadable = true
     }
     preferences = loaded
     settings = loaded.mirror
@@ -128,6 +132,7 @@ final class IOSAppStore {
       preferences = try repository.update { $0.mergeChanges(from: base, to: changed) }
       unsavedBase = nil
       persistenceFailed = false
+      storedPreferencesUnreadable = false
     } catch {
       // Keep the user's active edits usable, while surfacing that they were not saved.
       preferences = changed
@@ -187,7 +192,9 @@ final class IOSAppStore {
         preferences = try repository.update { $0.mergeChanges(from: base, to: pending) }
         unsavedBase = nil
       }
-      if let latest = try repository.load() {
+      let latest = try repository.load()
+      storedPreferencesUnreadable = false
+      if let latest {
         preferences = latest.normalized()
         persistenceFailed = false
       }

@@ -470,29 +470,51 @@ private struct IOSQiblaDial: View {
   }
 }
 
-/// Core Location follows the real view's orientation on iOS 27, including iPad rotation.
+/// Core Location measures heading from the top of the interface showing the dial: on iOS 27 from
+/// the real view, and before that from its window scene's interface orientation, which a device
+/// lying flat or held in an unsupported orientation doesn't change.
 private struct IOSHeadingReferenceView: UIViewRepresentable {
   let location: IOSLocationService
 
   func makeCoordinator() -> Coordinator { Coordinator(location: location) }
 
-  func makeUIView(context: Context) -> UIView {
-    let view = UIView()
+  func makeUIView(context: Context) -> ReferenceView {
+    let view = ReferenceView()
     view.isUserInteractionEnabled = false
+    view.location = location
     location.setHeadingReferenceView(view)
     return view
   }
 
-  func updateUIView(_ view: UIView, context: Context) {
+  func updateUIView(_ view: ReferenceView, context: Context) {
+    view.location = location
     location.setHeadingReferenceView(view)
   }
 
-  static func dismantleUIView(_ view: UIView, coordinator: Coordinator) {
+  static func dismantleUIView(_ view: ReferenceView, coordinator: Coordinator) {
+    view.location = nil
     coordinator.location.setHeadingReferenceView(nil)
   }
 
   final class Coordinator {
     let location: IOSLocationService
     init(location: IOSLocationService) { self.location = location }
+  }
+
+  /// Follows its scene's interface orientation from the moment it's shown, including rotations
+  /// made while Qibla was hidden.
+  final class ReferenceView: UIView {
+    weak var location: IOSLocationService?
+    private var geometryObservation: NSKeyValueObservation?
+
+    override func didMoveToWindow() {
+      super.didMoveToWindow()
+      geometryObservation = window?.windowScene?.observe(\.effectiveGeometry, options: .initial) {
+        [weak self] scene, _ in
+        Task { @MainActor in
+          self?.location?.setHeadingOrientation(scene.effectiveGeometry.interfaceOrientation)
+        }
+      }
+    }
   }
 }

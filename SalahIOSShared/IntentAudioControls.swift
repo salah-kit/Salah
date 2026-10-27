@@ -31,8 +31,11 @@ struct IOSSetMuteSoundsIntent: SetValueIntent, AudioPlaybackIntent {
 
   func perform() async throws -> some IntentResult {
     let preferences = try IOSSharedPreferencesStore.live.update { $0.muteSounds = value }
-    _ = try SharedValue<SalahSettings>.settings.save(
-      preferences.mirror, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+    // Without a location there are no settings to publish, and the widgets keep theirs.
+    if let settings = preferences.mirror {
+      _ = try SharedValue<SalahSettings>.settings.save(
+        settings, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
+    }
     if value {
       _ = try SharedValue<IOSPlaybackSession>.iosPlayback.save(nil)
       _ = try SharedValue<SalahPlayback>.playback.save(nil)

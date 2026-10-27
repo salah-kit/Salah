@@ -85,6 +85,32 @@ struct TVServicesTests {
     }
   }
 
+  /// An approximate fix counts when approximate location is what the person allowed: it's
+  /// enough for prayer times.
+  @Test func anApproximateFixIsUsableOnlyWithApproximateLocation() {
+    #expect(TVLocationService.isUsableFix(accuracy: 6_000, age: 900, reducedAccuracy: true))
+    #expect(!TVLocationService.isUsableFix(accuracy: 6_000, age: 900, reducedAccuracy: false))
+    #expect(!TVLocationService.isUsableFix(accuracy: 30_000, age: 60, reducedAccuracy: true))
+    #expect(!TVLocationService.isUsableFix(accuracy: 50, age: 1_500, reducedAccuracy: true))
+  }
+
+  /// With approximate location allowed, the service accepts an approximate fix and goes on to
+  /// resolve it, instead of ending the request.
+  @Test func approximateLocationAcceptsAnApproximateFix() {
+    let manager = StubLocationManager()
+    manager.accuracy = .reducedAccuracy
+    let location = TVLocationService(manager: manager)
+    let makkah = CLLocationCoordinate2D(latitude: 21.4225, longitude: 39.8262)
+    let approximate = CLLocation(
+      coordinate: makkah, altitude: 0, horizontalAccuracy: 6_000, verticalAccuracy: -1,
+      timestamp: Date().addingTimeInterval(-900))
+    location.requestLocation()
+    location.locationManager(manager, didUpdateLocations: [approximate])
+    #expect(location.isLocating)
+    #expect(location.errorMessage == nil)
+    location.cancelLocation()
+  }
+
   @Test func theTVOffersOnlySoundsItCanPlay() {
     #expect(TVAudioService.sounds == [.fajrAdhan, .adhan, .softTone, .none])
   }

@@ -1,7 +1,9 @@
 import XCTest
 
 /// Launches the real app with an isolated, durable preferences suite. Only the first
-/// launch resets it: relaunch assertions therefore exercise production persistence.
+/// launch resets it, so relaunch assertions read what the app saved. These launches use the
+/// Debug build's defaults-backed preferences; `IOSProductionJourneys` covers the App Group
+/// file store.
 @MainActor
 struct IOSJourneyApp {
   let app = XCUIApplication()
@@ -273,6 +275,31 @@ extension XCTestCase {
       attachment.lifetime = .keepAlways
       activity.add(attachment)
     }
+  }
+
+  /// The app's mean luminance, from 0 for black to 1 for white, over its screenshot drawn at
+  /// 32 × 32 pixels: enough to tell a light appearance from a dark one.
+  @MainActor
+  func meanLuminance(of app: XCUIApplication) -> Double {
+    guard let image = app.screenshot().image.cgImage else { return .nan }
+    let side = 32
+    var pixels = [UInt8](repeating: 0, count: side * side * 4)
+    let drawn = pixels.withUnsafeMutableBytes { buffer in
+      guard
+        let context = CGContext(
+          data: buffer.baseAddress, width: side, height: side, bitsPerComponent: 8,
+          bytesPerRow: side * 4, space: CGColorSpaceCreateDeviceRGB(),
+          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+      else { return false }
+      context.draw(image, in: CGRect(x: 0, y: 0, width: side, height: side))
+      return true
+    }
+    guard drawn else { return .nan }
+    let total = stride(from: 0, to: pixels.count, by: 4).reduce(0.0) { sum, index in
+      sum + 0.2126 * Double(pixels[index]) + 0.7152 * Double(pixels[index + 1]) + 0.0722
+        * Double(pixels[index + 2])
+    }
+    return total / Double(side * side) / 255
   }
 
   @MainActor

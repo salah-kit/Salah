@@ -22,13 +22,50 @@ nonisolated struct IOSActivityPublication: Sendable {
   }
 }
 
+/// The prayers whose activity the person dismissed. They stay in the app's own defaults until
+/// each one's activity window closes, so a relaunch within the window doesn't recreate one.
+@MainActor struct IOSActivityDismissals {
+  static let key = "Salah.iOS.dismissedActivities.v1"
+  private let defaults: UserDefaults
+  private var deadlines: [String: Date]
+
+  init(defaults: UserDefaults) {
+    self.defaults = defaults
+    deadlines = defaults.dictionary(forKey: Self.key) as? [String: Date] ?? [:]
+  }
+
+  /// How long a dismissal holds: until the prayer's count-up ends, or, for a playback that ends
+  /// before the prayer's approach begins, until the playback ends.
+  nonisolated static func deadline(for state: SalahActivityAttributes.ContentState) -> Date {
+    let approach = state.prayerTime.addingTimeInterval(-15 * 60)
+    if state.mode == .playing, state.validUntil < approach { return state.validUntil }
+    return max(state.validUntil, state.prayerTime.addingTimeInterval(15 * 60))
+  }
+
+  func contains(_ eventID: String, at date: Date) -> Bool {
+    deadlines[eventID].map { date < $0 } ?? false
+  }
+
+  /// Keeps `eventID` until `deadline`, and forgets the dismissals whose window has closed.
+  mutating func insert(_ eventID: String, until deadline: Date, now: Date) {
+    deadlines = deadlines.filter { now < $0.value }
+    deadlines[eventID] = max(deadline, deadlines[eventID] ?? deadline)
+    defaults.set(deadlines, forKey: Self.key)
+  }
+
+  mutating func remove(_ eventID: String) {
+    guard deadlines.removeValue(forKey: eventID) != nil else { return }
+    defaults.set(deadlines, forKey: Self.key)
+  }
+}
+
 /// Starts only a relevant foreground prayer activity and maintains its bounded state.
 /// Background suspension is expected: staleDate makes the extension show recovery rather
 /// than promising updates the process cannot deliver.
 @MainActor
 final class IOSActivityCoordinator {
   private var activity: Activity<SalahActivityAttributes>?
-  private var dismissedEventIDs: Set<String> = []
+  private(set) var dismissals: IOSActivityDismissals
   private var lastPublished: SalahActivityAttributes.ContentState?
   private var revision: UInt64 = 0
   private let now: @Sendable () -> Date
@@ -41,11 +78,13 @@ final class IOSActivityCoordinator {
     loadPlaybackSession: @escaping @MainActor () -> IOSPlaybackSession? = {
       SharedValue<IOSPlaybackSession>.iosPlayback.load()
     },
-    lifecycle: IOSActivityLifecycle = .system
+    lifecycle: IOSActivityLifecycle = .system,
+    defaults: UserDefaults = .standard
   ) {
     self.now = now
     self.loadPlaybackSession = loadPlaybackSession
     self.lifecycle = lifecycle
+    dismissals = IOSActivityDismissals(defaults: defaults)
   }
 
   /// System activities use the service clock, independently of the screen's last render or fixture.
@@ -77,7 +116,9 @@ final class IOSActivityCoordinator {
     }
     if let activity {
       if activity.activityState == .dismissed || activity.activityState == .ended {
-        dismissedEventIDs.insert(activity.attributes.eventID)
+        dismissals.insert(
+          activity.attributes.eventID, until: IOSActivityDismissals.deadline(for: state),
+          now: now())
         self.activity = nil
         lastPublished = nil
       } else if Self.shouldPublish(state, after: lastPublished) {
@@ -89,13 +130,15 @@ final class IOSActivityCoordinator {
         guard mine == revision else { return }
       }
     }
-    guard activity == nil, isForeground, !dismissedEventIDs.contains(eventID) else { return }
+    guard activity == nil, isForeground, !dismissals.contains(eventID, at: state.updatedAt)
+    else { return }
     let relevant = state.mode != .countdown || publication.isApproaching
     guard relevant else { return }
     request(state)
   }
 
   /// Explicitly following a prayer may start earlier than the automatic 15-minute window.
+  /// An explicit Play shows its activity, even for a prayer whose activity the person dismissed.
   func start(settings: SalahSettings) async {
     revision &+= 1
     let mine = revision
@@ -103,7 +146,7 @@ final class IOSActivityCoordinator {
     let state = publication.state
     await finishCurrent()
     guard mine == revision else { return }
-    dismissedEventIDs.remove(SalahActivityAttributes.eventID(for: state))
+    dismissals.remove(SalahActivityAttributes.eventID(for: state))
     request(state)
   }
 

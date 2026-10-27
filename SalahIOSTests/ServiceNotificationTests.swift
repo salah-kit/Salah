@@ -51,16 +51,103 @@ import Testing
       try? FileManager.default.removeItem(at: files.audioDirectory.deletingLastPathComponent())
     }
     let preferences = preferences()
-    let service = IOSNotificationService(center: center, files: files, now: { now })
+    let zone = try #require(preferences.location?.timeZone)
+    // After Isha, so the next alert is tomorrow's Fajr: a denied read-back still reports
+    // coverage up to it, which would read as all of today being scheduled.
+    let evening = now.addingTimeInterval(9 * 3_600)
+    let service = IOSNotificationService(center: center, files: files, now: { evening })
     await service.refresh(
-      schedule: preferences.mirror?.schedule, preferences: preferences, now: now)
+      schedule: preferences.mirror?.schedule, preferences: preferences, now: evening)
+    #expect(service.lastFullyScheduledDay(in: zone) != nil)
     center.insertExternal("unrelated")
     center.setAuthorization(.denied)
     await service.refresh(
-      schedule: preferences.mirror?.schedule, preferences: preferences, now: now)
+      schedule: preferences.mirror?.schedule, preferences: preferences, now: evening)
     #expect(service.status == .denied)
     #expect(service.report?.confirmed.isEmpty == true)
+    #expect(service.lastFullyScheduledDay(in: zone) == nil)
     #expect(try await center.pendingNotificationRequests().map(\.identifier) == ["unrelated"])
+  }
+
+  @Test func coverageShowsOnlyDaysWhoseEveryAlertIsInstalled() async throws {
+    let center = ServiceNotificationCenter()
+    let files = temporaryFiles()
+    defer {
+      try? FileManager.default.removeItem(at: files.audioDirectory.deletingLastPathComponent())
+    }
+    var preferences = preferences()
+    for kind in PrayerKind.allCases where kind != .sunrise {
+      preferences.notifications[kind] = IOSPrayerAlertSettings(
+        atTime: true, sound: .system, beforeEnabled: true, beforeMinutes: 10,
+        beforeSound: .system, afterEnabled: true, afterMinutes: 5, afterSound: .system)
+    }
+    let zone = try #require(preferences.location?.timeZone)
+    let service = IOSNotificationService(center: center, files: files, now: { now })
+    await service.refresh(
+      schedule: preferences.mirror?.schedule, preferences: preferences, now: now)
+    // Every kind is reserved for two days, so the reminders stop during Oct 8's afternoon.
+    let coverage = try #require(service.report?.confirmedCoveredUntil)
+    #expect(CivilDay(containing: coverage, in: zone) == CivilDay(year: 2026, month: 10, day: 8))
+    #expect(service.lastFullyScheduledDay(in: zone) == CivilDay(year: 2026, month: 10, day: 7))
+
+    let today = CivilDay(year: 2026, month: 10, day: 6)
+    func report(coveredUntil: Date) -> NotificationApplyReport {
+      NotificationApplyReport(
+        verifiedAt: now, confirmed: [], failures: [:], superseded: false,
+        confirmedCoveredUntil: coveredUntil)
+    }
+    let midnight = today.adding(days: 2).start(in: zone)
+    #expect(
+      IOSNotificationService.lastFullyScheduledDay(report(coveredUntil: midnight), in: zone)
+        == today.adding(days: 1))
+    let tonight = today.start(in: zone).addingTimeInterval(20 * 3_600)
+    #expect(
+      IOSNotificationService.lastFullyScheduledDay(report(coveredUntil: tonight), in: zone)
+        == nil)
+  }
+
+  @Test func cancelledNewestRefreshStillInstallsItsPlan() async throws {
+    let center = ServiceNotificationCenter()
+    let files = temporaryFiles()
+    defer {
+      try? FileManager.default.removeItem(at: files.audioDirectory.deletingLastPathComponent())
+    }
+    var preferences = preferences()
+    let service = IOSNotificationService(center: center, files: files, now: { now })
+    await service.refresh(
+      schedule: preferences.mirror?.schedule, preferences: preferences, now: now)
+    preferences.muteSounds = true
+    let muted = preferences
+    // A scene that leaves the foreground cancels the refresh that superseded the others.
+    let refresh = Task {
+      await service.refresh(schedule: muted.mirror?.schedule, preferences: muted, now: now)
+    }
+    refresh.cancel()
+    await refresh.value
+    let owned = try await center.pendingNotificationRequests().filter {
+      IOSNotificationService.owns($0.identifier)
+    }
+    #expect(!owned.isEmpty)
+    #expect(owned.allSatisfy { $0.content.sound == nil })
+  }
+
+  /// Without a schedule, as when the stored settings can't be read, the installed alerts stay:
+  /// they're still the user's, and nothing replaces them.
+  @Test func aMissingScheduleKeepsTheInstalledAlerts() async throws {
+    let center = ServiceNotificationCenter()
+    let files = temporaryFiles()
+    defer {
+      try? FileManager.default.removeItem(at: files.audioDirectory.deletingLastPathComponent())
+    }
+    let preferences = preferences()
+    let service = IOSNotificationService(center: center, files: files, now: { now })
+    await service.refresh(
+      schedule: preferences.mirror?.schedule, preferences: preferences, now: now)
+    let installed = try await center.pendingNotificationRequests().map(\.identifier).sorted()
+    #expect(!installed.isEmpty)
+    await service.refresh(schedule: nil, preferences: IOSPreferences(), now: now)
+    let kept = try await center.pendingNotificationRequests().map(\.identifier).sorted()
+    #expect(kept == installed)
   }
 
   @Test func nativeAddFailureRemainsVisibleRatherThanClaimedAsInstalled() async {

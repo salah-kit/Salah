@@ -51,6 +51,17 @@ struct IOSLocalizationTests {
     #expect(IOSTimesView.dateTitle(day: day, week: week, text: text).contains(month))
   }
 
+  /// A week row's day number is in the same calendar as the title above it: Solar Hijri in
+  /// Persian, where 2 June 2026 is 12 Khordad.
+  @Test func weekRowsNumberTheirDaysInTheTitlesCalendar() throws {
+    let timeZone = try #require(TimeZone(identifier: "Asia/Tehran"))
+    let day = CivilDay(year: 2026, month: 6, day: 2)
+    let persian = SalahText(locale: AppLanguage.persian.locale, timeZone: timeZone)
+    #expect(IOSTimesView.dayNumber(day, text: persian).contains("۱۲"))
+    let english = SalahText(locale: AppLanguage.english.locale, timeZone: timeZone)
+    #expect(IOSTimesView.dayNumber(day, text: english) == "2")
+  }
+
   @Test func catalogTemplatesRetainTheChosenLanguagesWordOrder() {
     #expect(
       IOSL10n.format(

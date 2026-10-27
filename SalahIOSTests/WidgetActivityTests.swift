@@ -244,6 +244,129 @@ struct WidgetActivityTests {
     #expect(state.clockValue(at: startedAt.addingTimeInterval(7)) == "0:00:07")
   }
 
+  /// Play works on any row, so the Stop face's times and progress keep to the real time.
+  @Test func stopFaceRowsAndProgressFollowTheRealTimeWhenAnotherPrayerPlays() throws {
+    let settings = try settings()
+    let dhuhr = try event(.dhuhr, settings: settings)
+    let asr = try event(.asr, settings: settings)
+    for (kind, now) in [
+      (PrayerKind.maghrib, dhuhr.time.addingTimeInterval(-2 * 60 * 60)),
+      (.fajr, asr.time.addingTimeInterval(-30 * 60)),
+    ] {
+      let prayer = try event(kind, settings: settings)
+      let quiet = SalahDisplay(date: now, settings: settings, schedule: settings.schedule)
+      let playing = SalahDisplay(
+        date: now, settings: settings, schedule: settings.schedule,
+        playback: SalahPlayback(event: prayer, slot: .alert))
+      let roles = WidgetTimes.rows(of: quiet).map(\.role)
+      #expect(roles.contains(.next))
+      #expect(WidgetTimes.rows(of: playing).map(\.role) == roles, "\(kind)")
+      let marked = WidgetTimes.markedRows(of: playing)
+      #expect(marked.filter { $0.role == .current }.map(\.event.id) == [prayer.id])
+      #expect(
+        marked.filter { $0.event.id != prayer.id }.map(\.role)
+          == WidgetTimes.rows(of: quiet).filter { $0.event.id != prayer.id }.map(\.role))
+      #expect(WidgetProgress.fraction(of: playing) == WidgetProgress.fraction(of: quiet))
+      #expect(WidgetProgress.fraction(of: playing) < 1)
+    }
+  }
+
+  /// The adhan of the prayer that just began keeps the face it always had.
+  @Test func stopFaceAtThePrayerTimeKeepsItsRowsAndProgress() throws {
+    let settings = try settings()
+    let maghrib = try event(.maghrib, settings: settings)
+    let isha = try event(.isha, settings: settings)
+    let now = maghrib.time.addingTimeInterval(2 * 60)
+    let playing = SalahDisplay(
+      date: now, settings: settings, schedule: settings.schedule,
+      playback: SalahPlayback(event: maghrib, slot: .alert))
+    let expected: [WidgetTimes.Role] = [.passed, .passed, .passed, .passed, .current, .next]
+    #expect(WidgetTimes.markedRows(of: playing).map(\.role) == expected)
+    #expect(WidgetTimes.rows(of: playing).map(\.role) == expected)
+    #expect(
+      WidgetProgress.fraction(of: playing)
+        == CGFloat(now.timeIntervalSince(maghrib.time) / isha.time.timeIntervalSince(maghrib.time)))
+  }
+
+  @Test @MainActor func dismissalsPersistAcrossLaunchesUntilTheirWindowCloses() throws {
+    let suite = "SalahIOSTests.dismissals.\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suite))
+    defer { defaults.removePersistentDomain(forName: suite) }
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let now = asr.time.addingTimeInterval(-10 * 60)
+    let state = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(date: now, settings: settings, schedule: settings.schedule)))
+    let eventID = SalahActivityAttributes.eventID(for: state)
+    let deadline = IOSActivityDismissals.deadline(for: state)
+    // The approach and the count-up that follows it are one activity for one prayer.
+    #expect(deadline == asr.time.addingTimeInterval(15 * 60))
+    var dismissals = IOSActivityDismissals(defaults: defaults)
+    dismissals.insert(eventID, until: deadline, now: now)
+    // A new process reads what the last one recorded.
+    let relaunched = IOSActivityCoordinator(
+      now: { now }, loadPlaybackSession: { nil }, defaults: defaults)
+    #expect(relaunched.dismissals.contains(eventID, at: now))
+    #expect(relaunched.dismissals.contains(eventID, at: deadline.addingTimeInterval(-1)))
+    #expect(!relaunched.dismissals.contains(eventID, at: deadline))
+    // A later dismissal forgets the ones whose window has closed, so the record stays small.
+    let maghrib = try event(.maghrib, settings: settings)
+    let later = maghrib.time.addingTimeInterval(-10 * 60)
+    let laterState = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(date: later, settings: settings, schedule: settings.schedule)))
+    let laterID = SalahActivityAttributes.eventID(for: laterState)
+    dismissals.insert(laterID, until: IOSActivityDismissals.deadline(for: laterState), now: later)
+    #expect(defaults.dictionary(forKey: IOSActivityDismissals.key)?.keys.sorted() == [laterID])
+    dismissals.remove(laterID)
+    #expect(!IOSActivityDismissals(defaults: defaults).contains(laterID, at: later))
+  }
+
+  /// A dismissed playback that ends before its prayer's approach holds only for its session:
+  /// Maghrib played at midday and dismissed doesn't keep Maghrib's own approach and count-up
+  /// from showing that evening. Inside the prayer's window it holds until the count-up ends, as
+  /// the approach or count-up it replaced would. An explicit Play clears a prayer's dismissal.
+  @Test @MainActor func aDismissedPlaybackHoldsForItsSessionOrItsPrayersWindow() async throws {
+    let suite = "SalahIOSTests.playbackDismissals.\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suite))
+    defer { defaults.removePersistentDomain(forName: suite) }
+    let settings = try settings()
+    let maghrib = try event(.maghrib, settings: settings)
+    let now = maghrib.time.addingTimeInterval(-5 * 60 * 60)
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: maghrib, slot: .alert), startedAt: now, duration: 90)
+    let playing = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(date: now, settings: settings, schedule: settings.schedule),
+        playbackSession: session))
+    #expect(playing.mode == .playing)
+    #expect(IOSActivityDismissals.deadline(for: playing) == playing.validUntil)
+    #expect(IOSActivityDismissals.deadline(for: playing) < maghrib.time)
+    let near = maghrib.time.addingTimeInterval(-5 * 60)
+    let nearSession = IOSPlaybackSession(
+      playback: SalahPlayback(event: maghrib, slot: .alert), startedAt: near, duration: 90)
+    let nearPlaying = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(date: near, settings: settings, schedule: settings.schedule),
+        playbackSession: nearSession))
+    #expect(nearPlaying.mode == .playing)
+    #expect(
+      IOSActivityDismissals.deadline(for: nearPlaying) == maghrib.time.addingTimeInterval(15 * 60))
+
+    var dismissals = IOSActivityDismissals(defaults: defaults)
+    dismissals.insert(
+      SalahActivityAttributes.eventID(for: playing),
+      until: IOSActivityDismissals.deadline(for: playing), now: now)
+    let coordinator = IOSActivityCoordinator(
+      now: { now }, loadPlaybackSession: { session },
+      lifecycle: IOSActivityLifecycle(activities: { [] }, end: { _ in }), defaults: defaults)
+    #expect(coordinator.dismissals.contains(SalahActivityAttributes.eventID(for: playing), at: now))
+    await coordinator.start(settings: settings)
+    #expect(
+      !coordinator.dismissals.contains(SalahActivityAttributes.eventID(for: playing), at: now))
+  }
+
   @Test func sunriseDoesNotBecomeAPrayerActivity() throws {
     let settings = try settings()
     let sunrise = try event(.sunrise, settings: settings)

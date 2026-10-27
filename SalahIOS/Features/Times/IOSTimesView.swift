@@ -240,6 +240,7 @@ struct IOSTimesView: View {
   private func weekRow(_ day: CivilDay, columns: IOSWeekColumns?) -> some View {
     let events = store.schedule?.day(day).day?.events ?? []
     let isToday = day == store.today
+    let text = SalahText(locale: store.locale, timeZone: store.timeZone)
     return Button {
       store.selectedDay = day
       mode = .day
@@ -263,7 +264,7 @@ struct IOSTimesView: View {
             Text(verbatim: formatted(day, template: "EEE"))
               .font(.caption.weight(.semibold))
               .foregroundStyle(IOSTheme.labelSecondary)
-            Text(verbatim: digits(day.day))
+            Text(verbatim: Self.dayNumber(day, text: text))
               .font(.headline)
               .foregroundStyle(IOSTheme.labelPrimary)
           }
@@ -406,10 +407,6 @@ struct IOSTimesView: View {
     return formatter.string(from: event.time).bidiIsolated
   }
 
-  private func digits(_ value: Int) -> String {
-    SalahText(locale: store.locale, timeZone: store.timeZone).digits(value)
-  }
-
   private func hijriDate(_ day: CivilDay) -> String {
     let value = SalahText(locale: store.locale, timeZone: store.timeZone).hijri(
       day.start(in: store.timeZone), dayOffset: store.preferences.hijriOffset)
@@ -446,5 +443,11 @@ extension IOSTimesView {
     return text.civilRange(
       from: first.start(in: text.timeZone), to: last.start(in: text.timeZone),
       template: "d MMMM yyyy")
+  }
+
+  /// A week row's day of the month, in the title's calendar and the locale's digits, so in
+  /// Persian it's the Solar Hijri day, as the title's range is.
+  static func dayNumber(_ day: CivilDay, text: SalahText) -> String {
+    text.civilDate(day.start(in: text.timeZone), template: "d")
   }
 }

@@ -276,8 +276,13 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
 
     tap("tab.settings", in: app)
     tap("settings.appearance", in: app)
+    tap("appearance.light", in: app)
+    back(in: app)
+    XCTAssertGreaterThan(meanLuminance(of: app), 0.55, "Light appearance draws Settings light")
+    tap("settings.appearance", in: app)
     tap("appearance.dark", in: app)
     back(in: app)
+    XCTAssertLessThan(meanLuminance(of: app), 0.35, "Dark appearance draws Settings dark")
     tap("settings.language", in: app)
     tap("language.arabic", in: app)
     back(in: app)
