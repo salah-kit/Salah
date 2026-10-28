@@ -36,6 +36,10 @@ match `project.yml`.
 | `SalahTVTopShelf` | The Top Shelf extension (`io.github.salah-kit.Salah.tvOS.TopShelf`) |
 | `SalahTVTests` | tvOS logic tests (the `SalahTV` scheme) |
 | `SalahTVUITests` | Journeys through the running Apple TV app (their own scheme) |
+| `SalahWatch` | The Apple Watch app, inside the iPhone app (`io.github.salah-kit.Salah.iOS.watchkitapp`) |
+| `SalahWatchWidgets` | The complications and Smart Stack widget (`io.github.salah-kit.Salah.iOS.watchkitapp.Widgets`) |
+| `SalahWatchTests` | watchOS logic tests (the `SalahWatch` scheme) |
+| `SalahWatchUITests` | Journeys through the running watch app (their own scheme) |
 
 `Salah/` holds the app, `SalahWidgetsExtension/` the extension, and `Shared/` the code both
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
@@ -59,6 +63,14 @@ snapshot and banners, and the String Catalog. The app also compiles the iOS app'
 preferences, preference storage, city search and audio files from `SalahIOS/` and
 `SalahIOSShared/`, so a change there builds and tests on both. The
 [tvOS architecture](docs/tvos-architecture.md) describes the split.
+
+`SalahWatch/` contains the Apple Watch app and `SalahWatchWidgets/` its complications.
+`SalahWatchShared/` holds what both compile: the theme, the wording helper and the String
+Catalog. The app compiles the iOS app's store, preferences, preference storage, presentation
+and audio files, and the complications the Lock Screen's accessory wording, so a change there
+builds and tests on both. The iPhone app sends the watch its preferences over
+WatchConnectivity (`SalahIOS/Data/Watch`); the watch keeps its own copy. The
+[watchOS architecture](docs/watchos-architecture.md) describes the split.
 
 ## Signing
 
@@ -218,6 +230,77 @@ notice. A tvOS notification can't play a sound, so the adhan plays only while Sa
 open, from SalahAlerts' in-process engine, and stops when Salah leaves the screen. tvOS
 keeps only an app's defaults across launches, so preferences live there, and the settings
 mirror for the Top Shelf goes through the App Group.
+
+### watchOS
+
+The Apple Watch app is the iPhone app's companion: the `SalahIOS` scheme builds it and embeds
+it in the iPhone app, and the `SalahWatch` scheme builds and runs it on its own. Simulator
+builds and journeys need no paid Apple Developer membership or provisioning profile. Install
+a watchOS 26 or later simulator runtime through Xcode's Components settings. The app and its
+complications share the App Group `group.io.github.salah-kit.Salah` on the watch; both
+entitlements are generated from `project.yml`. Run the shared CI entry point from the
+repository root:
+
+```sh
+# Builds an unsigned Release app and its complications for a generic Apple Watch, then runs
+# the logic tests and real-app journeys on an Apple Watch simulator.
+bash scripts/verify-watchos.sh
+```
+
+The script selects an installed runtime and a 46 mm Apple Watch, creates a simulator, boots
+it without opening Simulator.app, and deletes it on success or failure. It leaves build
+products and test results in `.derived/watchos`; each run has its own `Results` directory.
+The journeys stand in for the iPhone with a Debug fixture of the preferences it would send,
+and fix the compass's reading, as the simulator has none; the production journey runs after
+a fresh install and waits for the iPhone.
+[`SalahWatchUITests/README.md`](SalahWatchUITests/README.md) lists the journeys and the Debug
+launch options they use.
+
+The paired journey checks the preferences' way from the iPhone app to the watch: it installs
+the iPhone app, with the watch app inside, on an iPhone simulator paired with a watch
+simulator, sets Salah up on the iPhone from a fixture, and waits for the watch to show its
+times. Create and pair the two simulators, then run it with their identifiers:
+
+```sh
+phone=$(xcrun simctl create "Salah paired iPhone" "iPhone 17 Pro")
+watch=$(xcrun simctl create "Salah paired watch" "Apple Watch Series 12 (46mm)")
+xcrun simctl pair "$watch" "$phone"
+bash scripts/paired-watch-journey.sh "$phone" "$watch"
+```
+
+WatchConnectivity between simulators hasn't been shown to be reliable on hosted runners, so
+CI doesn't run it; run it when you change how the preferences are sent or received.
+
+The Smart Stack journey runs the complications' extension on the watch face: on a new watch
+simulator it adds Salah's widget to the Smart Stack and reads the timeline the extension
+logged, which it builds from the settings the app mirrored. The face exposes no accessibility
+elements there, so the journey taps places measured on a 46 mm watch with watchOS 27, and CI
+doesn't run it; run it when you change the complications:
+
+```sh
+bash scripts/smart-stack-journey.sh
+```
+
+To build a simulator app without running tests:
+
+```sh
+xcodebuild build -project Salah.xcodeproj -scheme SalahWatch -configuration Debug \
+  -destination 'generic/platform=watchOS Simulator' -derivedDataPath .derived/watchos \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run on an Apple Watch, configure your team in `Config/Local.xcconfig`, run the `SalahIOS`
+scheme on the paired iPhone with `-allowProvisioningUpdates`, and enable the App Group for
+the watch app and its complications. The compass, sound through the watch's speaker,
+notifications forwarded from the iPhone and complications on a real face need a watch:
+follow [#77](https://github.com/salah-kit/Salah/issues/77) and record the commit, the watch
+and iPhone models, their system versions and what you observed. The [watchOS validation
+notes](docs/watchos-validation.md) link the VoiceOver and native-language reviews too.
+
+The watch app bundles the same two CC BY 4.0 recordings as iOS and generates the soft tone;
+it ships inside the iPhone app, whose notice and About credit them ([NOTICE](NOTICE)). The
+iPhone schedules the alerts, so the watch schedules none: its adhan plays only while Salah is
+open, from SalahAlerts' in-process engine, and stops when Salah leaves the screen.
 
 ## Tests
 
@@ -425,7 +508,9 @@ swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
 User-facing text lives in String Catalogs: `Salah/Resources/Localizable.xcstrings`,
 `Salah/Resources/InfoPlist.xcstrings` and `SalahWidgetsExtension/Localizable.xcstrings`;
 the Apple TV app's are `SalahTVShared/Resources/Localizable.xcstrings`, which its Top Shelf
-extension shares, and `SalahTV/Resources/InfoPlist.xcstrings`.
+extension shares, and `SalahTV/Resources/InfoPlist.xcstrings`; the Apple Watch app's are
+`SalahWatchShared/Resources/Localizable.xcstrings`, which its complications share, and
+`SalahWatch/Resources/InfoPlist.xcstrings`.
 The widget's own labels are in `SalahWidgetLabels` (`Shared/SalahWidgetModels.swift`),
 because the extension can't read the app's String Catalog; prayer names come from
 SalahCore's `PrayerNames`. Every change needs all nine

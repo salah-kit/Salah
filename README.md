@@ -2,7 +2,8 @@
 
 <img src="Design/Previews/app-icon.png" alt="" width="96" align="right">
 
-A calm prayer app for iPhone, iPad, Apple TV and macOS, with prayer times, widgets and reminders.
+A calm prayer app for iPhone, iPad, Apple Watch, Apple TV and macOS, with prayer times, widgets
+and reminders.
 
 [![CI](https://github.com/salah-kit/Salah/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/salah-kit/Salah/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/salah-kit/Salah?sort=semver)](https://github.com/salah-kit/Salah/releases)
@@ -127,6 +128,27 @@ listing or download yet. See [Installation](#apple-tv) to run a simulator build 
 paid developer membership. The [privacy policy](docs/privacy.md) covers the Apple TV app
 too.
 
+### On Apple Watch
+
+The Apple Watch app is the iPhone app's companion: it installs with the iPhone app and takes
+its location, calculation, alerts and language from it. The watch keeps its own copy and
+calculates the times itself, so it works while the iPhone app is closed or the iPhone is
+away.
+
+- **The next prayer.** Its countdown on the time of day's sky, then the rest of its day. It
+  turns gold in the last 15 minutes and counts up for 15 minutes after a prayer begins.
+- **Today and Qibla.** The Digital Crown moves on to the day's prayers, then to the Qibla:
+  the bearing from the place chosen on the iPhone, and which way to turn with the watch's
+  compass, with a tap on the wrist when you face it.
+- **Alerts and the adhan.** The iPhone's alerts reach the watch as notifications. While
+  Salah is open on the watch, the adhan plays at each prayer whose alert is on, with Stop.
+- **Complications.** The next prayer and its countdown on a watch face, in the circular,
+  rectangular, inline and corner families, and in the Smart Stack, which raises it around
+  each prayer.
+
+The Apple Watch app is available as source in the Unreleased changes, inside the iPhone app.
+The [privacy policy](docs/privacy.md) covers it.
+
 ## Installation
 
 ### macOS
@@ -190,6 +212,22 @@ then Run. [CONTRIBUTING.md](CONTRIBUTING.md#tvos) covers the command-line simula
 journeys and the unsigned device build. Installing on an Apple TV needs your local signing
 configuration.
 
+### Apple Watch
+
+The watch app builds with the iPhone app and requires watchOS 26 or later. A simulator build
+needs no paid Apple Developer membership:
+
+```sh
+xcodebuild build -project Salah.xcodeproj -scheme SalahWatch -configuration Debug \
+  -destination 'generic/platform=watchOS Simulator' -derivedDataPath .derived/watchos \
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+```
+
+To run it, open `Salah.xcodeproj`, choose the `SalahWatch` scheme and an Apple Watch
+simulator paired with an iPhone simulator, then Run; set Salah up on the iPhone, and its
+preferences reach the watch. [CONTRIBUTING.md](CONTRIBUTING.md#watchos) covers the
+journeys, the paired journey and installing on a watch.
+
 ## Quick start
 
 ### macOS
@@ -233,6 +271,15 @@ configuration.
 4. Keep Salah open at prayer time to hear the adhan; Stop, Play/Pause or Back ends it.
    Move Salah into the top row of the Home Screen to see its Top Shelf.
 
+### Apple Watch
+
+1. Set Salah up on the iPhone. The watch app installs with it, or from the Watch app's
+   Available Apps list.
+2. Open Salah on the watch: the next prayer leads. Turn the Digital Crown for today's
+   prayers and the Qibla; the first time it shows, the Qibla page asks to use the watch's
+   location for the compass.
+3. To add a complication, touch and hold the watch face, tap Edit, and choose Salah.
+
 ## Documentation
 
 This README and [CONTRIBUTING.md](CONTRIBUTING.md) cover using and building the app. The
@@ -244,7 +291,9 @@ The design system for the apps (tokens, the prayer symbols, the app icon and pre
 key screens) is described in [Design](Design/README.md).
 The [iOS architecture](docs/ios-architecture.md) describes state, persistence, platform
 services and the app's system surfaces. The [tvOS architecture](docs/tvos-architecture.md)
-describes the Apple TV app, its sound and its Top Shelf.
+describes the Apple TV app, its sound and its Top Shelf. The
+[watchOS architecture](docs/watchos-architecture.md) describes the Apple Watch app, how it
+gets its preferences from the iPhone, and its complications.
 
 ## Supported platforms
 
@@ -254,6 +303,7 @@ describes the Apple TV app, its sound and its Top Shelf.
 | iPhone app | iOS 26 |
 | iPad app | iPadOS 26 |
 | Apple TV app | tvOS 26 |
+| Apple Watch app | watchOS 26, with the iPhone app |
 
 ## Status and versioning
 
@@ -270,6 +320,8 @@ and native-language reviews and explain the notification and background-refresh 
 The Apple TV app is Unreleased source in the same way; the
 [tvOS validation notes](docs/tvos-validation.md) link its remaining hardware, VoiceOver
 and native-language reviews and explain why the adhan plays only while Salah is open.
+The Apple Watch app is Unreleased source too, inside the iPhone app; the
+[watchOS validation notes](docs/watchos-validation.md) link its remaining checks on a watch.
 [Remaining work](docs/remaining-work.md) lists what's left on each platform.
 
 Not done yet: a signed and notarized download, a Mac App Store listing, and confirmation

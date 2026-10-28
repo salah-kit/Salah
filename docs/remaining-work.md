@@ -17,7 +17,7 @@ Each row needs one kind of equipment, so one sitting can cover it. Most Mac chec
 | An iPhone and an iPad | [#65], and StandBy in [#28] |
 | An iPhone Duo | [#67], with its simulator checks |
 | An Apple TV with a television | [#69] |
-| An Apple Watch, or its simulator | [#27] |
+| An Apple Watch and its iPhone | [#77], and [#27], which a simulator can do too |
 | A VoiceOver user | [#17], in each app |
 | Native speakers | [#18] to [#25] |
 
@@ -123,14 +123,32 @@ table.
 The owner's task: the Apple TV app has its own bundle identifier, `io.github.salah-kit.Salah.tvOS`. Whether it
 shares a universal purchase with the iPhone app is the owner's decision at release.
 
+## Apple Watch
+
+- [#77], with an Apple Watch and its iPhone:
+  - the preferences reaching a newly installed watch app, a change on the iPhone following,
+    and the watch keeping its times with the iPhone away;
+  - the iPhone's notifications on the watch, and while Salah is open on it;
+  - the compass, its location request, and the tap on the wrist when facing the Qibla;
+  - the adhan through the watch's speaker and through headphones, with the wrist down;
+  - the complications on real faces in each family, full color and tinted, and the Smart
+    Stack around a prayer.
+- [#27]: the icon in the App Switcher, which needs a person to double-press the Digital
+  Crown.
+- The Apple Watch section of [#17]: VoiceOver through the pages, the Qibla dial and Stop.
+
+### Before a release
+
+The owner's task: the watch app ships inside the iPhone app, so it's on the iPhone app's App
+Store record, and distribution signing covers its bundle identifiers,
+`io.github.salah-kit.Salah.iOS.watchkitapp` and its complications'.
+
 ## Every app
 
 - [#17]: a VoiceOver user listening through each app.
 - Native speakers reviewing the drafted text. String Catalog entries stay `needs_review`
   until then: Arabic [#18], French [#19], Urdu [#20], Indonesian [#21], Turkish [#22],
   Persian [#23], Bengali [#24] and Malay [#25].
-- [#27]: the icon's watchOS variant in the App Switcher, which needs a person to double-press
-  the Digital Crown.
 
 [#11]: https://github.com/salah-kit/Salah/issues/11
 [#12]: https://github.com/salah-kit/Salah/issues/12
@@ -162,3 +180,4 @@ shares a universal purchase with the iPhone app is the owner's decision at relea
 [#73]: https://github.com/salah-kit/Salah/issues/73
 [#74]: https://github.com/salah-kit/Salah/issues/74
 [#75]: https://github.com/salah-kit/Salah/issues/75
+[#77]: https://github.com/salah-kit/Salah/issues/77

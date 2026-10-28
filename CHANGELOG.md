@@ -48,6 +48,17 @@ All notable changes to this project are documented here. The format follows
   each device keeps its own settings.
   Simulator builds need no paid developer membership; App Store distribution is not
   included.
+- An Apple Watch app for watchOS 26 or later, the iPhone app's companion, available as
+  source. Three pages the Digital Crown moves through: the next prayer with its countdown
+  and the rest of its day; today's prayers; and the Qibla, with the watch's compass. The
+  iPhone app sends its preferences to the watch, which keeps its own copy and calculates its
+  own times, so it works while the iPhone app is closed or the iPhone is away; until then it
+  says to set Salah up on the iPhone. The iPhone's alerts reach the watch as notifications,
+  and while Salah is open on the watch the adhan plays at each prayer whose alert is on,
+  with Stop. Complications in the circular, rectangular, inline and corner families, and
+  the Smart Stack, count down to the next prayer. English and Arabic right to left, with
+  the other seven languages drafted. The watch ships inside the iPhone app; simulator
+  builds need no paid developer membership, and App Store distribution is not included.
 
 ### Changed
 

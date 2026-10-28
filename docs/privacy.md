@@ -1,6 +1,6 @@
-# Salah for iPhone, iPad and Apple TV: Privacy Policy
+# Salah for iPhone, iPad, Apple Watch and Apple TV: Privacy Policy
 
-Effective date: 26 October 2026
+Effective date: 28 October 2026
 
 Salah calculates prayer times and the Qibla direction on your device. It has no
 account, advertising, analytics or tracking. Salah does not operate a service that
@@ -83,6 +83,23 @@ To use a city instead, open **Salah → Settings → Location**. To stop locatio
 turn it off for Salah in the Apple TV's Location Services settings; the selected location
 remains available for offline calculations. Deleting Salah from the Apple TV removes its
 settings, the Top Shelf's copy of them and its images.
+
+## On Apple Watch
+
+Salah for Apple Watch takes its settings from Salah on your iPhone. The iPhone app sends
+your selected location, including its coordinates, city, country and time zone; the cities
+you chose recently; and your calculation, alert, sound, appearance and language choices to
+your paired Apple Watch through Apple's WatchConnectivity. Salah doesn't operate a service
+that receives them. The watch keeps its own copy, and the settings its complications need in
+a local App Group shared with them. Complications and the Smart Stack show the next prayer on
+the watch face, including while the watch is locked.
+
+The Qibla page asks for location access while you use the app, only so the watch's compass
+can point to true north. Salah doesn't send that location anywhere or use it for prayer
+times, which come from the place chosen on the iPhone. The watch doesn't schedule
+notifications; the alerts the iPhone app schedules can appear on the watch, as iOS decides.
+To stop location access, turn it off for Salah in the watch's Location Services settings.
+Deleting Salah from the watch removes its copy of the settings.
 
 ## Questions and changes
 
