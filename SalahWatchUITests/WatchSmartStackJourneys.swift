@@ -51,7 +51,7 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     let salah = face.cells["AppGroupCell -- Salah"]
     var previous = ""
     var unchanged = 0
-    while unchanged < 2 {
+    for _ in 0..<30 where unchanged < 2 {
       if isInView(salah) { return true }
       // At the end of the list the row can sit under the title bar.
       if salah.exists, salah.frame.minY < 62 {
