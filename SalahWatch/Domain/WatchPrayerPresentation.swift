@@ -79,9 +79,8 @@ nonisolated struct WatchPrayerPresentation: Sendable {
 
   /// The hero for VoiceOver: "Next prayer, Asr, 3:35 PM, in 2 hours, 16 minutes".
   var heroAccessibility: String {
-    guard let event = heroEvent else {
-      return [eyebrow, heroName, heroTime].joined(separator: ", ")
-    }
+    // Without a prayer the card shows a dash, which VoiceOver would read as a word.
+    guard let event = heroEvent else { return [eyebrow, heroTime].joined(separator: ", ") }
     var parts = [eyebrow, heroName, heroTime]
     switch heroMode {
     case .justStarted:

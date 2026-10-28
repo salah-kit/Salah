@@ -46,7 +46,7 @@ final class WatchAppRuntime {
   private func connect() {
     store.onPreferencesChanged = { [weak self] _ in self?.preferencesChanged() }
     store.onStopPlayback = { [weak self] in self?.audio.stop() }
-    receiver.onPreferences = { [weak self] preferences in self?.received(preferences) }
+    receiver.onPreferences = { [weak self] preferences in self?.received(preferences) ?? false }
     receiver.hasPreferences = { [weak self] in self?.store.settings != nil }
     adhan.onDue = { [weak self] event in self?.adhanDue(event) }
     audio.onPlaybackChanged = { [weak self] playing in
@@ -78,14 +78,16 @@ final class WatchAppRuntime {
     heading.stop()
   }
 
-  /// Moves the clock every `interval` while Salah runs: every second on screen, every minute
-  /// with the wrist down, when the watch redraws once a minute.
-  func runClock(every interval: Duration) async {
+  /// Moves the clock while Salah runs: every second on screen, and at each minute with the
+  /// wrist down, when the watch redraws once a minute.
+  func runClock(minutely: Bool = false) async {
     while !Task.isCancelled {
       let previousDay = store.today
       store.tick()
       if previousDay != store.today { replan(catchingUp: true) }
-      do { try await Task.sleep(for: interval) } catch { return }
+      let delay =
+        minutely ? 60 - store.now.timeIntervalSince1970.truncatingRemainder(dividingBy: 60) : 1
+      do { try await Task.sleep(for: .seconds(delay)) } catch { return }
     }
   }
 
@@ -110,8 +112,10 @@ final class WatchAppRuntime {
 
   // MARK: - Effects
 
-  private func received(_ preferences: IOSPreferences) {
+  /// Keeps preferences from the iPhone; returns whether they were stored.
+  private func received(_ preferences: IOSPreferences) -> Bool {
     store.updatePreferences { $0 = preferences }
+    return !store.persistenceFailed
   }
 
   private func preferencesChanged() {

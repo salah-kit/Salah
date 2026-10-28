@@ -114,7 +114,6 @@ final class ManualAlertClock: AlertClock {
 final class FakeWatchSession: WatchSession {
   var activationState: WCSessionActivationState = .activated
   var receivedApplicationContext: [String: Any] = [:]
-  var isCompanionAppInstalled = true
   var isReachable = true
   var hasContentPending = false
   private(set) var requests = 0

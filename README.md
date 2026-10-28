@@ -223,9 +223,10 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahWatch -configuration Debu
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run it, open `Salah.xcodeproj`, choose the `SalahWatch` scheme and an Apple Watch
-simulator paired with an iPhone simulator, then Run; set Salah up on the iPhone, and its
-preferences reach the watch. [CONTRIBUTING.md](CONTRIBUTING.md#watchos) covers the
+To run it, open `Salah.xcodeproj`, choose the `SalahIOS` scheme and an iPhone simulator
+paired with an Apple Watch simulator, and Run: the watch app installs with the iPhone app.
+Set Salah up on the iPhone, then choose the `SalahWatch` scheme and the watch simulator, and
+Run; the iPhone's preferences reach the watch. [CONTRIBUTING.md](CONTRIBUTING.md#watchos) covers the
 journeys, the paired journey and installing on a watch.
 
 ## Quick start

@@ -17,6 +17,8 @@ if [[ "$family" == iPhone ]]; then
     CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
   test -d "$derived_path/Build/Products/Release-iphoneos/SalahIOS.app/PlugIns/SalahIOSWidgets.appex"
   test -f "$derived_path/Build/Products/Release-iphoneos/SalahIOS.app/NOTICE"
+  # The watch app ships inside the iPhone app.
+  test -d "$derived_path/Build/Products/Release-iphoneos/SalahIOS.app/Watch/SalahWatch.app"
   app_info="$derived_path/Build/Products/Release-iphoneos/SalahIOS.app/Info.plist"
   icon_name="$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconName raw \
     -o - "$app_info" 2>/dev/null || plutil -extract CFBundleIconName raw -o - "$app_info")"

@@ -1257,44 +1257,44 @@
         },
         "fr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "L"
+            "state": "needs_review",
+            "value": "S"
           }
         },
         "ur": {
           "stringUnit": {
-            "state": "translated",
-            "value": "طل"
+            "state": "needs_review",
+            "value": "ج"
           }
         },
         "id": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Tb"
+            "state": "needs_review",
+            "value": "S"
           }
         },
         "tr": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Gü"
+            "state": "needs_review",
+            "value": "G"
           }
         },
         "fa": {
           "stringUnit": {
-            "state": "translated",
-            "value": "طل"
+            "state": "needs_review",
+            "value": "ج"
           }
         },
         "bn": {
           "stringUnit": {
-            "state": "translated",
-            "value": "সূ"
+            "state": "needs_review",
+            "value": "দ"
           }
         },
         "ms": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Sy"
+            "state": "needs_review",
+            "value": "S"
           }
         }
       }

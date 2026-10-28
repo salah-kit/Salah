@@ -1,8 +1,8 @@
 import XCTest
 
 /// Launches the real watch app with an isolated, durable preferences suite. A fixture stands
-/// for preferences the iPhone sent; only the first launch resets the suite, so a relaunch
-/// reads what the watch kept.
+/// for preferences the iPhone sent; only the first launch resets the suite and seeds it, so a
+/// relaunch reads what the watch kept.
 @MainActor
 struct WatchJourneyApp {
   let app = XCUIApplication()
@@ -30,9 +30,13 @@ struct WatchJourneyApp {
     app.launch()
   }
 
+  /// Launches again on the same suite, without the fixture, which would otherwise seed an
+  /// empty suite again.
   func relaunch() {
     app.terminate()
-    launch(reset: false)
+    var again = self
+    again.fixture = nil
+    again.launch(reset: false)
   }
 }
 

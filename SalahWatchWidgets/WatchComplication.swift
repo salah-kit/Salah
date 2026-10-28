@@ -94,7 +94,7 @@ struct WatchPrayerComplication: Widget {
 }
 
 /// One complication in its family: the next prayer's glyph, name, time and live countdown, or
-/// why there's none. In the watch face's tinted rendering the countdown and the progress keep
+/// why there's none. On a tinted watch face the gauges, the countdown and the progress take
 /// the face's accent.
 struct WatchComplicationView: View {
   let entry: SalahWidgetEntry
@@ -187,10 +187,6 @@ nonisolated enum WatchComplicationCopy {
     return min(1, max(0, display.date.timeIntervalSince(start) / interval))
   }
 
-  /// The inline family's short form when the countdown doesn't fit: "Asr 3:35 PM".
-  static func shortInline(display: SalahDisplay, focus: SalahDisplay.Focus) -> String {
-    display.name(of: focus.event) + " " + display.timeText(of: focus.event)
-  }
 }
 
 /// The focus in each accessory family, as the iPhone's Lock Screen draws it, and the watch's
@@ -213,12 +209,11 @@ struct WatchAccessoryFace: View {
   var body: some View {
     switch family {
     case .accessoryInline:
-      ViewThatFits {
-        IOSAccessoryCopy.inlineText(display: display, pause: pause, bundle: AppResources.bundle)
-        Text(verbatim: WatchComplicationCopy.shortInline(display: display, focus: focus))
-      }
-      .accessibilityElement(children: .ignore)
-      .accessibilityLabel(accessibilityLabel)
+      // One text with its live timer, as the Lock Screen draws it: a live timer stretches to
+      // whatever it's offered, so no shorter alternative would ever be chosen.
+      IOSAccessoryCopy.inlineText(display: display, pause: pause, bundle: AppResources.bundle)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
     case .accessoryCircular:
       Gauge(value: progress) {
         glyph
@@ -230,6 +225,7 @@ struct WatchAccessoryFace: View {
       }
       .gaugeStyle(.accessoryCircularCapacity)
       .tint(accent)
+      .widgetAccentable()
       .accessibilityLabel(accessibilityLabel)
     case .accessoryCorner:
       glyph
@@ -246,6 +242,7 @@ struct WatchAccessoryFace: View {
             timerText
           }
           .tint(accent)
+          .widgetAccentable()
         }
         .accessibilityLabel(accessibilityLabel)
     default:

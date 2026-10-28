@@ -8,7 +8,6 @@ protocol WatchSession: AnyObject {
   var activationState: WCSessionActivationState { get }
   /// The last context the iPhone sent that this watch received.
   var receivedApplicationContext: [String: Any] { get }
-  var isCompanionAppInstalled: Bool { get }
   var isReachable: Bool { get }
   var hasContentPending: Bool { get }
   /// Asks the iPhone app for the preferences. `reply` gets its answer on a queue of the
@@ -17,28 +16,32 @@ protocol WatchSession: AnyObject {
 }
 
 extension WCSession: WatchSession {
-  func requestPreferences(reply: @escaping @Sendable ([String: Any]) -> Void) {
+  /// WatchConnectivity calls the handlers on a queue of its own, so neither may assume the
+  /// main actor.
+  nonisolated func requestPreferences(reply: @escaping @Sendable ([String: Any]) -> Void) {
     // Unreachable after all: the context arrives when the iPhone app next runs.
     sendMessage(
-      [WatchPreferencesMessage.requestKey: true], replyHandler: { reply($0) },
-      errorHandler: { _ in })
+      [WatchPreferencesMessage.requestKey: true],
+      replyHandler: WatchPreferencesReceiver.replyHandler(reply),
+      errorHandler: { @Sendable _ in })
   }
 }
 
 /// Receives the preferences the iPhone app sends and keeps the latest.
 ///
 /// A context the iPhone sends is delivered when the watch app next runs, in the background if
-/// need be. Once the session is active the receiver reads the last delivered context again,
-/// in case a delivery was missed, and asks a reachable iPhone for the preferences while the
-/// watch has none. Each is kept only when the iPhone sent it after the preferences the watch
-/// already has, so an older send never replaces newer ones.
+/// need be; WatchConnectivity delivers only the latest, so a delivery is always kept. Once the
+/// session is active the receiver reads the last delivered context again, in case a delivery
+/// was missed, and asks a reachable iPhone for the preferences while the watch has none. Those
+/// are kept only when the iPhone sent them after the preferences the watch already has, so an
+/// older send never replaces newer ones.
 @MainActor
 final class WatchPreferencesReceiver {
   /// The defaults key of the instant the iPhone sent the preferences the watch has.
   static let sentKey = "salah.watch.preferences.sentAt"
 
-  /// Called with preferences newer than the watch's.
-  var onPreferences: ((IOSPreferences) -> Void)?
+  /// Called with preferences newer than the watch's; returns whether the watch kept them.
+  var onPreferences: ((IOSPreferences) -> Bool)?
   /// Whether the watch has preferences, so it doesn't ask the iPhone for them again.
   var hasPreferences: () -> Bool = { false }
   /// Why the last context or reply couldn't be used, for diagnostics and tests.
@@ -68,8 +71,9 @@ final class WatchPreferencesReceiver {
     self.defaults = defaults
   }
 
-  /// A context the iPhone delivered, or a reply to the watch's request.
-  func receive(_ context: [String: Any]) {
+  /// A context WatchConnectivity delivered, which is the iPhone's latest, or one read again or
+  /// replied, which is kept only when it's newer than the watch's.
+  func receive(_ context: [String: Any], delivered: Bool = false) {
     let message: WatchPreferencesMessage
     do {
       message = try WatchPreferencesMessage(context: context)
@@ -79,11 +83,14 @@ final class WatchPreferencesReceiver {
       return
     }
     lastRejection = nil
-    if let sent = defaults.object(forKey: Self.sentKey) as? Date, message.sentAt <= sent {
+    if !delivered, let sent = defaults.object(forKey: Self.sentKey) as? Date,
+      message.sentAt <= sent
+    {
       return
     }
+    // Recorded once kept, so preferences the watch couldn't store are read again later.
+    guard onPreferences?(message.preferences) == true else { return }
     defaults.set(message.sentAt, forKey: Self.sentKey)
-    onPreferences?(message.preferences)
   }
 
   /// The session is active: read the last delivered context again, and ask the iPhone while
@@ -96,10 +103,10 @@ final class WatchPreferencesReceiver {
   }
 
   /// Asks a reachable iPhone for the preferences, while the watch has none. iOS wakes Salah on
-  /// the iPhone to answer.
+  /// the iPhone to answer; the watch app installs with it, so it's there.
   func requestIfNeeded() {
     guard let session, session.activationState == .activated, !hasPreferences(),
-      session.isCompanionAppInstalled, session.isReachable
+      session.isReachable
     else { return }
     session.requestPreferences { [weak self] context in
       let reply = UncheckedContext(context)
@@ -107,15 +114,25 @@ final class WatchPreferencesReceiver {
     }
   }
 
-  /// Waits until WatchConnectivity has delivered what it holds for Salah, for the system's
-  /// background task that woke the app to receive it.
+  /// Waits until the session is active and WatchConnectivity has delivered what it holds for
+  /// Salah, then lets the deliveries reach the receiver, for the system's background task that
+  /// woke the app to receive them.
   func finishPendingContent() async {
     guard let session else { return }
     var waited = 0
-    while session.hasContentPending, waited < 50 {
+    while session.activationState != .activated || session.hasContentPending, waited < 50 {
       waited += 1
       do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
     }
+    // Each delivery hops to the main actor; give the hops queued behind this one their turn.
+    try? await Task.sleep(for: .milliseconds(250))
+  }
+
+  /// The handler WatchConnectivity calls with the iPhone's reply, on a queue of its own.
+  nonisolated static func replyHandler(_ reply: @escaping @Sendable ([String: Any]) -> Void)
+    -> @Sendable ([String: Any]) -> Void
+  {
+    { @Sendable context in reply(context) }
   }
 
   /// The session's delegate. WatchConnectivity calls it on a queue of its own, so it hands each
@@ -136,7 +153,7 @@ final class WatchPreferencesReceiver {
       _ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]
     ) {
       let context = UncheckedContext(applicationContext)
-      Task { @MainActor in self.receiver?.receive(context.value) }
+      Task { @MainActor in self.receiver?.receive(context.value, delivered: true) }
     }
 
     nonisolated func sessionReachabilityDidChange(_ session: WCSession) {

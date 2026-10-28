@@ -108,6 +108,15 @@ jobs:
           xcodebuild -version
           xcrun simctl list runtimes
 
+      # The iPhone app embeds the watch app, so the iOS build needs the watchOS platform; a
+      # hosted image may come without it, so download it only then.
+      - name: Install the watchOS platform
+        run: |
+          if ! xcrun simctl list --json runtimes devicetypes \
+            | python3 scripts/select-watchos-simulator.py >/dev/null; then
+            xcodebuild -downloadPlatform watchOS
+          fi
+
       # The iPhone job also builds the Release app and embedded widget for a
       # generic device, unsigned. Every family runs logic and real-app journeys;
       # Duo runs on iPhone Duo, which needs the iOS 27.1 simulator runtime.

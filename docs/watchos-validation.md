@@ -19,8 +19,8 @@ iPhone app with the watch app inside it.
   every family's drawing, links, and the launch configuration. `SalahIOSTests` covers what
   the iPhone sends and when.
 - Core journeys cover the next prayer with the rest of its day, the pages through Today to
-  the Qibla, the adhan at prayer time with Stop, a muted watch, Arabic right to left
-  with Arabic digits, the xxxLarge text size, the Qibla without a compass and facing it, the
+  the Qibla, the adhan at prayer time with Stop, a muted watch, Arabic with Arabic
+  digits, the xxxLarge text size, the Qibla without a compass and facing it, the
   preferences kept across a relaunch, and a watch with no preferences asking for the iPhone.
 - The production journey launches without Debug options after a fresh install: the watch
   has no preferences and asks for the iPhone.

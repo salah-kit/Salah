@@ -79,12 +79,14 @@ nonisolated final class WatchCoreJourneys: XCTestCase {
     journey.launch()
     let app = journey.app
     waitForLabel("hero", containing: "الصلاة القادمة, العصر", in: app)
+    // Arabic digits: Asr at ٣:٣٧, two hours and eighteen minutes away.
+    XCTAssertTrue(plain(element("hero", in: app).label).contains("٣:٣٧"))
     XCTAssertTrue(require("row.maghrib", in: app).label.contains("المغرب"))
     screenshot("now-ar")
   }
 
-  /// At the largest text size before the accessibility sizes, a row's time moves under its
-  /// name rather than cutting it.
+  /// At the largest text size before the accessibility sizes, every row stays in reach on
+  /// Today. The time moving under the name is in the screenshot.
   @MainActor
   func testTheLargerTextSizesKeepEveryRow() {
     var journey = WatchJourneyApp()
@@ -100,7 +102,7 @@ nonisolated final class WatchCoreJourneys: XCTestCase {
       for _ in 0..<6 where !row.exists || !row.isHittable {
         XCUIDevice.shared.rotateDigitalCrown(delta: 0.25, velocity: .default)
       }
-      XCTAssertTrue(row.exists, "Missing \(kind) at xxxLarge")
+      XCTAssertTrue(row.exists && row.isHittable, "Can't reach \(kind) at xxxLarge")
     }
     screenshot("today-xxxl-en")
   }

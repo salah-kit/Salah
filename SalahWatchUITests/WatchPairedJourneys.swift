@@ -2,8 +2,8 @@ import XCTest
 
 /// The preferences' way from the iPhone to the watch, on an iPhone simulator paired with a
 /// watch simulator: a watch app with no preferences of its own shows the place the iPhone app
-/// sent. `scripts/paired-watch-journey.sh` sets Salah up on the iPhone at the Kaaba first,
-/// and runs this with `SALAH_WATCH_PAIRED=1`; otherwise it skips.
+/// sent. `scripts/paired-watch-journey.sh` sets Salah up on the iPhone in Makkah first, and
+/// runs this with `SALAH_WATCH_PAIRED=1`; otherwise it skips.
 nonisolated final class WatchPairedJourneys: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipUnless(
@@ -22,12 +22,10 @@ nonisolated final class WatchPairedJourneys: XCTestCase {
     journey.launch()
     let app = journey.app
     // The watch has nothing until the iPhone's preferences arrive: the context it sent, or
-    // the reply to the watch's request. Only the iPhone's place puts the watch at the Kaaba.
+    // the reply to the watch's request. The iPhone's Makkah, a few metres southeast of the
+    // Kaaba, puts the Qibla at 325°.
     require("qibla.dial", in: app, timeout: 120)
-    waitForLabel("qibla.dial", containing: "You are at the Kaaba", in: app)
+    waitForLabel("qibla.dial", containing: "Qibla 325°", in: app)
     screenshot("paired-received")
-    // The watch keeps them: a relaunch shows them without waiting for the iPhone.
-    journey.relaunch()
-    waitForLabel("qibla.dial", containing: "You are at the Kaaba", in: app)
   }
 }

@@ -15,11 +15,11 @@ struct SalahWatchApp: App {
           switch scenePhase {
           case .active:
             runtime.activate()
-            await runtime.runClock(every: .seconds(1))
+            await runtime.runClock()
           case .inactive:
             // The wrist is down and Salah stays frontmost: the watch redraws once a minute,
             // and an adhan that's playing plays on.
-            await runtime.runClock(every: .seconds(60))
+            await runtime.runClock(minutely: true)
           default:
             runtime.deactivate()
           }

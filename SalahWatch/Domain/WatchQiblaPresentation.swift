@@ -84,9 +84,11 @@ nonisolated struct WatchQiblaPresentation: Equatable, Sendable {
     }
   }
 
-  /// The dial for VoiceOver: "Qibla 119°. Turn 26° right."
+  /// The dial for VoiceOver: "Qibla 119°. Turn 26° right." Without a bearing the dial shows a
+  /// dash, which VoiceOver would read as a word.
   var accessibility: String {
-    [copy("Qibla", "القبلة") + " " + center, instruction].joined(separator: ". ")
+    let title = copy("Qibla", "القبلة")
+    return [center == "—" ? title : title + " " + center, instruction].joined(separator: ". ")
   }
 
   /// The cardinal letters, north first: N E S W, or ش ق ج غ in Arabic.

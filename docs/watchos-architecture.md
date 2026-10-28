@@ -106,8 +106,7 @@ With the wrist down the watch redraws once a minute, so the countdown drops its 
 One widget, in the accessory families a watch face offers: circular (a gauge from the
 previous prayer to the next around its glyph and countdown), rectangular (the glyph, name and
 time, the live countdown and the progress, which the Smart Stack shows too), inline (one line,
-"Asr in 2:16", or "Asr 3:35 PM" when that doesn't fit) and corner (the glyph, with a curved
-gauge and label). They calculate their own timeline with SalahWidgets'
+"Asr in 2:16:00") and corner (the glyph, with a curved gauge and label). They calculate their own timeline with SalahWidgets'
 `PrayerTimelineBuilder`, through the timeline the iPhone's widgets use
 ([`SalahWidgetTimeline`](../Shared/SalahWidgetTimeline.swift)); the countdown is a timer text
 that WidgetKit advances itself. Each entry's relevance raises the Smart Stack's card from 15

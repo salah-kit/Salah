@@ -61,6 +61,8 @@ struct WatchQiblaTests {
     #expect(calibrating.center == "—")
     #expect(!calibrating.showsDial)
     #expect(calibrating.instruction == "Move your device in a figure 8")
+    // VoiceOver doesn't read the dash.
+    #expect(calibrating.accessibility == "Qibla. Move your device in a figure 8")
   }
 
   @Test func atTheKaabaThereIsNoDirection() {
@@ -81,5 +83,16 @@ struct WatchQiblaTests {
     #expect(arabic.center == "١١٩°")
     #expect(plain(arabic.instruction) == "استدر ٢٦° يمينًا")
     #expect(arabic.cardinalLetters == ["ش", "ق", "ج", "غ"])
+  }
+
+  /// The letters are the initials of north, east, south and west in each language.
+  @Test(
+    arguments: [
+      ("fr", ["N", "E", "S", "O"]), ("ur", ["ش", "م", "ج", "مغ"]), ("id", ["U", "T", "S", "B"]),
+      ("tr", ["K", "D", "G", "B"]), ("fa", ["ش", "شر", "ج", "غ"]), ("bn", ["উ", "পূ", "দ", "প"]),
+      ("ms", ["U", "T", "S", "B"]),
+    ])
+  func namesTheCardinalPointsInEachLanguage(language: String, letters: [String]) {
+    #expect(qibla(.unavailable, locale: Locale(identifier: language)).cardinalLetters == letters)
   }
 }

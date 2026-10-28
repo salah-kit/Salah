@@ -12,7 +12,10 @@ struct WatchPreferencesReceiverTests {
   ) -> (WatchPreferencesReceiver, Recorder) {
     let receiver = WatchPreferencesReceiver(session: session, defaults: WatchFixtures.defaults())
     let recorder = Recorder()
-    receiver.onPreferences = { recorder.received.append($0) }
+    receiver.onPreferences = { preferences in
+      recorder.received.append(preferences)
+      return recorder.keeps
+    }
     receiver.hasPreferences = { hasPreferences }
     return (receiver, recorder)
   }
@@ -20,6 +23,8 @@ struct WatchPreferencesReceiverTests {
   @MainActor
   final class Recorder {
     var received: [IOSPreferences] = []
+    /// Whether the watch manages to store what it receives.
+    var keeps = true
   }
 
   @Test func keepsWhatTheIPhoneSent() {
@@ -83,11 +88,6 @@ struct WatchPreferencesReceiverTests {
     receiver(session: unreachable).0.requestIfNeeded()
     #expect(unreachable.requests == 0)
 
-    let withoutApp = FakeWatchSession()
-    withoutApp.isCompanionAppInstalled = false
-    receiver(session: withoutApp).0.requestIfNeeded()
-    #expect(withoutApp.requests == 0)
-
     let inactive = FakeWatchSession()
     inactive.activationState = .notActivated
     receiver(session: inactive).0.requestIfNeeded()
@@ -109,6 +109,55 @@ struct WatchPreferencesReceiverTests {
       await Task.yield()
     }
     #expect(recorder.received.count == 1)
+  }
+
+  /// WatchConnectivity delivers only the iPhone's latest context, so a delivery is kept even
+  /// when the iPhone's clock has gone back since it sent the watch's preferences.
+  @Test func keepsADeliveryWhateverItsDate() {
+    let (receiver, recorder) = receiver()
+    receiver.receive(
+      WatchFixtures.context(WatchFixtures.preferences(), sentAt: "2026-10-12T13:00:00Z"))
+    let corrected = WatchFixtures.preferences { $0.madhab = .hanafi }
+    receiver.receive(
+      WatchFixtures.context(corrected, sentAt: "2026-10-12T12:00:00Z"), delivered: true)
+    #expect(recorder.received.map(\.madhab) == [.shafi, .hanafi])
+  }
+
+  /// Preferences the watch couldn't store are read again, rather than counted as had.
+  @Test func readsAgainWhatItCouldntStore() {
+    let (receiver, recorder) = receiver()
+    let context = WatchFixtures.context(WatchFixtures.preferences(), sentAt: "2026-10-12T12:00:00Z")
+    recorder.keeps = false
+    receiver.receive(context)
+    recorder.keeps = true
+    receiver.receive(context)
+    #expect(recorder.received.count == 2)
+    receiver.receive(context)
+    #expect(recorder.received.count == 2)
+  }
+
+  /// WatchConnectivity calls the reply handler on a queue of its own: it mustn't assume the
+  /// main actor, which would stop the app.
+  @Test func theReplyHandlerRunsOffTheMainActor() async {
+    await withCheckedContinuation { (finished: CheckedContinuation<Void, Never>) in
+      let handler = WatchPreferencesReceiver.replyHandler { _ in finished.resume() }
+      DispatchQueue.global().async { handler([:]) }
+    }
+  }
+
+  /// A background launch to deliver a context waits for the session to activate first.
+  @Test func backgroundDeliveryWaitsForActivation() async {
+    let session = FakeWatchSession()
+    session.activationState = .notActivated
+    let (receiver, _) = receiver(session: session)
+    let started = Date()
+    Task {
+      try? await Task.sleep(for: .milliseconds(300))
+      session.activationState = .activated
+    }
+    await receiver.finishPendingContent()
+    #expect(Date().timeIntervalSince(started) >= 0.3)
+    #expect(session.activationState == .activated)
   }
 
   @Test func messagesRoundTrip() throws {

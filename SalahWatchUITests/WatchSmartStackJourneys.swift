@@ -53,19 +53,18 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     screenshot("smartstack-2-editing")
     tap(x: 0.5, y: 0.43)  // The add slot
     screenshot("smartstack-3-apps")
-    // The list of apps is alphabetical; Salah sits near its end.
-    for _ in 0..<6 {
+    // The list of apps is alphabetical; Salah sits near its end, before Settings.
+    print("SMARTSTACK apps:\n\(carousel.debugDescription)")
+    let salah = carousel.staticTexts["Salah"]
+    for _ in 0..<8 where !(salah.exists && salah.isHittable) {
       carousel.swipeUp()
       Thread.sleep(forTimeInterval: 1.5)
     }
     screenshot("smartstack-4-apps-end")
-    let salah = carousel.staticTexts["Salah"]
-    if salah.exists, salah.isHittable {
-      salah.tap()
-      Thread.sleep(forTimeInterval: 4)
-    } else {
-      tap(x: 0.5, y: 0.72)  // Salah, as the list ends on a 46 mm watch
-    }
+    print("SMARTSTACK salah exists=\(salah.exists) hittable=\(salah.exists && salah.isHittable)")
+    XCTAssertTrue(salah.exists, "Salah isn't in the widget gallery's apps")
+    salah.tap()
+    Thread.sleep(forTimeInterval: 4)
     screenshot("smartstack-5-gallery")
     tap(x: 0.5, y: 0.5)  // Its widget
     tap(x: 0.15, y: 0.14, wait: 6)  // Done

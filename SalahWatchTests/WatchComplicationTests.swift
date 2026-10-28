@@ -65,13 +65,6 @@ struct WatchComplicationTests {
     #expect(abs(WatchComplicationCopy.progress(display: halfway) - 0.5) < 0.01)
   }
 
-  @Test func shortenTheInlineLineToTheTime() throws {
-    let display = WatchFixtures.display(at: "2026-10-12T12:19:00Z")
-    let focus = try #require(display.focus)
-    #expect(
-      plain(WatchComplicationCopy.shortInline(display: display, focus: focus)) == "Asr 3:37 PM")
-  }
-
   /// Each family draws, in the watch's language, at a fixed moment.
   @Test(arguments: [
     WidgetFamily.accessoryInline, .accessoryCircular, .accessoryRectangular, .accessoryCorner,

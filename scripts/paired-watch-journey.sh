@@ -4,9 +4,9 @@
 #
 #   1. build the iPhone app, with the watch app inside, and the watch journeys
 #   2. boot the pair, and install the iPhone app and the watch app fresh
-#   3. set Salah up on the iPhone from a fixture at the Kaaba; it sends the preferences
+#   3. set Salah up on the iPhone from its Makkah fixture; it sends the preferences
 #   4. on the watch, a launch with no preferences of its own waits for the iPhone's, then
-#      shows the Kaaba's Qibla, and keeps them across a relaunch
+#      shows the Qibla from that place
 #
 # Usage: scripts/paired-watch-journey.sh <iPhone UDID> <Watch UDID> [derived data path]
 # Create and pair the simulators first. The script shuts them down at the end; results go
@@ -48,7 +48,7 @@ xcrun simctl uninstall "$phone" io.github.salah-kit.Salah.iOS 2>/dev/null || tru
 xcrun simctl install "$phone" "$derived_path/Build/Products/Debug-iphonesimulator/SalahIOS.app"
 xcrun simctl install "$watch" "$derived_path/Build/Products/Debug-watchsimulator/SalahWatch.app"
 
-# Salah on the iPhone, set up at the Kaaba from its fixture, sends the preferences once its
+# Salah on the iPhone, set up in Makkah from its fixture, sends the preferences once its
 # session is active, and stays open to answer the watch's request.
 xcrun simctl launch "$phone" io.github.salah-kit.Salah.iOS \
   -salah.ios.testSuite paired -salah.ios.reset true -salah.ios.fixture true \
