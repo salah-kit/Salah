@@ -162,6 +162,46 @@ targetTemplates:
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "3"
         TVOS_DEPLOYMENT_TARGET: "26.0"
+  # The Apple Watch app and its complications compile the same portable models, the iOS
+  # preferences contract and the token colors. The watch keeps its own copy of the
+  # preferences the iPhone app sends it, so neither needs the iPhone to run.
+  WatchShared:
+    sources:
+      - path: Shared/AppLanguage.swift
+      - path: Shared/AppResources.swift
+      - path: Shared/SalahSettings.swift
+      - path: Shared/SalahPlayback.swift
+      - path: Shared/SalahDisplay.swift
+      - path: Shared/SalahPrayerSource.swift
+      - path: Shared/SalahWidgetModels.swift
+      - path: Shared/SalahWidgetTimeline.swift
+      - path: Shared/SalahText.swift
+      - path: Shared/SalahWidgetConstants.swift
+      - path: Shared/WidgetUI/SalahPalette.swift
+      - path: Shared/Glyphs.xcassets
+      - path: SalahIOSShared/IOSPreferences.swift
+      - path: SalahIOSShared/IOSLocalization.swift
+      - path: SalahIOS/Assets.xcassets
+      - path: SalahWatchShared
+    dependencies:
+      - package: SalahKit
+        product: SalahCore
+      - package: SalahKit
+        product: SalahCalculation
+      - package: SalahKit
+        product: SalahWidgets
+      - package: SalahKit
+        product: SalahUI
+    settings:
+      base:
+        SDKROOT: watchos
+        SUPPORTED_PLATFORMS: "watchos watchsimulator"
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "4"
+        WATCHOS_DEPLOYMENT_TARGET: "26.0"
 targets:
   Salah:
     type: application
@@ -438,6 +478,9 @@ targets:
     dependencies:
       - target: SalahIOSWidgets
         codeSign: false
+      # The watch app ships inside the iPhone app, which sends it the preferences.
+      - target: SalahWatch
+        codeSign: false
     entitlements:
       path: SalahIOS/SalahIOS.entitlements
       properties:
@@ -515,6 +558,8 @@ targets:
       - path: SalahIOSWidgets/IOSWidgetFaces.swift
       - path: SalahIOSWidgets/IOSWidgetSunArc.swift
       - path: SalahIOSWidgets/IOSPrayerWidget.swift
+      - path: SalahIOSWidgets/IOSAccessoryCopy.swift
+      - path: SalahIOSWidgets/PrayerGlyph.swift
       - path: SalahIOSWidgets/IOSPrayerLiveActivity.swift
     dependencies:
       - sdk: WidgetKit.framework
@@ -728,6 +773,181 @@ targets:
         TARGETED_DEVICE_FAMILY: "3"
         TEST_TARGET_NAME: SalahTV
         TVOS_DEPLOYMENT_TARGET: "26.0"
+  # The Apple Watch app, the iPhone app's companion. It keeps the preferences the iPhone app
+  # sends it, shares the iOS app's store, and has its own composition, services and views
+  # (SalahWatch). The adhan plays only while it is open; the iPhone's alerts reach the watch.
+  SalahWatch:
+    templates: [WatchShared]
+    type: application
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahWatch
+        excludes:
+          - Info.plist
+          - SalahWatch.entitlements
+      - path: SalahIOSShared/IOSSharedPreferencesStore.swift
+      - path: SalahIOS/Data/IOSPreferencesRepository.swift
+      - path: SalahIOS/Domain/IOSAppStore.swift
+      - path: SalahIOS/Features/Today/IOSPrayerPresentation.swift
+      - path: SalahIOS/Data/Audio/IOSAudioFiles.swift
+      - path: SalahIOSShared/ActivityPlaybackSession.swift
+      - path: SalahIOSShared/WatchPreferencesMessage.swift
+      - path: SalahIOS/Resources/Audio/adhan-ahmed-khalaf.mp3
+        buildPhase: resources
+      - path: SalahIOS/Resources/Audio/fajr-adhan-ahmed-khalaf.mp3
+        buildPhase: resources
+      # The round watch icon of the app icon, an Icon Composer document that Xcode compiles.
+      - path: Design/AppIcon/Salah.icon
+        type: file
+        buildPhase: resources
+    dependencies:
+      - target: SalahWatchWidgets
+        codeSign: false
+      - package: SalahKit
+        product: SalahAlerts
+    entitlements:
+      path: SalahWatch/SalahWatch.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.io.github.salah-kit.Salah
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: Salah
+        # The app's tint, which the navigation titles take: the dark accent text color.
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: SalahWatch/SalahWatch.entitlements
+        CURRENT_PROJECT_VERSION: "4"
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SalahWatch/Info.plist
+        INFOPLIST_KEY_WKApplication: YES
+        # The iPhone app owns the preferences, so the watch app installs with it.
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: io.github.salah-kit.Salah.iOS
+        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: NO
+        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.watchkitapp
+        PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_EMIT_LOC_STRINGS: YES
+  # The complications and the Smart Stack widget: the next prayer from the settings the watch
+  # app mirrors into its App Group. It calculates its own schedule.
+  SalahWatchWidgets:
+    templates: [WatchShared]
+    type: app-extension
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahWatchWidgets
+        excludes:
+          - Info.plist
+          - SalahWatchWidgets.entitlements
+      # The accessory families' wording, glyphs and live timers, shared with the iPhone's Lock
+      # Screen.
+      - path: SalahIOSWidgets/IOSAccessoryCopy.swift
+      - path: SalahIOSWidgets/PrayerGlyph.swift
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    entitlements:
+      path: SalahWatchWidgets/SalahWatchWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.io.github.salah-kit.Salah
+    settings:
+      base:
+        APPLICATION_EXTENSION_API_ONLY: YES
+        CODE_SIGN_ENTITLEMENTS: SalahWatchWidgets/SalahWatchWidgets.entitlements
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SalahWatchWidgets/Info.plist
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.watchkitapp.Widgets
+        PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
+        SKIP_INSTALL: YES
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_EMIT_LOC_STRINGS: YES
+  # A non-hosted Apple Watch simulator bundle, like SalahTVTests: it compiles the app's
+  # sources and the complications' views directly, without a signed App Group or a UI launch.
+  SalahWatchTests:
+    templates: [WatchShared]
+    type: bundle.unit-test
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahWatch
+        excludes:
+          - Info.plist
+          - SalahWatch.entitlements
+          - PrivacyInfo.xcprivacy
+          - Resources/InfoPlist.xcstrings
+      - path: SalahIOSShared/IOSSharedPreferencesStore.swift
+      - path: SalahIOS/Data/IOSPreferencesRepository.swift
+      - path: SalahIOS/Domain/IOSAppStore.swift
+      - path: SalahIOS/Features/Today/IOSPrayerPresentation.swift
+      - path: SalahIOS/Data/Audio/IOSAudioFiles.swift
+      - path: SalahIOSShared/ActivityPlaybackSession.swift
+      - path: SalahIOSShared/WatchPreferencesMessage.swift
+      - path: SalahIOS/Resources/Audio/adhan-ahmed-khalaf.mp3
+        buildPhase: resources
+      - path: SalahIOS/Resources/Audio/fajr-adhan-ahmed-khalaf.mp3
+        buildPhase: resources
+      - path: SalahWatchWidgets/WatchComplication.swift
+      - path: SalahIOSWidgets/IOSAccessoryCopy.swift
+      - path: SalahIOSWidgets/PrayerGlyph.swift
+      - path: SalahWatchTests
+    dependencies:
+      - package: SalahKit
+        product: SalahAlerts
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    settings:
+      base:
+        BUNDLE_LOADER: ""
+        CODE_SIGN_IDENTITY: "-"
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.watchkitapp.Tests
+        PRODUCT_NAME: $(TARGET_NAME)
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_EMIT_LOC_STRINGS: NO
+        TEST_HOST: ""
+  SalahWatchUITests:
+    type: bundle.ui-testing
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SalahWatchUITests
+    dependencies:
+      - target: SalahWatch
+    settings:
+      base:
+        CURRENT_PROJECT_VERSION: "4"
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+        MARKETING_VERSION: 1.1.2
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.iOS.watchkitapp.UITests
+        PRODUCT_NAME: $(TARGET_NAME)
+        SDKROOT: watchos
+        SUPPORTED_PLATFORMS: "watchos watchsimulator"
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "4"
+        TEST_TARGET_NAME: SalahWatch
+        WATCHOS_DEPLOYMENT_TARGET: "26.0"
 schemes:
   Salah:
     build:
@@ -819,3 +1039,29 @@ schemes:
       config: Debug
       targets:
         - SalahTVUITests
+  SalahWatch:
+    build:
+      targets:
+        SalahWatch: [running, profiling, archiving, analyzing]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SalahWatchTests
+      commandLineArguments:
+        "-AppleLanguages (en-US)": true
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  SalahWatchUITests:
+    build:
+      targets:
+        SalahWatchUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - SalahWatchUITests

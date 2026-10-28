@@ -282,22 +282,6 @@ private struct WidgetGlyph: View {
   }
 }
 
-/// Salah's glyph for a prayer or sunrise: a custom symbol from the asset catalog, which
-/// sizes with `.font` and tints with the foreground style.
-nonisolated struct PrayerGlyph: View {
-  let kind: PrayerKind
-  var observance: PrayerObservance = .ordinary
-
-  var assetName: String {
-    kind == .dhuhr && observance == .jumuah ? "salah.jumuah" : "salah.\(kind.rawValue)"
-  }
-
-  var body: some View {
-    Image(assetName, bundle: AppResources.bundle)
-      .symbolRenderingMode(.hierarchical)
-  }
-}
-
 /// The eyebrow above the name: "Next prayer", "Tomorrow", or "Now" after a prayer began.
 private struct WidgetEyebrow: View {
   let hero: WidgetHero

@@ -16,6 +16,7 @@ final class IOSAppRuntime {
   let notifications: IOSNotificationService
   let audio: IOSAudioService
   let activities: IOSActivityCoordinator
+  let watch: IOSWatchSync
   private(set) var widgetError: String?
   @ObservationIgnored private var refreshTask: Task<Void, Never>?
   @ObservationIgnored private var stopObservation: DarwinSignal.Observation?
@@ -31,8 +32,11 @@ final class IOSAppRuntime {
     notifications = IOSNotificationService()
     audio = IOSAudioService()
     activities = IOSActivityCoordinator()
+    watch = IOSWatchSync()
     isTesting = configuration.isTesting
     connect()
+    // iOS can launch Salah in the background for the watch's request, before any scene.
+    watch.send(store.preferences)
   }
 
   private func connect() {
@@ -83,6 +87,7 @@ final class IOSAppRuntime {
     if store.preferences.useCurrentLocation { location.requestLocation() }
     await notifications.refreshAuthorization()
     publishSettings()
+    watch.send(store.preferences)
     await refreshNotifications()
     // The scene can leave the foreground while this waits.
     await activities.refresh(settings: store.settings, isForeground: foreground)
@@ -120,6 +125,7 @@ final class IOSAppRuntime {
     audio.setVolume(store.preferences.playbackVolume)
     if !store.preferences.useCurrentLocation { location.cancelLocation() }
     publishSettings()
+    watch.send(store.preferences)
     refreshTask?.cancel()
     refreshTask = Task { [weak self] in
       guard let self else { return }
@@ -200,6 +206,7 @@ final class IOSAppRuntime {
           self.store.refresh()
           await self.refreshNotifications()
           self.publishSettings()
+          self.watch.send(self.store.preferences)
           self.submitBackgroundRefresh()
           // An expired task was completed by its expiration handler.
           guard !Task.isCancelled else { return }

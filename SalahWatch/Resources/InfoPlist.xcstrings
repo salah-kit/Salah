@@ -1,0 +1,183 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صلاة"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        }
+      }
+    },
+    "CFBundleName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صلاة"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salah"
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your location is used to point the compass toward the Qibla. Prayer times come from the place chosen in Salah on your iPhone."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "يُستخدم موقعك لتوجيه البوصلة نحو القبلة. تأتي أوقات الصلاة من المكان المختار في تطبيق صلاة على جهاز iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Votre position sert à orienter la boussole vers la qibla. Les heures de prière viennent du lieu choisi dans Salah sur votre iPhone."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آپ کا مقام قطب نما کو قبلہ کی طرف رخ دینے کے لیے استعمال ہوتا ہے۔ نماز کے اوقات آپ کے iPhone پر Salah میں منتخب کردہ جگہ سے آتے ہیں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lokasi Anda digunakan untuk mengarahkan kompas ke kiblat. Waktu salat berasal dari tempat yang dipilih di Salah pada iPhone Anda."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Konumunuz pusulayı kıbleye yöneltmek için kullanılır. Namaz vakitleri, iPhone’unuzdaki Salah’ta seçilen yerden gelir."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "موقعیت شما برای جهت دادن قطب‌نما به سوی قبله به کار می‌رود. اوقات نماز از مکانی می‌آید که در Salah روی iPhone شما انتخاب شده است."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কম্পাসকে কিবলার দিকে নির্দেশ করতে আপনার অবস্থান ব্যবহার করা হয়। নামাজের সময় আসে আপনার iPhone-এ Salah-এ বেছে নেওয়া স্থান থেকে।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lokasi anda digunakan untuk menghalakan kompas ke arah kiblat. Waktu solat datang daripada tempat yang dipilih dalam Salah pada iPhone anda."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
