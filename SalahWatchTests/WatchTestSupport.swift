@@ -112,7 +112,16 @@ final class ManualAlertClock: AlertClock {
 /// sends it.
 @MainActor
 final class FakeWatchSession: WatchSession {
-  var activationState: WCSessionActivationState = .activated
+  private var state = WCSessionActivationState.activated
+  /// How many times the activation state was read.
+  private(set) var activationChecks = 0
+  var activationState: WCSessionActivationState {
+    get {
+      activationChecks += 1
+      return state
+    }
+    set { state = newValue }
+  }
   var receivedApplicationContext: [String: Any] = [:]
   var isReachable = true
   var hasContentPending = false

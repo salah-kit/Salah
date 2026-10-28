@@ -19,11 +19,10 @@ extension WCSession: WatchSession {
   /// WatchConnectivity calls the handlers on a queue of its own, so neither may assume the
   /// main actor.
   nonisolated func requestPreferences(reply: @escaping @Sendable ([String: Any]) -> Void) {
-    // Unreachable after all: the context arrives when the iPhone app next runs.
+    let handlers = WatchPreferencesReceiver.handlers(reply)
     sendMessage(
-      [WatchPreferencesMessage.requestKey: true],
-      replyHandler: WatchPreferencesReceiver.replyHandler(reply),
-      errorHandler: { @Sendable _ in })
+      [WatchPreferencesMessage.requestKey: true], replyHandler: handlers.reply,
+      errorHandler: handlers.error)
   }
 }
 
@@ -128,11 +127,13 @@ final class WatchPreferencesReceiver {
     try? await Task.sleep(for: .milliseconds(250))
   }
 
-  /// The handler WatchConnectivity calls with the iPhone's reply, on a queue of its own.
-  nonisolated static func replyHandler(_ reply: @escaping @Sendable ([String: Any]) -> Void)
-    -> @Sendable ([String: Any]) -> Void
-  {
-    { @Sendable context in reply(context) }
+  /// The handlers WatchConnectivity calls with the iPhone's reply or an error, on a queue of
+  /// its own. Made outside the main actor, so neither checks that it runs on it.
+  nonisolated static func handlers(_ reply: @escaping @Sendable ([String: Any]) -> Void) -> (
+    reply: @Sendable ([String: Any]) -> Void, error: @Sendable (any Error) -> Void
+  ) {
+    // Unreachable after all: the context arrives when the iPhone app next runs.
+    ({ @Sendable context in reply(context) }, { @Sendable _ in })
   }
 
   /// The session's delegate. WatchConnectivity calls it on a queue of its own, so it hands each

@@ -96,8 +96,9 @@ Three pages, top to bottom, which the Digital Crown scrolls through:
   `Qibla.direction(from:)`. The watch's own location only corrects the compass to true north,
   so the page asks for When In Use access the first time it shows. With a reading within 15°
   the dial turns with the watch and says which way to turn; within 3° the ring turns gold and
-  the watch taps the wrist. Without a compass, or without location access, the dial stays
-  north up with the bearing in its centre.
+  the watch taps the wrist. Without a compass, or without location access, the dial gives
+  only the bearing in its centre, as the iPhone's does: turned to north, it would point the
+  wrong way. On a 40 mm watch the dial scales down to fit.
 
 With the wrist down the watch redraws once a minute, so the countdown drops its seconds.
 
@@ -106,8 +107,9 @@ With the wrist down the watch redraws once a minute, so the countdown drops its 
 One widget, in the accessory families a watch face offers: circular (a gauge from the
 previous prayer to the next around its glyph and countdown), rectangular (the glyph, name and
 time, the live countdown and the progress, which the Smart Stack shows too), inline (one line,
-"Asr in 2:16:00") and corner (the glyph, with a curved gauge and label). They calculate their own timeline with SalahWidgets'
-`PrayerTimelineBuilder`, through the timeline the iPhone's widgets use
+"Asr in 2:16:00") and corner (the glyph, with a curved gauge and label). They calculate their
+own timeline with SalahWidgets' `PrayerTimelineBuilder`, through the timeline the iPhone's
+widgets use
 ([`SalahWidgetTimeline`](../Shared/SalahWidgetTimeline.swift)); the countdown is a timer text
 that WidgetKit advances itself. Each entry's relevance raises the Smart Stack's card from 15
 minutes before a prayer until 15 minutes after it begins. A tap opens the first page.

@@ -258,8 +258,9 @@ launch options they use.
 
 The paired journey checks the preferences' way from the iPhone app to the watch: it installs
 the iPhone app, with the watch app inside, on an iPhone simulator paired with a watch
-simulator, sets Salah up on the iPhone from a fixture, and waits for the watch to show its
-times. Create and pair the two simulators, then run it with their identifiers:
+simulator, sets Salah up on the iPhone from a fixture, and waits for the watch's Qibla page to
+show the bearing from the place the iPhone sent. Create and pair the two simulators, then run
+it with their identifiers:
 
 ```sh
 phone=$(xcrun simctl create "Salah paired iPhone" "iPhone 17 Pro")
@@ -272,10 +273,11 @@ WatchConnectivity between simulators hasn't been shown to be reliable on hosted 
 CI doesn't run it; run it when you change how the preferences are sent or received.
 
 The Smart Stack journey runs the complications' extension on the watch face: on a new watch
-simulator it adds Salah's widget to the Smart Stack and reads the timeline the extension
-logged, which it builds from the settings the app mirrored. The face exposes no accessibility
-elements there, so the journey taps places measured on a 46 mm watch with watchOS 27, and CI
-doesn't run it; run it when you change the complications:
+simulator it adds Salah's widget to the Smart Stack through the face's own process, checks
+that the widget names the next prayer, and reads the timeline the extension logged, which it
+builds from the settings the app mirrored. It drives the system's own interface, which can
+change with a watchOS release, so CI doesn't run it; run it when you change the
+complications:
 
 ```sh
 bash scripts/smart-stack-journey.sh

@@ -18,25 +18,31 @@ struct WatchQiblaView: View {
 
   var body: some View {
     let qibla = qibla
-    WatchQiblaDial(qibla: qibla, heading: unwrappedHeading)
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .background { WatchSkyBackground(phase: store.display?.phase ?? .neutral) }
-      .navigationTitle(Text(verbatim: WatchCopy(locale: store.locale)("Qibla", "القبلة")))
-      .navigationBarTitleDisplayMode(.inline)
-      .onAppear {
-        isShowing = true
-        updateCompass()
-        follow(qibla.dialHeading)
-      }
-      .onDisappear {
-        isShowing = false
-        updateCompass()
-      }
-      .onChange(of: scenePhase) { updateCompass() }
-      .onChange(of: qibla.dialHeading) { _, value in follow(value) }
-      // The page's identifier stays its own; its parts keep theirs.
-      .accessibilityElement(children: .contain)
-      .accessibilityIdentifier("screen.qibla")
+    GeometryReader { geometry in
+      // A 40 mm watch has less room than the dial's design size: the dial scales down whole.
+      let diameter = min(WatchQiblaDial.size, geometry.size.width, geometry.size.height)
+      WatchQiblaDial(qibla: qibla, heading: unwrappedHeading)
+        .scaleEffect(diameter / WatchQiblaDial.size)
+        .frame(width: diameter, height: diameter)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    .background { WatchSkyBackground(phase: store.display?.phase ?? .neutral) }
+    .navigationTitle(Text(verbatim: WatchCopy(locale: store.locale)("Qibla", "القبلة")))
+    .navigationBarTitleDisplayMode(.inline)
+    .onAppear {
+      isShowing = true
+      updateCompass()
+      follow(qibla.dialHeading)
+    }
+    .onDisappear {
+      isShowing = false
+      updateCompass()
+    }
+    .onChange(of: scenePhase) { updateCompass() }
+    .onChange(of: qibla.dialHeading) { _, value in follow(value) }
+    // The page's identifier stays its own; its parts keep theirs.
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("screen.qibla")
   }
 
   /// A Debug journey fixes the reading, and the compass rests while it does.

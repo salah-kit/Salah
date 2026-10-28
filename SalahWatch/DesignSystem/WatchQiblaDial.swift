@@ -3,8 +3,8 @@ import SwiftUI
 /// The Qibla compass at watch size: north and the ticks turn with the watch, the mihrab
 /// marker sits at the bearing from true north, and the notch at the top is where the watch
 /// points. When the marker reaches the notch the ring turns gold and the watch taps the
-/// wrist. Without a compass the dial stays north up, with the bearing in its centre. The
-/// dial never mirrors.
+/// wrist. Without a compass reading the dial gives only the bearing, as the iPhone's does.
+/// The dial never mirrors.
 struct WatchQiblaDial: View {
   let qibla: WatchQiblaPresentation
   /// The heading the dial turns by, unwrapped so a turn across north takes the short way.
@@ -13,19 +13,20 @@ struct WatchQiblaDial: View {
   @Environment(\.colorSchemeContrast) private var contrast
   private var theme: WatchTheme { WatchTheme(contrast: contrast) }
 
-  private let size: CGFloat = 176
+  /// The design's diameter. A smaller watch scales the whole dial down.
+  static let size: CGFloat = 176
 
   var body: some View {
     ZStack {
       Circle()
         .fill(theme.dial)
         .padding(6)
-      if qibla.showsDial || qibla.heading == .calibrating {
+      if qibla.showsDirection || qibla.heading == .calibrating {
         ticks
           .opacity(qibla.heading == .calibrating ? 0.4 : 1)
         letters
       }
-      if qibla.showsDial, let bearing = qibla.bearing {
+      if qibla.showsDirection, let bearing = qibla.bearing {
         Image("IOSQiblaMarker", bundle: AppResources.bundle)
           .resizable()
           .foregroundStyle(theme.accent)
@@ -50,7 +51,7 @@ struct WatchQiblaDial: View {
         .offset(y: -85)
       center
     }
-    .frame(width: size, height: size)
+    .frame(width: Self.size, height: Self.size)
     .environment(\.layoutDirection, .leftToRight)
     .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.85), value: heading)
     .sensoryFeedback(.success, trigger: qibla.isAligned) { _, aligned in aligned }
@@ -105,11 +106,15 @@ struct WatchQiblaDial: View {
           .font(.title3)
           .foregroundStyle(qibla.isAligned ? theme.accentText : theme.labelPrimary)
       }
+      // When the Qibla is behind the watch, the marker passes under the words, which stay
+      // readable on a plate of the dial's color.
       Text(verbatim: qibla.instruction)
         .watchFootnote2()
         .foregroundStyle(qibla.isAligned ? theme.accentText : theme.labelSecondary)
         .multilineTextAlignment(.center)
-        .frame(width: 100)
+        .padding(.horizontal, 3)
+        .background(theme.dial, in: .rect(cornerRadius: 4))
+        .frame(width: 106)
     }
   }
 }

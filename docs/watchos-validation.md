@@ -28,9 +28,10 @@ iPhone app with the watch app inside it.
   sets Salah up on an iPhone simulator and waits on the paired watch simulator for the place
   it sent. The Smart Stack journey
   ([`scripts/smart-stack-journey.sh`](../scripts/smart-stack-journey.sh)) adds Salah's widget
-  to the Smart Stack and reads the timeline the extension built from the watch's settings.
-  Both run locally, not on CI: WatchConnectivity between simulators hasn't been shown to be
-  reliable on hosted runners, and the Smart Stack journey taps measured places.
+  to the Smart Stack, checks that it names the next prayer, and reads the timeline the
+  extension built from the watch's settings. Both run locally, not on CI: WatchConnectivity
+  between simulators hasn't been shown to be reliable on hosted runners, and the Smart Stack
+  journey drives the system's own interface, which can change with a watchOS release.
 
 ## Pending
 
@@ -69,4 +70,4 @@ iPhone app with the watch app inside it.
 - A system sound or an imported recording chosen on the iPhone plays the soft tone on the
   watch, which has neither.
 - The compass needs the watch's location to point to true north; without location access,
-  or without a compass, the dial stays north up and gives the bearing.
+  or without a compass, the dial gives the bearing in degrees, with no direction to turn.

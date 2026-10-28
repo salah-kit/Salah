@@ -17,9 +17,10 @@ the watch kept. Screenshots are kept as result-bundle attachments.
 - `WatchPairedJourneys` waits on the watch for preferences an iPhone app paired with it
   sent. It skips unless `SALAH_WATCH_PAIRED=1`; `scripts/paired-watch-journey.sh` sets it
   after setting Salah up on the paired iPhone simulator.
-- `WatchSmartStackJourneys` adds Salah's widget to the Smart Stack by tapping the watch
-  face at measured places, as the face exposes no accessibility elements there. It skips
-  unless `SALAH_WATCH_SMART_STACK=1`; `scripts/smart-stack-journey.sh` sets it and reads the
+- `WatchSmartStackJourneys` adds Salah's widget to the Smart Stack through the watch face's
+  own process, `com.apple.clockface`, which draws the stack, its editor and its gallery, and
+  checks that the widget names the next prayer. It skips unless
+  `SALAH_WATCH_SMART_STACK=1`; `scripts/smart-stack-journey.sh` sets it and reads the
   complications' log for the timeline the extension built.
 
 Prayer arithmetic, the receive path, the adhan plan, the complications' timeline and the

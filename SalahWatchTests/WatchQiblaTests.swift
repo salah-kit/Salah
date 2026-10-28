@@ -43,12 +43,14 @@ struct WatchQiblaTests {
     #expect(WatchQiblaPresentation.shortestTurn(from: 0, to: 180) == 180)
   }
 
-  /// Without a usable compass the dial stays north up and still gives the bearing.
+  /// Without a usable compass the dial still gives the bearing, but no direction: turned to
+  /// north it would point the wrong way.
   @Test func keepsTheBearingWithoutACompass() {
     let none = qibla(.unavailable)
     #expect(none.center == "119°")
-    #expect(none.dialHeading == 0)
-    #expect(none.showsDial)
+    #expect(!none.showsDirection)
+    #expect(!qibla(.needsLocation).showsDirection)
+    #expect(qibla(.ready(trueHeading: 93)).showsDirection)
     #expect(none.instruction == "Compass unavailable")
     #expect(qibla(.needsLocation).instruction == "The compass needs your location")
   }
@@ -59,7 +61,8 @@ struct WatchQiblaTests {
     #expect(WatchHeading.reading(trueHeading: 453, accuracy: 5) == .ready(trueHeading: 93))
     let calibrating = qibla(.calibrating)
     #expect(calibrating.center == "—")
-    #expect(!calibrating.showsDial)
+    #expect(!calibrating.showsDirection)
+    #expect(calibrating.dialHeading == 0)
     #expect(calibrating.instruction == "Move your device in a figure 8")
     // VoiceOver doesn't read the dash.
     #expect(calibrating.accessibility == "Qibla. Move your device in a figure 8")

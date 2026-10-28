@@ -136,12 +136,15 @@ struct WatchPreferencesReceiverTests {
     #expect(recorder.received.count == 2)
   }
 
-  /// WatchConnectivity calls the reply handler on a queue of its own: it mustn't assume the
-  /// main actor, which would stop the app.
-  @Test func theReplyHandlerRunsOffTheMainActor() async {
+  /// WatchConnectivity calls the reply and error handlers on a queue of its own: neither may
+  /// assume the main actor, which would stop the app.
+  @Test func theHandlersRunOffTheMainActor() async {
     await withCheckedContinuation { (finished: CheckedContinuation<Void, Never>) in
-      let handler = WatchPreferencesReceiver.replyHandler { _ in finished.resume() }
-      DispatchQueue.global().async { handler([:]) }
+      let handlers = WatchPreferencesReceiver.handlers { _ in finished.resume() }
+      DispatchQueue.global().async {
+        handlers.error(CocoaError(.featureUnsupported))
+        handlers.reply([:])
+      }
     }
   }
 
@@ -150,13 +153,13 @@ struct WatchPreferencesReceiverTests {
     let session = FakeWatchSession()
     session.activationState = .notActivated
     let (receiver, _) = receiver(session: session)
-    let started = Date()
     Task {
       try? await Task.sleep(for: .milliseconds(300))
       session.activationState = .activated
     }
     await receiver.finishPendingContent()
-    #expect(Date().timeIntervalSince(started) >= 0.3)
+    // It found the session inactive and checked again until it was active.
+    #expect(session.activationChecks >= 2)
     #expect(session.activationState == .activated)
   }
 

@@ -1,8 +1,8 @@
 import XCTest
 
 /// The watch app as a person uses it: the next prayer and the rest of its day, swiping down
-/// to today's list and the Qibla, the adhan at prayer time with Stop, Arabic right
-/// to left, the larger text sizes, and the preferences kept across a relaunch.
+/// to today's list and the Qibla, the adhan at prayer time with Stop, Arabic with its own
+/// digits, the larger text sizes, and the preferences kept across a relaunch.
 nonisolated final class WatchCoreJourneys: XCTestCase {
   override func setUpWithError() throws { continueAfterFailure = false }
 
@@ -73,7 +73,7 @@ nonisolated final class WatchCoreJourneys: XCTestCase {
   }
 
   @MainActor
-  func testArabicReadsRightToLeftWithItsOwnDigits() {
+  func testArabicHasItsOwnWordsAndDigits() {
     var journey = WatchJourneyApp()
     journey.language = "ar"
     journey.launch()

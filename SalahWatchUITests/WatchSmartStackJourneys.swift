@@ -1,13 +1,16 @@
 import XCTest
 
 /// The complication outside the app: Salah's widget added to the Smart Stack from the watch
-/// face, where WidgetKit runs the extension on the settings the app mirrored.
+/// face, where WidgetKit runs the extension on the settings the app mirrored, and the widget
+/// in the stack names the next prayer.
 ///
-/// The watch face exposes no accessibility elements in the Smart Stack and its editor, so
-/// the steps tap coordinates measured on a 46 mm watch with watchOS 27, and may need new ones
-/// on another watch or system. `scripts/smart-stack-journey.sh` runs it with
-/// `SALAH_WATCH_SMART_STACK=1` on a new simulator and checks the extension's log for the
-/// timeline it built; otherwise it skips.
+/// The watch face's own process, `com.apple.clockface`, draws the Smart Stack, its editor and
+/// its widget gallery, and the journey finds their parts through it. The gallery lists the
+/// apps with widgets alphabetically; Salah's row appears once the system has read its widget,
+/// so the journey opens the gallery again when the row isn't there yet.
+/// `scripts/smart-stack-journey.sh` runs it with `SALAH_WATCH_SMART_STACK=1` on a new
+/// simulator and also checks the extension's log for the timeline it built; otherwise it
+/// skips.
 nonisolated final class WatchSmartStackJourneys: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipUnless(
@@ -17,26 +20,50 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
   }
 
   @MainActor
-  private var carousel: XCUIApplication {
-    XCUIApplication(bundleIdentifier: "com.apple.Carousel")
+  private var face: XCUIApplication { XCUIApplication(bundleIdentifier: "com.apple.clockface") }
+
+  /// The cells on the face, for a failure's message.
+  @MainActor
+  private var cells: String {
+    face.cells.allElementsBoundByIndex.map { $0.identifier + " | " + $0.label }
+      .joined(separator: "\n")
   }
 
+  /// Below the gallery's title bar and above the bottom edge, where a tap reaches the row.
   @MainActor
-  private func tap(x: CGFloat, y: CGFloat, wait: TimeInterval = 4) {
-    carousel.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y)).tap()
-    Thread.sleep(forTimeInterval: wait)
+  private func isInView(_ element: XCUIElement) -> Bool {
+    guard element.exists, element.isHittable else { return false }
+    return element.frame.minY >= 62 && element.frame.maxY <= face.frame.maxY
   }
 
-  /// From the face, turning the crown opens the Smart Stack; a second turn moves the stack
-  /// up, which puts its Edit button where the editing steps tap.
+  /// Drags the list by a fraction of the screen and holds before lifting, so it doesn't coast.
   @MainActor
-  private func openTheSmartStack(turns: Int) {
-    XCUIDevice.shared.press(.home)
-    Thread.sleep(forTimeInterval: 3)
-    for _ in 0..<turns {
-      XCUIDevice.shared.rotateDigitalCrown(delta: 1, velocity: .default)
-      Thread.sleep(forTimeInterval: 6)
+  private func drag(by fraction: CGFloat) {
+    let start = face.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55 + fraction / 2))
+    let end = face.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55 - fraction / 2))
+    start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.5)
+    Thread.sleep(forTimeInterval: 1)
+  }
+
+  /// Scrolls the gallery to Salah's row; `false` when the list ends without it.
+  @MainActor
+  private func scrollToSalah() -> Bool {
+    let salah = face.cells["AppGroupCell -- Salah"]
+    var previous = ""
+    var unchanged = 0
+    while unchanged < 2 {
+      if isInView(salah) { return true }
+      // At the end of the list the row can sit under the title bar.
+      if salah.exists, salah.frame.minY < 62 {
+        drag(by: -0.25)
+        continue
+      }
+      let current = cells
+      unchanged = current == previous ? unchanged + 1 : 0
+      previous = current
+      drag(by: 0.4)
     }
+    return isInView(salah)
   }
 
   @MainActor
@@ -47,31 +74,56 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     journey.frozen = false
     journey.launch()
     require("hero", in: journey.app)
-    openTheSmartStack(turns: 2)
-    screenshot("smartstack-1-stack")
-    tap(x: 0.5, y: 0.86)  // Edit, under the stack
-    screenshot("smartstack-2-editing")
-    tap(x: 0.5, y: 0.43)  // The add slot
-    screenshot("smartstack-3-apps")
-    // The list of apps is alphabetical; Salah sits near its end, before Settings.
-    print("SMARTSTACK apps:\n\(carousel.debugDescription)")
-    let salah = carousel.staticTexts["Salah"]
-    for _ in 0..<8 where !(salah.exists && salah.isHittable) {
-      carousel.swipeUp()
-      Thread.sleep(forTimeInterval: 1.5)
+
+    // From the face, the Digital Crown opens the Smart Stack and moves it up to its Edit button.
+    XCUIDevice.shared.press(.home)
+    Thread.sleep(forTimeInterval: 3)
+    let edit = face.buttons["Edit"]
+    for _ in 0..<3 where !(edit.exists && edit.isHittable) {
+      XCUIDevice.shared.rotateDigitalCrown(delta: 1, velocity: .default)
+      Thread.sleep(forTimeInterval: 6)
     }
-    screenshot("smartstack-4-apps-end")
-    print("SMARTSTACK salah exists=\(salah.exists) hittable=\(salah.exists && salah.isHittable)")
-    XCTAssertTrue(salah.exists, "Salah isn't in the widget gallery's apps")
-    salah.tap()
+    screenshot("smartstack-1-stack")
+    XCTAssertTrue(edit.exists && edit.isHittable, "The Smart Stack has no Edit button:\n\(cells)")
+    edit.tap()
+    Thread.sleep(forTimeInterval: 3)
+
+    var found = false
+    for attempt in 1...3 where !found {
+      let add = face.cells["Add widget"]
+      XCTAssertTrue(add.waitForExistence(timeout: 10), "The editor has no Add widget:\n\(cells)")
+      add.tap()
+      Thread.sleep(forTimeInterval: 4)
+      found = scrollToSalah()
+      if !found, attempt < 3 {
+        face.buttons["Close"].tap()
+        Thread.sleep(forTimeInterval: 20)
+      }
+    }
+    screenshot("smartstack-2-gallery")
+    XCTAssertTrue(found, "Salah isn't in the widget gallery:\n\(cells)")
+    face.cells["AppGroupCell -- Salah"].tap()
     Thread.sleep(forTimeInterval: 4)
-    screenshot("smartstack-5-gallery")
-    tap(x: 0.5, y: 0.5)  // Its widget
-    tap(x: 0.15, y: 0.14, wait: 6)  // Done
-    openTheSmartStack(turns: 1)
-    Thread.sleep(forTimeInterval: 10)
-    screenshot("smartstack-6-salah")
-    // The taps can't be checked in the face; the script reads the extension's log, which
-    // records a timeline only once the widget is in the Smart Stack.
+
+    // Salah's page in the gallery offers its widget, Next prayer; choosing it adds it.
+    let widget = face.cells["ComplicationListCell -- Next prayer"]
+    screenshot("smartstack-3-salah")
+    XCTAssertTrue(widget.waitForExistence(timeout: 10), "Salah's page has no widget:\n\(cells)")
+    widget.tap()
+    let done = face.buttons["Done"]
+    XCTAssertTrue(done.waitForExistence(timeout: 10), "The editor has no Done:\n\(cells)")
+    done.tap()
+    Thread.sleep(forTimeInterval: 8)
+
+    // The widget in the stack reads the next prayer, its time and the countdown, as VoiceOver
+    // would: the timeline came from the settings, not the set-up message.
+    let prayers = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+    let next = face.descendants(matching: .any).matching(
+      NSPredicate(
+        format: prayers.map { _ in "label BEGINSWITH %@" }.joined(separator: " OR "),
+        argumentArray: prayers.map { $0 + ", " })
+    ).firstMatch
+    XCTAssertTrue(next.waitForExistence(timeout: 30), "The stack has no next prayer:\n\(cells)")
+    screenshot("smartstack-4-widget")
   }
 }

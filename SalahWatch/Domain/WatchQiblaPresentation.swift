@@ -45,15 +45,18 @@ nonisolated struct WatchQiblaPresentation: Equatable, Sendable {
 
   var isAligned: Bool { turn.map { abs($0) <= Self.alignment } ?? false }
 
-  /// The heading the dial turns by: the compass's, or north up when the watch has none.
+  /// The heading the dial turns by: the compass's, or north up while it calibrates.
   var dialHeading: Double {
     if case .ready(let heading) = heading { return heading }
     return 0
   }
 
-  /// Whether the dial draws its ticks, letters and marker: always but while calibrating,
-  /// when the marker would point nowhere.
-  var showsDial: Bool { heading != .calibrating && bearing != nil }
+  /// Whether the dial draws its ticks, letters and marker: only with a compass reading, as on
+  /// the iPhone. Without one, a dial turned to north would point the wrong way.
+  var showsDirection: Bool {
+    guard bearing != nil, case .ready = heading else { return false }
+    return true
+  }
 
   /// The bearing in the dial's centre: "119°", or "—" while calibrating or without one.
   var center: String {
