@@ -163,6 +163,43 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
 
+  watchos-build-and-test:
+    name: watchOS
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      # A hosted image may come without the watchOS simulator; download it only then.
+      - name: Install the watchOS simulator
+        run: |
+          if ! xcrun simctl list --json runtimes devicetypes \
+            | python3 scripts/select-watchos-simulator.py >/dev/null; then
+            xcodebuild -downloadPlatform watchOS
+          fi
+
+      # Builds the Release app and its complications for a generic Apple Watch, unsigned,
+      # then runs logic tests and real-app journeys on a simulator the script creates and
+      # deletes. It needs no paid team.
+      - name: Build and test watchOS
+        run: bash scripts/verify-watchos.sh
+
+      - name: Upload watchOS test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: watchos-results
+          path: .derived/watchos/Results
+          include-hidden-files: true
+          if-no-files-found: ignore
+
   lint:
     name: Lint
     runs-on: xcode-27
@@ -180,7 +217,8 @@ jobs:
           swift format lint --strict --recursive Salah SalahWidgetsExtension Shared \
             SalahTests SalahUITests SalahRoundTripTests SalahStopHarness \
             SalahIOS SalahIOSShared SalahIOSWidgets SalahIOSTests SalahIOSUITests \
-            SalahTV SalahTVShared SalahTVTopShelf SalahTVTests SalahTVUITests
+            SalahTV SalahTVShared SalahTVTopShelf SalahTVTests SalahTVUITests \
+            SalahWatch SalahWatchShared SalahWatchWidgets SalahWatchTests SalahWatchUITests
 
       - name: Check the flat app icon
         run: python3 Design/AppIcon/flatten_icon.py --check
