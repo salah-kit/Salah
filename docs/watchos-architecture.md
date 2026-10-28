@@ -96,9 +96,10 @@ Three pages, top to bottom, which the Digital Crown scrolls through:
   `Qibla.direction(from:)`. The watch's own location only corrects the compass to true north,
   so the page asks for When In Use access the first time it shows. With a reading within 15°
   the dial turns with the watch and says which way to turn; within 3° the ring turns gold and
-  the watch taps the wrist. Without a compass, or without location access, the dial gives
-  only the bearing in its centre, as the iPhone's does: turned to north, it would point the
-  wrong way. On a 40 mm watch the dial scales down to fit.
+  the watch taps the wrist. Without a usable reading (no compass, no location access, or
+  while the compass calibrates) the dial draws no direction, like the iPhone's: turned to
+  north, it would point the wrong way. Its centre keeps the bearing, or a dash while the
+  compass calibrates. On a smaller watch the dial scales down to fit.
 
 With the wrist down the watch redraws once a minute, so the countdown drops its seconds.
 

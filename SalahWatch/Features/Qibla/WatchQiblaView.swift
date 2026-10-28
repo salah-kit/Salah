@@ -10,6 +10,9 @@ struct WatchQiblaView: View {
   @State private var previousHeading: Double?
   @State private var isShowing = false
 
+  /// How far the dial reaches past the page's top and bottom margins.
+  private static let overhang: CGFloat = 14
+
   private var qibla: WatchQiblaPresentation {
     WatchQiblaPresentation(
       bearing: store.qiblaBearing, distanceKilometers: store.qiblaDistanceKilometers,
@@ -19,8 +22,10 @@ struct WatchQiblaView: View {
   var body: some View {
     let qibla = qibla
     GeometryReader { geometry in
-      // A 40 mm watch has less room than the dial's design size: the dial scales down whole.
-      let diameter = min(WatchQiblaDial.size, geometry.size.width, geometry.size.height)
+      // On a 46 mm watch the design's dial reaches past the page's margins above and below;
+      // a smaller watch scales the whole dial down to reach as far and fit its width.
+      let diameter = min(
+        WatchQiblaDial.size, geometry.size.width, geometry.size.height + 2 * Self.overhang)
       WatchQiblaDial(qibla: qibla, heading: unwrappedHeading)
         .scaleEffect(diameter / WatchQiblaDial.size)
         .frame(width: diameter, height: diameter)

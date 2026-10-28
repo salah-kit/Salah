@@ -1,16 +1,16 @@
 import XCTest
 
 /// The complication outside the app: Salah's widget added to the Smart Stack from the watch
-/// face, where WidgetKit runs the extension on the settings the app mirrored, and the widget
-/// in the stack names the next prayer.
+/// face, where WidgetKit runs the extension on the settings the app mirrored.
 ///
 /// The watch face's own process, `com.apple.clockface`, draws the Smart Stack, its editor and
 /// its widget gallery, and the journey finds their parts through it. The gallery lists the
 /// apps with widgets alphabetically; Salah's row appears once the system has read its widget,
-/// so the journey opens the gallery again when the row isn't there yet.
-/// `scripts/smart-stack-journey.sh` runs it with `SALAH_WATCH_SMART_STACK=1` on a new
-/// simulator and also checks the extension's log for the timeline it built; otherwise it
-/// skips.
+/// so the journey opens the gallery again when the row isn't there yet. In the stack, the
+/// widget's placeholder reads like a prayer too, so the journey shows only that the widget is
+/// there: `scripts/smart-stack-journey.sh`, which runs it with `SALAH_WATCH_SMART_STACK=1` on
+/// a new simulator, checks the extension's log for the timeline it built from the settings.
+/// Otherwise it skips.
 nonisolated final class WatchSmartStackJourneys: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipUnless(
@@ -115,8 +115,7 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     done.tap()
     Thread.sleep(forTimeInterval: 8)
 
-    // The widget in the stack reads the next prayer, its time and the countdown, as VoiceOver
-    // would: the timeline came from the settings, not the set-up message.
+    // The widget in the stack reads a prayer, its time and the countdown, as VoiceOver would.
     let prayers = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
     let next = face.descendants(matching: .any).matching(
       NSPredicate(

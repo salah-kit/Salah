@@ -3,8 +3,8 @@ import SwiftUI
 /// The Qibla compass at watch size: north and the ticks turn with the watch, the mihrab
 /// marker sits at the bearing from true north, and the notch at the top is where the watch
 /// points. When the marker reaches the notch the ring turns gold and the watch taps the
-/// wrist. Without a compass reading the dial gives only the bearing, as the iPhone's does.
-/// The dial never mirrors.
+/// wrist. Without a usable compass reading it draws no direction, like the iPhone's dial: its
+/// centre keeps the bearing, or a dash while the compass calibrates. The dial never mirrors.
 struct WatchQiblaDial: View {
   let qibla: WatchQiblaPresentation
   /// The heading the dial turns by, unwrapped so a turn across north takes the short way.
@@ -21,12 +21,9 @@ struct WatchQiblaDial: View {
       Circle()
         .fill(theme.dial)
         .padding(6)
-      if qibla.showsDirection || qibla.heading == .calibrating {
-        ticks
-          .opacity(qibla.heading == .calibrating ? 0.4 : 1)
-        letters
-      }
       if qibla.showsDirection, let bearing = qibla.bearing {
+        ticks
+        letters
         Image("IOSQiblaMarker", bundle: AppResources.bundle)
           .resizable()
           .foregroundStyle(theme.accent)

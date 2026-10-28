@@ -45,7 +45,8 @@ nonisolated struct WatchQiblaPresentation: Equatable, Sendable {
 
   var isAligned: Bool { turn.map { abs($0) <= Self.alignment } ?? false }
 
-  /// The heading the dial turns by: the compass's, or north up while it calibrates.
+  /// The heading the dial turns by: the compass's reading, or 0 without one, when the dial
+  /// draws no direction.
   var dialHeading: Double {
     if case .ready(let heading) = heading { return heading }
     return 0
