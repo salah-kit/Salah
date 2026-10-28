@@ -28,10 +28,11 @@ iPhone app with the watch app inside it.
   sets Salah up on an iPhone simulator and waits on the paired watch simulator for the place
   it sent. The Smart Stack journey
   ([`scripts/smart-stack-journey.sh`](../scripts/smart-stack-journey.sh)) adds Salah's widget
-  to the Smart Stack, checks that it reads a prayer there, and reads the timeline the
-  extension built from the watch's settings. Both run locally, not on CI: WatchConnectivity
-  between simulators hasn't been shown to be reliable on hosted runners, and the Smart Stack
-  journey drives the system's own interface, which can change with a watchOS release.
+  to the Smart Stack, checks that it reads a prayer there and that a tap opens Salah's first
+  page, and reads the timeline the extension built from the watch's settings. Both run
+  locally, not on CI: WatchConnectivity between simulators hasn't been shown to be reliable on
+  hosted runners, and the Smart Stack journey drives the system's own interface, which can
+  change with a watchOS release.
 
 ## Pending
 

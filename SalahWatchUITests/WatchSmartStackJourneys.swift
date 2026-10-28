@@ -1,7 +1,8 @@
 import XCTest
 
 /// The complication outside the app: Salah's widget added to the Smart Stack from the watch
-/// face, where WidgetKit runs the extension on the settings the app mirrored.
+/// face, where WidgetKit runs the extension on the settings the app mirrored, and a tap on it
+/// opens Salah's first page.
 ///
 /// The watch face's own process, `com.apple.clockface`, draws the Smart Stack, its editor and
 /// its widget gallery, and the journey finds their parts through it. The gallery lists the
@@ -68,12 +69,16 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
 
   @MainActor
   func testTheComplicationCountsDownInTheSmartStack() {
-    // The app mirrors the preferences the iPhone sent for the complication.
+    // The app mirrors the preferences the iPhone sent for the complication, and is left on
+    // Today. It runs on the real clock, muted, so an adhan that's due doesn't take the first
+    // page.
     var journey = WatchJourneyApp()
     journey.now = nil
     journey.frozen = false
+    journey.tab = "today"
+    journey.extraArguments = ["-salah.watch.mute", "true"]
     journey.launch()
-    require("hero", in: journey.app)
+    require("screen.today", in: journey.app)
 
     // From the face, the Digital Crown opens the Smart Stack and moves it up to its Edit button.
     XCUIDevice.shared.press(.home)
@@ -105,8 +110,11 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     face.cells["AppGroupCell -- Salah"].tap()
     Thread.sleep(forTimeInterval: 4)
 
-    // Salah's page in the gallery offers its widget, Next prayer; choosing it adds it.
-    let widget = face.cells["ComplicationListCell -- Next prayer"]
+    // Salah's page in the gallery lists only its widget, Next prayer, whose name can still be
+    // loading; choosing it adds it.
+    let widget = face.cells.matching(
+      NSPredicate(format: "identifier BEGINSWITH 'ComplicationListCell'")
+    ).firstMatch
     screenshot("smartstack-3-salah")
     XCTAssertTrue(widget.waitForExistence(timeout: 10), "Salah's page has no widget:\n\(cells)")
     widget.tap()
@@ -124,5 +132,19 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     ).firstMatch
     XCTAssertTrue(next.waitForExistence(timeout: 30), "The stack has no next prayer:\n\(cells)")
     screenshot("smartstack-4-widget")
+
+    // A tap on the widget's card opens Salah on its first page. The widget's own elements
+    // report frames in the widget's coordinates, so the tap goes to the card on the face.
+    let card = face.otherElements.matching(
+      NSPredicate(
+        format: "identifier BEGINSWITH 'ComplicationCardContentView' AND identifier CONTAINS %@",
+        "io.github.salah-kit.Salah.watch.prayer")
+    ).firstMatch
+    XCTAssertTrue(card.waitForExistence(timeout: 10), "The stack has no Salah card:\n\(cells)")
+    card.tap()
+    XCTAssertTrue(
+      journey.app.wait(for: .runningForeground, timeout: 15), "The tap didn't open Salah")
+    require("screen.now", in: journey.app)
+    screenshot("smartstack-5-opened")
   }
 }

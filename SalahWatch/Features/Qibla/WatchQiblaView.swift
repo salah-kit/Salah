@@ -29,7 +29,8 @@ struct WatchQiblaView: View {
       WatchQiblaDial(qibla: qibla, heading: unwrappedHeading)
         .scaleEffect(diameter / WatchQiblaDial.size)
         .frame(width: diameter, height: diameter)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // Centred on the page even when it reaches past the margins.
+        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
     }
     .background { WatchSkyBackground(phase: store.display?.phase ?? .neutral) }
     .navigationTitle(Text(verbatim: WatchCopy(locale: store.locale)("Qibla", "القبلة")))

@@ -274,10 +274,10 @@ CI doesn't run it; run it when you change how the preferences are sent or receiv
 
 The Smart Stack journey runs the complications' extension on the watch face: on a new watch
 simulator it adds Salah's widget to the Smart Stack through the face's own process, checks
-that the widget reads a prayer there, and reads the timeline the extension logged, which it
-builds from the settings the app mirrored. It drives the system's own interface, which can
-change with a watchOS release, so CI doesn't run it; run it when you change the
-complications:
+that the widget reads a prayer there and that a tap on it opens Salah's first page, and reads
+the timeline the extension logged, which it builds from the settings the app mirrored. It
+drives the system's own interface, which can change with a watchOS release, so CI doesn't run
+it; run it when you change the complications:
 
 ```sh
 bash scripts/smart-stack-journey.sh

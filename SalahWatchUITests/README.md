@@ -19,9 +19,9 @@ the watch kept. Screenshots are kept as result-bundle attachments.
   after setting Salah up on the paired iPhone simulator.
 - `WatchSmartStackJourneys` adds Salah's widget to the Smart Stack through the watch face's
   own process, `com.apple.clockface`, which draws the stack, its editor and its gallery, and
-  checks that the widget reads a prayer there. It skips unless
-  `SALAH_WATCH_SMART_STACK=1`; `scripts/smart-stack-journey.sh` sets it and reads the
-  complications' log for the timeline the extension built.
+  checks that the widget reads a prayer there and that a tap on it opens Salah's first page.
+  It skips unless `SALAH_WATCH_SMART_STACK=1`; `scripts/smart-stack-journey.sh` sets it and
+  reads the complications' log for the timeline the extension built.
 
 Prayer arithmetic, the receive path, the adhan plan, the complications' timeline and the
 Qibla's states are tested below the UI in `SalahWatchTests`; these journeys observe the
