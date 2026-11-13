@@ -101,6 +101,44 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     capture("iPhone-English-Notifications-Scheduled-After-Settings-Grant", in: app)
   }
 
+  /// At the largest text sizes each step's page scrolls, and its button stays on screen
+  /// without scrolling to it.
+  @MainActor
+  func testOnboardingButtonsStayOnScreenAtLargeTextSizes() {
+    let journey = IOSJourneyApp(
+      fixture: false, skipOnboarding: false,
+      extraArguments: [
+        "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityL",
+      ])
+    journey.launch()
+    let app = journey.app
+    defer { app.terminate() }
+    func assertOnScreen(_ identifier: String, line: UInt = #line) {
+      let button = require(identifier, in: app, line: line)
+      let window = app.windows.firstMatch.frame
+      XCTAssertTrue(
+        button.isHittable && window.contains(button.frame),
+        "\(identifier) is off screen: \(button.frame) in \(window)", line: line)
+    }
+
+    assertOnScreen("onboarding.continue")
+    tap("onboarding.continue", in: app)
+    assertOnScreen("onboarding.location.allow")
+    tap("onboarding.location.chooseCity", in: app)
+    selectCity("Makkah, Saudi Arabia", matching: "Makkah", in: app)
+    assertOnScreen("onboarding.notification.allow")
+    tap("onboarding.notification.silent", in: app)
+    assertOnScreen("onboarding.notification.continue")
+    tap("onboarding.notification.continue", in: app)
+    assertOnScreen("onboarding.reminders.continue")
+    capture("iPhone-English-Onboarding-Reminders-Large-Text", in: app)
+    tap("onboarding.reminders.continue", in: app)
+    assertOnScreen("onboarding.calculation.continue")
+    capture("iPhone-English-Onboarding-Calculation-Large-Text", in: app)
+    tap("onboarding.calculation.continue", in: app)
+    assertOnScreen("onboarding.ready.start")
+  }
+
   /// Setup pushes each step, so Back returns to the one before with its choice kept. Silent
   /// asks for nothing; the first alert turned on afterwards brings the system's question.
   @MainActor

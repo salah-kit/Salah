@@ -124,17 +124,40 @@ struct IOSOnboardingView: View {
           case .location where waitingForLocation: locationProgress
           default: EmptyView()
           }
-          Spacer(minLength: 0)
-          pageIndicator(step)
-          actions(step)
         }
-        .frame(maxWidth: presentation == .formSheet ? 322 : 400)
-        .padding(.horizontal, presentation == .formSheet ? 24 : 40)
+        .frame(maxWidth: contentWidth)
+        .padding(.horizontal, horizontalPadding)
         .padding(.top, topPadding(step, height: geometry.size.height))
-        .padding(.bottom, presentation == .formSheet ? 54 : (step.hasOptions ? 19 : 32))
-        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity)
       }
       .scrollIndicators(.hidden)
+    }
+    // On the page, not the bar: it would replace the identifiers of the bar's controls.
+    .accessibilityIdentifier("onboarding.step." + String(describing: step))
+    // The step's action stays on screen however large the text: the page scrolls above it.
+    .safeAreaBar(edge: .bottom) {
+      VStack(spacing: 14) {
+        pageIndicator(step)
+        actions(step)
+      }
+      .frame(maxWidth: contentWidth)
+      .padding(.horizontal, horizontalPadding)
+      .padding(.top, 8)
+      .padding(.bottom, presentation == .formSheet ? 54 : (step.hasOptions ? 19 : 32))
+      .frame(maxWidth: .infinity)
+      // The page scrolls under the bar: it fades out above the dots, rather than run into them.
+      .background {
+        LinearGradient(
+          stops: [
+            .init(color: IOSTheme.groupedBackground.opacity(0), location: 0),
+            .init(color: IOSTheme.groupedBackground, location: 0.18),
+          ], startPoint: .top, endPoint: .bottom
+        )
+        .padding(.top, -24)
+        .ignoresSafeArea(edges: .bottom)
+        .allowsHitTesting(false)
+      }
     }
     .background {
       IOSSkyBackground(
@@ -145,8 +168,10 @@ struct IOSOnboardingView: View {
     .toolbar(step == .welcome ? .hidden : .visible, for: .navigationBar)
     .toolbarBackground(.hidden, for: .navigationBar)
     .navigationBarTitleDisplayMode(.inline)
-    .accessibilityIdentifier("onboarding.step." + String(describing: step))
   }
+
+  private var contentWidth: CGFloat { presentation == .formSheet ? 322 : 400 }
+  private var horizontalPadding: CGFloat { presentation == .formSheet ? 24 : 40 }
 
   /// The space the hidden bar left is the bar's own on the later steps.
   private func topPadding(_ step: IOSOnboardingStep, height: CGFloat) -> CGFloat {
