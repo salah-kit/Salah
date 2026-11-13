@@ -14,6 +14,7 @@ Each row needs one kind of equipment, so one sitting can cover it. Most Mac chec
 | With | Checks |
 |---|---|
 | A Mac | [#14] first, then [#11], [#12], [#15], [#16], [#28], [#38], [#45] and [#46], [#54], [#64] |
+| A Mac that runs macOS 14, 15 or 26, or a MacBook with a notch | [#86] |
 | An iPhone and an iPad | [#65], and StandBy in [#28] |
 | An iPhone Duo | [#67], with its simulator checks |
 | An Apple TV with a television | [#69] |
@@ -41,6 +42,8 @@ Each row needs one kind of equipment, so one sitting can cover it. Most Mac chec
 - [#54]: the large desktop widget redraws after Salah quits while the adhan plays.
 - [#64]: notification banners show the place under the title, stack by day, keep the title
   with previews hidden, and open Today when clicked.
+- [#86]: the menu bar's gold capsule inside the highlight of an open item, on macOS 14, 15 and
+  26 and on a notched display. It's measured on macOS 27, on a display without a notch.
 - [#14]: run the dropdown's accessibility audit again on a Mac with room for Salah's item.
   Its first run failed on contrast; the contrast fixes for [#40] have landed since, and this
   run decides whether [#40] needs more.
@@ -185,3 +188,4 @@ Store record, and distribution signing covers its bundle identifiers,
 [#75]: https://github.com/salah-kit/Salah/issues/75
 [#77]: https://github.com/salah-kit/Salah/issues/77
 [#79]: https://github.com/salah-kit/Salah/issues/79
+[#86]: https://github.com/salah-kit/Salah/issues/86
