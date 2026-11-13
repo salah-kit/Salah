@@ -3,6 +3,28 @@ import Foundation
 import SalahWidgets
 import WidgetKit
 
+/// How an intent stops the app's audio.
+///
+/// Stop runs in the app's process, where the app registers itself: the audio stops and the
+/// Live Activity changes before the intent returns, so one tap is enough. In another process
+/// the signal reaches the app.
+@MainActor enum IOSAudioStopper {
+  static var stopInProcess: (@MainActor () async -> Void)?
+
+  /// Returns whether the app stopped in this process.
+  @discardableResult
+  static func stop(signal: @MainActor () -> Void = { DarwinSignal.stopAudio.post() }) async
+    -> Bool
+  {
+    guard let stopInProcess else {
+      signal()
+      return false
+    }
+    await stopInProcess()
+    return true
+  }
+}
+
 /// Runs in the app process so stopping works while the foreground app is suspended.
 nonisolated struct IOSStopAudioIntent: LiveActivityIntent, AudioPlaybackIntent {
   static var title: LocalizedStringResource { "Stop audio" }
@@ -13,7 +35,7 @@ nonisolated struct IOSStopAudioIntent: LiveActivityIntent, AudioPlaybackIntent {
     _ = try SharedValue<IOSPlaybackSession>.iosPlayback.save(
       nil, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
     _ = try SharedValue<SalahPlayback>.playback.save(nil)
-    DarwinSignal.stopAudio.post()
+    await IOSAudioStopper.stop()
     ControlCenter.shared.reloadControls(ofKind: IOSControlKind.stopAudio)
     return .result()
   }

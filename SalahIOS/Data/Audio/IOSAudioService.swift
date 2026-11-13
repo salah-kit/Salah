@@ -20,6 +20,7 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
   var onPlaybackChanged: ((Bool) -> Void)?
 
   @ObservationIgnored private let files: IOSAudioFiles
+  @ObservationIgnored private let session: IOSAudioSessionGate
   @ObservationIgnored private var player: AVAudioPlayer?
   @ObservationIgnored private let speech = AVSpeechSynthesizer()
   @ObservationIgnored private var activeUtterance: AVSpeechUtterance?
@@ -30,8 +31,9 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
   @ObservationIgnored private var observers: [NSObjectProtocol] = []
   @ObservationIgnored private var commandTargets: [(MPRemoteCommand, Any)] = []
 
-  init(files: IOSAudioFiles = IOSAudioFiles()) {
+  init(files: IOSAudioFiles = IOSAudioFiles(), session: IOSAudioSessionGate = .system) {
     self.files = files
+    self.session = session
     super.init()
     speech.delegate = self
     do { try files.prepareSounds() } catch {
@@ -140,7 +142,9 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
     expectedPlaybackEnd = nil
     MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     updatePlayback(false)
-    try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    // Ending the session can take seconds. Stop has already happened for the person, so the
+    // session ends behind the main actor's back.
+    session.deactivateLater()
   }
 
   private func start(_ sound: IOSSound, queueDua: Bool) {
@@ -149,9 +153,8 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
       let player = try AVAudioPlayer(contentsOf: url)
       let duration = try IOSAudioDurationPolicy.sessionDuration(
         recordingDuration: player.duration, hasQueuedDua: queueDua)
-      let session = AVAudioSession.sharedInstance()
-      try session.setCategory(.playback, mode: .default)
-      try session.setActive(true)
+      try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+      try session.activate()
       player.delegate = self
       player.volume = Float(volume)
       player.prepareToPlay()
@@ -269,5 +272,51 @@ nonisolated struct IOSAudioMetadata: Equatable, Sendable {
       ? IOSL10n.text("Du’a after adhan", arabic: "الدعاء بعد الأذان", locale: locale)
       : IOSL10n.text("Adhan", arabic: "الأذان", locale: locale)
     artist = IOSL10n.text("Salah", arabic: "صلاة", locale: locale)
+  }
+}
+
+/// Starts and ends the audio session, ending it off the main actor.
+///
+/// Deactivating the session waits for the system's audio to settle, which has taken seconds.
+/// Stop returns at once and the session ends on a queue of its own. Playback that starts
+/// before then keeps its session: an ending asked for earlier is dropped.
+nonisolated final class IOSAudioSessionGate: Sendable {
+  static let system = IOSAudioSessionGate(
+    setActive: { active in
+      try AVAudioSession.sharedInstance().setActive(
+        active, options: active ? [] : .notifyOthersOnDeactivation)
+    },
+    later: { work in queue.async(execute: work) })
+
+  private static let queue = DispatchQueue(label: "io.github.salah-kit.Salah.audio-session")
+  private let setActive: @Sendable (Bool) throws -> Void
+  private let later: @Sendable (@escaping @Sendable () -> Void) -> Void
+  /// Held while the session changes, so a start and an ending never interleave.
+  private let lock = NSLock()
+  nonisolated(unsafe) private var activations = 0
+
+  init(
+    setActive: @escaping @Sendable (Bool) throws -> Void,
+    later: @escaping @Sendable (@escaping @Sendable () -> Void) -> Void
+  ) {
+    self.setActive = setActive
+    self.later = later
+  }
+
+  func activate() throws {
+    try lock.withLock {
+      activations += 1
+      try setActive(true)
+    }
+  }
+
+  func deactivateLater() {
+    let seen = lock.withLock { activations }
+    later { [self] in
+      lock.withLock {
+        guard activations == seen else { return }
+        try? setActive(false)
+      }
+    }
   }
 }

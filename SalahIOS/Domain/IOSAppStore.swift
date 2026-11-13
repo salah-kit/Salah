@@ -39,6 +39,8 @@ final class IOSAppStore {
   var selectedDay: CivilDay
   var onboardingStep: IOSOnboardingStep = .welcome
   var settingsPath: [IOSSettingsDestination] = []
+  /// Location, presented over whichever tab asked for it.
+  var showsLocation = false
   private(set) var settingsNavigationRequestID = UUID()
 
   /// Compact navigation and the regular-width sidebar select the same category.
@@ -246,6 +248,9 @@ final class IOSAppStore {
   }
   func setNotificationPermission(_ status: IOSPermissionStatus) { notificationPermission = status }
   func setLocationPermission(_ status: IOSPermissionStatus) { locationPermission = status }
+
+  /// Opens Location over the current tab: choosing a place doesn't move the person to Settings.
+  func showLocation() { showsLocation = true }
 
   func handle(url: URL) {
     guard url.scheme?.lowercased() == "salah" else { return }

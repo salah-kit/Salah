@@ -22,6 +22,11 @@ struct SalahIOSApp: App {
         .environment(runtime.audio)
         .environment(runtime)
         .onOpenURL { runtime.store.handle(url: $0) }
+        // The clock catches up in the same update that shows the app again, so no frame
+        // draws the countdown as it stood when Salah left the screen.
+        .onChange(of: scenePhase) { _, phase in
+          if phase == .active { runtime.store.tick() }
+        }
         .task(id: scenePhase) {
           if scenePhase == .active {
             await runtime.activate()

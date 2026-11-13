@@ -532,6 +532,7 @@
 		A1B66DDA0903173A0D0D4E55 /* SalahDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EFE7DDA9A724FDF705576 /* SalahDisplay.swift */; };
 		A293110168284D5AAC061838 /* SalahText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BAFE950109CD5DEE9FEF68 /* SalahText.swift */; };
 		A2A804D1034A8C5EFB9CD123 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34963BC2BCF87B5CD9AF6DA4 /* SwiftUI.framework */; };
+		A2ED34BA2BF3DBC2C3DC214E /* IOSNowPlayingAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783112999B6851F5B5328C25 /* IOSNowPlayingAccessory.swift */; };
 		A2F681D4D7CA42CCF99F629E /* NotificationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE9FAAEFB4B160776C283E6 /* NotificationModels.swift */; };
 		A327272484A895E2439C4B70 /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
 		A348316EC934DD1446FB3357 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34963BC2BCF87B5CD9AF6DA4 /* SwiftUI.framework */; };
@@ -653,6 +654,7 @@
 		C55D58647D12504ACE061CBC /* SalahPrayerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28837E4AF194675AAF562303 /* SalahPrayerSource.swift */; };
 		C57737A1E99F9948F7176DDA /* SalahSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8552FB43879A30B29BAC8299 /* SalahSettings.swift */; };
 		C57F5B043E75C4A34876CA72 /* Adhan-Makkah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */; };
+		C6906D8D8DE2EE779656CFDD /* IOSNowPlayingAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783112999B6851F5B5328C25 /* IOSNowPlayingAccessory.swift */; };
 		C6D8C8508B2B2CA688876316 /* DebugLaunchOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7118B5FB030156F22424C715 /* DebugLaunchOptionsTests.swift */; };
 		C734FF6349FA98C556A7F8E6 /* IOSTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876347883335868C4A3CC2EA /* IOSTheme.swift */; };
 		C7AAAA338D5542AFE207916B /* ActivitySalahAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E352F329E876BE7CCDD8C698 /* ActivitySalahAttributes.swift */; };
@@ -1132,6 +1134,7 @@
 		75A58B6B432555BCDFD97270 /* IOSQiblaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSQiblaView.swift; sourceTree = "<group>"; };
 		773972880125F047212E6224 /* WatchCoreJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchCoreJourneys.swift; sourceTree = "<group>"; };
 		7815CD2D7BD05B1B047D2D9D /* TVAdhanCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAdhanCoordinator.swift; sourceTree = "<group>"; };
+		783112999B6851F5B5328C25 /* IOSNowPlayingAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSNowPlayingAccessory.swift; sourceTree = "<group>"; };
 		7850779C111D56324DA71023 /* AdjustmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustmentRow.swift; sourceTree = "<group>"; };
 		7895AB6FB9DE1C6453A5DEA0 /* TVRoomDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVRoomDisplayView.swift; sourceTree = "<group>"; };
 		7B66435FE621F7C56026AD3E /* Adhan-Makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Adhan-Makkah.mp3"; sourceTree = "<group>"; };
@@ -2282,6 +2285,7 @@
 		9409D684AA64D8032AD3F0F4 /* Today */ = {
 			isa = PBXGroup;
 			children = (
+				783112999B6851F5B5328C25 /* IOSNowPlayingAccessory.swift */,
 				9946789142083B74AD770C76 /* IOSPrayerPresentation.swift */,
 				25D2CFDAF6756E7261E9C950 /* IOSTodayView.swift */,
 			);
@@ -4030,6 +4034,7 @@
 				50442ACAA23F425D44643150 /* IOSLocationSettingsView.swift in Sources */,
 				A3C9C5FC81952F7D1C47DF86 /* IOSMapLocation.swift in Sources */,
 				F1E13500C73E3E175437FE45 /* IOSNotificationService.swift in Sources */,
+				C6906D8D8DE2EE779656CFDD /* IOSNowPlayingAccessory.swift in Sources */,
 				5B65515F00210D27923036DF /* IOSOnboardingArtwork.swift in Sources */,
 				F28DC7C757B91B877A3569F3 /* IOSOnboardingView.swift in Sources */,
 				D319F21A203461147F599A4F /* IOSPlaceNamer.swift in Sources */,
@@ -4096,6 +4101,7 @@
 				FCA0D9E2478AFB7F5815D440 /* IOSLocationSettingsView.swift in Sources */,
 				BABE87BA951796664ADED04C /* IOSMapLocation.swift in Sources */,
 				A3EA632BD663977403A1B248 /* IOSNotificationService.swift in Sources */,
+				A2ED34BA2BF3DBC2C3DC214E /* IOSNowPlayingAccessory.swift in Sources */,
 				9F4B02409F80388A7B41B835 /* IOSOnboardingArtwork.swift in Sources */,
 				96E15DE4AB81EBA9CBE9F1DD /* IOSOnboardingView.swift in Sources */,
 				AEAAF7E304D5C434E463A812 /* IOSPlaceNamer.swift in Sources */,

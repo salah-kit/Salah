@@ -189,8 +189,11 @@ struct IOSLocationSettingsView: View {
           HStack {
             IOSSettingsRow(
               title: result.title,
-              subtitle: [result.subtitle, result.location.timeZone.identifier]
-                .filter { !$0.isEmpty }.joined(separator: " · "),
+              subtitle: [
+                result.subtitle,
+                IOSLocationCopy(locale: store.locale).timeZoneName(result.location.timeZone),
+              ]
+              .filter { !$0.isEmpty }.joined(separator: " · "),
               symbol: isOnboarding ? nil : "mappin.and.ellipse")
             if isOnboarding {
               Image(systemName: "chevron.right")
@@ -252,20 +255,47 @@ struct IOSLocationSettingsView: View {
   }
 
   private func detail(_ location: PrayerLocation) -> String {
-    let latitude = abs(location.latitude).formatted(
-      .number.precision(.fractionLength(4)).locale(store.locale))
-    let longitude = abs(location.longitude).formatted(
-      .number.precision(.fractionLength(4)).locale(store.locale))
-    return
-      "\(latitude)° \(location.latitude >= 0 ? "N" : "S"), \(longitude)° \(location.longitude >= 0 ? "E" : "W") · \(location.timeZone.identifier)"
+    IOSLocationCopy(locale: store.locale).detail(of: location)
   }
 
   private func locationTitle(_ location: PrayerLocation) -> String {
-    let name = location.name ?? copy.text("Selected location", "الموقع المختار")
+    // The saved place has a name in Salah's language; a recent one reads as it was saved.
+    let saved = location == store.preferences.location ? store.preferences.placeName : nil
+    let name = saved ?? location.name ?? copy.text("Selected location", "الموقع المختار")
     guard let countryCode = location.countryCode,
       let country = store.locale.localizedString(forRegionCode: countryCode),
       !country.isEmpty, !name.localizedCaseInsensitiveContains(country)
     else { return name }
     return name + (copy.isArabic ? "، " : ", ") + country
+  }
+}
+
+/// A place's coordinates and time zone in the selected language.
+nonisolated struct IOSLocationCopy: Sendable {
+  let locale: Locale
+  var bundle: Bundle = .main
+
+  /// "21.4225° N, 39.8262° E · Arabian Standard Time".
+  func detail(of location: PrayerLocation) -> String {
+    let latitude = coordinate(
+      location.latitude, positive: ("%@° N", "%@° شمالًا"), negative: ("%@° S", "%@° جنوبًا"))
+    let longitude = coordinate(
+      location.longitude, positive: ("%@° E", "%@° شرقًا"), negative: ("%@° W", "%@° غربًا"))
+    let separator = locale.language.languageCode?.identifier == "ar" ? "، " : ", "
+    return latitude + separator + longitude + " · " + timeZoneName(location.timeZone)
+  }
+
+  /// The zone as people call it, such as "Arabian Standard Time", not its database identifier.
+  func timeZoneName(_ timeZone: TimeZone) -> String {
+    timeZone.localizedName(for: .generic, locale: locale) ?? timeZone.identifier
+  }
+
+  private func coordinate(
+    _ value: Double, positive: (String, String), negative: (String, String)
+  ) -> String {
+    let side = value >= 0 ? positive : negative
+    let number = abs(value).formatted(.number.precision(.fractionLength(4)).locale(locale))
+    return String(
+      format: IOSL10n.text(side.0, arabic: side.1, locale: locale, bundle: bundle), number)
   }
 }

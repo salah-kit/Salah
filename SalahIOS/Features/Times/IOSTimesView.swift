@@ -50,6 +50,7 @@ struct IOSTimesView: View {
     .navigationTitle(copy("Times", "الأوقات"))
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
+      ToolbarItem(placement: .topBarLeading) { todayButton }
       ToolbarItem(placement: .topBarTrailing) {
         Button(copy("Choose date", "اختيار تاريخ"), systemImage: "calendar") {
           showsDatePicker = true
@@ -88,6 +89,8 @@ struct IOSTimesView: View {
               .accessibilityAddTraits(.isHeader)
           }
           Spacer()
+          // The tablet hides the navigation bar, so the button sits beside the picker.
+          if !barsAtSide { todayButton.buttonStyle(.glass) }
           modePicker.frame(width: 280)
         }
         dateNavigator
@@ -171,7 +174,7 @@ struct IOSTimesView: View {
         display: display,
         title: store.preferences.placeName ?? copy("Prayer times", "أوقات الصلاة"),
         live: store.selectedDay == store.today, onAlert: store.toggleAlert(for:),
-        onPlay: store.playPrayer(_:)
+        onPlay: store.playPrayer(_:), onStop: store.stopPlayback
       )
       .accessibilityIdentifier("times.dayList")
     } else {
@@ -430,10 +433,30 @@ struct IOSTimesView: View {
     store.selectedDay = store.selectedDay.adding(days: direction * (mode == .week ? 7 : 1))
   }
 
-  private func showLocation() { store.handle(url: URL(string: "salah://location")!) }
+  private func showLocation() { store.showLocation() }
+
+  /// Whether the day, or in the week view the week, on screen is another than today's.
+  private var isAwayFromToday: Bool {
+    Self.isAway(
+      selected: store.selectedDay, today: store.today, week: mode == .week ? store.weekDays : [])
+  }
+
+  /// Returns to today. It shows only away from today, so it never sits there doing nothing.
+  @ViewBuilder private var todayButton: some View {
+    if isAwayFromToday {
+      Button(copy("Today", "اليوم")) { store.selectedDay = store.today }
+        .accessibilityLabel(copy("Go to Today", "الانتقال إلى اليوم"))
+        .accessibilityIdentifier("times.today")
+    }
+  }
 }
 
 extension IOSTimesView {
+  /// Whether `selected`, or `week` when the week is on screen, leaves today out.
+  static func isAway(selected: CivilDay, today: CivilDay, week: [CivilDay]) -> Bool {
+    week.isEmpty ? selected != today : !week.contains(today)
+  }
+
   /// The title's civil date: the day in full, or its week's range when `week` has days, in
   /// the calendar of `SalahText.gregorianDate(_:)`, so the Hijri date below never repeats.
   static func dateTitle(day: CivilDay, week: [CivilDay], text: SalahText) -> String {

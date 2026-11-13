@@ -55,7 +55,8 @@ struct IOSTodayView: View {
   }
 
   private func scrolling<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-    ScrollView { content() }.scrollIndicators(.hidden)
+    // Content fades under the status bar instead of meeting it at a hard line.
+    ScrollView { content() }.scrollIndicators(.hidden).scrollEdgeEffectStyle(.soft, for: .top)
   }
 
   private func stacked(_ display: SalahDisplay, geometry: IOSDisplayGeometry) -> some View {
@@ -344,7 +345,8 @@ struct IOSTodayView: View {
   private func prayerList(_ display: SalahDisplay) -> some View {
     IOSPrayerDayCard(
       display: display, title: copy("Today", "اليوم"), live: true,
-      onAlert: store.toggleAlert(for:), onPlay: store.playPrayer(_:)
+      onAlert: store.toggleAlert(for:), onPlay: store.playPrayer(_:),
+      onStop: store.stopPlayback
     )
     .accessibilityIdentifier("today.dayList")
   }
@@ -424,7 +426,7 @@ struct IOSTodayView: View {
     }
   }
 
-  private func showLocation() { store.handle(url: URL(string: "salah://location")!) }
+  private func showLocation() { store.showLocation() }
 }
 
 /// A day's rows are shared by Today and the selected day in Times.
@@ -434,6 +436,7 @@ struct IOSPrayerDayCard: View {
   var live = true
   var onAlert: (PrayerEvent) -> Void
   var onPlay: ((PrayerEvent) -> Void)? = nil
+  var onStop: (() -> Void)? = nil
 
   private var model: IOSPrayerPresentation { IOSPrayerPresentation(display: display) }
 
@@ -471,18 +474,23 @@ struct IOSPrayerDayCard: View {
             .id(Self.rowID(event.kind))
             .accessibilityIdentifier(Self.rowID(event.kind))
             .contextMenu {
-              if let onPlay {
+              if isPlaying(event), let onStop {
                 Button(
-                  model.copy("Play prayer sound", "تشغيل صوت الصلاة"), systemImage: "play.fill"
+                  model.copy("Stop Prayer Sound", "إيقاف صوت الصلاة"), systemImage: "stop.fill",
+                  action: onStop
+                )
+                .accessibilityIdentifier("prayer.menu.stop")
+              } else if let onPlay {
+                Button(
+                  model.copy("Play Prayer Sound", "تشغيل صوت الصلاة"), systemImage: "play.fill"
                 ) {
                   onPlay(event)
                 }
+                .accessibilityIdentifier("prayer.menu.play")
               }
             }
-            .accessibilityAction(
-              named: Text(verbatim: model.copy("Play prayer sound", "تشغيل صوت الصلاة"))
-            ) {
-              onPlay?(event)
+            .accessibilityAction(named: Text(verbatim: soundActionName(event))) {
+              if isPlaying(event), let onStop { onStop() } else { onPlay?(event) }
             }
           case .missing(let kind):
             IOSPrayerRow(
@@ -497,6 +505,17 @@ struct IOSPrayerDayCard: View {
       .padding(.bottom, 4)
     }
     .accessibilityElement(children: .contain)
+  }
+
+  /// The row whose sound is playing offers Stop where the others offer Play.
+  private func isPlaying(_ event: PrayerEvent) -> Bool {
+    onStop != nil && display.playback?.event.id == event.id
+  }
+
+  private func soundActionName(_ event: PrayerEvent) -> String {
+    isPlaying(event)
+      ? model.copy("Stop Prayer Sound", "إيقاف صوت الصلاة")
+      : model.copy("Play Prayer Sound", "تشغيل صوت الصلاة")
   }
 
   private func rowState(_ event: PrayerEvent) -> IOSPrayerRowState {

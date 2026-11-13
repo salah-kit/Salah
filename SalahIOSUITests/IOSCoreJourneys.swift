@@ -235,18 +235,33 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
 
   @MainActor
   func testExplicitPrayerPlaybackStartsAndStopsInToday() {
-    let journey = IOSJourneyApp()
+    playAndStopAPrayer(extraArguments: [])
+  }
+
+  /// iOS 26.0 has no way to hide the tab bar's accessory, so there the same bar sits above
+  /// the tab bar on each tab. The argument runs that placement on a later system.
+  @MainActor
+  func testPrayerPlaybackShowsStopAboveTheTabBarWithoutTheAccessory() {
+    playAndStopAPrayer(extraArguments: ["-salah.ios.nowPlayingAboveTabBar"])
+  }
+
+  @MainActor
+  private func playAndStopAPrayer(extraArguments: [String]) {
+    let journey = IOSJourneyApp(extraArguments: extraArguments)
     journey.launch()
     let app = journey.app
     defer { app.terminate() }
 
     require("today.nextPrayer", in: app)
     XCTAssertFalse(element("today.stopAudio", in: app).exists)
+    XCTAssertFalse(element("nowPlaying.bar", in: app).exists, "Nothing plays, so no bar shows")
     let fajr = require("prayer.row.fajr", in: app)
     reveal(fajr, in: app)
-    fajr.press(forDuration: 1)
-    let play = app.buttons["Play prayer sound"].firstMatch
+    // The empty stretch between the name and the time belongs to the row too.
+    fajr.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1)
+    let play = app.buttons["Play Prayer Sound"].firstMatch
     XCTAssertTrue(play.waitForExistence(timeout: 5))
+    capture("iPhone-English-Today-Prayer-Menu", in: app)
     play.tap()
     let stop = element("today.stopAudio", in: app)
     if !stop.isHittable { app.swipeDown() }
@@ -260,9 +275,118 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
         NSPredicate(format: "label == %@", "Now")
       ).firstMatch.exists)
     capture("iPhone-English-Today-Explicit-Playback", in: app)
-    tap("today.stopAudio", in: app)
+
+    // What's playing follows the person to every tab, above the tab bar, with Stop.
+    let tabBar = app.tabBars.firstMatch
+    for tab in ["tab.times", "tab.qibla", "tab.settings"] {
+      tap(tab, in: app)
+      let bar = require("nowPlaying.bar", in: app)
+      XCTAssertTrue(require("nowPlaying.stop", in: app).isHittable, "Stop is reachable on \(tab)")
+      XCTAssertLessThanOrEqual(bar.frame.maxY, tabBar.frame.maxY)
+      XCTAssertGreaterThan(bar.frame.width, 200, "The bar is not an empty capsule on \(tab)")
+    }
+    capture("iPhone-English-Settings-Now-Playing", in: app)
+
+    // The row that is playing offers Stop in place of Play.
+    tap("tab.times", in: app)
+    let playing = require("prayer.row.fajr", in: app)
+    reveal(playing, in: app)
+    playing.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1)
+    let stopSound = app.buttons["Stop Prayer Sound"].firstMatch
+    XCTAssertTrue(stopSound.waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["Play Prayer Sound"].exists)
+    stopSound.tap()
+    XCTAssertTrue(waitUntil { !self.element("nowPlaying.bar", in: app).exists })
+
+    // Stop on the bar ends it with one tap.
+    reveal(playing, in: app)
+    playing.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1)
+    XCTAssertTrue(play.waitForExistence(timeout: 5))
+    play.tap()
+    tap("nowPlaying.stop", in: app)
+    XCTAssertTrue(waitUntil { !self.element("nowPlaying.bar", in: app).exists })
+    tap("tab.today", in: app)
     XCTAssertTrue(waitUntil { !stop.exists })
     require("today.countdown", in: app)
+  }
+
+  /// The location chip opens Location over Today and comes back to Today; Times offers
+  /// Today only while another day is on screen.
+  @MainActor
+  func testLocationOpensOverTodayAndTimesReturnsToToday() {
+    let journey = IOSJourneyApp()
+    journey.launch()
+    let app = journey.app
+    defer { app.terminate() }
+
+    tap("today.location", in: app)
+    require("location.form", in: app)
+    require("location.selected", in: app)
+    capture("iPhone-English-Today-Location-Sheet", in: app)
+    tap("location.done", in: app)
+    XCTAssertTrue(waitUntil { !self.element("location.form", in: app).exists })
+    require("today.nextPrayer", in: app)
+    XCTAssertTrue(element("tab.today", in: app).isSelected, "Location never changes the tab")
+
+    tap("tab.times", in: app)
+    require("times.date", in: app)
+    XCTAssertFalse(element("times.today", in: app).exists, "Today is already on screen")
+    tap("times.next", in: app)
+    require("times.today", in: app)
+    capture("iPhone-English-Times-Away-From-Today", in: app)
+    tap("times.today", in: app)
+    XCTAssertTrue(waitUntil { !self.element("times.today", in: app).exists })
+    tap("times.week", in: app)
+    XCTAssertFalse(element("times.today", in: app).exists, "This week holds today")
+    tap("times.next", in: app)
+    tap("times.today", in: app)
+    XCTAssertTrue(waitUntil { !self.element("times.today", in: app).exists })
+  }
+
+  /// In Arabic the tab and its screen share one name, and a slight scroll never shows a
+  /// screen's title twice, large and in the bar at once.
+  @MainActor
+  func testArabicTitlesShowOnceOnASlightScroll() {
+    // Larger text makes each screen taller than the display, so a drag scrolls it and it
+    // stays where the drag left it.
+    let journey = IOSJourneyApp(extraArguments: [
+      "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryXXXL",
+    ])
+    journey.launch()
+    let app = journey.app
+    defer { app.terminate() }
+
+    tap("tab.settings", in: app)
+    tap("settings.language", in: app)
+    tap("language.arabic", in: app)
+    back(in: app)
+
+    tap("tab.times", in: app)
+    XCTAssertEqual(require("tab.times", in: app).label, "الأوقات")
+    require("times.date", in: app)
+    assertTitleShowsOnce("الأوقات", in: app, named: "Times")
+
+    tap("tab.today", in: app)
+    tap("today.location", in: app)
+    require("location.form", in: app)
+    assertTitleShowsOnce("الموقع", in: app, named: "Location")
+  }
+
+  /// Drags the screen a little at a time and reads the title after each step.
+  @MainActor
+  private func assertTitleShowsOnce(_ title: String, in app: XCUIApplication, named name: String) {
+    let window = app.windows.firstMatch
+    for step in 1...4 {
+      let from = window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
+      from.press(
+        forDuration: 0.05, thenDragTo: from.withOffset(CGVector(dx: 0, dy: -32)),
+        withVelocity: .slow, thenHoldForDuration: 0.3)
+      let titles = app.staticTexts.matching(NSPredicate(format: "label == %@", title))
+        .allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+      capture("iPhone-Arabic-\(name)-Slight-Scroll-\(step)", in: app)
+      XCTAssertLessThanOrEqual(
+        titles.count, 1, "\(title) shows \(titles.count) times after step \(step)")
+    }
   }
 
   @MainActor

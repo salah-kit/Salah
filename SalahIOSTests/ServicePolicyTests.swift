@@ -191,6 +191,59 @@ struct ServicePolicyTests {
     #expect(MPNowPlayingInfoCenter.default().nowPlayingInfo == nil)
   }
 
+  /// Ending the audio session has taken seconds, and Stop waited for it on the main actor
+  /// (https://github.com/salah-kit/Salah/issues/88). Stop now returns at once and the session
+  /// ends afterwards.
+  @Test @MainActor func stopReturnsBeforeTheAudioSessionEnds() {
+    let log = ServiceSessionLog()
+    let gate = IOSAudioSessionGate(
+      setActive: { active in
+        if !active { Thread.sleep(forTimeInterval: 2) }
+        log.record(active ? "on" : "off")
+      },
+      later: { work in log.defer(work) })
+    let audio = IOSAudioService(files: temporaryFiles(), session: gate)
+    var stopped = 0
+    audio.onPlaybackChanged = { if !$0 { stopped += 1 } }
+    let started = Date()
+    audio.stop()
+    #expect(Date().timeIntervalSince(started) < 0.5)
+    #expect(log.events.isEmpty)
+    #expect(log.pending == 1)
+  }
+
+  /// Playback that starts before a deferred ending runs keeps its session.
+  @Test func aSessionStartedAgainIsNotEndedByAnEarlierStop() throws {
+    let log = ServiceSessionLog()
+    let gate = IOSAudioSessionGate(
+      setActive: { log.record($0 ? "on" : "off") }, later: { work in log.defer(work) })
+    try gate.activate()
+    gate.deactivateLater()
+    try gate.activate()
+    log.runPending()
+    #expect(log.events == ["on", "on"])
+    gate.deactivateLater()
+    log.runPending()
+    #expect(log.events == ["on", "on", "off"])
+  }
+
+  /// In the app's process Stop runs the app's own stop and waits for it; elsewhere it signals.
+  @Test @MainActor func stopIntentStopsInProcessWhenTheAppIsThere() async {
+    let previous = IOSAudioStopper.stopInProcess
+    defer { IOSAudioStopper.stopInProcess = previous }
+    var signals = 0
+    var stops = 0
+    IOSAudioStopper.stopInProcess = nil
+    #expect(await IOSAudioStopper.stop(signal: { signals += 1 }) == false)
+    #expect(signals == 1)
+    IOSAudioStopper.stopInProcess = {
+      await Task.yield()
+      stops += 1
+    }
+    #expect(await IOSAudioStopper.stop(signal: { signals += 1 }))
+    #expect(stops == 1 && signals == 1)
+  }
+
   @Test func compassNeverConfusesMagneticOrUnreliableHeadingWithTrueNorth() {
     #expect(IOSHeadingState.reading(trueHeading: -1, accuracy: 5) == .calibrating)
     #expect(IOSHeadingState.reading(trueHeading: 120, accuracy: -1) == .calibrating)
@@ -526,4 +579,23 @@ nonisolated private enum ServiceWaveFixture {
     waiting.removeValue(forKey: query)?.resume(returning: [result])
   }
   func cancel() {}
+}
+
+/// What an audio session was asked to do, and the endings it was asked to run later.
+nonisolated private final class ServiceSessionLog: @unchecked Sendable {
+  private let lock = NSLock()
+  private var recorded: [String] = []
+  private var deferred: [@Sendable () -> Void] = []
+
+  var events: [String] { lock.withLock { recorded } }
+  var pending: Int { lock.withLock { deferred.count } }
+  func record(_ event: String) { lock.withLock { recorded.append(event) } }
+  func `defer`(_ work: @escaping @Sendable () -> Void) { lock.withLock { deferred.append(work) } }
+  func runPending() {
+    let work = lock.withLock {
+      defer { deferred = [] }
+      return deferred
+    }
+    for item in work { item() }
+  }
 }

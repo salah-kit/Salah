@@ -282,6 +282,54 @@ struct CoreStoreTests {
     #expect((4_700...4_900).contains(distance))
   }
 
+  /// The location chip opens Location where the person is; only a link from outside the app
+  /// goes to Settings.
+  @Test func showingLocationKeepsTheSelectedTab() throws {
+    let store = IOSAppStore(repository: CoreMemoryPreferences())
+    store.select(location: Self.makkah)
+    store.selectedTab = .times
+    store.showLocation()
+    #expect(store.showsLocation)
+    #expect(store.selectedTab == .times)
+    #expect(store.settingsPath.isEmpty)
+    store.showsLocation = false
+    store.handle(url: try #require(URL(string: "salah://location")))
+    #expect(store.selectedTab == .settings)
+    #expect(store.settingsPath == [.location])
+  }
+
+  /// Today's button shows only when today is off screen: another day, or a week without it.
+  @Test func timesOffersTodayOnlyAwayFromToday() {
+    let today = CivilDay(year: 2026, month: 6, day: 2)
+    let week = (0..<7).map { today.adding(days: $0 - 2) }
+    #expect(!IOSTimesView.isAway(selected: today, today: today, week: []))
+    #expect(IOSTimesView.isAway(selected: today.adding(days: 1), today: today, week: []))
+    #expect(IOSTimesView.isAway(selected: today.adding(days: -1), today: today, week: []))
+    // In the week view any day of today's week counts as today's.
+    #expect(!IOSTimesView.isAway(selected: today.adding(days: 3), today: today, week: week))
+    #expect(
+      IOSTimesView.isAway(
+        selected: today.adding(days: 7), today: today, week: week.map { $0.adding(days: 7) }))
+  }
+
+  /// Location's detail line reads in the selected language: directions as words of that
+  /// language and the zone by its name, never "N", "E" and a database identifier in Arabic.
+  @Test func locationDetailIsWrittenInTheSelectedLanguage() {
+    let bundle = Bundle(for: CoreStoreResources.self)
+    let english = IOSLocationCopy(locale: Locale(identifier: "en_US"), bundle: bundle)
+    #expect(english.detail(of: Self.makkah) == "21.4225° N, 39.8262° E · Arabian Standard Time")
+    let arabic = IOSLocationCopy(locale: AppLanguage.arabic.locale, bundle: bundle)
+    let detail = arabic.detail(of: Self.makkah)
+    #expect(detail.contains("شمالًا") && detail.contains("شرقًا"))
+    #expect(!detail.contains("Asia/Riyadh") && !detail.contains(" N") && !detail.contains(" E"))
+    #expect(detail.hasSuffix(arabic.timeZoneName(Self.makkah.timeZone)))
+    let south = PrayerLocation(
+      latitude: -33.8688, longitude: -70.6693, timeZone: TimeZone(identifier: "America/Santiago")!)
+    #expect(english.detail(of: south).hasPrefix("33.8688° S, 70.6693° W · "))
+    let turkish = IOSLocationCopy(locale: AppLanguage.turkish.locale, bundle: bundle)
+    #expect(turkish.detail(of: Self.makkah).hasPrefix("21,4225° K, 39,8262° D · "))
+  }
+
   static var makkah: PrayerLocation {
     PrayerLocation(
       latitude: Qibla.kaaba.latitude, longitude: Qibla.kaaba.longitude,
@@ -303,3 +351,5 @@ private final class CoreMemoryPreferences: IOSPreferencesRepository {
     value = preferences
   }
 }
+
+private final class CoreStoreResources: NSObject {}

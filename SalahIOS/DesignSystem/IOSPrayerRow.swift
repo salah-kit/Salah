@@ -83,6 +83,9 @@ struct IOSPrayerRow: View {
     .padding(.vertical, 9)
     .frame(minHeight: IOSMetrics.rowHeight)
     .background(backgroundColor(colors), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    // A plain row's background is clear: without a shape, only its text and glyph take a touch.
+    .contentShape(.rect)
+    .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 14, style: .continuous))
   }
 
   private var alertValue: String {

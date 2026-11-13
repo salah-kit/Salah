@@ -120,7 +120,7 @@ nonisolated final class IOSDuoPoseJourneys: XCTestCase {
     try expectNothing(in: fold, of: app, on: "tab.today")
 
     isha.press(forDuration: 1)
-    let play = app.buttons["Play prayer sound"].firstMatch
+    let play = app.buttons["Play Prayer Sound"].firstMatch
     XCTAssertTrue(play.waitForExistence(timeout: 5))
     play.tap()
     let card = require("today.nowPlaying", in: app)

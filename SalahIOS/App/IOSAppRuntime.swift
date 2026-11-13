@@ -95,6 +95,7 @@ final class IOSAppRuntime {
       }
     }
     stopObservation = DarwinSignal.stopAudio.observe { [weak self] in self?.audio.stop() }
+    IOSAudioStopper.stopInProcess = { [weak self] in await self?.stopFromIntent() }
     preferencesObservation = DarwinSignal(name: IOSSharedPreferencesStore.changedSignalName).observe
     {
       [weak self] in
@@ -219,6 +220,15 @@ final class IOSAppRuntime {
     } catch {
       widgetError = String(describing: error)
     }
+  }
+
+  /// Stop on the Live Activity or in Control Center: the audio stops and the activity shows
+  /// it before the intent returns.
+  private func stopFromIntent() async {
+    audio.stop()
+    store.setPlayback(nil)
+    publishPlayback()
+    await activities.refresh(settings: store.settings, isForeground: foreground)
   }
 
   private func publishPlayback() {

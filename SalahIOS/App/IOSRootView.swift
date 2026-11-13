@@ -66,7 +66,7 @@ struct IOSRootView: View {
     @Bindable var store = store
     return TabView(selection: $store.selectedTab) {
       Tab(value: IOSTab.today) {
-        NavigationStack { IOSTodayView() }
+        NavigationStack { IOSTodayView() }.iosNowPlayingInset()
       } label: {
         Label(
           IOSL10n.text("Today", arabic: "اليوم", locale: store.locale),
@@ -75,16 +75,16 @@ struct IOSRootView: View {
         .accessibilityIdentifier("tab.today")
       }
       Tab(value: IOSTab.times) {
-        NavigationStack { IOSTimesView() }
+        NavigationStack { IOSTimesView() }.iosNowPlayingInset()
       } label: {
         Label(
-          IOSL10n.text("Times", arabic: "المواقيت", locale: store.locale),
+          IOSL10n.text("Times", arabic: "الأوقات", locale: store.locale),
           systemImage: "list.bullet"
         )
         .accessibilityIdentifier("tab.times")
       }
       Tab(value: IOSTab.qibla) {
-        NavigationStack { IOSQiblaView() }
+        NavigationStack { IOSQiblaView() }.iosNowPlayingInset()
       } label: {
         Label(
           IOSL10n.text("Qibla", arabic: "القبلة", locale: store.locale),
@@ -93,7 +93,7 @@ struct IOSRootView: View {
         .accessibilityIdentifier("tab.qibla")
       }
       Tab(value: IOSTab.settings) {
-        IOSSettingsNavigationView()
+        IOSSettingsNavigationView().iosNowPlayingInset()
       } label: {
         Label(
           IOSL10n.text("Settings", arabic: "الإعدادات", locale: store.locale),
@@ -104,7 +104,33 @@ struct IOSRootView: View {
     }
     .tabViewStyle(.sidebarAdaptable)
     .defaultAdaptableTabBarPlacement(.tabBar)
+    .iosNowPlayingAccessory()
     .accessibilityIdentifier("app.tabs")
+    .sheet(isPresented: $store.showsLocation) { locationSheet }
+  }
+
+  private var locationSheet: some View {
+    NavigationStack {
+      IOSLocationSettingsView()
+        .toolbar {
+          ToolbarItem(placement: .confirmationAction) {
+            Button(
+              IOSL10n.text("Done", arabic: "تم", locale: store.locale), systemImage: "checkmark"
+            ) {
+              store.showsLocation = false
+            }
+            .labelStyle(.iconOnly)
+            .accessibilityIdentifier("location.done")
+          }
+        }
+    }
+    .environment(\.locale, store.locale)
+    .environment(
+      \.layoutDirection,
+      store.locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight
+    )
+    .preferredColorScheme(preferredColorScheme)
+    .tint(IOSTheme.accentText)
   }
 
   private var preferredColorScheme: ColorScheme? {
