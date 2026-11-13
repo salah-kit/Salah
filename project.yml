@@ -292,6 +292,9 @@ targets:
         MARKETING_VERSION: 1.1.2
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.Widgets
         PRODUCT_NAME: $(TARGET_NAME)
+        # macOS keeps a process out of an App Group's container unless its provisioning
+        # profile grants the group, so each target in the group registers it.
+        REGISTER_APP_GROUPS: YES
         SDKROOT: macosx
         SKIP_INSTALL: YES
         STRING_CATALOG_GENERATE_SYMBOLS: YES
@@ -414,6 +417,7 @@ targets:
         MARKETING_VERSION: 1.1.2
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.StopHarness
         PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
         SDKROOT: macosx
         SKIP_INSTALL: YES
         SWIFT_APPROACHABLE_CONCURRENCY: YES
