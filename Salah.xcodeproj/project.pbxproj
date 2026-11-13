@@ -769,6 +769,7 @@
 		EEE08C7E5B2270B0CEE97471 /* SalahCore in Frameworks */ = {isa = PBXBuildFile; productRef = 433BD73B72BB1550474306ED /* SalahCore */; };
 		EF114CE274F8D82AE98525DA /* IOSPrayerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E4743D3482A42C8D6B055 /* IOSPrayerLiveActivity.swift */; };
 		EF4A85AA4294D3AD5A06AA63 /* WindowPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5A2519AD84C5A0495CE414 /* WindowPane.swift */; };
+		EF582C74511F392C3D4B1B69 /* MenuBarLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88237719175D2390A2ABAA21 /* MenuBarLabelTests.swift */; };
 		EFBE3303F13382777D382C3A /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
 		EFEF33EF387D1C03DDB4B6D8 /* IOSRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAB87231D9691A13AD1F74C /* IOSRootView.swift */; };
 		EFF42690A12B137C5560C1E2 /* SalahWidgets in Frameworks */ = {isa = PBXBuildFile; productRef = 0CD06853D7F479A05A97476E /* SalahWidgets */; };
@@ -1147,6 +1148,7 @@
 		8553423EEDBE4DE994305486 /* IOSPrayerAlertsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSPrayerAlertsSettingsView.swift; sourceTree = "<group>"; };
 		86DBE6E4702CBC8563ADCFDE /* WatchPrayerHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchPrayerHero.swift; sourceTree = "<group>"; };
 		876347883335868C4A3CC2EA /* IOSTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSTheme.swift; sourceTree = "<group>"; };
+		88237719175D2390A2ABAA21 /* MenuBarLabelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabelTests.swift; sourceTree = "<group>"; };
 		891B0632C527D831866EDC45 /* SalahWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalahWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		896A369441BB352FC0EF1FE6 /* IOSSoundSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSoundSettingsView.swift; sourceTree = "<group>"; };
 		8A7839EBDB446EE20304A9CB /* WatchPairedJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchPairedJourneys.swift; sourceTree = "<group>"; };
@@ -1630,6 +1632,7 @@
 				A1C7C5BD7CAB7AE3AF1A0013 /* IdentityTests.swift */,
 				26919458978A22A9F5A66E14 /* LocationManagerTests.swift */,
 				EEFB430DFB6CB8E290607039 /* MenuBarItemTests.swift */,
+				88237719175D2390A2ABAA21 /* MenuBarLabelTests.swift */,
 				E3918035E64E88A8CEA2B5C3 /* MenuDropdownTextTests.swift */,
 				6A4DC47073A66A3254478106 /* NotificationTargetTests.swift */,
 				52E8485FD3AAA8075FAE085E /* OnboardingFlowTests.swift */,
@@ -3562,6 +3565,7 @@
 				26F0012FBF1EA1102A1B3C51 /* MenuBarDropdownView.swift in Sources */,
 				3F9F4791F3B0B3C811636765 /* MenuBarItem.swift in Sources */,
 				C1F9C9A9A639ED39360EB119 /* MenuBarItemTests.swift in Sources */,
+				EF582C74511F392C3D4B1B69 /* MenuBarLabelTests.swift in Sources */,
 				E992F574BE00602768045000 /* MenuBarPreview.swift in Sources */,
 				BDB78EA135CE4A4E021B6DDC /* MenuDropdownContent.swift in Sources */,
 				5FC3437E70FAD313FBD06F7C /* MenuDropdownFooter.swift in Sources */,

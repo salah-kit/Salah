@@ -155,7 +155,7 @@ private struct SalahCommands: Commands {
 /// capsule, `label/on-accent` ink on `accent/fill`, legible on any wallpaper; and the
 /// attention dot, `status/warning` in the glyph's top-trailing corner, with ink in the menu
 /// bar's appearance.
-private struct MenuBarLabel: View {
+struct MenuBarLabel: View {
   let item: MenuBarItem
   let layoutDirection: LayoutDirection
 
@@ -238,6 +238,19 @@ private struct MenuBarLabel: View {
   /// The label as a non-template image: on the approaching capsule, or with the attention
   /// dot in its color.
   private var coloredImage: some View {
+    let image = image(menuBarIsDark: menuBarIsDark, scale: NSScreen.main?.backingScaleFactor ?? 2)
+    return Group {
+      if let image {
+        Image(nsImage: image).renderingMode(.original)
+      } else {
+        content(ink: .primary, dot: nil)
+      }
+    }
+  }
+
+  /// The image `coloredImage` shows, at a display's `scale`, inked for a dark or a light
+  /// menu bar.
+  func image(menuBarIsDark: Bool, scale: CGFloat) -> NSImage? {
     let isDark = menuBarIsDark && !item.approaching
     let palette = SalahPalette(isDark: isDark)
     let ink = item.approaching ? palette.labelOnAccent.color : (isDark ? Color.white : .black)
@@ -246,32 +259,47 @@ private struct MenuBarLabel: View {
         .font(.system(size: NSFont.menuBarFont(ofSize: 0).pointSize))
         .modifier(ApproachingCapsule(isOn: item.approaching, fill: palette.accentFill.color))
     )
-    renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
-    let nsImage = renderer.nsImage
-    nsImage?.isTemplate = false
-    return Group {
-      if let nsImage {
-        Image(nsImage: nsImage).renderingMode(.original)
-      } else {
-        content(ink: .primary, dot: nil)
-      }
-    }
+    renderer.scale = scale
+    let image = renderer.nsImage
+    image?.isTemplate = false
+    return image
   }
 }
 
-/// The approaching state's gold capsule: the item's full 24 pt height, 7 pt padding, radius 6.
+/// The approaching state's gold capsule: 20 pt tall, with 7 pt of padding at its ends.
+///
+/// While the status item's window is open, macOS 27 draws a highlight behind the item: a
+/// capsule 24 pt tall that reaches 2 pt past the item at each end. The image lies inside
+/// the item, so it can't cover the highlight. The capsule sits inside it instead: 2 pt
+/// shorter above and below, and a whole number of points wide, as the item is, so it lies
+/// in the highlight's middle.
 private struct ApproachingCapsule: ViewModifier {
   let isOn: Bool
   let fill: Color
 
   func body(content: Content) -> some View {
     if isOn {
-      content
-        .padding(.horizontal, 7)
-        .frame(height: 24)
-        .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(fill))
+      WholePointWidth { content.padding(.horizontal, 7) }
+        .frame(height: 20)
+        .background(Capsule().fill(fill))
     } else {
       content
     }
+  }
+}
+
+/// Rounds its content's width up to a whole number of points.
+private struct WholePointWidth: Layout {
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    var size = subviews.first?.sizeThatFits(proposal) ?? .zero
+    size.width.round(.up)
+    return size
+  }
+
+  func placeSubviews(
+    in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()
+  ) {
+    subviews.first?.place(
+      at: CGPoint(x: bounds.midX, y: bounds.midY), anchor: .center, proposal: proposal)
   }
 }
