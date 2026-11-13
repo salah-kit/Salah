@@ -7,7 +7,7 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
   /// into this test bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
   private static let appBundleIdentifier =
     Bundle(for: IOSPermissionJourneys.self).object(forInfoDictionaryKey: "AppBundleIdentifier")
-    as? String ?? "io.github.salah-kit.Salah.iOS"
+    as? String ?? "com.omarkhaled.salah"
 
   override func setUpWithError() throws { continueAfterFailure = false }
 

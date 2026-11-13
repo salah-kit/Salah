@@ -46,7 +46,7 @@
         ],
         "$description": "Cards that sit on a sky or on the grouped background. SwiftUI .shadow(color: SalahColor.shadowAmbient, radius: 4, y: 2) — or none, when a card already contrasts.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "Elevation/Raised"
           }
         }
@@ -95,7 +95,7 @@
         ],
         "$description": "Popovers, menus, the macOS dropdown panel and floating glass bars. The system draws these shadows for native surfaces; use only on custom floating views.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "Elevation/Floating"
           }
         }
@@ -144,7 +144,7 @@
         ],
         "$description": "Sheets, alerts and windows. System-drawn on native surfaces; reference only.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "Elevation/Overlay"
           }
         }
@@ -174,7 +174,7 @@
         },
         "$description": "macOS keyboard focus ring: 3.5 pt outside the shape in the accent color (the system draws it with .focusable(); the app accent is gold).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "Focus/Ring"
           }
         }
@@ -189,7 +189,7 @@
         },
         "$description": ".thinMaterial. Pair with a translucent fill (glass/fill). Under Reduce Transparency use material/opaque-thin. The value is the background blur radius of the Figma drawing.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".thinMaterial",
             "figmaStyle": "Material/Thin",
             "tint": "{color.glass.fill}",
@@ -205,7 +205,7 @@
         },
         "$description": ".regularMaterial. Pair with glass/fill. Under Reduce Transparency use material/opaque. The value is the background blur radius of the Figma drawing.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".regularMaterial",
             "figmaStyle": "Material/Regular",
             "tint": "{color.glass.fill}",
@@ -221,7 +221,7 @@
         },
         "$description": ".thickMaterial. Pair with glass/fill. Under Reduce Transparency use material/opaque-thick. The value is the background blur radius of the Figma drawing.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".thickMaterial",
             "figmaStyle": "Material/Thick",
             "tint": "{color.glass.fill}",
@@ -234,7 +234,7 @@
       "regular": {
         "$description": "Liquid Glass, regular: tab bars, toolbars, buttons and controls in the navigation layer. Code: .glassEffect(.regular) or a .glass / .glassProminent button style. Never on the content layer. Under Reduce Transparency the system makes it opaque (material/opaque).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".glassEffect(.regular)",
             "figmaStyle": "Glass/Regular",
             "figmaGlass": {
@@ -254,7 +254,7 @@
       "clear": {
         "$description": "Liquid Glass, clear: controls over rich media (the Qibla dial, StandBy). Code: .glassEffect(.clear). Needs a dimming layer underneath when content is bright.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".glassEffect(.clear)",
             "figmaStyle": "Glass/Clear",
             "figmaGlass": {
@@ -274,7 +274,7 @@
       "tinted": {
         "$description": "Liquid Glass tinted with the accent: the prominent Stop control. Code: .glassEffect(.regular.tint(SalahColor.accentFill)). Pair with an accent/fill layer at ~35%.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": ".glassEffect(.regular.tint(SalahColor.accentFill))",
             "figmaStyle": "Glass/Tinted",
             "figmaGlass": {

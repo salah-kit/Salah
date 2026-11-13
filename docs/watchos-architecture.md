@@ -48,7 +48,7 @@ wakes Salah on the iPhone to answer. Until preferences arrive, the watch shows w
 Salah up, and so do the complications.
 
 The watch stores its copy in its own defaults through the iOS repository, and mirrors its
-`SalahSettings` into its App Group, `group.io.github.salah-kit.Salah.shared` on the watch, through
+`SalahSettings` into its App Group, `group.com.omarkhaled.salah` on the watch, through
 SalahWidgets' `SharedValue`, reloading the complications when the mirror changes. A watch's
 App Group isn't shared with the iPhone: nothing on the iPhone reads it.
 

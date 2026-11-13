@@ -174,7 +174,7 @@ nonisolated enum AppGroup {
   /// bundle's Info.plist (`APP_GROUP_IDENTIFIER`).
   static let identifier =
     Bundle(for: AlertSettingsUITests.self).object(forInfoDictionaryKey: "AppGroupIdentifier")
-    as? String ?? "group.io.github.salah-kit.Salah.shared"
+    as? String ?? "group.com.omarkhaled.salah"
 
   /// What's playing (`SalahPlayback` in Shared/SalahPlayback.swift).
   struct Playback: Decodable, Sendable {

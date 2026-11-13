@@ -73,7 +73,7 @@ import UserNotifications
     static let withoutLocationUpdatesKey = "salah.debug.withoutLocationUpdates"
 
     /// The scratch store's suite.
-    static let scratchSuiteName = "io.github.salah-kit.Salah.debug.scratch"
+    static let scratchSuiteName = "com.omarkhaled.salah.debug.scratch"
 
     /// `-salah.debug.withoutSystemNotifications YES`: the alerts go to a notification center
     /// of their own that holds nothing and reports notifications denied, so a test launch

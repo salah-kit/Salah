@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>AppBundleIdentifier</key>
-	<string>$(APP_BUNDLE_IDENTIFIER).iOS</string>
+	<string>$(APP_BUNDLE_IDENTIFIER)</string>
 </dict>
 </plist>

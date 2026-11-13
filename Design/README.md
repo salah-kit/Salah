@@ -86,7 +86,7 @@ Units:
 - A typography token's `lineHeight` is a ratio of its font size, as the format requires.
   The line height in points is in its `$extensions`.
 
-Each token's `$extensions` entry under `io.github.salah-kit` carries what code needs and the
+Each token's `$extensions` entry under `com.omarkhaled.salah` carries what code needs and the
 format can't express:
 
 - `swift`: how SwiftUI writes the token. Most are names in a Salah namespace, such as

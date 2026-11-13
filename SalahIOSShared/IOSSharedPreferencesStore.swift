@@ -12,7 +12,7 @@ nonisolated enum IOSPreferencesStorageError: Error, Equatable {
 /// entire read-modify-write, including separate processes; atomic replacement protects
 /// readers if a process exits while writing.
 nonisolated struct IOSSharedPreferencesStore: Sendable {
-  static let changedSignalName = "io.github.salah-kit.Salah.ios.preferencesChanged"
+  static let changedSignalName = "com.omarkhaled.salah.ios.preferencesChanged"
 
   static var live: Self {
     Self(

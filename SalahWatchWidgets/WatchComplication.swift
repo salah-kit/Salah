@@ -58,7 +58,7 @@ struct WatchComplicationProvider: TimelineProvider {
   /// When WidgetKit asked for a timeline and what it got, without the place: diagnostics, and
   /// the evidence the Smart Stack journey reads.
   static let log = Logger(
-    subsystem: "io.github.salah-kit.Salah.iOS.watchkitapp.Widgets", category: "Timeline")
+    subsystem: "com.omarkhaled.salah.watchkitapp.Widgets", category: "Timeline")
 
   static func state(of entry: SalahWidgetEntry?) -> String {
     switch entry?.content {

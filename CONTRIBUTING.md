@@ -22,22 +22,22 @@ match `project.yml`.
 
 | Target | What it is |
 |---|---|
-| `Salah` | The menu-bar app (`io.github.salah-kit.Salah`) |
-| `SalahWidgetsExtension` | The WidgetKit extension (`io.github.salah-kit.Salah.Widgets`) |
+| `Salah` | The menu-bar app (`com.omarkhaled.salah`) |
+| `SalahWidgetsExtension` | The WidgetKit extension (`com.omarkhaled.salah.Widgets`) |
 | `SalahTests` | Unit and visual-baseline tests (the `Salah` scheme) |
 | `SalahUITests` | UI tests that drive the real app (their own `SalahUITests` scheme) |
 | `SalahRoundTripTests` | Tests that run the real app and the stop harness as processes (their own scheme) |
-| `SalahStopHarness` | A stand-in for the widget extension in those tests (`io.github.salah-kit.Salah.StopHarness`) |
-| `SalahIOS` | The iPhone and iPad app (`io.github.salah-kit.Salah.iOS`) |
-| `SalahIOSWidgets` | Home Screen, Lock Screen, Live Activity and Control Center extension (`io.github.salah-kit.Salah.iOS.Widgets`) |
+| `SalahStopHarness` | A stand-in for the widget extension in those tests (`com.omarkhaled.salah.StopHarness`) |
+| `SalahIOS` | The iPhone and iPad app (`com.omarkhaled.salah`) |
+| `SalahIOSWidgets` | Home Screen, Lock Screen, Live Activity and Control Center extension (`com.omarkhaled.salah.iOS.Widgets`) |
 | `SalahIOSTests` | iOS logic and adapter tests (the `SalahIOS` scheme) |
 | `SalahIOSUITests` | Journeys through the running iOS app (their own scheme) |
-| `SalahTV` | The Apple TV app (`io.github.salah-kit.Salah.tvOS`) |
-| `SalahTVTopShelf` | The Top Shelf extension (`io.github.salah-kit.Salah.tvOS.TopShelf`) |
+| `SalahTV` | The Apple TV app (`com.omarkhaled.salah`) |
+| `SalahTVTopShelf` | The Top Shelf extension (`com.omarkhaled.salah.tvOS.TopShelf`) |
 | `SalahTVTests` | tvOS logic tests (the `SalahTV` scheme) |
 | `SalahTVUITests` | Journeys through the running Apple TV app (their own scheme) |
-| `SalahWatch` | The Apple Watch app, inside the iPhone app (`io.github.salah-kit.Salah.iOS.watchkitapp`) |
-| `SalahWatchWidgets` | The complications and Smart Stack widget (`io.github.salah-kit.Salah.iOS.watchkitapp.Widgets`) |
+| `SalahWatch` | The Apple Watch app, inside the iPhone app (`com.omarkhaled.salah.watchkitapp`) |
+| `SalahWatchWidgets` | The complications and Smart Stack widget (`com.omarkhaled.salah.watchkitapp.Widgets`) |
 | `SalahWatchTests` | watchOS logic tests (the `SalahWatch` scheme) |
 | `SalahWatchUITests` | Journeys through the running watch app (their own scheme) |
 
@@ -45,7 +45,7 @@ match `project.yml`.
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
 (`SalahPlayback`), Salah's prayer source, the display model the widget and the menu bar
 draw from (`SalahDisplay`), the widget's timeline, and the palette and views. The two share
-the App Group `group.io.github.salah-kit.Salah.shared`. Prayer times, the schedule, widget
+the App Group `group.com.omarkhaled.salah`. Prayer times, the schedule, widget
 timelines, alerts and the UI components come from
 [SalahKit](https://github.com/salah-kit/SalahKit), through its public API only.
 
@@ -89,14 +89,21 @@ cp Config/Local.xcconfig.example Config/Local.xcconfig
 Apple registers a bundle identifier and an App Group to one team, and the ones in
 `Config/Shared.xcconfig` (the identifiers in the table above) are registered to Salah's
 maintainers' team, so a build signed with another team needs its own. `APP_BUNDLE_IDENTIFIER`
-is the Mac app's; every other target's follows it, as `com.yourname.Salah.iOS` follows
-`com.yourname.Salah`. The build writes `APP_GROUP_IDENTIFIER` into each target's
+is shared by the Mac, iPhone/iPad and Apple TV apps so they can use one App Store record.
+The watch and extension targets append their suffixes, such as
+`com.yourname.Salah.watchkitapp` and `com.yourname.Salah.iOS.Widgets`. The build writes `APP_GROUP_IDENTIFIER` into each target's
 entitlements and into the `AppGroupIdentifier` key of its Info.plist, where the code reads
 it (`SalahWidgetConstants.appGroupID`), so an app and its extensions always open the same
 group. Unsigned builds, simulator builds and the unit tests need neither setting, and the
 scripts in `scripts/` build under Salah's own identifiers whatever yours are. The tests
 that sign with your team, the [UI tests](#ui-tests) and the
 [real-app tests](#real-app-tests), need both, like any signed build.
+
+Choose the permanent bundle identifier before the first upload to App Store Connect,
+including TestFlight. After that upload Apple locks it. A change from an older source build
+to these identifiers creates a new app identity and App Group: existing settings and widget
+installations do not migrate automatically. Keep the old app and containers if their data
+is needed.
 
 With a team, Xcode signs automatically; add `-allowProvisioningUpdates` to command-line
 builds so it can register your bundle identifiers and your App Group. Sign with a team to
@@ -204,7 +211,7 @@ the system controls when it runs.
 
 Simulator builds and journeys need no paid Apple Developer membership or provisioning
 profile. Install a tvOS 26 or later simulator runtime through Xcode's Components settings.
-The app and its Top Shelf extension share the App Group `group.io.github.salah-kit.Salah.shared`;
+The app and its Top Shelf extension share the App Group `group.com.omarkhaled.salah`;
 both entitlements are generated from `project.yml`. Run the shared CI entry point from the
 repository root:
 
@@ -255,7 +262,7 @@ The Apple Watch app is the iPhone app's companion: the `SalahIOS` scheme builds 
 it in the iPhone app, and the `SalahWatch` scheme builds and runs it on its own. Simulator
 builds and journeys need no paid Apple Developer membership or provisioning profile. Install
 a watchOS 26 or later simulator runtime through Xcode's Components settings. The app and its
-complications share the App Group `group.io.github.salah-kit.Salah.shared` on the watch; both
+complications share the App Group `group.com.omarkhaled.salah` on the watch; both
 entitlements are generated from `project.yml`. Run the shared CI entry point from the
 repository root:
 

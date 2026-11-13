@@ -337,7 +337,7 @@ struct CorePreferencesTests {
   }
 
   @Test @MainActor func versionedDefaultsRoundTripAndRefuseFutureData() throws {
-    let suite = "io.github.salah-kit.Salah.coretest.\(UUID().uuidString)"
+    let suite = "com.omarkhaled.salah.coretest.\(UUID().uuidString)"
     let defaults = try #require(UserDefaults(suiteName: suite))
     defer { defaults.removePersistentDomain(forName: suite) }
     let repository = IOSUserDefaultsPreferencesRepository(defaults: defaults)

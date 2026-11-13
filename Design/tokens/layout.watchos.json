@@ -10,7 +10,7 @@
         },
         "$description": "Leading and trailing margin of screens, windows and panels. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.marginScreen"
           }
         }
@@ -25,7 +25,7 @@
         },
         "$description": "Inner padding of cards and the hero. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.paddingCard"
           }
         }
@@ -40,7 +40,7 @@
         },
         "$description": "Space between sections and cards. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.gapSection"
           }
         }
@@ -53,7 +53,7 @@
         },
         "$description": "Space between items inside a card or row. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.gapStack"
           }
         }
@@ -68,7 +68,7 @@
         },
         "$description": "Minimum height of a list row. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.rowHeight"
           }
         }
@@ -81,7 +81,7 @@
         },
         "$description": "Horizontal padding inside a row. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.rowPaddingH"
           }
         }
@@ -94,7 +94,7 @@
         },
         "$description": "Vertical padding inside a row. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.rowPaddingV"
           }
         }
@@ -109,7 +109,7 @@
         },
         "$description": "Large button height (glass and prominent). Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.controlHeight"
           }
         }
@@ -122,7 +122,7 @@
         },
         "$description": "Small button and chip height. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.controlHeightSmall"
           }
         }
@@ -137,7 +137,7 @@
         },
         "$description": "Minimum interactive size. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.hitTargetMin"
           }
         }
@@ -152,7 +152,7 @@
         },
         "$description": "Icon box in rows (SF Symbol at the row text style). Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.iconRow"
           }
         }
@@ -167,7 +167,7 @@
         },
         "$description": "Cards, the hero and grouped list sections. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.radiusCard"
           }
         }
@@ -180,7 +180,7 @@
         },
         "$description": "Sheets, panels, popovers and windows. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.radiusContainer"
           }
         }
@@ -193,7 +193,7 @@
         },
         "$description": "Highlight behind a selected or next row. Values per platform mode.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahLayout.radiusRowHighlight"
           }
         }

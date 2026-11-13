@@ -16,7 +16,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold50"
           }
         }
@@ -35,7 +35,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold100"
           }
         }
@@ -54,7 +54,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold200"
           }
         }
@@ -73,7 +73,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold300"
           }
         }
@@ -92,7 +92,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold400"
           }
         }
@@ -111,7 +111,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold500"
           }
         }
@@ -130,7 +130,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold600"
           }
         }
@@ -149,7 +149,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold700"
           }
         }
@@ -168,7 +168,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold800"
           }
         }
@@ -187,7 +187,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold900"
           }
         }
@@ -206,7 +206,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold950"
           }
         }
@@ -225,7 +225,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold400A16"
           }
         }
@@ -244,7 +244,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold400A28"
           }
         }
@@ -263,7 +263,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold850"
           }
         }
@@ -282,7 +282,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.gold400A40"
           }
         }
@@ -303,7 +303,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn50"
           }
         }
@@ -322,7 +322,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn100"
           }
         }
@@ -341,7 +341,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn200"
           }
         }
@@ -360,7 +360,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn300"
           }
         }
@@ -379,7 +379,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn400"
           }
         }
@@ -398,7 +398,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn500"
           }
         }
@@ -417,7 +417,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn600"
           }
         }
@@ -436,7 +436,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn700"
           }
         }
@@ -455,7 +455,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn800"
           }
         }
@@ -474,7 +474,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn900"
           }
         }
@@ -493,7 +493,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dawn950"
           }
         }
@@ -514,7 +514,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day50"
           }
         }
@@ -533,7 +533,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day100"
           }
         }
@@ -552,7 +552,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day200"
           }
         }
@@ -571,7 +571,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day300"
           }
         }
@@ -590,7 +590,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day400"
           }
         }
@@ -609,7 +609,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day500"
           }
         }
@@ -628,7 +628,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day600"
           }
         }
@@ -647,7 +647,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day700"
           }
         }
@@ -666,7 +666,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day800"
           }
         }
@@ -685,7 +685,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day900"
           }
         }
@@ -704,7 +704,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.day950"
           }
         }
@@ -725,7 +725,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber50"
           }
         }
@@ -744,7 +744,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber100"
           }
         }
@@ -763,7 +763,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber200"
           }
         }
@@ -782,7 +782,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber300"
           }
         }
@@ -801,7 +801,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber400"
           }
         }
@@ -820,7 +820,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber500"
           }
         }
@@ -839,7 +839,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber600"
           }
         }
@@ -858,7 +858,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber700"
           }
         }
@@ -877,7 +877,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber800"
           }
         }
@@ -896,7 +896,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber900"
           }
         }
@@ -915,7 +915,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.amber950"
           }
         }
@@ -936,7 +936,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk50"
           }
         }
@@ -955,7 +955,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk100"
           }
         }
@@ -974,7 +974,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk200"
           }
         }
@@ -993,7 +993,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk300"
           }
         }
@@ -1012,7 +1012,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk400"
           }
         }
@@ -1031,7 +1031,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk500"
           }
         }
@@ -1050,7 +1050,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk600"
           }
         }
@@ -1069,7 +1069,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk700"
           }
         }
@@ -1088,7 +1088,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk800"
           }
         }
@@ -1107,7 +1107,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk900"
           }
         }
@@ -1126,7 +1126,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.dusk950"
           }
         }
@@ -1147,7 +1147,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve50"
           }
         }
@@ -1166,7 +1166,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve100"
           }
         }
@@ -1185,7 +1185,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve200"
           }
         }
@@ -1204,7 +1204,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve300"
           }
         }
@@ -1223,7 +1223,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve400"
           }
         }
@@ -1242,7 +1242,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve500"
           }
         }
@@ -1261,7 +1261,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve600"
           }
         }
@@ -1280,7 +1280,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve700"
           }
         }
@@ -1299,7 +1299,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve800"
           }
         }
@@ -1318,7 +1318,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve900"
           }
         }
@@ -1337,7 +1337,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.mauve950"
           }
         }
@@ -1358,7 +1358,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night50"
           }
         }
@@ -1377,7 +1377,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night100"
           }
         }
@@ -1396,7 +1396,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night200"
           }
         }
@@ -1415,7 +1415,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night300"
           }
         }
@@ -1434,7 +1434,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night400"
           }
         }
@@ -1453,7 +1453,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night500"
           }
         }
@@ -1472,7 +1472,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night600"
           }
         }
@@ -1491,7 +1491,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night700"
           }
         }
@@ -1510,7 +1510,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night800"
           }
         }
@@ -1529,7 +1529,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night900"
           }
         }
@@ -1548,7 +1548,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.night950"
           }
         }
@@ -1569,7 +1569,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutralWhite"
           }
         }
@@ -1588,7 +1588,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral50"
           }
         }
@@ -1607,7 +1607,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral75"
           }
         }
@@ -1626,7 +1626,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral100"
           }
         }
@@ -1645,7 +1645,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral150"
           }
         }
@@ -1664,7 +1664,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral200"
           }
         }
@@ -1683,7 +1683,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral300"
           }
         }
@@ -1702,7 +1702,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral400"
           }
         }
@@ -1721,7 +1721,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral500"
           }
         }
@@ -1740,7 +1740,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral600"
           }
         }
@@ -1759,7 +1759,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral700"
           }
         }
@@ -1778,7 +1778,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral800"
           }
         }
@@ -1797,7 +1797,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral825"
           }
         }
@@ -1816,7 +1816,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral850"
           }
         }
@@ -1835,7 +1835,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral875"
           }
         }
@@ -1854,7 +1854,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutralBlack"
           }
         }
@@ -1873,7 +1873,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral50HighContrast"
           }
         }
@@ -1892,7 +1892,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral850HighContrast"
           }
         }
@@ -1911,7 +1911,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.neutral800HighContrast"
           }
         }
@@ -1932,7 +1932,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight78"
           }
         }
@@ -1951,7 +1951,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight62"
           }
         }
@@ -1970,7 +1970,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight18"
           }
         }
@@ -1989,7 +1989,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark64"
           }
         }
@@ -2008,7 +2008,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark44"
           }
         }
@@ -2027,7 +2027,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark16"
           }
         }
@@ -2046,7 +2046,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight92"
           }
         }
@@ -2065,7 +2065,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight76"
           }
         }
@@ -2084,7 +2084,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkLight36"
           }
         }
@@ -2103,7 +2103,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark84"
           }
         }
@@ -2122,7 +2122,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark60"
           }
         }
@@ -2141,7 +2141,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.inkDark32"
           }
         }
@@ -2162,7 +2162,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.separatorLight"
           }
         }
@@ -2181,7 +2181,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.separatorDark"
           }
         }
@@ -2200,7 +2200,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.separatorOpaqueLight"
           }
         }
@@ -2219,7 +2219,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.separatorOpaqueDark"
           }
         }
@@ -2240,7 +2240,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight20"
           }
         }
@@ -2259,7 +2259,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight16"
           }
         }
@@ -2278,7 +2278,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight12"
           }
         }
@@ -2297,7 +2297,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight08"
           }
         }
@@ -2316,7 +2316,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark36"
           }
         }
@@ -2335,7 +2335,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark32"
           }
         }
@@ -2354,7 +2354,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark24"
           }
         }
@@ -2373,7 +2373,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark18"
           }
         }
@@ -2392,7 +2392,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight28HighContrast"
           }
         }
@@ -2411,7 +2411,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight24HighContrast"
           }
         }
@@ -2430,7 +2430,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight20HighContrast"
           }
         }
@@ -2449,7 +2449,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillLight16HighContrast"
           }
         }
@@ -2468,7 +2468,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark44HighContrast"
           }
         }
@@ -2487,7 +2487,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark40HighContrast"
           }
         }
@@ -2506,7 +2506,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark32HighContrast"
           }
         }
@@ -2525,7 +2525,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.fillDark26HighContrast"
           }
         }
@@ -2546,7 +2546,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA90"
           }
         }
@@ -2565,7 +2565,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA80"
           }
         }
@@ -2584,7 +2584,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA60"
           }
         }
@@ -2603,7 +2603,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA40"
           }
         }
@@ -2622,7 +2622,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA25"
           }
         }
@@ -2641,7 +2641,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA15"
           }
         }
@@ -2660,7 +2660,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA08"
           }
         }
@@ -2679,7 +2679,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA05"
           }
         }
@@ -2698,7 +2698,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.whiteA03"
           }
         }
@@ -2719,7 +2719,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA60"
           }
         }
@@ -2738,7 +2738,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA50"
           }
         }
@@ -2757,7 +2757,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA30"
           }
         }
@@ -2776,7 +2776,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA20"
           }
         }
@@ -2795,7 +2795,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA15"
           }
         }
@@ -2814,7 +2814,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA12"
           }
         }
@@ -2833,7 +2833,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA06"
           }
         }
@@ -2852,7 +2852,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA05"
           }
         }
@@ -2871,7 +2871,7 @@
         },
         "$description": "Primitive. Use a semantic token instead.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.blackA03"
           }
         }
@@ -2893,7 +2893,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemRedLight"
             }
           }
@@ -2912,7 +2912,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemRedDark"
             }
           }
@@ -2931,7 +2931,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemRedLightEnhanced"
             }
           }
@@ -2950,7 +2950,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemRedDarkEnhanced"
             }
           }
@@ -2971,7 +2971,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemOrangeLight"
             }
           }
@@ -2990,7 +2990,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemOrangeDark"
             }
           }
@@ -3009,7 +3009,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemOrangeLightEnhanced"
             }
           }
@@ -3028,7 +3028,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemOrangeDarkEnhanced"
             }
           }
@@ -3049,7 +3049,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemGreenLight"
             }
           }
@@ -3068,7 +3068,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemGreenDark"
             }
           }
@@ -3087,7 +3087,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemGreenLightEnhanced"
             }
           }
@@ -3106,7 +3106,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemGreenDarkEnhanced"
             }
           }
@@ -3127,7 +3127,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemBlueLight"
             }
           }
@@ -3146,7 +3146,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemBlueDark"
             }
           }
@@ -3165,7 +3165,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemBlueLightEnhanced"
             }
           }
@@ -3184,7 +3184,7 @@
           },
           "$description": "Primitive. Use a semantic token instead.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "swift": "SalahPalette.systemBlueDarkEnhanced"
             }
           }
@@ -3205,7 +3205,7 @@
       },
       "$description": "Primitive. Use a semantic token instead.",
       "$extensions": {
-        "io.github.salah-kit": {
+        "com.omarkhaled.salah": {
           "swift": "SalahPalette.transparent"
         }
       }
@@ -3225,7 +3225,7 @@
         },
         "$description": "Sample watch-face color, only for previewing the accented watch rendering. The face supplies the real color.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahPalette.watchfaceOrange"
           }
         }

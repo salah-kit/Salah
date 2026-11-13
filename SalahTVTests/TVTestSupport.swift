@@ -55,7 +55,7 @@ enum TVFixtures {
 
   /// An empty defaults suite of its own, so a test never sees another's records.
   static func defaults() -> UserDefaults {
-    let suite = "io.github.salah-kit.Salah.tvOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.tvOS.unit." + UUID().uuidString
     let defaults = UserDefaults(suiteName: suite)!
     defaults.removePersistentDomain(forName: suite)
     return defaults

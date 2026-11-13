@@ -44,14 +44,14 @@ xcrun simctl bootstatus "$phone" -b
 xcrun simctl bootstatus "$watch" -b
 xcrun simctl list pairs | grep -B1 -A2 "$watch"
 
-xcrun simctl uninstall "$watch" "$bundle_identifier.iOS.watchkitapp" 2>/dev/null || true
-xcrun simctl uninstall "$phone" "$bundle_identifier.iOS" 2>/dev/null || true
+xcrun simctl uninstall "$watch" "$bundle_identifier.watchkitapp" 2>/dev/null || true
+xcrun simctl uninstall "$phone" "$bundle_identifier" 2>/dev/null || true
 xcrun simctl install "$phone" "$derived_path/Build/Products/Debug-iphonesimulator/SalahIOS.app"
 xcrun simctl install "$watch" "$derived_path/Build/Products/Debug-watchsimulator/SalahWatch.app"
 
 # Salah on the iPhone, set up in Makkah from its fixture, sends the preferences once its
 # session is active, and stays open to answer the watch's request.
-xcrun simctl launch "$phone" "$bundle_identifier.iOS" \
+xcrun simctl launch "$phone" "$bundle_identifier" \
   -salah.ios.testSuite paired -salah.ios.reset true -salah.ios.fixture true \
   -salah.ios.skipOnboarding true
 sleep 10

@@ -21,9 +21,9 @@ nonisolated enum SalahWidgetConstants {
   /// tests' runner, gets Salah's own.
   static let appGroupID =
     Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String
-    ?? "group.io.github.salah-kit.Salah.shared"
+    ?? "group.com.omarkhaled.salah"
 
-  static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
+  static let prayerTimesWidgetKind = "com.omarkhaled.salah.widgets.prayerTimes"
   /// The settings mirror (`SalahSettings`). The version is in the key: a change to the
   /// value's shape takes a new key.
   static let settingsKey = "SalahSettings.v2"
@@ -32,7 +32,7 @@ nonisolated enum SalahWidgetConstants {
   /// What's playing (`SalahPlayback`), or nothing.
   static let playbackKey = "SalahPlayback.v1"
   /// The widget's Stop button posts this signal; the running app stops playback.
-  static let stopAudioSignal = "io.github.salah-kit.Salah.widget.stopAudio"
+  static let stopAudioSignal = "com.omarkhaled.salah.widget.stopAudio"
 
   /// Tap target for the widget. A menu-bar (`LSUIElement`) app can't open its
   /// `MenuBarExtra` popover via URL, so the widget routes taps to the Settings

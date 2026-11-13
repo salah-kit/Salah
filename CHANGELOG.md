@@ -62,17 +62,22 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The macOS, iOS/iPadOS and tvOS apps share `com.omarkhaled.salah` for one App Store
+  record. Watch and extension IDs use that prefix. These are new app identities: source
+  installs using the previous IDs keep their old containers and start with fresh settings
+  under the new IDs; add the new widgets again. Choose permanent IDs before the first
+  TestFlight or App Store build upload.
+
 - Signing Salah with your own team takes two more lines in `Config/Local.xcconfig`:
   `APP_BUNDLE_IDENTIFIER` and `APP_GROUP_IDENTIFIER`, a bundle identifier and an App Group
   of your own. Apple registers each identifier to one team, so only the team that holds
   Salah's own could sign a build before. Every target's bundle identifier follows the
   first, and each app and its extensions read the second. Simulator builds need neither.
 - The App Group each app shares with its own extensions is
-  `group.io.github.salah-kit.Salah.shared` on every platform: the widgets on Mac, iPhone
+  `group.com.omarkhaled.salah` on every platform: the widgets on Mac, iPhone
   and iPad, the Top Shelf on Apple TV and the complications on Apple Watch. The Mac,
-  Apple TV and Apple Watch apps write what their extensions read again when they next
-  open. The iPhone and iPad app keeps its preferences in that container too, so an iPhone
-  or iPad set up with a build from an earlier commit starts at setup again.
+  Apple TV and Apple Watch apps write what their extensions read there. Preferences from
+  the previous App Group are not migrated automatically on any platform.
 - The app icon is the design system's: a gold arch and crescent on a burgundy sky, on
   every platform, with dark, tinted and clear versions where the system has them.
 - Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first
