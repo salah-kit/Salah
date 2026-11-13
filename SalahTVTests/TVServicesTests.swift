@@ -20,8 +20,8 @@ struct TVServicesTests {
   @Test func journeysStartFromAFixtureInTheirOwnSuite() throws {
     let suite = "unit-" + UUID().uuidString
     defer {
-      UserDefaults(suiteName: "io.github.salah-kit.Salah.tvOS.tests." + suite)?
-        .removePersistentDomain(forName: "io.github.salah-kit.Salah.tvOS.tests." + suite)
+      UserDefaults(suiteName: "com.omarkhaled.salah.tvOS.tests." + suite)?
+        .removePersistentDomain(forName: "com.omarkhaled.salah.tvOS.tests." + suite)
     }
     let configuration = TVLaunchConfiguration(arguments: [
       "SalahTV", "-salah.tv.testSuite", suite, "-salah.tv.reset", "true",

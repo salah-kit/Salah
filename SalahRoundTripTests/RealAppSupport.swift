@@ -19,7 +19,7 @@ enum Products {
   /// this test bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
   nonisolated static var appBundleIdentifier: String {
     Bundle(for: LogRecorder.self).object(forInfoDictionaryKey: "AppBundleIdentifier") as? String
-      ?? "io.github.salah-kit.Salah"
+      ?? "com.omarkhaled.salah"
   }
 }
 

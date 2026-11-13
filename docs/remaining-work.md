@@ -93,8 +93,9 @@ the bundled macOS adhan recordings ([NOTICE](../NOTICE)).
 
 ### Before a release
 
-The owner's tasks: App Store Connect records for the app and its widgets, distribution signing, the privacy
-answers from [privacy.md](privacy.md), screenshots, and TestFlight.
+The app's App Store Connect record exists. Before distribution, complete distribution signing,
+the privacy answers from [privacy.md](privacy.md), screenshots, and TestFlight. Widget extensions
+ship inside the app build and use their own signing identifiers; they need no separate store records.
 
 ## iPhone Duo
 
@@ -128,8 +129,9 @@ table.
 
 ### Before a release
 
-The owner's task: the Apple TV app has its own bundle identifier, `io.github.salah-kit.Salah.tvOS`. Whether it
-shares a universal purchase with the iPhone app is the owner's decision at release.
+The Apple TV app shares `com.omarkhaled.salah` with the Mac and iPhone/iPad apps so it
+can join their App Store record. Apple TV distribution and physical-device checks remain
+pending; the initial store release targets iOS and macOS.
 
 ## Apple Watch
 
@@ -149,7 +151,7 @@ shares a universal purchase with the iPhone app is the owner's decision at relea
 
 The owner's task: the watch app ships inside the iPhone app, so it's on the iPhone app's App
 Store record, and distribution signing covers its bundle identifiers,
-`io.github.salah-kit.Salah.iOS.watchkitapp` and its complications'.
+`com.omarkhaled.salah.watchkitapp` and its complications'.
 
 ## Every app
 

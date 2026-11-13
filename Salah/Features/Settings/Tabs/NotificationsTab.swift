@@ -435,7 +435,7 @@ struct NotificationsContent: View {
   }
 
   private func openNotificationSettings() {
-    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.github.salah-kit.Salah"
+    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "com.omarkhaled.salah"
     let urlStrings = [
       "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=\(bundleIdentifier)",
       "x-apple.systempreferences:com.apple.Notifications-Settings.extension",

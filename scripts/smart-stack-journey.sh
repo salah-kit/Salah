@@ -34,7 +34,7 @@ TEST_RUNNER_SALAH_WATCH_SMART_STACK=1 xcodebuild test -jobs 4 -project Salah.xco
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 
 xcrun simctl spawn "$simulator_id" log show --style compact --start "$started" \
-  --predicate 'subsystem == "io.github.salah-kit.Salah.iOS.watchkitapp.Widgets"' \
+  --predicate 'subsystem == "com.omarkhaled.salah.watchkitapp.Widgets"' \
   > "$results/extension.log" || true
 cat "$results/extension.log"
 if ! grep -q "entries, first schedule" "$results/extension.log"; then

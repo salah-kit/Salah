@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-EXT = 'io.github.salah-kit'
+EXT = 'com.omarkhaled.salah'
 REF = re.compile(r'^\{([^{}]+)\}$')
 BRACES = re.compile(r'\{([^{}]*)\}')
 TOKEN_PATH = re.compile(r'[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*')

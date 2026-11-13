@@ -10,7 +10,7 @@
         },
         "$description": "2 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s2"
           }
         }
@@ -23,7 +23,7 @@
         },
         "$description": "4 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s4"
           }
         }
@@ -36,7 +36,7 @@
         },
         "$description": "6 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s6"
           }
         }
@@ -49,7 +49,7 @@
         },
         "$description": "8 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s8"
           }
         }
@@ -62,7 +62,7 @@
         },
         "$description": "10 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s10"
           }
         }
@@ -75,7 +75,7 @@
         },
         "$description": "12 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s12"
           }
         }
@@ -88,7 +88,7 @@
         },
         "$description": "16 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s16"
           }
         }
@@ -101,7 +101,7 @@
         },
         "$description": "20 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s20"
           }
         }
@@ -114,7 +114,7 @@
         },
         "$description": "24 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s24"
           }
         }
@@ -127,7 +127,7 @@
         },
         "$description": "32 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s32"
           }
         }
@@ -140,7 +140,7 @@
         },
         "$description": "40 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s40"
           }
         }
@@ -153,7 +153,7 @@
         },
         "$description": "48 pt spacing step.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSpace.s48"
           }
         }
@@ -168,7 +168,7 @@
         },
         "$description": "4 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r4"
           }
         }
@@ -181,7 +181,7 @@
         },
         "$description": "8 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r8"
           }
         }
@@ -194,7 +194,7 @@
         },
         "$description": "12 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r12"
           }
         }
@@ -207,7 +207,7 @@
         },
         "$description": "16 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r16"
           }
         }
@@ -220,7 +220,7 @@
         },
         "$description": "20 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r20"
           }
         }
@@ -233,7 +233,7 @@
         },
         "$description": "26 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r26"
           }
         }
@@ -246,7 +246,7 @@
         },
         "$description": "34 pt corner radius. Use .continuous corners in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahRadius.r34"
           }
         }
@@ -259,7 +259,7 @@
         },
         "$description": "Capsule: buttons, chips, badges. Capsule() in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "Capsule()"
           }
         }
@@ -274,7 +274,7 @@
         },
         "$description": "Small symbol box.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSize.iconSmall"
           }
         }
@@ -287,7 +287,7 @@
         },
         "$description": "Default symbol box.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSize.iconMedium"
           }
         }
@@ -300,7 +300,7 @@
         },
         "$description": "Large symbol box.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSize.iconLarge"
           }
         }
@@ -313,7 +313,7 @@
         },
         "$description": "Prayer glyph in the hero.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahSize.glyphHero"
           }
         }
@@ -328,7 +328,7 @@
         },
         "$description": "Hairline: 1 px in Figma, 1 / displayScale pt in code.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahStroke.hairline"
           }
         }
@@ -341,7 +341,7 @@
         },
         "$description": "Regular stroke for outlined marks.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahStroke.regular"
           }
         }
@@ -354,7 +354,7 @@
         },
         "$description": "Focus rings and progress strokes.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahStroke.emphasis"
           }
         }

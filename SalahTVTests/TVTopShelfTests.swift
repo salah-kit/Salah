@@ -142,7 +142,7 @@ struct TVTopShelfTests {
   }
 
   @Test func publishingReloadsOnlyWhenTheBannersWouldChange() throws {
-    let suite = "io.github.salah-kit.Salah.tvOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.tvOS.unit." + UUID().uuidString
     defer { UserDefaults(suiteName: suite)?.removePersistentDomain(forName: suite) }
     var reloads = 0
     let mirror = SharedValue<SalahSettings>(appGroup: suite, key: "settings")

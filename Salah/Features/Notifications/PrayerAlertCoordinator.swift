@@ -23,7 +23,7 @@ import SalahCore
 @MainActor
 final class PrayerAlertCoordinator: NSObject, UNUserNotificationCenterDelegate {
   /// Every request identifier starts with the app's bundle identifier.
-  nonisolated static let identifierPrefix = "io.github.salah-kit.Salah."
+  nonisolated static let identifierPrefix = "com.omarkhaled.salah."
   /// The one namespace Salah's prayer alerts use.
   nonisolated static let namespace = "prayers"
   /// The start of every prayer alert's thread: each prayer day has its own thread,

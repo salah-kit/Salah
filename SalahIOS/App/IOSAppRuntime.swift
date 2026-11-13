@@ -23,7 +23,7 @@ final class IOSAppRuntime {
   @ObservationIgnored private var preferencesObservation: DarwinSignal.Observation?
   @ObservationIgnored private var foreground = false
   @ObservationIgnored private let isTesting: Bool
-  static let refreshIdentifier = "io.github.salah-kit.Salah.iOS.refresh"
+  static let refreshIdentifier = "com.omarkhaled.salah.iOS.refresh"
 
   init(configuration: IOSLaunchConfiguration = IOSLaunchConfiguration()) {
     store = IOSAppStore(repository: configuration.repository, now: configuration.now)

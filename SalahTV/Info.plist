@@ -12,7 +12,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>io.github.salah-kit.Salah.tvOS</string>
+			<string>com.omarkhaled.salah</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>salah</string>

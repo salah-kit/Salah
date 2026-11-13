@@ -19,7 +19,7 @@
         },
         "$description": "iOS Large Title → Font.largeTitle. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Large Title",
             "design": "default",
             "weight": "regular",
@@ -54,7 +54,7 @@
         },
         "$description": "iOS Large Title → Font.largeTitle.bold(). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Large Title Emphasized",
             "design": "default",
             "weight": "bold",
@@ -89,7 +89,7 @@
         },
         "$description": "iOS Title 1 → Font.title. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 1",
             "design": "default",
             "weight": "regular",
@@ -124,7 +124,7 @@
         },
         "$description": "iOS Title 1 → Font.title.bold(). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 1 Emphasized",
             "design": "default",
             "weight": "bold",
@@ -159,7 +159,7 @@
         },
         "$description": "iOS Title 2 → Font.title2. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 2",
             "design": "default",
             "weight": "regular",
@@ -194,7 +194,7 @@
         },
         "$description": "iOS Title 2 → Font.title2.bold(). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 2 Emphasized",
             "design": "default",
             "weight": "bold",
@@ -229,7 +229,7 @@
         },
         "$description": "iOS Title 3 → Font.title3. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 3",
             "design": "default",
             "weight": "regular",
@@ -264,7 +264,7 @@
         },
         "$description": "iOS Title 3 → Font.title3.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Title 3 Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -299,7 +299,7 @@
         },
         "$description": "iOS Headline → Font.headline (system weight semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Headline",
             "design": "default",
             "weight": "semibold",
@@ -334,7 +334,7 @@
         },
         "$description": "iOS Body → Font.body. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Body",
             "design": "default",
             "weight": "regular",
@@ -369,7 +369,7 @@
         },
         "$description": "iOS Body → Font.body.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Body Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -404,7 +404,7 @@
         },
         "$description": "iOS Callout → Font.callout. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Callout",
             "design": "default",
             "weight": "regular",
@@ -439,7 +439,7 @@
         },
         "$description": "iOS Callout → Font.callout.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Callout Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -474,7 +474,7 @@
         },
         "$description": "iOS Subheadline → Font.subheadline. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Subheadline",
             "design": "default",
             "weight": "regular",
@@ -509,7 +509,7 @@
         },
         "$description": "iOS Subheadline → Font.subheadline.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Subheadline Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -544,7 +544,7 @@
         },
         "$description": "iOS Footnote → Font.footnote. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Footnote",
             "design": "default",
             "weight": "regular",
@@ -579,7 +579,7 @@
         },
         "$description": "iOS Footnote → Font.footnote.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Footnote Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -614,7 +614,7 @@
         },
         "$description": "iOS Caption 1 → Font.caption. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Caption 1",
             "design": "default",
             "weight": "regular",
@@ -649,7 +649,7 @@
         },
         "$description": "iOS Caption 1 → Font.caption.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Caption 1 Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -684,7 +684,7 @@
         },
         "$description": "iOS Caption 2 → Font.caption2. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Caption 2",
             "design": "default",
             "weight": "regular",
@@ -719,7 +719,7 @@
         },
         "$description": "iOS Caption 2 → Font.caption2.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "iOS/Caption 2 Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -755,7 +755,7 @@
           },
           "$description": "Hero countdown. @ScaledMetric(relativeTo: .largeTitle) size 64, design .rounded, .monospacedDigit(). Stops growing at AX3 with .dynamicTypeSize(...DynamicTypeSize.accessibility3); .lineLimit(1) and .minimumScaleFactor(0.5) keep it on one line, even with two-digit hours under Display Zoom. Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Countdown Display",
               "design": "rounded",
               "weight": "semibold",
@@ -791,7 +791,7 @@
           },
           "$description": "Large countdown (iPad hero, StandBy). @ScaledMetric(relativeTo: .largeTitle) size 44, .rounded, .monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Countdown Large",
               "design": "rounded",
               "weight": "semibold",
@@ -826,7 +826,7 @@
           },
           "$description": "Countdown in widgets and cards. .title, .rounded, semibold, .monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Countdown",
               "design": "rounded",
               "weight": "semibold",
@@ -861,7 +861,7 @@
           },
           "$description": "Small widget countdown. .title2, .rounded, semibold, .monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Countdown Small",
               "design": "rounded",
               "weight": "semibold",
@@ -896,7 +896,7 @@
           },
           "$description": "Prayer times in lists. .body.monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Time",
               "design": "default",
               "weight": "regular",
@@ -931,7 +931,7 @@
           },
           "$description": "The next prayer time. .body.weight(.semibold).monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Time Emphasized",
               "design": "default",
               "weight": "semibold",
@@ -966,7 +966,7 @@
           },
           "$description": "Iqama times, offsets, since text. .footnote.monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "iOS/Numeric/Time Small",
               "design": "default",
               "weight": "regular",

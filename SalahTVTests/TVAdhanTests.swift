@@ -155,7 +155,7 @@ struct TVAdhanTests {
     let configuration = TVLaunchConfiguration(
       repository: TVFixtures.repository(preferences), defaults: defaults,
       clock: TVClock(start: TVFixtures.date(text), frozen: true))
-    let suite = "io.github.salah-kit.Salah.tvOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.tvOS.unit." + UUID().uuidString
     return TVAppRuntime(
       configuration: configuration, idleTimer: idleTimer,
       topShelf: TVTopShelfPublisher(

@@ -19,7 +19,7 @@
         },
         "$description": "macOS Large Title → Font.largeTitle. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Large Title",
             "design": "default",
             "weight": "regular",
@@ -54,7 +54,7 @@
         },
         "$description": "macOS Title 1 → Font.title. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Title 1",
             "design": "default",
             "weight": "regular",
@@ -89,7 +89,7 @@
         },
         "$description": "macOS Title 2 → Font.title2. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Title 2",
             "design": "default",
             "weight": "regular",
@@ -124,7 +124,7 @@
         },
         "$description": "macOS Title 3 → Font.title3. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Title 3",
             "design": "default",
             "weight": "regular",
@@ -159,7 +159,7 @@
         },
         "$description": "macOS Headline → Font.headline (system weight bold). macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Headline",
             "design": "default",
             "weight": "bold",
@@ -194,7 +194,7 @@
         },
         "$description": "macOS Body → Font.body. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Body",
             "design": "default",
             "weight": "regular",
@@ -229,7 +229,7 @@
         },
         "$description": "macOS Body → Font.body.weight(.semibold). macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Body Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -264,7 +264,7 @@
         },
         "$description": "macOS Callout → Font.callout. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Callout",
             "design": "default",
             "weight": "regular",
@@ -299,7 +299,7 @@
         },
         "$description": "macOS Subheadline → Font.subheadline. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Subheadline",
             "design": "default",
             "weight": "regular",
@@ -334,7 +334,7 @@
         },
         "$description": "macOS Subheadline → Font.subheadline.weight(.semibold). macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Subheadline Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -369,7 +369,7 @@
         },
         "$description": "macOS Footnote → Font.footnote. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Footnote",
             "design": "default",
             "weight": "regular",
@@ -404,7 +404,7 @@
         },
         "$description": "macOS Caption 1 → Font.caption. macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Caption 1",
             "design": "default",
             "weight": "regular",
@@ -439,7 +439,7 @@
         },
         "$description": "macOS Caption 2 → Font.caption2 (system weight medium). macOS text styles are fixed (no Dynamic Type).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "macOS/Caption 2",
             "design": "default",
             "weight": "medium",
@@ -475,7 +475,7 @@
           },
           "$description": "Dropdown hero countdown. .system(size: 30, weight: .semibold, design: .rounded).monospacedDigit() (macOS has no Dynamic Type). macOS text styles are fixed (no Dynamic Type).",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "macOS/Numeric/Countdown Large",
               "design": "rounded",
               "weight": "semibold",
@@ -510,7 +510,7 @@
           },
           "$description": "Widget and card countdown. .title, .rounded, semibold, .monospacedDigit(). macOS text styles are fixed (no Dynamic Type).",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "macOS/Numeric/Countdown",
               "design": "rounded",
               "weight": "semibold",
@@ -545,7 +545,7 @@
           },
           "$description": "Times in rows. .body.monospacedDigit(). macOS text styles are fixed (no Dynamic Type).",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "macOS/Numeric/Time",
               "design": "default",
               "weight": "regular",
@@ -580,7 +580,7 @@
           },
           "$description": "The next prayer time. .body.weight(.semibold).monospacedDigit(). macOS text styles are fixed (no Dynamic Type).",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "macOS/Numeric/Time Emphasized",
               "design": "default",
               "weight": "semibold",
@@ -615,7 +615,7 @@
           },
           "$description": "Status item title. System menu-bar font with .monospacedDigit(). macOS text styles are fixed (no Dynamic Type).",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "macOS/Numeric/Menu Bar",
               "design": "default",
               "weight": "regular",

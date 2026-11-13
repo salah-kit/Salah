@@ -23,9 +23,9 @@ struct IOSLaunchConfiguration {
           CharacterSet.alphanumerics.contains($0) || "-_.".unicodeScalars.contains($0)
         }),
         let defaults = UserDefaults(
-          suiteName: "io.github.salah-kit.Salah.iOS.tests." + requestedSuite)
+          suiteName: "com.omarkhaled.salah.iOS.tests." + requestedSuite)
       {
-        let suite = "io.github.salah-kit.Salah.iOS.tests." + requestedSuite
+        let suite = "com.omarkhaled.salah.iOS.tests." + requestedSuite
         if value("-salah.ios.reset") == "true" { defaults.removePersistentDomain(forName: suite) }
         let testRepository = IOSUserDefaultsPreferencesRepository(defaults: defaults)
         if (try? testRepository.load()) == nil {

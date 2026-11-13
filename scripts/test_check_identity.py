@@ -54,20 +54,20 @@ class CheckIdentityTests(unittest.TestCase):
         )
 
     def test_another_bundle_identifier_fails(self):
-        app = self.bundle("Salah.app", "io.github.salah-kit.Salah")
+        app = self.bundle("Salah.app", "com.omarkhaled.salah")
         self.assertEqual(
-            self.check(f"{app}={APP}"), (1, "", f"{app} is io.github.salah-kit.Salah, not {APP}.")
+            self.check(f"{app}={APP}"), (1, "", f"{app} is com.omarkhaled.salah, not {APP}.")
         )
 
     def test_a_bundle_that_names_another_group_or_none_fails(self):
-        other = self.bundle("Other.app", APP, group="group.io.github.salah-kit.Salah.shared")
+        other = self.bundle("Other.app", APP, group="group.com.omarkhaled.salah")
         none = self.bundle("None.app", APP, group=None)
         self.assertEqual(
             self.check(f"{other}={APP}", f"{none}={APP}"),
             (
                 1,
                 "",
-                f"{other} names the App Group group.io.github.salah-kit.Salah.shared, not {GROUP}.\n"
+                f"{other} names the App Group group.com.omarkhaled.salah, not {GROUP}.\n"
                 f"{none} names no App Group, not {GROUP}.",
             ),
         )

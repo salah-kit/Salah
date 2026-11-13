@@ -23,10 +23,10 @@ if [[ "$family" == iPhone ]]; then
   # Every bundle carries Salah's identifier and names the App Group its code reads.
   release="$derived_path/Build/Products/Release-iphoneos/SalahIOS.app"
   python3 scripts/check-identity.py "$app_group" \
-    "$release=$bundle_identifier.iOS" \
+    "$release=$bundle_identifier" \
     "$release/PlugIns/SalahIOSWidgets.appex=$bundle_identifier.iOS.Widgets" \
-    "$release/Watch/SalahWatch.app=$bundle_identifier.iOS.watchkitapp" \
-    "$release/Watch/SalahWatch.app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.iOS.watchkitapp.Widgets"
+    "$release/Watch/SalahWatch.app=$bundle_identifier.watchkitapp" \
+    "$release/Watch/SalahWatch.app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.watchkitapp.Widgets"
   app_info="$derived_path/Build/Products/Release-iphoneos/SalahIOS.app/Info.plist"
   icon_name="$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconName raw \
     -o - "$app_info" 2>/dev/null || plutil -extract CFBundleIconName raw -o - "$app_info")"
@@ -84,8 +84,12 @@ PY
 simulator_app="$derived_path/Build/Products/Debug-iphonesimulator/SalahIOS.app"
 python3 scripts/check-identity.py "$app_group" \
   "$results/AppEntitlements.plist" "$results/WidgetsEntitlements.plist" \
-  "$simulator_app=$bundle_identifier.iOS" \
+  "$simulator_app=$bundle_identifier" \
   "$simulator_app/PlugIns/SalahIOSWidgets.appex=$bundle_identifier.iOS.Widgets"
+
+# The Settings fallback must search for the installed app, not a retired platform suffix.
+ui_test_info="$derived_path/Build/Products/Debug-iphonesimulator/SalahIOSUITests-Runner.app/PlugIns/SalahIOSUITests.xctest/Info.plist"
+test "$(plutil -extract AppBundleIdentifier raw -o - "$ui_test_info")" = "$bundle_identifier"
 
 # Notification authorization belongs to the installed app, not its preferences.
 # Each permission journey must see a genuinely fresh system alert. Reinstall only
@@ -95,7 +99,7 @@ for permission_test in \
   testLocationAndNotificationsAllowCompleteSetup \
   testSettingsPermissionGrantSchedulesSavedAlertsImmediately \
   testDeniedNotificationsRecoverFromSystemSettings; do
-  xcrun simctl uninstall "$simulator_id" "$bundle_identifier.iOS"
+  xcrun simctl uninstall "$simulator_id" "$bundle_identifier"
   xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahIOSUITests \
     -destination "platform=iOS Simulator,id=$simulator_id" \
     -only-testing:"SalahIOSUITests/IOSPermissionJourneys/$permission_test" \
@@ -106,7 +110,7 @@ done
 
 # Exercise production composition with its real App Group and no Debug fixture
 # or test-preferences overrides, after a fresh install of this task's app.
-xcrun simctl uninstall "$simulator_id" "$bundle_identifier.iOS"
+xcrun simctl uninstall "$simulator_id" "$bundle_identifier"
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahIOSUITests \
   -destination "platform=iOS Simulator,id=$simulator_id" \
   -only-testing:SalahIOSUITests/IOSProductionJourneys \
