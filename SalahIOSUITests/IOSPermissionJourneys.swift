@@ -208,7 +208,14 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
         // The floating search field can cover the app row while XCTest still reports
         // that row as hittable. Filtering keeps the exact bundle row clear of it.
         let search = settings.searchFields["Search Apps"].firstMatch
-        XCTAssertTrue(search.waitForExistence(timeout: 10), settings.debugDescription)
+        let searchButton = settings.buttons["Search"].firstMatch
+        XCTAssertTrue(
+          waitUntil(timeout: 10) { search.exists || searchButton.exists }, settings.debugDescription
+        )
+        // The Duo side bar exposes a button before it presents the search field.
+        if !search.exists { searchButton.tap() }
+        XCTAssertTrue(
+          search.exists || search.waitForExistence(timeout: 10), settings.debugDescription)
         if (search.value as? String) != "Salah" {
           search.tap()
           search.typeText("Salah")
