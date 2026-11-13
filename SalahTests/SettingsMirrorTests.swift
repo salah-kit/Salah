@@ -350,7 +350,7 @@ struct SettingsMirrorTests {
     let group = MirrorGroup()
     let playback = SalahPlayback(event: Fixture.event(.asr), slot: .alert)
     try group.playback.save(playback)
-    let signal = DarwinSignal(name: "io.github.salah-kit.Salah.tests.stop.\(UUID().uuidString)")
+    let signal = DarwinSignal(name: "com.omarkhaled.salah.tests.stop.\(UUID().uuidString)")
     var observed = false
     var clearedBeforeSignal = false
     let observation = signal.observe {

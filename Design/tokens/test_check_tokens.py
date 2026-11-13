@@ -38,7 +38,7 @@ class CheckTokensTests(unittest.TestCase):
             node = doc['typography'][platform]
             for key in path.split('.'):
                 node = node[key]
-            change(node, node['$extensions']['io.github.salah-kit'])
+            change(node, node['$extensions']['com.omarkhaled.salah'])
         self.edit(f'typography.{platform}.json', apply)
 
     def assert_fails(self, *expected):
@@ -59,7 +59,7 @@ class CheckTokensTests(unittest.TestCase):
             body = doc['typography']['ios']['body']
             body['$value']['fontSize']['value'] = 34
             body['$value']['lineHeight'] = round(41 / 34, 4)
-            body['$extensions']['io.github.salah-kit']['lineHeight']['value'] = 41
+            body['$extensions']['com.omarkhaled.salah']['lineHeight']['value'] = 41
         self.edit('typography.ios.json', large_title_size)
         self.assert_fails('font size 34 differs from type-scale.ios.body.size')
 
@@ -67,14 +67,14 @@ class CheckTokensTests(unittest.TestCase):
         def taller(doc):
             body = doc['typography']['ios']['body']
             body['$value']['lineHeight'] = round(24 / 17, 4)
-            body['$extensions']['io.github.salah-kit']['lineHeight']['value'] = 24
+            body['$extensions']['com.omarkhaled.salah']['lineHeight']['value'] = 24
         self.edit('typography.ios.json', taller)
         self.assert_fails('line height 24 differs from type-scale.ios.body.line-height')
 
     def test_text_style_must_give_the_styles_size(self):
         # The watch countdown is 28 pt, the size of .title2; .title is 34 pt.
         def title(doc):
-            doc['typography']['watchos']['numeric']['countdown']['$extensions']['io.github.salah-kit']['textStyle'] = 'title'
+            doc['typography']['watchos']['numeric']['countdown']['$extensions']['com.omarkhaled.salah']['textStyle'] = 'title'
         self.edit('typography.watchos.json', title)
         self.assert_fails('Font.TextStyle.title gives 34 in type-scale.default.json')
 
@@ -86,7 +86,7 @@ class CheckTokensTests(unittest.TestCase):
         def scaled(doc):
             for mode_file_entry in ('size', 'line-height'):
                 entry = doc['type-scale']['watchos']['countdown'][mode_file_entry]
-                entry['$extensions']['io.github.salah-kit']['swift'] = '@ScaledMetric(relativeTo: .title2)'
+                entry['$extensions']['com.omarkhaled.salah']['swift'] = '@ScaledMetric(relativeTo: .title2)'
         for mode in ('default', 'xxxlarge', 'ax3', 'ax5'):
             self.edit(f'type-scale.{mode}.json', scaled)
         self.assert_fails("has swift '@ScaledMetric(relativeTo: .title2)'; the style needs 'Font.TextStyle.title2'")
@@ -131,13 +131,13 @@ class CheckTokensTests(unittest.TestCase):
 
     def test_malformed_extension_reference_fails(self):
         def bad(doc):
-            doc['effects']['material']['thin']['$extensions']['io.github.salah-kit']['tint'] = '{color.glass fill}'
+            doc['effects']['material']['thin']['$extensions']['com.omarkhaled.salah']['tint'] = '{color.glass fill}'
         self.edit('effects.json', bad)
         self.assert_fails("malformed reference in '{color.glass fill}'")
 
     def test_extensions_must_match_across_modes(self):
         def rename(doc):
-            doc['color']['bg']['primary']['$extensions']['io.github.salah-kit']['swift'] = 'SalahColor.oops'
+            doc['color']['bg']['primary']['$extensions']['com.omarkhaled.salah']['swift'] = 'SalahColor.oops'
         self.edit('color.dark.json', rename)
         self.assert_fails('color.dark.json differs from color.light.json', "$extensions changes ['color.bg.primary']")
 
@@ -202,7 +202,7 @@ class CheckTokensTests(unittest.TestCase):
 
     def test_color_link_must_be_a_color(self):
         def link(doc):
-            doc['effects']['material']['thin']['$extensions']['io.github.salah-kit']['reduceTransparencyFallback'] = '{dimension.space.2}'
+            doc['effects']['material']['thin']['$extensions']['com.omarkhaled.salah']['reduceTransparencyFallback'] = '{dimension.space.2}'
         self.edit('effects.json', link)
         self.assert_fails('reduceTransparencyFallback of effects.material.thin must reference a color, not dimension.space.2')
 
@@ -269,7 +269,7 @@ class CheckTokensTests(unittest.TestCase):
 
     def test_line_height_code_ends_in_leading(self):
         def drop(doc):
-            doc['type-scale']['ios']['body']['line-height']['$extensions']['io.github.salah-kit']['swift'] = 'Font.TextStyle.body'
+            doc['type-scale']['ios']['body']['line-height']['$extensions']['com.omarkhaled.salah']['swift'] = 'Font.TextStyle.body'
         for mode in ('default', 'xxxlarge', 'ax3', 'ax5'):
             self.edit(f'type-scale.{mode}.json', drop)
         self.assert_fails("type-scale.ios.body.line-height has swift 'Font.TextStyle.body'; the style needs 'Font.TextStyle.body (leading)'")
@@ -277,7 +277,7 @@ class CheckTokensTests(unittest.TestCase):
     def test_fixed_size_code_names_its_size(self):
         def decimal(doc):
             for entry in ('size', 'line-height'):
-                doc['type-scale']['macos']['countdown-large'][entry]['$extensions']['io.github.salah-kit']['swift'] = 'Font.system(size: 30.0)'
+                doc['type-scale']['macos']['countdown-large'][entry]['$extensions']['com.omarkhaled.salah']['swift'] = 'Font.system(size: 30.0)'
         for mode in ('default', 'xxxlarge', 'ax3', 'ax5'):
             self.edit(f'type-scale.{mode}.json', decimal)
         self.edit_typography('macos', 'numeric.countdown-large', lambda tok, ext: ext.update(fixedSize='yes'))
@@ -322,7 +322,7 @@ class CheckTokensTests(unittest.TestCase):
                           'effects.elevation.raised[0]: shadow needs color, offsetX, offsetY, blur and spread')
 
     def test_extension_references_must_resolve(self):
-        self.edit('effects.json', lambda doc: doc['effects']['material']['thin']['$extensions']['io.github.salah-kit'].update(tint='{color.glass.nope}'))
+        self.edit('effects.json', lambda doc: doc['effects']['material']['thin']['$extensions']['com.omarkhaled.salah'].update(tint='{color.glass.nope}'))
         self.assert_fails('effects.json: $extensions of effects.material.thin reference missing {color.glass.nope}')
 
     def test_one_report_per_wrongly_typed_alias(self):

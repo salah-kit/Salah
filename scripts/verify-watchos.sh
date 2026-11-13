@@ -19,11 +19,11 @@ test -d "$app/PlugIns/SalahWatchWidgets.appex"
 test -f "$app/adhan-ahmed-khalaf.mp3"
 # The iPhone app owns the preferences: the watch app installs with it.
 test "$(plutil -extract WKCompanionAppBundleIdentifier raw -o - "$app/Info.plist")" \
-  = "$bundle_identifier.iOS"
+  = "$bundle_identifier"
 # Both bundles carry Salah's identifier and name the App Group their code reads.
 python3 scripts/check-identity.py "$app_group" \
-  "$app=$bundle_identifier.iOS.watchkitapp" \
-  "$app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.iOS.watchkitapp.Widgets"
+  "$app=$bundle_identifier.watchkitapp" \
+  "$app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.watchkitapp.Widgets"
 # actool succeeds silently without the icon, so check the app names it.
 icon_name="$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconName raw \
   -o - "$app/Info.plist" 2>/dev/null || plutil -extract CFBundleIconName raw -o - "$app/Info.plist")"
@@ -66,12 +66,12 @@ cp "$intermediates/SalahWatchWidgets.build/SalahWatchWidgets.appex-Simulated.xce
 simulator_app="$derived_path/Build/Products/Debug-watchsimulator/SalahWatch.app"
 python3 scripts/check-identity.py "$app_group" \
   "$results/AppEntitlements.plist" "$results/WidgetsEntitlements.plist" \
-  "$simulator_app=$bundle_identifier.iOS.watchkitapp" \
-  "$simulator_app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.iOS.watchkitapp.Widgets"
+  "$simulator_app=$bundle_identifier.watchkitapp" \
+  "$simulator_app/PlugIns/SalahWatchWidgets.appex=$bundle_identifier.watchkitapp.Widgets"
 
 # Exercise production composition with its own defaults and no Debug fixture, after a
 # fresh install of this task's app: it waits for the iPhone.
-xcrun simctl uninstall "$simulator_id" "$bundle_identifier.iOS.watchkitapp"
+xcrun simctl uninstall "$simulator_id" "$bundle_identifier.watchkitapp"
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahWatchUITests \
   -destination "platform=watchOS Simulator,id=$simulator_id" \
   -only-testing:SalahWatchUITests/WatchProductionJourneys \

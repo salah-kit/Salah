@@ -53,7 +53,7 @@ enum WatchFixtures {
 
   /// An empty defaults suite of its own, so a test never sees another's records.
   static func defaults() -> UserDefaults {
-    let suite = "io.github.salah-kit.Salah.watchOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.watchOS.unit." + UUID().uuidString
     let defaults = UserDefaults(suiteName: suite)!
     defaults.removePersistentDomain(forName: suite)
     return defaults
@@ -145,7 +145,7 @@ nonisolated final class RecordingReloads: @unchecked Sendable {
   func record(_ widgetKinds: [String]) { lock.withLock { kinds.append(widgetKinds) } }
 
   func value() -> SharedValue<SalahSettings> {
-    let suite = "io.github.salah-kit.Salah.watchOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.watchOS.unit." + UUID().uuidString
     return SharedValue(
       appGroup: suite, key: SalahWidgetConstants.settingsKey,
       reloadTimelines: { [self] in self.record($0) })

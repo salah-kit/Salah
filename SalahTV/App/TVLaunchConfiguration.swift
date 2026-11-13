@@ -61,10 +61,10 @@ struct TVLaunchConfiguration {
         suite.unicodeScalars.allSatisfy({
           CharacterSet.alphanumerics.contains($0) || "-_.".unicodeScalars.contains($0)
         }),
-        let defaults = UserDefaults(suiteName: "io.github.salah-kit.Salah.tvOS.tests." + suite)
+        let defaults = UserDefaults(suiteName: "com.omarkhaled.salah.tvOS.tests." + suite)
       {
         if value("-salah.tv.reset") == "true" {
-          defaults.removePersistentDomain(forName: "io.github.salah-kit.Salah.tvOS.tests." + suite)
+          defaults.removePersistentDomain(forName: "com.omarkhaled.salah.tvOS.tests." + suite)
         }
         let testRepository = IOSUserDefaultsPreferencesRepository(defaults: defaults)
         if (try? testRepository.load()) == nil {
@@ -103,7 +103,7 @@ struct TVLaunchConfiguration {
 
   /// A new suite of its own, so a test never sees another's records.
   static func emptyDefaults() -> UserDefaults {
-    let suite = "io.github.salah-kit.Salah.tvOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.tvOS.unit." + UUID().uuidString
     return UserDefaults(suiteName: suite) ?? UserDefaults()
   }
 }

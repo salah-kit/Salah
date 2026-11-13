@@ -46,15 +46,23 @@ struct IdentityTests {
   /// App Group a process without a build's Info.plist opens, as these tests' runner does.
   @Test func salahsOwnIdentifiersAreTheDefaults() throws {
     let root = BaselineStore.repositoryRoot
-    #expect(SalahWidgetConstants.appGroupID == "group.io.github.salah-kit.Salah.shared")
+    #expect(SalahWidgetConstants.appGroupID == "group.com.omarkhaled.salah")
     let settings = try String(
       contentsOf: root.appending(path: "Config/Shared.xcconfig"), encoding: .utf8)
-    #expect(settings.contains("\nAPP_BUNDLE_IDENTIFIER = io.github.salah-kit.Salah\n"))
+    #expect(settings.contains("\nAPP_BUNDLE_IDENTIFIER = com.omarkhaled.salah\n"))
     #expect(settings.contains("\nAPP_GROUP_IDENTIFIER = \(SalahWidgetConstants.appGroupID)\n"))
     let scripts = try String(
       contentsOf: root.appending(path: "scripts/identity.sh"), encoding: .utf8)
-    #expect(scripts.contains("\nbundle_identifier=io.github.salah-kit.Salah\n"))
+    #expect(scripts.contains("\nbundle_identifier=com.omarkhaled.salah\n"))
     #expect(scripts.contains("\napp_group=\(SalahWidgetConstants.appGroupID)\n"))
+  }
+
+  /// The permission journey must find the installed iPhone app in Settings, including
+  /// when the simulator ignores the direct Settings link.
+  @Test func iOSPermissionJourneyUsesTheMainAppIdentifier() throws {
+    let info = try Self.propertyList(
+      BaselineStore.repositoryRoot.appending(path: "SalahIOSUITests/Info.plist"))
+    #expect(info["AppBundleIdentifier"] as? String == "$(APP_BUNDLE_IDENTIFIER)")
   }
 
   private static func propertyList(_ url: URL) throws -> [String: Any] {
@@ -66,8 +74,8 @@ struct IdentityTests {
   /// The names the app and the extension exchange are Salah's own.
   @Test func sharedNamesAreSalahs() {
     #expect(
-      SalahWidgetConstants.prayerTimesWidgetKind == "io.github.salah-kit.Salah.widgets.prayerTimes")
-    #expect(SalahWidgetConstants.stopAudioSignal == "io.github.salah-kit.Salah.widget.stopAudio")
+      SalahWidgetConstants.prayerTimesWidgetKind == "com.omarkhaled.salah.widgets.prayerTimes")
+    #expect(SalahWidgetConstants.stopAudioSignal == "com.omarkhaled.salah.widget.stopAudio")
     #expect(DarwinSignal.stopAudio.name == SalahWidgetConstants.stopAudioSignal)
     #expect(SalahWidgetConstants.settingsKey == "SalahSettings.v2")
     #expect(SalahWidgetConstants.playbackKey == "SalahPlayback.v1")
@@ -90,14 +98,14 @@ struct IdentityTests {
     }
     #expect(claims.count == 1)
     let claim = try #require(claims.first)
-    #expect(claim["CFBundleURLName"] as? String == "io.github.salah-kit.Salah")
+    #expect(claim["CFBundleURLName"] as? String == "com.omarkhaled.salah")
     #expect(claim["CFBundleTypeRole"] as? String == "Editor")
   }
 
   /// Prayer alerts are requested under the app's bundle identifier, in one namespace, a
   /// notification thread per prayer day and one category.
   @Test func alertIdentifiersAreSalahs() {
-    #expect(PrayerAlertCoordinator.identifierPrefix == "io.github.salah-kit.Salah.")
+    #expect(PrayerAlertCoordinator.identifierPrefix == "com.omarkhaled.salah.")
     #expect(PrayerAlertCoordinator.namespace == "prayers")
     #expect(
       PrayerAlertCoordinator.threadIdentifier(for: CivilDay(year: 2026, month: 6, day: 2))
@@ -105,7 +113,7 @@ struct IdentityTests {
     #expect(PrayerAlertCoordinator.categoryIdentifier == "salah-prayer")
     #expect(
       PrayerAlertCoordinator.isPrayerAlert(
-        "io.github.salah-kit.Salah.prayers/2026-06-02/dhuhr/before"))
+        "com.omarkhaled.salah.prayers/2026-06-02/dhuhr/before"))
     #expect(!PrayerAlertCoordinator.isPrayerAlert("salah.prayer.dhuhr.preReminder.1780391340"))
   }
 }

@@ -15,7 +15,7 @@ extension UNUserNotificationCenter: IOSNotificationCenter {}
 
 @MainActor @Observable
 final class IOSNotificationService: NSObject, UNUserNotificationCenterDelegate {
-  nonisolated static let prefix = "io.github.salah-kit.Salah.ios."
+  nonisolated static let prefix = "com.omarkhaled.salah.ios."
   nonisolated static let namespace = "prayers"
   private(set) var status: IOSPermissionStatus = .notDetermined
   private(set) var report: NotificationApplyReport?

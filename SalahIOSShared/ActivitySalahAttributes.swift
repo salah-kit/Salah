@@ -147,6 +147,6 @@ nonisolated enum IOSSurfaceLink {
 }
 
 nonisolated enum IOSControlKind {
-  static let muteSounds = "io.github.salah-kit.Salah.ios.controls.muteSounds"
-  static let stopAudio = "io.github.salah-kit.Salah.ios.controls.stopAudio"
+  static let muteSounds = "com.omarkhaled.salah.ios.controls.muteSounds"
+  static let stopAudio = "com.omarkhaled.salah.ios.controls.stopAudio"
 }

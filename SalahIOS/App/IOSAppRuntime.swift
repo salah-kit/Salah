@@ -46,7 +46,7 @@ final class IOSAppRuntime {
   /// moment under Control Center or a system alert.
   @ObservationIgnored private var returning = true
   @ObservationIgnored private let isTesting: Bool
-  static let refreshIdentifier = "io.github.salah-kit.Salah.iOS.refresh"
+  static let refreshIdentifier = "com.omarkhaled.salah.iOS.refresh"
 
   init(configuration: IOSLaunchConfiguration = IOSLaunchConfiguration()) {
     store = IOSAppStore(repository: configuration.repository, now: configuration.now)

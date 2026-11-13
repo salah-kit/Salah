@@ -12,7 +12,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>io.github.salah-kit.Salah.iOS.watchkitapp</string>
+			<string>com.omarkhaled.salah.watchkitapp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>salah</string>

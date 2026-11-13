@@ -138,7 +138,7 @@ nonisolated final class WatchSmartStackJourneys: XCTestCase {
     let card = face.otherElements.matching(
       NSPredicate(
         format: "identifier BEGINSWITH 'ComplicationCardContentView' AND identifier CONTAINS %@",
-        "io.github.salah-kit.Salah.watch.prayer")
+        "com.omarkhaled.salah.watch.prayer")
     ).firstMatch
     XCTAssertTrue(card.waitForExistence(timeout: 10), "The stack has no Salah card:\n\(cells)")
     card.tap()

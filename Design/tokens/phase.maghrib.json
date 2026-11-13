@@ -7,7 +7,7 @@
         "$value": "{color.phase-maghrib.sky-top}",
         "$description": "Top of the time-of-day sky gradient: hero, widgets, the Today background. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark and their Increased contrast modes).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahColor.phase.skyTop"
           }
         }
@@ -17,7 +17,7 @@
         "$value": "{color.phase-maghrib.sky-bottom}",
         "$description": "Bottom of the time-of-day sky gradient. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark and their Increased contrast modes).",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahColor.phase.skyBottom"
           }
         }
@@ -28,7 +28,7 @@
       "$value": "{color.phase-maghrib.tint}",
       "$description": "Signature mark of the time of day: timeline segment, glyph, progress (3:1; 4.5:1 with Increase Contrast). Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark and their Increased contrast modes).",
       "$extensions": {
-        "io.github.salah-kit": {
+        "com.omarkhaled.salah": {
           "swift": "SalahColor.phase.tint"
         }
       }
@@ -38,7 +38,7 @@
       "$value": "{color.phase-maghrib.text}",
       "$description": "Text in the time-of-day color (4.5:1 on its sky and on cells; 7:1 with Increase Contrast). Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark and their Increased contrast modes).",
       "$extensions": {
-        "io.github.salah-kit": {
+        "com.omarkhaled.salah": {
           "swift": "SalahColor.phase.text"
         }
       }
@@ -48,7 +48,7 @@
       "$value": "{color.phase-maghrib.tint-subtle}",
       "$description": "Quiet wash of the time of day, behind the next row. Its value follows the frame Phase mode (Fajr, Dhuhr, Asr, Maghrib, Isha, Neutral) and Color mode (Light, Dark and their Increased contrast modes).",
       "$extensions": {
-        "io.github.salah-kit": {
+        "com.omarkhaled.salah": {
           "swift": "SalahColor.phase.tintSubtle"
         }
       }

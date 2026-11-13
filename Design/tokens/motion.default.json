@@ -10,7 +10,7 @@
         },
         "$description": "Countdown digit change: .contentTransition(.numericText(countsDown: true)); a 0.2 s cross-fade under Reduce Motion. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.countdownTickDuration"
           }
         }
@@ -25,7 +25,7 @@
         },
         "$description": "Focus moves to the next prayer: .smooth(duration: 0.5); cross-fade under Reduce Motion. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.prayerChangeDuration"
           }
         }
@@ -40,7 +40,7 @@
         },
         "$description": "Sky colors cross-fade at a phase boundary (widgets cap animations at 2 s). Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.phaseChangeDuration"
           }
         }
@@ -55,7 +55,7 @@
         },
         "$description": "Speaker glyph variable-color pulse while the adhan plays; static under Reduce Motion. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.adhanPulsePeriod"
           }
         }
@@ -70,7 +70,7 @@
         },
         "$description": "Gentle accent breathing on the hero rim in the last 15 minutes; none under Reduce Motion. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.approachingBreathPeriod"
           }
         }
@@ -85,7 +85,7 @@
         },
         "$description": "Press feedback. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.pressDuration"
           }
         }
@@ -100,7 +100,7 @@
         },
         "$description": "Spring response; 0 means no spring (cross-fade) under Reduce Motion. Seconds.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "swift": "SalahMotion.springResponse"
           }
         }

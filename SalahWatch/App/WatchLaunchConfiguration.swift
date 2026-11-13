@@ -64,11 +64,11 @@ struct WatchLaunchConfiguration {
           CharacterSet.alphanumerics.contains($0) || "-_.".unicodeScalars.contains($0)
         }),
         let defaults = UserDefaults(
-          suiteName: "io.github.salah-kit.Salah.watchOS.tests." + suite)
+          suiteName: "com.omarkhaled.salah.watchOS.tests." + suite)
       {
         if value("-salah.watch.reset") == "true" {
           defaults.removePersistentDomain(
-            forName: "io.github.salah-kit.Salah.watchOS.tests." + suite)
+            forName: "com.omarkhaled.salah.watchOS.tests." + suite)
         }
         let testRepository = IOSUserDefaultsPreferencesRepository(defaults: defaults)
         // A fixture stands for preferences the iPhone sent; without one, the watch waits for
@@ -116,7 +116,7 @@ struct WatchLaunchConfiguration {
 
   /// A new suite of its own, so a test never sees another's records.
   static func emptyDefaults() -> UserDefaults {
-    let suite = "io.github.salah-kit.Salah.watchOS.unit." + UUID().uuidString
+    let suite = "com.omarkhaled.salah.watchOS.unit." + UUID().uuidString
     return UserDefaults(suiteName: suite) ?? UserDefaults()
   }
 }

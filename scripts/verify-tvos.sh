@@ -18,7 +18,7 @@ app="$derived_path/Build/Products/Release-appletvos/SalahTV.app"
 test -d "$app/PlugIns/SalahTVTopShelf.appex"
 test -f "$app/NOTICE"
 # Both bundles carry Salah's identifier and name the App Group their code reads.
-python3 scripts/check-identity.py "$app_group" "$app=$bundle_identifier.tvOS" \
+python3 scripts/check-identity.py "$app_group" "$app=$bundle_identifier" \
   "$app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
 # actool succeeds silently without the brand assets, so check the app names them.
 test "$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon raw -o - "$app/Info.plist")" \
@@ -68,7 +68,7 @@ cp "$intermediates/SalahTVTopShelf.build/SalahTVTopShelf.appex-Simulated.xcent" 
 simulator_app="$derived_path/Build/Products/Debug-appletvsimulator/SalahTV.app"
 python3 scripts/check-identity.py "$app_group" \
   "$results/AppEntitlements.plist" "$results/TopShelfEntitlements.plist" \
-  "$simulator_app=$bundle_identifier.tvOS" \
+  "$simulator_app=$bundle_identifier" \
   "$simulator_app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
 
 # Each permission journey resets Salah's location authorization, so it answers a fresh
@@ -83,7 +83,7 @@ xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
 
 # Exercise production composition with its own defaults and no Debug fixture or
 # test-preferences overrides, after a fresh install of this task's app.
-xcrun simctl uninstall "$simulator_id" "$bundle_identifier.tvOS"
+xcrun simctl uninstall "$simulator_id" "$bundle_identifier"
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
   -destination "platform=tvOS Simulator,id=$simulator_id" \
   -only-testing:SalahTVUITests/TVProductionJourneys \

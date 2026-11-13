@@ -179,7 +179,7 @@ final class LifecycleUITests: XCTestCase {
   /// bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
   static let bundleIdentifier =
     Bundle(for: LifecycleUITests.self).object(forInfoDictionaryKey: "AppBundleIdentifier")
-    as? String ?? "io.github.salah-kit.Salah"
+    as? String ?? "com.omarkhaled.salah"
 
   @MainActor
   private func launch() -> XCUIApplication {

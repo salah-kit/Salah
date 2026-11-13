@@ -19,7 +19,7 @@
         },
         "$description": "watchOS Large Title → Font.largeTitle. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Large Title",
             "design": "default",
             "weight": "regular",
@@ -54,7 +54,7 @@
         },
         "$description": "watchOS Title 1 → Font.title. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Title 1",
             "design": "default",
             "weight": "regular",
@@ -89,7 +89,7 @@
         },
         "$description": "watchOS Title 2 → Font.title2. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Title 2",
             "design": "default",
             "weight": "regular",
@@ -124,7 +124,7 @@
         },
         "$description": "watchOS Title 3 → Font.title3. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Title 3",
             "design": "default",
             "weight": "regular",
@@ -159,7 +159,7 @@
         },
         "$description": "watchOS Headline → Font.headline (system weight semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Headline",
             "design": "default",
             "weight": "semibold",
@@ -194,7 +194,7 @@
         },
         "$description": "watchOS Body → Font.body. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Body",
             "design": "default",
             "weight": "regular",
@@ -229,7 +229,7 @@
         },
         "$description": "watchOS Body → Font.body.weight(.semibold). Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Body Emphasized",
             "design": "default",
             "weight": "semibold",
@@ -264,7 +264,7 @@
         },
         "$description": "watchOS Caption 1 → Font.caption. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Caption 1",
             "design": "default",
             "weight": "regular",
@@ -299,7 +299,7 @@
         },
         "$description": "watchOS Caption 2 → Font.caption2. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Caption 2",
             "design": "default",
             "weight": "regular",
@@ -334,7 +334,7 @@
         },
         "$description": "watchOS Footnote 1 → Font.footnote. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Footnote 1",
             "design": "default",
             "weight": "regular",
@@ -369,7 +369,7 @@
         },
         "$description": "watchOS Footnote 2: size 12 with @ScaledMetric(relativeTo: .footnote), because Font.footnote is Footnote 1. The base size applies at the watch’s default text size: Large on 40 to 42 mm, xLarge on 44 to 49 mm. Scales with Dynamic Type.",
         "$extensions": {
-          "io.github.salah-kit": {
+          "com.omarkhaled.salah": {
             "figmaStyle": "watchOS/Footnote 2",
             "design": "default",
             "weight": "regular",
@@ -405,7 +405,7 @@
           },
           "$description": "Watch hero countdown. @ScaledMetric(relativeTo: .title) size 40, .rounded, .monospacedDigit(); .lineLimit(1) and .minimumScaleFactor(0.5) keep it on one line, even with two-digit hours on a 40 mm watch. The base size applies at the watch’s default text size: Large on 40 to 42 mm, xLarge on 44 to 49 mm. Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "watchOS/Numeric/Countdown Display",
               "design": "rounded",
               "weight": "semibold",
@@ -440,7 +440,7 @@
           },
           "$description": "Watch countdown. .title2, .rounded, semibold, .monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "watchOS/Numeric/Countdown",
               "design": "rounded",
               "weight": "semibold",
@@ -475,7 +475,7 @@
           },
           "$description": "Times in watch lists. .body.monospacedDigit(). Scales with Dynamic Type.",
           "$extensions": {
-            "io.github.salah-kit": {
+            "com.omarkhaled.salah": {
               "figmaStyle": "watchOS/Numeric/Time",
               "design": "default",
               "weight": "regular",

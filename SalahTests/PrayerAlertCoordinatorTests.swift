@@ -119,7 +119,7 @@ struct PrayerAlertCoordinatorTests {
     NotificationIdentity(
       namespace: "prayers", scheduleDay: Fixture.civilDay(offset: dayOffset), prayer: prayer,
       kind: kind
-    ).requestIdentifier(prefix: "io.github.salah-kit.Salah.")
+    ).requestIdentifier(prefix: "com.omarkhaled.salah.")
   }
 
   /// The instant a request's calendar trigger names.
@@ -182,7 +182,7 @@ struct PrayerAlertCoordinatorTests {
       let alert = try #require(alerts[request.identifier])
       #expect(
         NotificationIdentity(
-          requestIdentifier: request.identifier, prefix: "io.github.salah-kit.Salah.")
+          requestIdentifier: request.identifier, prefix: "com.omarkhaled.salah.")
           == alert.id)
       #expect(alert.id.namespace == "prayers")
       #expect(request.content.threadIdentifier == "salah-prayers-\(alert.id.scheduleDay)")
@@ -196,7 +196,7 @@ struct PrayerAlertCoordinatorTests {
     }
     #expect(
       pending.contains {
-        $0.identifier == "io.github.salah-kit.Salah.prayers/2026-06-02/asr/atTime"
+        $0.identifier == "com.omarkhaled.salah.prayers/2026-06-02/asr/atTime"
       })
     let identifiers = Set(pending.map(\.identifier))
     for day in 0...1 {
@@ -660,7 +660,7 @@ struct PrayerAlertCoordinatorTests {
   @Test func deniedPermissionRemovesOnlySalahsPendingRequests() async {
     let owned = Self.identifier(.isha, .atTime, dayOffset: 1)
     let foreign = [
-      "com.example.other.reminder", "io.github.salah-kit.Salah.other/2026-06-02/asr/atTime",
+      "com.example.other.reminder", "com.omarkhaled.salah.other/2026-06-02/asr/atTime",
     ]
     let harness = Harness(
       now: Fixture.date(13, 0), status: .denied,
@@ -677,9 +677,9 @@ struct PrayerAlertCoordinatorTests {
   /// Authorized: an obsolete Salah request is replaced, other apps' requests are never
   /// removed.
   @Test func replanningNeverRemovesOtherAppsRequests() async {
-    let obsolete = "io.github.salah-kit.Salah.prayers/2026-05-30/isha/atTime"
+    let obsolete = "com.omarkhaled.salah.prayers/2026-05-30/isha/atTime"
     let foreign = [
-      "com.example.other.reminder", "io.github.salah-kit.Salah.other/2026-06-02/asr/atTime",
+      "com.example.other.reminder", "com.omarkhaled.salah.other/2026-06-02/asr/atTime",
     ]
     let harness = Harness(
       now: Fixture.date(13, 0), pending: ([obsolete] + foreign).map(Self.foreignRequest))
@@ -1730,11 +1730,11 @@ struct PrayerAlertCoordinatorTests {
     #expect(PrayerAlertCoordinator.isPrayerAlert(Self.identifier(.asr, .atTime)))
     #expect(PrayerAlertCoordinator.isPrayerAlert(Self.identifier(.fajr, .after, dayOffset: 5)))
     #expect(
-      !PrayerAlertCoordinator.isPrayerAlert("io.github.salah-kit.Salah.other/2026-06-02/asr/atTime")
+      !PrayerAlertCoordinator.isPrayerAlert("com.omarkhaled.salah.other/2026-06-02/asr/atTime")
     )
     #expect(!PrayerAlertCoordinator.isPrayerAlert("com.example.prayers/2026-06-02/asr/atTime"))
     #expect(
-      !PrayerAlertCoordinator.isPrayerAlert("io.github.salah-kit.Salah.prayers/2026-06-02/asr"))
+      !PrayerAlertCoordinator.isPrayerAlert("com.omarkhaled.salah.prayers/2026-06-02/asr"))
     #expect(!PrayerAlertCoordinator.isPrayerAlert("salah.prayer.asr.prayerTime.1780400100"))
     #expect(!PrayerAlertCoordinator.isPrayerAlert(""))
   }
