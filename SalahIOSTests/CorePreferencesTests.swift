@@ -139,9 +139,29 @@ struct CorePreferencesTests {
     arabicDevice.location = fix(30.0444, 31.2357, name: "الشيخ زايد")
     arabicDevice.settlePlaceNames(after: moved, deviceLanguageCode: "ar")
     #expect(!arabicDevice.needsPlaceName)
-    // A place saved while the device answered in English still gets its Arabic name.
-    moved.language = .system
-    #expect(moved.placeNames?.names["ar"] == nil)
+
+    // Preferences that arrive with their place's names, as the iPhone's do on the watch,
+    // keep them.
+    var sent = IOSPreferences()
+    sent.language = .arabic
+    sent.location = fix(30.0444, 31.2357, name: "Sheikh Zayed")
+    sent.placeNames = IOSPlaceNames(
+      latitude: 30.0444, longitude: 31.2357, names: ["en": "Sheikh Zayed", "ar": "الشيخ زايد"])
+    var received = sent
+    received.settlePlaceNames(after: IOSPreferences(), deviceLanguageCode: "fr")
+    #expect(received == sent)
+    #expect(received.mirror?.location.name == "الشيخ زايد")
+
+    // A place saved before names were kept files its name under the device's language once.
+    var older = IOSPreferences()
+    older.language = .english
+    older.location = fix(30.0444, 31.2357, name: "Sheikh Zayed")
+    #expect(older.needsPlaceName)
+    older.seedPlaceNames(deviceLanguageCode: "en")
+    #expect(!older.needsPlaceName)
+    let seeded = older
+    older.seedPlaceNames(deviceLanguageCode: "ar")
+    #expect(older == seeded)
   }
 
   /// A name belongs to the place it was looked up for. A late answer for a place the person

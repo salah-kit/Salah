@@ -31,3 +31,9 @@ import SalahCore
     return IOSL10n.text("Makkah", arabic: "مكة المكرمة", locale: locale)
   }
 }
+
+/// One request for a place's name in a language.
+nonisolated struct IOSPlaceQuestion: Equatable, Sendable {
+  var location: PrayerLocation
+  var languageCode: String
+}

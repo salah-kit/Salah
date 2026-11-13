@@ -37,6 +37,7 @@ final class IOSAppRuntime {
   @ObservationIgnored private let widgets = IOSWidgetPublisher()
   @ObservationIgnored private let placeNamer: any IOSPlaceNaming
   @ObservationIgnored private var placeNameTask: Task<Void, Never>?
+  @ObservationIgnored private var unanswered: IOSPlaceQuestion?
   @ObservationIgnored private var refreshTask: Task<Void, Never>?
   @ObservationIgnored private var stopObservation: DarwinSignal.Observation?
   @ObservationIgnored private var preferencesObservation: DarwinSignal.Observation?
@@ -110,6 +111,7 @@ final class IOSAppRuntime {
     if store.preferences.useCurrentLocation { location.requestLocation() }
     await notifications.refreshAuthorization()
     publishSettings()
+    unanswered = nil
     namePlace()
     watch.send(store.preferences)
     // Coming back to Salah shows its activity again, even one the person swiped away. The
@@ -174,15 +176,29 @@ final class IOSAppRuntime {
   /// once for each place and language. Offline, the saved name stays until a later change or
   /// return to the app asks again.
   private func namePlace() {
+    var seeded = store.preferences
+    seeded.seedPlaceNames(deviceLanguageCode: IOSPreferences.deviceLanguageCode)
+    if seeded != store.preferences {
+      // Saving the names comes back here through the store's change.
+      store.updatePreferences { $0.placeNames = seeded.placeNames }
+      return
+    }
     let preferences = store.preferences
     guard let location = preferences.location, preferences.needsPlaceName else { return }
     let languageCode = preferences.placeLanguageCode
+    // A place the geocoder has no name for is asked about once for each return to the app.
+    let asked = IOSPlaceQuestion(location: location, languageCode: languageCode)
+    guard asked != unanswered else { return }
     let locale = preferences.language.locale
     placeNameTask?.cancel()
     placeNameTask = Task { [weak self] in
-      guard let self, let name = await self.placeNamer.name(of: location, in: locale),
-        !Task.isCancelled
-      else { return }
+      guard let self else { return }
+      let name = await self.placeNamer.name(of: location, in: locale)
+      guard !Task.isCancelled else { return }
+      guard let name else {
+        self.unanswered = asked
+        return
+      }
       self.store.updatePreferences {
         $0.setPlaceName(name, languageCode: languageCode, for: location)
       }

@@ -95,6 +95,9 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
   /// twice, and each one would otherwise ask for every name again.
   mutating func settlePlaceNames(after previous: IOSPreferences, deviceLanguageCode: String?) {
     guard let location, previous.location != location else { return }
+    // An edit that brings the new place's names with it, as the iPhone's preferences do on the
+    // watch, already settled them.
+    if let names = placeNames, names != previous.placeNames, names.belongs(to: location) { return }
     var names = IOSPlaceNames(latitude: location.latitude, longitude: location.longitude)
     if let old = previous.location, let kept = previous.placeNames, kept.belongs(to: old),
       IOSPlaceNames.isSameNamedPlace(old, location)
@@ -105,6 +108,15 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
       names.names[deviceLanguageCode] = name
     }
     placeNames = names
+  }
+
+  /// Files the saved name under the device's language for a place saved before names were
+  /// kept, so a language the geocoder already answered in asks for nothing.
+  mutating func seedPlaceNames(deviceLanguageCode: String?) {
+    guard let location, placeNames?.belongs(to: location) != true, let deviceLanguageCode,
+      let name = location.name
+    else { return }
+    setPlaceName(name, languageCode: deviceLanguageCode, for: location)
   }
 
   /// Keeps `name` for `location` in a language. A name that arrives after the person chose

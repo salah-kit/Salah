@@ -39,6 +39,28 @@ struct CoreStoreTests {
     #expect(restored.schedule != nil)
   }
 
+  /// The store settles a place's names with every edit: a new place files the geocoder's
+  /// answer, and whole preferences arriving from the iPhone keep the names they carry.
+  @Test func theStoreKeepsThePlacesNamesWithItsLocation() throws {
+    let store = IOSAppStore(repository: CoreMemoryPreferences())
+    store.select(location: Self.makkah)
+    let makkah = try #require(Self.makkah.name)
+    #expect(store.preferences.placeNames?.names.values.contains(makkah) == true)
+    #expect(store.preferences.placeNames?.belongs(to: Self.makkah) == true)
+
+    var sent = store.preferences
+    sent.language = .arabic
+    sent.location?.latitude += 0.25
+    let moved = try #require(sent.location)
+    sent.placeNames = IOSPlaceNames(
+      latitude: moved.latitude, longitude: moved.longitude, names: ["ar": "مكة المكرمة"])
+    let watch = IOSAppStore(repository: CoreMemoryPreferences())
+    watch.select(location: Self.makkah)
+    watch.updatePreferences { $0 = sent }
+    #expect(watch.preferences.placeNames == sent.placeNames)
+    #expect(watch.settings?.location.name == "مكة المكرمة")
+  }
+
   @Test func fridayToggleEditsTheSameSettingsTheNamedEventUses() throws {
     let repository = CoreMemoryPreferences()
     let store = IOSAppStore(repository: repository)
