@@ -62,6 +62,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The App Group each app shares with its own extensions is
+  `group.io.github.salah-kit.Salah.shared` on every platform: the widgets on Mac, iPhone
+  and iPad, the Top Shelf on Apple TV and the complications on Apple Watch. The Mac,
+  Apple TV and Apple Watch apps write what their extensions read again when they next
+  open. The iPhone and iPad app keeps its preferences in that container too, so an iPhone
+  or iPad set up with a build from an earlier commit starts at setup again.
 - The app icon is the design system's: a gold arch and crescent on the evening sky, with
   dark and tinted versions for macOS's icon styles.
 - Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first

@@ -169,7 +169,7 @@ final class AlertSettingsUITests: XCTestCase {
 /// What Salah publishes in its App Group, read as the widget extension reads it: the
 /// group's own storage, the JSON `SharedValue` saves. Only the fields the tests need.
 nonisolated enum AppGroup {
-  static let identifier = "group.io.github.salah-kit.Salah"
+  static let identifier = "group.io.github.salah-kit.Salah.shared"
 
   /// What's playing (`SalahPlayback` in Shared/SalahPlayback.swift).
   struct Playback: Decodable, Sendable {

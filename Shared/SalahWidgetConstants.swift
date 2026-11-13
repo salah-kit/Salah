@@ -15,7 +15,7 @@ nonisolated enum SalahWidgetConstants {
   /// Enable this App Group on BOTH targets (Signing & Capabilities ▸ App Groups):
   /// - Salah
   /// - SalahWidgetsExtension
-  static let appGroupID = "group.io.github.salah-kit.Salah"
+  static let appGroupID = "group.io.github.salah-kit.Salah.shared"
 
   static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
   /// The settings mirror (`SalahSettings`). The version is in the key: a change to the
