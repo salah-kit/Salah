@@ -99,11 +99,33 @@ extension XCTestCase {
   func reveal(_ target: XCUIElement, in app: XCUIApplication) {
     for _ in 0..<5 where !target.isHittable {
       swipe(up: true, alongside: target, in: app)
+      waitUntilStill(target)
     }
     // A row scrolled under a navigation bar still reports itself hittable, but a tap at its
     // middle reaches the bar or the status bar above it.
     for _ in 0..<3 where isUnderNavigationBar(target, in: app) {
       swipe(up: false, alongside: target, in: app)
+      waitUntilStill(target)
+    }
+  }
+
+  /// Waits until a row a swipe has moved stops moving: until two readings of its frame, a
+  /// quarter of a second apart, agree, for at most twelve readings. A row the swipe hasn't
+  /// brought into the list yet gets half a second to appear first.
+  ///
+  /// Asked whether a row can be hit while its list is still settling, XCTest can fail to find a
+  /// point to hit, and it records that as the test's failure rather than answering no. A slow
+  /// simulator can still be scrolling when the swipe returns.
+  @MainActor
+  private func waitUntilStill(_ target: XCUIElement) {
+    guard target.exists || target.waitForExistence(timeout: 0.5) else { return }
+    var last = target.frame
+    for _ in 0..<12 {
+      Thread.sleep(forTimeInterval: 0.25)
+      guard target.exists else { return }
+      let now = target.frame
+      if now == last { return }
+      last = now
     }
   }
 
