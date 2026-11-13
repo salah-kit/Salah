@@ -46,7 +46,7 @@ nonisolated enum IOSWidgetSample {
 /// The extension computes the schedule itself from canonical mirrored settings.
 struct IOSPrayerWidgetProvider: TimelineProvider {
   private static let logger = Logger(
-    subsystem: "io.github.salah-kit.Salah.iOS.Widgets", category: "provider")
+    subsystem: "com.omarkhaled.salah.iOS.Widgets", category: "provider")
 
   /// What a redacted widget is drawn from before its first timeline: the sample's layout.
   func placeholder(in context: Context) -> SalahWidgetEntry { IOSWidgetSample.entry() }
