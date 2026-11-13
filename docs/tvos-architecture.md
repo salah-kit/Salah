@@ -36,7 +36,7 @@ a location: this Apple TV's, found once with When In Use permission (Allow Once 
 because an Apple TV doesn't move), or a city from Apple Maps search, which needs no
 permission. The calculation method follows the country, as on iOS.
 
-The app mirrors its `SalahSettings` into the App Group `group.io.github.salah-kit.Salah`
+The app mirrors its `SalahSettings` into the App Group `group.io.github.salah-kit.Salah.shared`
 through SalahWidgets' `SharedValue`, and asks the system to reload the Top Shelf when the
 mirror, the next prayer, the day or the time of day changes. The extension builds a
 snapshot for the moment the system asks, draws three inset banners (the next prayer, today's prayers and the room

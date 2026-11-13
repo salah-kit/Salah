@@ -45,7 +45,7 @@ match `project.yml`.
 compile: the settings the app mirrors for the widget (`SalahSettings`), what's playing
 (`SalahPlayback`), Salah's prayer source, the display model the widget and the menu bar
 draw from (`SalahDisplay`), the widget's timeline, and the palette and views. The two share
-the App Group `group.io.github.salah-kit.Salah`. Prayer times, the schedule, widget
+the App Group `group.io.github.salah-kit.Salah.shared`. Prayer times, the schedule, widget
 timelines, alerts and the UI components come from
 [SalahKit](https://github.com/salah-kit/SalahKit), through its public API only.
 
@@ -187,7 +187,7 @@ the system controls when it runs.
 
 Simulator builds and journeys need no paid Apple Developer membership or provisioning
 profile. Install a tvOS 26 or later simulator runtime through Xcode's Components settings.
-The app and its Top Shelf extension share the App Group `group.io.github.salah-kit.Salah`;
+The app and its Top Shelf extension share the App Group `group.io.github.salah-kit.Salah.shared`;
 both entitlements are generated from `project.yml`. Run the shared CI entry point from the
 repository root:
 
@@ -237,7 +237,7 @@ The Apple Watch app is the iPhone app's companion: the `SalahIOS` scheme builds 
 it in the iPhone app, and the `SalahWatch` scheme builds and runs it on its own. Simulator
 builds and journeys need no paid Apple Developer membership or provisioning profile. Install
 a watchOS 26 or later simulator runtime through Xcode's Components settings. The app and its
-complications share the App Group `group.io.github.salah-kit.Salah` on the watch; both
+complications share the App Group `group.io.github.salah-kit.Salah.shared` on the watch; both
 entitlements are generated from `project.yml`. Run the shared CI entry point from the
 repository root:
 

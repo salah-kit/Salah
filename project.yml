@@ -486,7 +486,7 @@ targets:
       properties:
         com.apple.developer.usernotifications.time-sensitive: true
         com.apple.security.application-groups:
-          - group.io.github.salah-kit.Salah
+          - group.io.github.salah-kit.Salah.shared
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: Salah
@@ -645,7 +645,7 @@ targets:
       path: SalahTV/SalahTV.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.io.github.salah-kit.Salah
+          - group.io.github.salah-kit.Salah.shared
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
@@ -682,7 +682,7 @@ targets:
       path: SalahTVTopShelf/SalahTVTopShelf.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.io.github.salah-kit.Salah
+          - group.io.github.salah-kit.Salah.shared
     settings:
       base:
         APPLICATION_EXTENSION_API_ONLY: YES
@@ -810,7 +810,7 @@ targets:
       path: SalahWatch/SalahWatch.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.io.github.salah-kit.Salah
+          - group.io.github.salah-kit.Salah.shared
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: Salah
@@ -856,7 +856,7 @@ targets:
       path: SalahWatchWidgets/SalahWatchWidgets.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.io.github.salah-kit.Salah
+          - group.io.github.salah-kit.Salah.shared
     settings:
       base:
         APPLICATION_EXTENSION_API_ONLY: YES

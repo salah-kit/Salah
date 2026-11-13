@@ -69,7 +69,7 @@ with open(sys.argv[1], "rb") as source:
     entitlements = plistlib.load(source)
 if entitlements.get("com.apple.developer.usernotifications.time-sensitive") is not True:
     sys.exit("The built app is missing its Time Sensitive notification entitlement.")
-if "group.io.github.salah-kit.Salah" not in entitlements.get("com.apple.security.application-groups", []):
+if "group.io.github.salah-kit.Salah.shared" not in entitlements.get("com.apple.security.application-groups", []):
     sys.exit("The built app is missing its shared App Group entitlement.")
 PY
 
