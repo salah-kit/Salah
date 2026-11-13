@@ -9,19 +9,58 @@ import Testing
 struct IdentityTests {
   init() { TestEnvironment.configure() }
 
-  /// Each target's entitlements grant exactly the App Group the shared store opens, so
-  /// the widget reads what the app writes.
-  @Test(arguments: [
-    "Salah/Salah.entitlements", "SalahWidgetsExtension/SalahWidgetsExtension.entitlements",
-  ])
-  func entitlementsGrantTheSharedAppGroup(_ path: String) throws {
-    let url = BaselineStore.repositoryRoot.appending(path: path)
-    let entitlements =
-      try PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil)
-      as? [String: Any]
-    let groups = entitlements?["com.apple.security.application-groups"] as? [String]
-    #expect(groups == [SalahWidgetConstants.appGroupID])
+  /// The targets that open the App Group: each app, its extensions, and the Mac test
+  /// processes that read what the app publishes.
+  nonisolated static let targetsInTheAppGroup = [
+    "Salah", "SalahWidgetsExtension", "SalahStopHarness", "SalahUITests",
+    "SalahIOS", "SalahIOSWidgets", "SalahTV", "SalahTVTopShelf",
+    "SalahWatch", "SalahWatchWidgets",
+  ]
+
+  /// Each of them takes its App Group from the one build setting, in its entitlements and
+  /// in the Info.plist key the code reads, so the processes of a build always open the same
+  /// group: the widget reads what the app writes.
+  @Test(arguments: targetsInTheAppGroup)
+  func targetTakesItsAppGroupFromTheBuild(_ target: String) throws {
+    let folder = BaselineStore.repositoryRoot.appending(path: target)
+    let entitlements = try Self.propertyList(folder.appending(path: "\(target).entitlements"))
+    #expect(
+      entitlements["com.apple.security.application-groups"] as? [String]
+        == ["$(APP_GROUP_IDENTIFIER)"])
+    let info = try Self.propertyList(folder.appending(path: "Info.plist"))
+    #expect(info["AppGroupIdentifier"] as? String == "$(APP_GROUP_IDENTIFIER)")
+  }
+
+  /// The test above leaves out no target that has entitlements.
+  @Test func everyTargetWithEntitlementsIsChecked() throws {
+    let root = BaselineStore.repositoryRoot
+    let folders = try FileManager.default.contentsOfDirectory(
+      at: root, includingPropertiesForKeys: nil)
+    let withEntitlements = folders.map(\.lastPathComponent).filter {
+      FileManager.default.fileExists(atPath: root.appending(path: "\($0)/\($0).entitlements").path)
+    }
+    #expect(Set(withEntitlements) == Set(Self.targetsInTheAppGroup))
+  }
+
+  /// Salah's own identifiers are the build's defaults, the ones the scripts pin, and the
+  /// App Group a process without a build's Info.plist opens, as these tests' runner does.
+  @Test func salahsOwnIdentifiersAreTheDefaults() throws {
+    let root = BaselineStore.repositoryRoot
     #expect(SalahWidgetConstants.appGroupID == "group.io.github.salah-kit.Salah.shared")
+    let settings = try String(
+      contentsOf: root.appending(path: "Config/Shared.xcconfig"), encoding: .utf8)
+    #expect(settings.contains("\nAPP_BUNDLE_IDENTIFIER = io.github.salah-kit.Salah\n"))
+    #expect(settings.contains("\nAPP_GROUP_IDENTIFIER = \(SalahWidgetConstants.appGroupID)\n"))
+    let scripts = try String(
+      contentsOf: root.appending(path: "scripts/identity.sh"), encoding: .utf8)
+    #expect(scripts.contains("\nbundle_identifier=io.github.salah-kit.Salah\n"))
+    #expect(scripts.contains("\napp_group=\(SalahWidgetConstants.appGroupID)\n"))
+  }
+
+  private static func propertyList(_ url: URL) throws -> [String: Any] {
+    try #require(
+      PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil)
+        as? [String: Any])
   }
 
   /// The names the app and the extension exchange are Salah's own.
@@ -43,10 +82,8 @@ struct IdentityTests {
   /// LaunchServices checks the app's declared schemes before delivering a widget's
   /// Settings link from a sandboxed caller, even when the app is already running.
   @Test func appClaimsTheWidgetsSettingsURLScheme() throws {
-    let url = BaselineStore.repositoryRoot.appending(path: "Salah/Info.plist")
-    let info = try #require(
-      PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil)
-        as? [String: Any])
+    let info = try Self.propertyList(
+      BaselineStore.repositoryRoot.appending(path: "Salah/Info.plist"))
     let urlTypes = try #require(info["CFBundleURLTypes"] as? [[String: Any]])
     let claims = urlTypes.filter {
       ($0["CFBundleURLSchemes"] as? [String])?.contains(SalahWidgetConstants.deepLinkScheme) == true

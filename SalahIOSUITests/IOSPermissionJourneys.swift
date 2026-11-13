@@ -3,6 +3,12 @@ import XCTest
 /// Run each permission journey on a fresh app installation. iOS provides no XCTest
 /// reset for notification authorization; resetting preferences does not reset consent.
 nonisolated final class IOSPermissionJourneys: XCTestCase {
+  /// The app's bundle identifier, under which the Settings app lists it. The build writes it
+  /// into this test bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
+  private static let appBundleIdentifier =
+    Bundle(for: IOSPermissionJourneys.self).object(forInfoDictionaryKey: "AppBundleIdentifier")
+    as? String ?? "io.github.salah-kit.Salah.iOS"
+
   override func setUpWithError() throws { continueAfterFailure = false }
 
   @MainActor
@@ -136,7 +142,7 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
           appsPage.exists || appsPage.waitForExistence(timeout: 10),
           "The measured fallback must reach the Apps list.\n\(settings.debugDescription)")
         captureSystem("System-Settings-Apps-List-For-Salah")
-        tap("io.github.salah-kit.Salah.iOS", in: settings)
+        tap(Self.appBundleIdentifier, in: settings)
       }
       XCTAssertTrue(
         appSettings.exists || appSettings.waitForExistence(timeout: 10),

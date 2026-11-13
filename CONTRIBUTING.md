@@ -79,11 +79,27 @@ No signing team is committed. `Config/Shared.xcconfig` includes your own
 
 ```sh
 cp Config/Local.xcconfig.example Config/Local.xcconfig
-# then set DEVELOPMENT_TEAM = <your team ID> in Config/Local.xcconfig
+# then, in Config/Local.xcconfig:
+#   DEVELOPMENT_TEAM = <your team ID>
+# and, unless that team holds Salah's identifiers, uncomment and fill in:
+#   APP_BUNDLE_IDENTIFIER = <a bundle identifier of your own, like com.yourname.Salah>
+#   APP_GROUP_IDENTIFIER = <an App Group of your own, like group.com.yourname.Salah>
 ```
 
+Apple registers a bundle identifier and an App Group to one team, and the ones in
+`Config/Shared.xcconfig` (the identifiers in the table above) are registered to Salah's
+maintainers' team, so a build signed with another team needs its own. `APP_BUNDLE_IDENTIFIER`
+is the Mac app's; every other target's follows it, as `com.yourname.Salah.iOS` follows
+`com.yourname.Salah`. The build writes `APP_GROUP_IDENTIFIER` into each target's
+entitlements and into the `AppGroupIdentifier` key of its Info.plist, where the code reads
+it (`SalahWidgetConstants.appGroupID`), so an app and its extensions always open the same
+group. Unsigned builds, simulator builds and the unit tests need neither setting, and the
+scripts in `scripts/` build under Salah's own identifiers whatever yours are. The tests
+that sign with your team, the [UI tests](#ui-tests) and the
+[real-app tests](#real-app-tests), need both, like any signed build.
+
 With a team, Xcode signs automatically; add `-allowProvisioningUpdates` to command-line
-builds so it can register the bundle identifiers and the App Group. Sign with a team to
+builds so it can register your bundle identifiers and your App Group. Sign with a team to
 run the app: the App Group it shares with its widget comes from your team's provisioning
 profile.
 
@@ -105,7 +121,7 @@ profile. Simulator apps are signed ad hoc so their App Group entitlements are av
 they are not distribution builds. Install an iOS 26 or later simulator runtime through
 Xcode's Components settings.
 The app's App Group and Time Sensitive notification entitlements are generated from
-its `project.yml` declaration; keep the widget's App Group identifier matching.
+its `project.yml` declaration; the widget's entitlements name the same build setting.
 Run the shared CI entry point from the repository root:
 
 ```sh
@@ -160,8 +176,9 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug 
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on a physical device, configure your team in `Config/Local.xcconfig` and use
-`-allowProvisioningUpdates`. Enable the existing App Group for the app and extension.
+To run on a physical device, set your team and your own identifiers in
+`Config/Local.xcconfig` ([Signing](#signing)) and use `-allowProvisioningUpdates`, which
+registers them and enables your App Group for the app and extension.
 App Store distribution needs a paid membership; device notification delivery, compass
 accuracy and system scheduling should also be checked on the intended device. Follow
 the steps in [#65](https://github.com/salah-kit/Salah/issues/65), or
@@ -216,8 +233,9 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahTV -configuration Debug \
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on an Apple TV, configure your team in `Config/Local.xcconfig`, use
-`-allowProvisioningUpdates`, and enable the App Group for the app and the extension.
+To run on an Apple TV, set your team and your own identifiers in `Config/Local.xcconfig`
+([Signing](#signing)) and use `-allowProvisioningUpdates`, which registers them and enables
+your App Group for the app and the extension.
 Sound through a television, the screen saver and the Siri Remote need a real device:
 follow [#69](https://github.com/salah-kit/Salah/issues/69) and record the commit,
 the Apple TV model, the tvOS version and what you observed. The
@@ -291,9 +309,10 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahWatch -configuration Debu
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on an Apple Watch, configure your team in `Config/Local.xcconfig`, run the `SalahIOS`
-scheme on the paired iPhone with `-allowProvisioningUpdates`, and enable the App Group for
-the watch app and its complications. The compass, sound through the watch's speaker,
+To run on an Apple Watch, set your team and your own identifiers in `Config/Local.xcconfig`
+([Signing](#signing)), and run the `SalahIOS` scheme on the paired iPhone with
+`-allowProvisioningUpdates`, which registers them and enables your App Group for the watch
+app and its complications. The compass, sound through the watch's speaker,
 notifications forwarded from the iPhone and complications on a real face need a watch:
 follow [#77](https://github.com/salah-kit/Salah/issues/77) and record the commit, the watch
 and iPhone models, their system versions and what you observed. The [watchOS validation
@@ -337,7 +356,8 @@ your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). Wh
 team has a wildcard provisioning profile, Xcode signs the runner with it, and that profile
 grants no App Group, so macOS would keep the runner out of the group and those two tests
 couldn't read it ([#82](https://github.com/salah-kit/Salah/issues/82)). The runner builds
-and launches the app, so it needs your team in `Config/Local.xcconfig`. UI testing on
+and launches the app, so it needs your team in `Config/Local.xcconfig`, and your own
+identifiers there unless your team holds Salah's ([Signing](#signing)). UI testing on
 macOS runs in Automation Mode; the first time, macOS may ask an administrator to allow it
 (`automationmodetool` shows whether it will). A full run takes about 15 minutes: the two
 alert tests take about five, and `VoiceOverSpeechUITests`, which turns VoiceOver on
@@ -427,9 +447,9 @@ xcodebuild test -project Salah.xcodeproj -scheme SalahRoundTripTests \
   -destination 'platform=macOS' -allowProvisioningUpdates
 ```
 
-They need your team, like the UI tests, and CI only builds them. The app runs muted and
-with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never asks for
-notification permission or sends Music an Apple Event, and with
+They need your team and identifiers, like the UI tests, and CI only builds them. The app
+runs muted and with `-salah.debug.withoutSystemPrompts` (Debug builds only), so it never
+asks for notification permission or sends Music an Apple Event, and with
 `-salah.debug.scratchPreferences` and `-salah.debug.withoutSystemNotifications`, so this
 Mac's own Salah preferences and notifications are untouched.
 Like the UI tests, they quit a Salah you have running, and leave it quit, so only the

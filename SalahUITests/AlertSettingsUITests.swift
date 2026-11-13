@@ -110,8 +110,9 @@ final class AlertSettingsUITests: XCTestCase {
     XCTAssertTrue(
       app.salahWindow.waitForExistence(timeout: 30), app.windows.debugDescription)
     XCTAssertEqual(
-      NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
-        .count, 1, "Only the launched app runs, so only its settings can alert")
+      NSRunningApplication.runningApplications(
+        withBundleIdentifier: LifecycleUITests.bundleIdentifier
+      ).count, 1, "Only the launched app runs, so only its settings can alert")
     return app
   }
 
@@ -169,7 +170,11 @@ final class AlertSettingsUITests: XCTestCase {
 /// What Salah publishes in its App Group, read as the widget extension reads it: the
 /// group's own storage, the JSON `SharedValue` saves. Only the fields the tests need.
 nonisolated enum AppGroup {
-  static let identifier = "group.io.github.salah-kit.Salah.shared"
+  /// The group the build under test was signed into, which the build writes into the test
+  /// bundle's Info.plist (`APP_GROUP_IDENTIFIER`).
+  static let identifier =
+    Bundle(for: AlertSettingsUITests.self).object(forInfoDictionaryKey: "AppGroupIdentifier")
+    as? String ?? "group.io.github.salah-kit.Salah.shared"
 
   /// What's playing (`SalahPlayback` in Shared/SalahPlayback.swift).
   struct Playback: Decodable, Sendable {

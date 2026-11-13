@@ -164,7 +164,7 @@ final class SalahUITests: XCTestCase {
     let app = launchQuietly()
     let link = try XCTUnwrap(URL(string: "salah://settings"))
     let running = NSRunningApplication.runningApplications(
-      withBundleIdentifier: "io.github.salah-kit.Salah"
+      withBundleIdentifier: LifecycleUITests.bundleIdentifier
     )
     .filter { !$0.isTerminated }
     XCTAssertEqual(running.count, 1)
@@ -175,7 +175,7 @@ final class SalahUITests: XCTestCase {
     // Check the processed app bundle, not just the source plist. XCUIApplication.open
     // launches the app directly and does not prove that LaunchServices accepts its scheme.
     let bundle = try XCTUnwrap(Bundle(url: applicationURL))
-    XCTAssertEqual(bundle.bundleIdentifier, "io.github.salah-kit.Salah")
+    XCTAssertEqual(bundle.bundleIdentifier, LifecycleUITests.bundleIdentifier)
     let urlTypes = try XCTUnwrap(
       bundle.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]])
     let claim = try XCTUnwrap(
@@ -218,8 +218,10 @@ final class SalahUITests: XCTestCase {
     XCTAssertTrue(app.menuItems["About Salah"].exists, app.menuBars.debugDescription)
     XCTAssertFalse(original.isTerminated)
     XCTAssertEqual(
-      NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.salah-kit.Salah")
-        .filter { !$0.isTerminated }.map(\.processIdentifier), [originalPID])
+      NSRunningApplication.runningApplications(
+        withBundleIdentifier: LifecycleUITests.bundleIdentifier
+      )
+      .filter { !$0.isTerminated }.map(\.processIdentifier), [originalPID])
   }
 
   /// The About panel names Salah and credits its authors.

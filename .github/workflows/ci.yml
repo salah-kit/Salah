@@ -32,11 +32,16 @@ jobs:
       # The app embeds the widget extension, so building the app builds both.
       - name: Build the app and the widget extension, unsigned
         run: |
+          source scripts/identity.sh
           for configuration in Debug Release; do
             xcodebuild build -project Salah.xcodeproj -scheme Salah \
               -configuration "$configuration" -destination 'platform=macOS' \
               -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
             test -d ".derived/Build/Products/$configuration/Salah.app/Contents/PlugIns/SalahWidgetsExtension.appex"
+            # Both bundles carry Salah's identifier and name the App Group their code reads.
+            python3 scripts/check-identity.py "$app_group" \
+              ".derived/Build/Products/$configuration/Salah.app=$bundle_identifier" \
+              ".derived/Build/Products/$configuration/Salah.app/Contents/PlugIns/SalahWidgetsExtension.appex=$bundle_identifier.Widgets"
             # actool succeeds silently without the icon, so check the app carries it.
             test "$(plutil -extract CFBundleIconName raw -o - \
               ".derived/Build/Products/$configuration/Salah.app/Contents/Info.plist")" = Salah
@@ -76,8 +81,12 @@ jobs:
       - name: Build the real-app tests
         if: ${{ !cancelled() }}
         run: |
+          source scripts/identity.sh
           xcodebuild build-for-testing -project Salah.xcodeproj -scheme SalahRoundTripTests \
             -destination 'platform=macOS' -derivedDataPath .derived CODE_SIGNING_ALLOWED=NO
+          # The harness stands in for the widget extension, in the same App Group.
+          python3 scripts/check-identity.py "$app_group" \
+            ".derived/Build/Products/Debug/SalahStopHarness.app=$bundle_identifier.StopHarness"
 
       # The directory's name starts with a dot, so its files only upload with
       # include-hidden-files. It's absent when no baseline failed.
@@ -218,7 +227,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Test the simulator selection
+      - name: Test the scripts' helpers
         run: python3 -B -m unittest discover -s scripts
 
       - name: swift format lint

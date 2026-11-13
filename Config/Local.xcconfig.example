@@ -1,2 +1,9 @@
 // Copy to Local.xcconfig (gitignored) and fill in your Apple Developer team ID.
 DEVELOPMENT_TEAM = YOURTEAMID
+
+// Apple registers a bundle identifier and an App Group to one team, and Salah's own are
+// registered to its maintainers' team. To sign with another team, uncomment these two
+// lines and name identifiers of your own: the other targets' bundle identifiers follow
+// APP_BUNDLE_IDENTIFIER. Unsigned and simulator builds need neither line.
+// APP_BUNDLE_IDENTIFIER = com.yourname.Salah
+// APP_GROUP_IDENTIFIER = group.com.yourname.Salah
