@@ -297,7 +297,7 @@ nonisolated final class IOSAudioSessionGate: Sendable {
     },
     later: { work in queue.async(execute: work) })
 
-  private static let queue = DispatchQueue(label: "io.github.salah-kit.Salah.audio-session")
+  private static let queue = DispatchQueue(label: "com.omarkhaled.salah.audio-session")
   private let setActive: @Sendable (Bool) throws -> Void
   private let later: @Sendable (@escaping @Sendable () -> Void) -> Void
   /// Guards the count only, so asking for an ending never waits.
