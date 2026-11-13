@@ -94,6 +94,7 @@ for permission_test in \
   testNotificationDeniedKeepsManualCityAndCompletesSetup \
   testLocationAndNotificationsAllowCompleteSetup \
   testSettingsPermissionGrantSchedulesSavedAlertsImmediately \
+  testSilentSetupGoesBackAndAsksWhenAnAlertIsTurnedOn \
   testDeniedNotificationsRecoverFromSystemSettings; do
   xcrun simctl uninstall "$simulator_id" "$bundle_identifier.iOS"
   xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahIOSUITests \

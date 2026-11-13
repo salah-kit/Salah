@@ -397,6 +397,60 @@ nonisolated enum IOSCalculationMethod: Codable, Hashable, Sendable {
 }
 
 /// Notification and foreground sounds are independent. A custom value names a managed file.
+/// What happens at each prayer's time, chosen once for every prayer during setup.
+nonisolated enum IOSAlertMode: String, CaseIterable, Sendable {
+  /// A notification that plays a short adhan clip.
+  case adhan
+  /// A notification with the system's usual sound.
+  case notification
+  /// No alerts or reminders at all.
+  case silent
+
+  var symbol: String {
+    switch self {
+    case .adhan: "speaker.wave.2.fill"
+    case .notification: "bell.fill"
+    case .silent: "bell.slash.fill"
+    }
+  }
+}
+
+nonisolated extension IOSPreferences {
+  /// Sets every prayer's alert to `mode`. Adhan and Notification alert at the prayers that do
+  /// by default, each with its sound; Silent turns every alert and reminder off. Minutes and
+  /// reminder sounds stay as they were, for when the person turns one back on.
+  mutating func apply(_ mode: IOSAlertMode) {
+    func applied(_ value: IOSPrayerAlertSettings, kind: PrayerKind) -> IOSPrayerAlertSettings {
+      var value = value
+      let defaults = IOSPrayerAlertSettings.defaults(for: kind)
+      switch mode {
+      case .adhan:
+        value.atTime = defaults.atTime
+        value.sound = defaults.sound
+      case .notification:
+        value.atTime = defaults.atTime
+        value.sound = .system
+      case .silent:
+        value.atTime = false
+        value.beforeEnabled = false
+        value.afterEnabled = false
+      }
+      return value
+    }
+    for kind in PrayerKind.allCases {
+      notifications[kind] = applied(alerts(for: kind), kind: kind)
+    }
+    jumuahAlerts = applied(jumuahAlerts, kind: .dhuhr)
+  }
+
+  /// Whether any prayer alerts or reminds, so there's something to ask permission for.
+  var hasEnabledAlerts: Bool {
+    let all =
+      PrayerKind.allCases.map { alerts(for: $0) } + (jumuahOverrideEnabled ? [jumuahAlerts] : [])
+    return all.contains { $0.atTime || $0.beforeEnabled || $0.afterEnabled }
+  }
+}
+
 nonisolated enum IOSSound: Codable, Hashable, Sendable {
   case adhan
   case fajrAdhan

@@ -10,143 +10,174 @@ nonisolated enum IOSOnboardingPresentation: Equatable, Sendable {
 
 /// First-run decisions share the production settings and platform services.
 /// Native permission requests are made only after their explanation is visible.
+///
+/// Each step is a page pushed on one navigation stack, so Back and the edge swipe return to
+/// the step before with its choice as it was left.
 struct IOSOnboardingView: View {
   var presentation: IOSOnboardingPresentation = .fullScreen
 
   @Environment(IOSAppStore.self) private var store
   @Environment(IOSLocationService.self) private var locationService
   @Environment(IOSNotificationService.self) private var notifications
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.dynamicTypeSize) private var typeSize
   @ScaledMetric(relativeTo: .body) private var methodRowHeight: CGFloat = 66
-  @State private var path: [Destination] = []
+  @State private var path: [Route] = []
   @State private var waitingForLocation = false
   @State private var requestingNotifications = false
   @State private var notificationDenied = false
   @State private var showCalculation = false
+  @State private var alertMode = IOSAlertMode.notification
 
-  private enum Destination: Hashable { case city }
+  private enum Route: Hashable {
+    case step(IOSOnboardingStep)
+    case city
+  }
+
+  /// The step on screen: the last one pushed, or Welcome at the root.
+  private var current: IOSOnboardingStep {
+    for route in path.reversed() {
+      if case .step(let step) = route { return step }
+    }
+    return .welcome
+  }
 
   var body: some View {
     NavigationStack(path: $path) {
-      GeometryReader { geometry in
-        ScrollView {
-          VStack(spacing: 14) {
-            IOSOnboardingArtwork(step: store.onboardingStep, readyKind: nextPrayer?.kind)
-              .accessibilityHidden(true)
-            Text(title)
-              .font(.title.bold())
-              .multilineTextAlignment(.center)
-              .fixedSize(horizontal: false, vertical: true)
-              .accessibilityAddTraits(.isHeader)
-              .accessibilityIdentifier("onboarding.title")
-            Text(detail)
-              .font(.body)
-              .foregroundStyle(IOSTheme.labelSecondary)
-              .multilineTextAlignment(.center)
-              .fixedSize(horizontal: false, vertical: true)
-              .accessibilityIdentifier("onboarding.detail")
-            if store.onboardingStep == .calculation { calculationOptions }
-            if waitingForLocation { locationProgress }
-            Spacer(minLength: 0)
-            pageIndicator
-            actions
-          }
-          .frame(maxWidth: presentation == .formSheet ? 322 : 400)
-          .padding(.horizontal, presentation == .formSheet ? 24 : 40)
-          .padding(
-            .top,
-            presentation == .formSheet ? 70 : min(110, max(24, geometry.size.height * 0.142))
-          )
-          .padding(
-            .bottom,
-            presentation == .formSheet ? 54 : (store.onboardingStep == .calculation ? 19 : 32)
-          )
-          .frame(maxWidth: .infinity, minHeight: geometry.size.height)
-        }
-        .scrollIndicators(.hidden)
-      }
-      .background {
-        IOSSkyBackground(
-          phase: .dhuhr, fadeStart: 0.35, fadeEnd: presentation == .formSheet ? 0.8 : 0.75
-        ).ignoresSafeArea()
-      }
-      .toolbar(.hidden, for: .navigationBar)
-      .navigationDestination(for: Destination.self) { destination in
-        switch destination {
-        case .city:
-          IOSLocationSettingsView {
-            // The NavigationStack owns the pop and keyboard transition. Do not put
-            // an onboarding animation into the same commit as removing its city page.
-            waitingForLocation = false
-            store.onboardingStep = .notifications
-            path.removeAll()
-          }
-          .toolbar(.visible, for: .navigationBar)
-        }
-      }
-      .sheet(isPresented: $showCalculation) {
-        NavigationStack {
-          IOSCalculationSettingsView()
-            .toolbar {
-              ToolbarItem(placement: .confirmationAction) {
-                Button(text("Done", "تم"), systemImage: "checkmark") {
-                  showCalculation = false
-                }
-                .labelStyle(.iconOnly)
-                .accessibilityIdentifier("onboarding.calculation.done")
-              }
+      page(.welcome)
+        .navigationDestination(for: Route.self) { route in
+          switch route {
+          case .step(let step): page(step)
+          case .city:
+            IOSLocationSettingsView {
+              // One change replaces the city page with the next step, so Back from there
+              // returns to Location.
+              waitingForLocation = false
+              path = [.step(.location), .step(.notifications)]
             }
+            .toolbar(.visible, for: .navigationBar)
+          }
         }
-      }
-      .onChange(of: notifications.status) { _, status in
-        // Returning from Settings refreshes the live service in IOSAppRuntime.activate().
-        // Recovery must follow that authorization, rather than retain its old local flag.
-        guard notificationDenied, status == .authorized else { return }
-        notificationDenied = false
-        if store.onboardingStep == .notifications { advance(to: .calculation) }
-      }
-      .onChange(of: locationService.authorizationStatus) { _, status in
-        guard waitingForLocation else { return }
-        if status == .denied || status == .restricted { chooseCity() }
-      }
-      .onChange(of: store.preferences.location) { _, location in
-        guard waitingForLocation, location != nil else { return }
-        waitingForLocation = false
-        advance(to: .notifications)
-      }
-      .onChange(of: locationService.isLocating) { _, isLocating in
-        guard waitingForLocation, !isLocating, store.preferences.location != nil,
-          locationService.errorMessage == nil
-        else { return }
-        waitingForLocation = false
-        advance(to: .notifications)
-      }
+        .sheet(isPresented: $showCalculation) {
+          NavigationStack {
+            IOSCalculationSettingsView()
+              .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                  Button(text("Done", "تم"), systemImage: "checkmark") {
+                    showCalculation = false
+                  }
+                  .labelStyle(.iconOnly)
+                  .accessibilityIdentifier("onboarding.calculation.done")
+                }
+              }
+          }
+        }
+        .onChange(of: path) { store.onboardingStep = current }
+        .onChange(of: notifications.status) { _, status in
+          // Returning from Settings refreshes the live service in IOSAppRuntime.activate().
+          // Recovery must follow that authorization, rather than retain its old local flag.
+          guard notificationDenied, status == .authorized else { return }
+          notificationDenied = false
+          if current == .notifications { advance(to: .reminders) }
+        }
+        .onChange(of: locationService.authorizationStatus) { _, status in
+          guard waitingForLocation else { return }
+          if status == .denied || status == .restricted { chooseCity() }
+        }
+        .onChange(of: store.preferences.location) { _, location in
+          guard waitingForLocation, location != nil else { return }
+          waitingForLocation = false
+          if current == .location { advance(to: .notifications) }
+        }
+        .onChange(of: locationService.isLocating) { _, isLocating in
+          guard waitingForLocation, !isLocating, store.preferences.location != nil,
+            locationService.errorMessage == nil
+          else { return }
+          waitingForLocation = false
+          if current == .location { advance(to: .notifications) }
+        }
     }
     .accessibilityIdentifier(presentation == .formSheet ? "onboarding.formSheet" : "onboarding")
   }
 
-  private var title: String {
-    if notificationDenied {
+  private func page(_ step: IOSOnboardingStep) -> some View {
+    GeometryReader { geometry in
+      ScrollView {
+        VStack(spacing: 14) {
+          IOSOnboardingArtwork(step: step, readyKind: nextPrayer?.kind)
+            .accessibilityHidden(true)
+          Text(title(step))
+            .font(.title.bold())
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityIdentifier("onboarding.title")
+          Text(detail(step))
+            .font(.body)
+            .foregroundStyle(IOSTheme.labelSecondary)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("onboarding.detail")
+          switch step {
+          case .notifications where !notificationDenied: alertModes
+          case .reminders: reminderKinds
+          case .calculation: calculationOptions
+          case .location where waitingForLocation: locationProgress
+          default: EmptyView()
+          }
+          Spacer(minLength: 0)
+          pageIndicator(step)
+          actions(step)
+        }
+        .frame(maxWidth: presentation == .formSheet ? 322 : 400)
+        .padding(.horizontal, presentation == .formSheet ? 24 : 40)
+        .padding(.top, topPadding(step, height: geometry.size.height))
+        .padding(.bottom, presentation == .formSheet ? 54 : (step.hasOptions ? 19 : 32))
+        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+      }
+      .scrollIndicators(.hidden)
+    }
+    .background {
+      IOSSkyBackground(
+        phase: .dhuhr, fadeStart: 0.35, fadeEnd: presentation == .formSheet ? 0.8 : 0.75
+      ).ignoresSafeArea()
+    }
+    // The bar holds only Back; Welcome has nothing to go back to.
+    .toolbar(step == .welcome ? .hidden : .visible, for: .navigationBar)
+    .toolbarBackground(.hidden, for: .navigationBar)
+    .navigationBarTitleDisplayMode(.inline)
+    .accessibilityIdentifier("onboarding.step." + String(describing: step))
+  }
+
+  /// The space the hidden bar left is the bar's own on the later steps.
+  private func topPadding(_ step: IOSOnboardingStep, height: CGFloat) -> CGFloat {
+    if presentation == .formSheet { return step == .welcome ? 70 : 26 }
+    let padding = min(110, max(24, height * 0.142))
+    return step == .welcome ? padding : max(8, padding - 44)
+  }
+
+  private func title(_ step: IOSOnboardingStep) -> String {
+    if step == .notifications, notificationDenied {
       return text("Notifications are off", "التنبيهات متوقفة")
     }
-    switch store.onboardingStep {
+    switch step {
     case .welcome: return text("Prayer times, calm and on time", "أوقات الصلاة، بهدوء وفي موعدها")
     case .location: return text("Times for where you are", "أوقات الصلاة في مكانك")
-    case .notifications: return text("An alert at each prayer", "تنبيه عند كل صلاة")
+    case .notifications:
+      return text("How should Salah alert you?", "كيف تريد أن ينبّهك تطبيق صلاة؟")
+    case .reminders: return text("Reminders before and after", "تذكير قبل الصلاة وبعدها")
     case .calculation: return text("How times are calculated", "طريقة حساب الأوقات")
     case .ready: return text("You’re all set", "كل شيء جاهز")
     }
   }
 
-  private var detail: String {
-    if notificationDenied {
+  private func detail(_ step: IOSOnboardingStep) -> String {
+    if step == .notifications, notificationDenied {
       return text(
         "Your prayer alerts are saved. Turn on notifications in Settings to receive them. Focus and Scheduled Summary may delay delivery.",
         "تم حفظ تنبيهات الصلاة. فعّل التنبيهات من الإعدادات لاستلامها. قد يؤخر التركيز والملخص المجدول وصولها."
       )
     }
-    switch store.onboardingStep {
+    switch step {
     case .welcome:
       return text(
         "Salah shows today’s prayers, counts down to the next, and reminds you when it’s time.",
@@ -158,19 +189,22 @@ struct IOSOnboardingView: View {
       )
     case .notifications:
       return text(
-        "Choose prayers, alert sounds and reminders. Notifications play a short clip; open Salah for the full adhan.",
-        "اختر الصلوات وأصوات التنبيهات والتذكيرات. تُشغّل الإشعارات مقطعًا قصيرًا؛ افتح تطبيق صلاة لسماع الأذان كاملًا."
-      )
+        "Choose what happens at prayer time. You can change it anytime in Settings.",
+        "اختر ما يحدث عند دخول وقت الصلاة. يمكنك تغييره في أي وقت من الإعدادات.")
+    case .reminders:
+      return text(
+        "Each prayer can also remind you before it begins and after it.",
+        "إلى جانب التنبيه عند دخول الوقت، يمكن لكل صلاة أن تذكّرك قبلها وبعدها، ولكلٍّ صوته.")
     case .calculation: return calculationDetail
     case .ready: return readyDetail
     }
   }
 
-  private var pageIndicator: some View {
+  private func pageIndicator(_ current: IOSOnboardingStep) -> some View {
     HStack(spacing: 8) {
       ForEach(IOSOnboardingStep.allCases, id: \.rawValue) { step in
         Circle()
-          .fill(step == store.onboardingStep ? IOSTheme.labelPrimary : IOSTheme.labelQuaternary)
+          .fill(step == current ? IOSTheme.labelPrimary : IOSTheme.labelQuaternary)
           .frame(width: 7, height: 7)
       }
     }
@@ -180,14 +214,36 @@ struct IOSOnboardingView: View {
       String(
         format: text("Step %lld of %lld", "الخطوة %lld من %lld"),
         locale: store.locale,
-        Int64(store.onboardingStep.rawValue + 1), Int64(IOSOnboardingStep.allCases.count))
+        Int64(current.rawValue + 1), Int64(IOSOnboardingStep.allCases.count))
     )
     .accessibilityIdentifier("onboarding.progress")
   }
 
-  @ViewBuilder private var actions: some View {
+  @ViewBuilder private func actions(_ step: IOSOnboardingStep) -> some View {
     VStack(spacing: 4) {
-      if notificationDenied {
+      switch step {
+      case .welcome:
+        primary(text("Continue", "متابعة"), id: "onboarding.continue") {
+          advance(to: .location)
+        }
+      case .location:
+        primary(
+          text("Allow Location Access", "السماح بالوصول إلى الموقع"),
+          id: "onboarding.location.allow", disabled: locationService.isLocating
+        ) {
+          waitingForLocation = true
+          store.updatePreferences { $0.useCurrentLocation = true }
+          locationService.requestLocation()
+          if locationService.authorizationStatus == .denied
+            || locationService.authorizationStatus == .restricted
+          {
+            chooseCity()
+          }
+        }
+        secondary(text("Choose a City", "اختيار مدينة"), id: "onboarding.location.chooseCity") {
+          chooseCity()
+        }
+      case .notifications where notificationDenied:
         primary(text("Open Settings", "فتح الإعدادات"), id: "onboarding.notification.openSettings")
         {
           openNotificationSettings()
@@ -197,47 +253,32 @@ struct IOSOnboardingView: View {
           id: "onboarding.notification.continueWithout"
         ) {
           notificationDenied = false
+          advance(to: .reminders)
+        }
+      case .notifications where alertMode == .silent:
+        // Silent sends nothing, so it asks for no permission.
+        primary(text("Continue", "متابعة"), id: "onboarding.notification.continue") {
+          store.updatePreferences { $0.apply(alertMode) }
+          advance(to: .reminders)
+        }
+      case .notifications:
+        primary(
+          text("Allow Notifications", "السماح بالتنبيهات"),
+          id: "onboarding.notification.allow", disabled: requestingNotifications
+        ) { requestNotifications() }
+      case .reminders:
+        primary(text("Continue", "متابعة"), id: "onboarding.reminders.continue") {
           advance(to: .calculation)
         }
-      } else {
-        switch store.onboardingStep {
-        case .welcome:
-          primary(text("Continue", "متابعة"), id: "onboarding.continue") {
-            advance(to: .location)
-          }
-        case .location:
-          primary(
-            text("Allow Location Access", "السماح بالوصول إلى الموقع"),
-            id: "onboarding.location.allow", disabled: locationService.isLocating
-          ) {
-            waitingForLocation = true
-            store.updatePreferences { $0.useCurrentLocation = true }
-            locationService.requestLocation()
-            if locationService.authorizationStatus == .denied
-              || locationService.authorizationStatus == .restricted
-            {
-              chooseCity()
-            }
-          }
-          secondary(text("Choose a City", "اختيار مدينة"), id: "onboarding.location.chooseCity") {
-            chooseCity()
-          }
-        case .notifications:
-          primary(
-            text("Allow Notifications", "السماح بالتنبيهات"),
-            id: "onboarding.notification.allow", disabled: requestingNotifications
-          ) { requestNotifications() }
-          secondary(text("Not Now", "ليس الآن"), id: "onboarding.notification.notNow") {
-            advance(to: .calculation)
-          }
-        case .calculation:
-          primary(text("Continue", "متابعة"), id: "onboarding.calculation.continue") {
-            advance(to: .ready)
-          }
-        case .ready:
-          primary(text("Start", "ابدأ"), id: "onboarding.ready.start") {
-            store.completeOnboarding()
-          }
+      case .calculation:
+        primary(text("Continue", "متابعة"), id: "onboarding.calculation.continue") {
+          advance(to: .ready)
+        }
+      case .ready:
+        primary(text("Start", "ابدأ"), id: "onboarding.ready.start") {
+          store.completeOnboarding()
+          // Without a place there's nothing to start with: back to choosing one.
+          if store.needsOnboarding { path = [.step(.location)] }
         }
       }
     }
@@ -287,10 +328,11 @@ struct IOSOnboardingView: View {
     .accessibilityIdentifier("onboarding.location.status")
   }
 
+  /// Pushes the next step. A step already on the stack, reached again after Back, is not
+  /// pushed twice.
   private func advance(to step: IOSOnboardingStep) {
-    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
-      store.onboardingStep = step
-    }
+    guard current != step else { return }
+    path.append(.step(step))
   }
 
   private func chooseCity() {
@@ -302,11 +344,12 @@ struct IOSOnboardingView: View {
 
   private func requestNotifications() {
     requestingNotifications = true
+    store.updatePreferences { $0.apply(alertMode) }
     Task {
       let status = await notifications.requestAuthorization()
       requestingNotifications = false
       if status == .authorized {
-        advance(to: .calculation)
+        if current == .notifications { advance(to: .reminders) }
       } else {
         notificationDenied = true
       }
@@ -384,6 +427,105 @@ extension IOSOnboardingView {
       locale: store.locale, name)
   }
 
+  /// What happens at prayer time. Notification is chosen until the person picks another.
+  private var alertModes: some View {
+    optionCard {
+      ForEach(IOSAlertMode.allCases, id: \.self) { mode in
+        Button {
+          alertMode = mode
+        } label: {
+          optionRow(
+            symbol: mode.symbol, title: alertTitle(mode), detail: alertDetail(mode),
+            selected: alertMode == mode)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(alertMode == mode ? [.isSelected] : [])
+        .accessibilityIdentifier("onboarding.notification.\(mode.rawValue)")
+        if mode != IOSAlertMode.allCases.last { Divider().padding(.leading, 52) }
+      }
+    }
+  }
+
+  private func alertTitle(_ mode: IOSAlertMode) -> String {
+    switch mode {
+    case .adhan: text("Adhan", "الأذان")
+    case .notification: text("Notification", "الإشعار")
+    case .silent: text("Silent", "صامت")
+    }
+  }
+
+  private func alertDetail(_ mode: IOSAlertMode) -> String {
+    switch mode {
+    case .adhan:
+      text("A short adhan clip plays with each alert", "يُشغَّل مقطع قصير من الأذان مع كل تنبيه")
+    case .notification: text("The usual alert sound, no adhan", "صوت التنبيه المعتاد، دون أذان")
+    case .silent:
+      text("No alerts. Check the times in Salah.", "دون تنبيهات. اطّلع على الأوقات في تطبيق صلاة.")
+    }
+  }
+
+  /// The three moments a prayer can alert at. Nothing here is chosen: Settings has the controls.
+  private var reminderKinds: some View {
+    VStack(spacing: 10) {
+      optionCard {
+        optionRow(
+          symbol: "alarm", title: text("Before the prayer", "قبل الصلاة"),
+          detail: text("A reminder minutes before it begins", "تذكير قبل دخول الوقت بدقائق"))
+        Divider().padding(.leading, 52)
+        optionRow(
+          symbol: "bell.fill", title: text("At prayer time", "عند دخول الوقت"),
+          detail: text("The alert you just chose", "التنبيه الذي اخترته للتو"))
+        Divider().padding(.leading, 52)
+        optionRow(
+          symbol: "bell.badge.fill", title: text("After the prayer", "بعد الصلاة"),
+          detail: text("A reminder minutes after it begins", "تذكير بعد دخول الوقت بدقائق"))
+      }
+      .accessibilityIdentifier("onboarding.reminders.kinds")
+      Text(
+        text(
+          "Set them for each prayer in Settings › Prayer Alerts.",
+          "اضبطها لكل صلاة من «تنبيهات الصلاة» في الإعدادات.")
+      )
+      .font(.footnote)
+      .foregroundStyle(IOSTheme.labelSecondary)
+      .multilineTextAlignment(.center)
+      .fixedSize(horizontal: false, vertical: true)
+    }
+  }
+
+  private func optionCard<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    VStack(spacing: 0) { content() }
+      .background(IOSTheme.groupedSecondary, in: .rect(cornerRadius: 20))
+  }
+
+  private func optionRow(symbol: String, title: String, detail: String, selected: Bool = false)
+    -> some View
+  {
+    HStack(spacing: 12) {
+      Image(systemName: symbol)
+        .font(.system(size: 20))
+        .foregroundStyle(IOSTheme.accent)
+        .frame(width: 28)
+        .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 3) {
+        Text(title).font(.body).foregroundStyle(IOSTheme.labelPrimary)
+        Text(detail).font(.footnote).foregroundStyle(IOSTheme.labelSecondary)
+      }
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      if selected {
+        Image(systemName: "checkmark")
+          .foregroundStyle(IOSTheme.accentText)
+          .accessibilityHidden(true)
+      }
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 10)
+    .frame(minHeight: 64)
+    .contentShape(.rect)
+    .accessibilityElement(children: .combine)
+  }
+
   private var calculationOptions: some View {
     VStack(spacing: 8) {
       List {
@@ -420,16 +562,23 @@ extension IOSOnboardingView {
           .accessibilityAddTraits(
             isSelected(method) ? [.isSelected] : []
           )
-          .contextMenu {
-            Button(text("All methods and adjustments", "كل الطرق والتعديلات")) {
-              showCalculation = true
-            }
-          }
-          .accessibilityAction(named: text("All methods and adjustments", "كل الطرق والتعديلات")) {
-            showCalculation = true
-          }
           .accessibilityIdentifier("onboarding.calculation.\(methodIdentifier(method))")
         }
+        Button {
+          showCalculation = true
+        } label: {
+          HStack {
+            Text(text("All methods and adjustments", "كل الطرق والتعديلات"))
+              .font(.body)
+              .foregroundStyle(IOSTheme.labelPrimary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+            Image(systemName: "chevron.forward")
+              .font(.footnote.weight(.semibold))
+              .foregroundStyle(IOSTheme.labelTertiary)
+              .accessibilityHidden(true)
+          }
+        }
+        .accessibilityIdentifier("onboarding.calculation.all")
       }
       .listStyle(.plain)
       .scrollDisabled(true)
@@ -440,8 +589,10 @@ extension IOSOnboardingView {
   }
 
   private var methodListHeight: CGFloat {
-    // Two native selection rows gain room for stacked title/badge and wrapped details at AX sizes.
+    // Two selection rows gain room for stacked title/badge and wrapped details at AX sizes;
+    // the row that opens every method is one line.
     max(132, methodRowHeight * (typeSize.isAccessibilitySize ? 3 : 2))
+      + max(48, methodRowHeight * 0.75)
   }
 
   private var suggestedBadge: some View {

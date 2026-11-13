@@ -282,6 +282,15 @@ struct CoreStoreTests {
     #expect((4_700...4_900).contains(distance))
   }
 
+  /// Setup has six steps in this order; Reminders follows the alert choice it explains.
+  @Test func setupHasSixStepsWithRemindersAfterTheAlertChoice() {
+    #expect(
+      IOSOnboardingStep.allCases == [
+        .welcome, .location, .notifications, .reminders, .calculation, .ready,
+      ])
+    #expect(IOSOnboardingStep.reminders.rawValue == IOSOnboardingStep.notifications.rawValue + 1)
+  }
+
   /// The location chip opens Location where the person is; only a link from outside the app
   /// goes to Settings.
   @Test func showingLocationKeepsTheSelectedTab() throws {

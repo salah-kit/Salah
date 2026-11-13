@@ -1240,6 +1240,183 @@
         }
       }
     },
+    "A reminder minutes after it begins": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reminder minutes after it begins"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تذكير بعد دخول الوقت بدقائق"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Un rappel quelques minutes après son début"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وقت شروع ہونے کے چند منٹ بعد یاد دہانی"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pengingat beberapa menit setelah waktunya tiba"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vakit girdikten dakikalar sonra bir hatırlatıcı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآوری چند دقیقه پس از آغاز وقت"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুরুর কয়েক মিনিট পরে একটি অনুস্মারক"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan beberapa minit selepas masuk waktu"
+          }
+        }
+      }
+    },
+    "A reminder minutes before it begins": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reminder minutes before it begins"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تذكير قبل دخول الوقت بدقائق"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Un rappel quelques minutes avant son début"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وقت شروع ہونے سے چند منٹ پہلے یاد دہانی"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pengingat beberapa menit sebelum waktunya tiba"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vakit girmeden dakikalar önce bir hatırlatıcı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآوری چند دقیقه پیش از آغاز وقت"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুরুর কয়েক মিনিট আগে একটি অনুস্মারক"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan beberapa minit sebelum masuk waktu"
+          }
+        }
+      }
+    },
+    "A short adhan clip plays with each alert": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short adhan clip plays with each alert"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "يُشغَّل مقطع قصير من الأذان مع كل تنبيه"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Un court extrait de l’adhan accompagne chaque alerte"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ہر الرٹ کے ساتھ اذان کا مختصر حصہ چلتا ہے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cuplikan singkat azan diputar pada setiap pemberitahuan"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Her uyarıyla kısa bir ezan bölümü çalar"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "با هر هشدار بخش کوتاهی از اذان پخش می‌شود"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রতিটি সতর্কতার সাথে আজানের ছোট অংশ বাজে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Klip azan pendek dimainkan dengan setiap makluman"
+          }
+        }
+      }
+    },
     "About Salah": {
       "extractionState": "manual",
       "localizations": {
@@ -1649,6 +1826,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Selepas"
+          }
+        }
+      }
+    },
+    "After the prayer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After the prayer"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بعد الصلاة"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Après la prière"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز کے بعد"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sesudah salat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namazdan sonra"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پس از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের পরে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selepas solat"
           }
         }
       }
@@ -2538,65 +2774,6 @@
         }
       }
     },
-    "An alert at each prayer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An alert at each prayer"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "تنبيه عند كل صلاة"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Une alerte à chaque prière"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ہر نماز پر تنبیہ"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Peringatan setiap waktu salat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Her namazda bir uyarı"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "هشدار در وقت هر نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "প্রতি নামাজে একটি সতর্কতা"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Peringatan pada setiap waktu solat"
-          }
-        }
-      }
-    },
     "Appearance": {
       "extractionState": "manual",
       "localizations": {
@@ -3022,7 +3199,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "عند وقت الصلاة"
+            "value": "عند دخول الوقت"
           }
         },
         "fr": {
@@ -3052,7 +3229,7 @@
         "fa": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "هنگام نماز"
+            "value": "هنگام وقت نماز"
           }
         },
         "bn": {
@@ -3419,6 +3596,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Sebelum"
+          }
+        }
+      }
+    },
+    "Before the prayer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before the prayer"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "قبل الصلاة"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avant la prière"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز سے پہلے"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sebelum salat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namazdan önce"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "پیش از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের আগে"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sebelum solat"
           }
         }
       }
@@ -4485,65 +4721,6 @@
         }
       }
     },
-    "Choose prayers, alert sounds and reminders. Notifications play a short clip; open Salah for the full adhan.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose prayers, alert sounds and reminders. Notifications play a short clip; open Salah for the full adhan."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "اختر الصلوات وأصوات التنبيهات والتذكيرات. تُشغّل الإشعارات مقطعًا قصيرًا؛ افتح تطبيق صلاة لسماع الأذان كاملًا."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Choisissez les prières, les sons et les rappels. Les notifications jouent un court extrait ; ouvrez Salah pour l’adhan complet."
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "نمازیں، تنبیہ کی آوازیں اور یاد دہانیاں منتخب کریں۔ اطلاعات مختصر کلپ چلاتی ہیں؛ مکمل اذان کے لیے Salah کھولیں۔"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Pilih salat, suara peringatan, dan pengingat. Notifikasi memutar cuplikan singkat; buka Salah untuk azan lengkap."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Namazları, uyarı seslerini ve hatırlatıcıları seçin. Bildirimler kısa bir klip çalar; tam ezan için Salah’ı açın."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "نمازها، صداهای هشدار و یادآورها را انتخاب کنید. اعلان‌ها قطعه کوتاهی پخش می‌کنند؛ برای اذان کامل Salah را باز کنید."
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "নামাজ, সতর্কতার শব্দ ও স্মরণবার্তা বেছে নিন। বিজ্ঞপ্তিতে সংক্ষিপ্ত ক্লিপ বাজে; পুরো আজানের জন্য Salah খুলুন।"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Pilih solat, bunyi peringatan dan pengingat. Pemberitahuan memainkan klip pendek; buka Salah untuk azan penuh."
-          }
-        }
-      }
-    },
     "Choose the correct city and time zone. Search uses Apple Maps. Prayer times work offline once a city is selected.": {
       "extractionState": "manual",
       "localizations": {
@@ -4599,6 +4776,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pilih bandar dan zon waktu yang betul. Carian menggunakan Peta Apple. Waktu solat berfungsi di luar talian selepas bandar dipilih."
+          }
+        }
+      }
+    },
+    "Choose what happens at prayer time. You can change it anytime in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose what happens at prayer time. You can change it anytime in Settings."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اختر ما يحدث عند دخول وقت الصلاة. يمكنك تغييره في أي وقت من الإعدادات."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisissez ce qui se passe à l’heure de la prière. Vous pouvez le modifier à tout moment dans Réglages."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "منتخب کریں کہ نماز کے وقت کیا ہو۔ آپ اسے کسی بھی وقت ترتیبات میں بدل سکتے ہیں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pilih apa yang terjadi saat waktu salat tiba. Anda dapat mengubahnya kapan saja di Pengaturan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Namaz vaktinde ne olacağını seçin. Bunu istediğiniz zaman Ayarlar’dan değiştirebilirsiniz."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "انتخاب کنید هنگام وقت نماز چه اتفاقی بیفتد. هر زمان می‌توانید آن را در تنظیمات تغییر دهید."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামাজের সময় কী হবে তা বেছে নিন। আপনি যেকোনো সময় সেটিংসে এটি বদলাতে পারবেন।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pilih apa yang berlaku apabila masuk waktu solat. Anda boleh menukarnya bila-bila masa dalam Tetapan."
           }
         }
       }
@@ -6197,6 +6433,65 @@
         }
       }
     },
+    "Each prayer can also remind you before it begins and after it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each prayer can also remind you before it begins and after it."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "إلى جانب التنبيه عند دخول الوقت، يمكن لكل صلاة أن تذكّرك قبلها وبعدها، ولكلٍّ صوته."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Chaque prière peut aussi vous envoyer un rappel avant son début et après."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ہر نماز اپنے وقت سے پہلے اور بعد میں بھی آپ کو یاد دلا سکتی ہے۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Setiap salat juga dapat mengingatkan Anda sebelum waktunya tiba dan sesudahnya."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Her namaz, vakti girmeden önce ve sonra da size hatırlatma yapabilir."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هر نماز می‌تواند پیش از آغاز و پس از آن نیز به شما یادآوری کند."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রতিটি নামাজ শুরুর আগে ও পরে আপনাকে মনে করিয়ে দিতে পারে।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Setiap solat juga boleh mengingatkan anda sebelum masuk waktunya dan selepasnya."
+          }
+        }
+      }
+    },
     "Egyptian General Authority": {
       "extractionState": "manual",
       "localizations": {
@@ -7432,6 +7727,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pegang peranti rata, jauh daripada logam dan magnet. Kiblat diukur dari utara benar."
+          }
+        }
+      }
+    },
+    "How should Salah alert you?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How should Salah alert you?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "كيف تريد أن ينبّهك تطبيق صلاة؟"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Comment Salah doit-il vous alerter ?"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صلاۃ آپ کو کیسے خبردار کرے؟"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bagaimana Salah memberi tahu Anda?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah sizi nasıl uyarsın?"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صلاة چگونه به شما هشدار دهد؟"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salah আপনাকে কীভাবে জানাবে?"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bagaimanakah Salah patut memaklumkan anda?"
           }
         }
       }
@@ -9973,6 +10327,65 @@
         }
       }
     },
+    "No alerts. Check the times in Salah.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No alerts. Check the times in Salah."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "دون تنبيهات. اطّلع على الأوقات في تطبيق صلاة."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aucune alerte. Consultez les horaires dans Salah."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "کوئی الرٹ نہیں۔ اوقات صلاۃ میں دیکھیں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tanpa pemberitahuan. Lihat waktunya di Salah."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uyarı yok. Vakitlere Salah’ta bakın."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بدون هشدار. اوقات را در صلاة ببینید."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কোনো সতর্কতা নেই। সময়গুলো Salah-এ দেখুন।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tiada makluman. Semak waktu dalam Salah."
+          }
+        }
+      }
+    },
     "No cities found. Try a city and country name.": {
       "extractionState": "manual",
       "localizations": {
@@ -10268,65 +10681,6 @@
         }
       }
     },
-    "Not Now": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Not Now"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ليس الآن"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Pas maintenant"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ابھی نہیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Jangan Sekarang"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Şimdi Değil"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "الان نه"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "এখন নয়"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Bukan Sekarang"
-          }
-        }
-      }
-    },
     "Not published": {
       "extractionState": "manual",
       "localizations": {
@@ -10441,6 +10795,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tiada audio dimainkan"
+          }
+        }
+      }
+    },
+    "Notification": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notification"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الإشعار"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notification"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اطلاع"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notifikasi"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bildirim"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اعلان"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বিজ্ঞপ্তি"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pemberitahuan"
           }
         }
       }
@@ -12864,6 +13277,65 @@
         }
       }
     },
+    "Reminders before and after": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reminders before and after"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تذكير قبل الصلاة وبعدها"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rappels avant et après"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نماز سے پہلے اور بعد کی یاد دہانیاں"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pengingat sebelum dan sesudah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Öncesinde ve sonrasında hatırlatıcılar"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "یادآورهای پیش و پس از نماز"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগে ও পরে অনুস্মারক"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Peringatan sebelum dan selepas"
+          }
+        }
+      }
+    },
     "Rule": {
       "extractionState": "manual",
       "localizations": {
@@ -13749,6 +14221,65 @@
         }
       }
     },
+    "Set them for each prayer in Settings › Prayer Alerts.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set them for each prayer in Settings › Prayer Alerts."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اضبطها لكل صلاة من «تنبيهات الصلاة» في الإعدادات."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réglez-les pour chaque prière dans Réglages › Alertes de prière."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "انہیں ہر نماز کے لیے ترتیبات › نماز کے الرٹس میں مقرر کریں۔"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Atur untuk setiap salat di Pengaturan › Pemberitahuan Salat."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bunları her namaz için Ayarlar › Namaz Uyarıları’ndan ayarlayın."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آن‌ها را برای هر نماز در تنظیمات › هشدارهای نماز تنظیم کنید."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রতিটি নামাজের জন্য সেটিংস › নামাজের সতর্কতা থেকে এগুলো ঠিক করুন।"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tetapkannya untuk setiap solat dalam Tetapan › Makluman Solat."
+          }
+        }
+      }
+    },
     "Settings": {
       "extractionState": "manual",
       "localizations": {
@@ -14158,6 +14689,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tunjukkan hari ini"
+          }
+        }
+      }
+    },
+    "Silent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silent"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صامت"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Silencieux"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "خاموش"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senyap"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sessiz"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بی‌صدا"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নীরব"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senyap"
           }
         }
       }
@@ -15814,6 +16404,65 @@
         }
       }
     },
+    "The alert you just chose": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The alert you just chose"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التنبيه الذي اخترته للتو"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’alerte que vous venez de choisir"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وہ الرٹ جو آپ نے ابھی منتخب کیا"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pemberitahuan yang baru saja Anda pilih"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Az önce seçtiğiniz uyarı"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هشداری که هم‌اکنون انتخاب کردید"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি এইমাত্র যে সতর্কতা বেছে নিয়েছেন"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Makluman yang baru anda pilih"
+          }
+        }
+      }
+    },
     "The du’ā’ after the adhan follows": {
       "extractionState": "manual",
       "localizations": {
@@ -15987,6 +16636,65 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Matahari hari ini"
+          }
+        }
+      }
+    },
+    "The usual alert sound, no adhan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The usual alert sound, no adhan"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صوت التنبيه المعتاد، دون أذان"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le son d’alerte habituel, sans adhan"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "معمول کی الرٹ آواز، اذان کے بغیر"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Suara pemberitahuan biasa, tanpa azan"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alışılmış uyarı sesi, ezan yok"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "صدای هشدار معمول، بدون اذان"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাধারণ সতর্কতার শব্দ, আজান ছাড়া"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bunyi makluman biasa, tanpa azan"
           }
         }
       }

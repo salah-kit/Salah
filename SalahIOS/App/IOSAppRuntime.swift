@@ -37,6 +37,7 @@ final class IOSAppRuntime {
   @ObservationIgnored private let widgets = IOSWidgetPublisher()
   @ObservationIgnored private let placeNamer: any IOSPlaceNaming
   @ObservationIgnored private var placeNameTask: Task<Void, Never>?
+  @ObservationIgnored private var hadEnabledAlerts: Bool?
   @ObservationIgnored private var unanswered: IOSPlaceQuestion?
   @ObservationIgnored private var refreshTask: Task<Void, Never>?
   @ObservationIgnored private var stopObservation: DarwinSignal.Observation?
@@ -108,6 +109,7 @@ final class IOSAppRuntime {
   func activate() async {
     foreground = true
     store.refresh()
+    if hadEnabledAlerts == nil { hadEnabledAlerts = store.preferences.hasEnabledAlerts }
     location.refreshAuthorization()
     if store.preferences.useCurrentLocation { location.requestLocation() }
     await notifications.refreshAuthorization()
@@ -154,6 +156,7 @@ final class IOSAppRuntime {
   }
 
   private func preferencesChanged() {
+    askForNotificationsIfAnAlertWasTurnedOn()
     if store.preferences.muteSounds { audio.stop() }
     audio.setVolume(store.preferences.playbackVolume)
     if !store.preferences.useCurrentLocation { location.cancelLocation() }
@@ -220,6 +223,19 @@ final class IOSAppRuntime {
     } catch {
       widgetError = String(describing: error)
     }
+  }
+
+  /// A person who chose Silent during setup was never asked about notifications. Turning the
+  /// first alert on is when the question means something.
+  private func askForNotificationsIfAnAlertWasTurnedOn() {
+    let enabled = store.preferences.hasEnabledAlerts
+    defer { hadEnabledAlerts = enabled }
+    guard
+      IOSAlertPermissionPolicy.asks(
+        hadEnabledAlerts: hadEnabledAlerts, hasEnabledAlerts: enabled,
+        status: store.notificationPermission, isSetUp: !store.needsOnboarding)
+    else { return }
+    Task { await notifications.requestAuthorization() }
   }
 
   /// Stop on the Live Activity or in Control Center: the audio stops and the activity shows

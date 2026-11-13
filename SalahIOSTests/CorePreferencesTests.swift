@@ -94,6 +94,55 @@ struct CorePreferencesTests {
     #expect(try JSONDecoder().decode(IOSPreferences.self, from: Data("{}".utf8)).placeNames == nil)
   }
 
+  /// Setup's one choice sets every prayer: Adhan and Notification differ only in the sound,
+  /// and Silent turns everything off without forgetting the minutes.
+  @Test func anAlertModeSetsEveryPrayersAlert() {
+    var preferences = IOSPreferences()
+    preferences.notifications[.asr] = IOSPrayerAlertSettings(
+      atTime: true, sound: .adhan, beforeEnabled: true, beforeMinutes: 20, afterEnabled: true)
+    preferences.apply(.notification)
+    #expect(preferences.alerts(for: .asr).sound == .system)
+    #expect(preferences.alerts(for: .fajr).sound == .system)
+    #expect(preferences.alerts(for: .fajr).atTime)
+    #expect(!preferences.alerts(for: .sunrise).atTime)
+    #expect(preferences.alerts(for: .asr).beforeEnabled)
+    #expect(preferences.hasEnabledAlerts)
+
+    preferences.apply(.adhan)
+    #expect(preferences.alerts(for: .fajr).sound == .fajrAdhan)
+    #expect(preferences.alerts(for: .asr).sound == .adhan)
+    #expect(preferences.jumuahAlerts.sound == .adhan)
+
+    preferences.apply(.silent)
+    #expect(!preferences.hasEnabledAlerts)
+    for kind in PrayerKind.allCases {
+      let alerts = preferences.alerts(for: kind)
+      #expect(!alerts.atTime && !alerts.beforeEnabled && !alerts.afterEnabled)
+    }
+    #expect(preferences.alerts(for: .asr).beforeMinutes == 20)
+    #expect(preferences.mirror == nil || preferences.mirror?.alerts[.asr]?.alert == false)
+    preferences.notifications[.asr]?.atTime = true
+    #expect(preferences.hasEnabledAlerts)
+  }
+
+  /// Silent asks for no permission during setup. Salah asks when the first alert is turned
+  /// on afterwards, and never again once the person has answered.
+  @Test func permissionIsAskedWhenTheFirstAlertIsTurnedOnAfterSetup() {
+    func asks(
+      had: Bool?, has: Bool, _ status: IOSPermissionStatus = .notDetermined, setUp: Bool = true
+    ) -> Bool {
+      IOSAlertPermissionPolicy.asks(
+        hadEnabledAlerts: had, hasEnabledAlerts: has, status: status, isSetUp: setUp)
+    }
+    #expect(asks(had: false, has: true))
+    #expect(!asks(had: true, has: true))
+    #expect(!asks(had: false, has: false))
+    #expect(!asks(had: nil, has: true))
+    #expect(!asks(had: false, has: true, .denied))
+    #expect(!asks(had: false, has: true, .authorized))
+    #expect(!asks(had: false, has: true, setUp: false))
+  }
+
   /// A fix never lands on the same coordinates twice. The next fix of the same place keeps
   /// the names already looked up, so opening Salah asks for none again; another place starts
   /// over. The geocoder's own answer is the name in the device's language.

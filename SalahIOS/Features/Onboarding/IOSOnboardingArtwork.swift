@@ -24,6 +24,8 @@ struct IOSOnboardingArtwork: View {
         symbol("location.fill")
       case .notifications:
         symbol("bell.fill")
+      case .reminders:
+        symbol("alarm.fill")
       case .calculation:
         symbol("function")
       case .ready:

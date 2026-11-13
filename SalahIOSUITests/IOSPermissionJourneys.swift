@@ -30,6 +30,7 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     require("onboarding.notification.continueWithout", in: app)
     capture("iPhone-English-Onboarding-Notifications-Denied", in: app)
     tap("onboarding.notification.continueWithout", in: app)
+    tap("onboarding.reminders.continue", in: app)
     tap("onboarding.calculation.continue", in: app)
     tap("onboarding.ready.start", in: app)
     XCTAssertTrue(cityMatches("Makkah", label: require("today.location", in: app).label))
@@ -59,8 +60,9 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     capture("iPhone-English-Onboarding-Notifications", in: app)
     tap("onboarding.notification.allow", in: app)
     answerPermission(allow: true, resource: .notification)
-    require("onboarding.calculation.continue", in: app)
+    require("onboarding.reminders.continue", in: app)
     XCTAssertFalse(element("onboarding.notification.continueWithout", in: app).exists)
+    tap("onboarding.reminders.continue", in: app)
     capture("iPhone-English-Onboarding-Calculation", in: app)
     tap("onboarding.calculation.continue", in: app)
     capture("iPhone-English-Onboarding-Ready", in: app)
@@ -97,6 +99,64 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     assertNativeAlertsAreScheduled(in: app)
     XCTAssertFalse(element("alerts.permission", in: app).exists)
     capture("iPhone-English-Notifications-Scheduled-After-Settings-Grant", in: app)
+  }
+
+  /// Setup pushes each step, so Back returns to the one before with its choice kept. Silent
+  /// asks for nothing; the first alert turned on afterwards brings the system's question.
+  @MainActor
+  func testSilentSetupGoesBackAndAsksWhenAnAlertIsTurnedOn() {
+    let journey = IOSJourneyApp(fixture: false, skipOnboarding: false)
+    journey.launch()
+    let app = journey.app
+    defer { app.terminate() }
+    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 1 of 6")
+    tap("onboarding.continue", in: app)
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 2 of 6")
+    back(in: app)
+    require("onboarding.continue", in: app)
+    tap("onboarding.continue", in: app)
+    tap("onboarding.location.chooseCity", in: app)
+    selectCity("Makkah, Saudi Arabia", matching: "Makkah", in: app)
+
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 3 of 6")
+    XCTAssertTrue(
+      require("onboarding.notification.notification", in: app).isSelected,
+      "Notification is chosen until the person picks another")
+    require("onboarding.notification.allow", in: app)
+    capture("iPhone-English-Onboarding-Alert-Modes", in: app)
+    tap("onboarding.notification.silent", in: app)
+    XCTAssertFalse(element("onboarding.notification.allow", in: app).exists)
+    tap("onboarding.notification.continue", in: app)
+
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 4 of 6")
+    require("onboarding.reminders.kinds", in: app)
+    XCTAssertFalse(springboard.alerts.firstMatch.exists, "Silent asks for no permission")
+    capture("iPhone-English-Onboarding-Reminders", in: app)
+    back(in: app)
+    XCTAssertTrue(
+      require("onboarding.notification.silent", in: app).isSelected, "Back keeps the choice")
+    tap("onboarding.notification.continue", in: app)
+    tap("onboarding.reminders.continue", in: app)
+
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 5 of 6")
+    tap("onboarding.calculation.all", in: app)
+    require("onboarding.calculation.done", in: app)
+    capture("iPhone-English-Onboarding-All-Methods", in: app)
+    tap("onboarding.calculation.done", in: app)
+    tap("onboarding.calculation.continue", in: app)
+    XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 6 of 6")
+    tap("onboarding.ready.start", in: app)
+
+    require("today.nextPrayer", in: app)
+    XCTAssertFalse(element("onboarding", in: app).exists, "Setup leaves the screen with Start")
+    let alert = app.buttons["Alert for Asr"].firstMatch
+    reveal(alert, in: app)
+    XCTAssertEqual(alert.value as? String, "Alert off", "Silent turned every alert off")
+    alert.tap()
+    answerPermission(allow: true, resource: .notification)
+    XCTAssertTrue(waitUntil { (alert.value as? String) == "Alert on" })
   }
 
   @MainActor
@@ -171,8 +231,9 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     captureSystem("System-Settings-Notifications-Enabled-After-Denial")
 
     app.activate()
-    require("onboarding.calculation.continue", in: app)
+    require("onboarding.reminders.continue", in: app)
     XCTAssertFalse(element("onboarding.notification.continueWithout", in: app).exists)
+    tap("onboarding.reminders.continue", in: app)
     capture("iPhone-English-Onboarding-Recovered-From-System-Settings", in: app)
     tap("onboarding.calculation.continue", in: app)
     tap("onboarding.ready.start", in: app)

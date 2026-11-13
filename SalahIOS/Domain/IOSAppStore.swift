@@ -8,11 +8,25 @@ nonisolated enum IOSTab: String, CaseIterable, Sendable {
 }
 
 nonisolated enum IOSOnboardingStep: Int, CaseIterable, Sendable {
-  case welcome, location, notifications, calculation, ready
+  case welcome, location, notifications, reminders, calculation, ready
+
+  /// The steps that show a card of rows under their text.
+  var hasOptions: Bool { self == .notifications || self == .reminders || self == .calculation }
 }
 
 nonisolated enum IOSPermissionStatus: String, Sendable {
   case notDetermined, authorized, denied, restricted
+}
+
+/// When Salah asks for notification permission outside setup.
+nonisolated enum IOSAlertPermissionPolicy {
+  /// Only when the first alert has just been turned on, nothing was decided yet, and setup,
+  /// which asks in its own step, is over.
+  static func asks(
+    hadEnabledAlerts: Bool?, hasEnabledAlerts: Bool, status: IOSPermissionStatus, isSetUp: Bool
+  ) -> Bool {
+    isSetUp && hadEnabledAlerts == false && hasEnabledAlerts && status == .notDetermined
+  }
 }
 
 nonisolated enum IOSSettingsDestination: String, CaseIterable, Hashable, Sendable {
