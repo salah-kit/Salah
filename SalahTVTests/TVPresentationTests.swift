@@ -89,7 +89,7 @@ struct TVPresentationTests {
     #expect(presentation.name == "العصر")
     #expect(presentation.countdown == "٢:١٦:٠٠")
     #expect(presentation.eyebrow == "الصلاة القادمة")
-    #expect(plain(presentation.subtitle) == "تبدأ الساعة ٣:٣٥ م")
+    #expect(plain(presentation.subtitle) == "يدخل الوقت الساعة ٣:٣٥ م")
   }
 
   @Test func boardTimesSplitTheirDayPeriod() {
@@ -154,6 +154,14 @@ struct TVPresentationTests {
     adjustments.setSettingsMinutes(3, for: .isha)
     #expect(copy.adjustments(adjustments) == "1 changed")
     #expect(copy.sound(.none) == "Off")
+  }
+
+  @Test func arabicHijriOffsetsCountTheirDays() {
+    let copy = TVSettingsCopy(locale: AppLanguage.arabic.locale)
+    #expect(copy.hijriOffset(0) == "بلا تعديل")
+    #expect(copy.hijriOffset(1) == "+ يوم واحد")
+    #expect(copy.hijriOffset(-2) == "− يومان")
+    #expect(copy.hijriOffset(3) == "+ ٣ أيام")
   }
 
   @Test func aPrayersSoundIsOnOrOff() {

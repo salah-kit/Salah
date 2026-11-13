@@ -19,7 +19,7 @@ struct IOSSoundSettingsView: View {
         Text(
           copy.text(
             "Notifications and reminders still arrive when sounds are muted.",
-            "تستمر الإشعارات والتذكيرات عند كتم الأصوات."))
+            "تصلك الإشعارات والتذكيرات حتى مع كتم الأصوات."))
       }
       Section {
         Toggle(
@@ -38,12 +38,12 @@ struct IOSSoundSettingsView: View {
         .accessibilityValue(
           store.preferences.playbackVolume.formatted(.percent.locale(store.locale)))
       } header: {
-        Text(copy.text("Playback in Salah", "التشغيل في صلاة"))
+        Text(copy.text("Playback in Salah", "التشغيل داخل التطبيق"))
       } footer: {
         Text(
           copy.text(
             "Start the full adhan in Salah. Playback continues when the app is in the background. Du’a and playback volume apply to this audio.",
-            "ابدأ تشغيل الأذان كاملًا في تطبيق صلاة. يستمر التشغيل عندما يكون التطبيق في الخلفية. ينطبق الدعاء ومستوى صوت التشغيل على هذا الصوت."
+            "ابدأ تشغيل الأذان كاملًا في تطبيق صلاة، ويستمر التشغيل حين يكون التطبيق في الخلفية. يسري خيارا الدعاء ومستوى صوت التشغيل على هذا التشغيل."
           ))
       }
       .disabled(store.preferences.muteSounds)
@@ -54,7 +54,7 @@ struct IOSSoundSettingsView: View {
           HStack {
             IOSSettingsRow(
               title: copy.text("Open Settings", "فتح الإعدادات"),
-              subtitle: copy.text("Salah notification settings", "إعدادات إشعارات صلاة"))
+              subtitle: copy.text("Salah notification settings", "إعدادات إشعارات التطبيق"))
             Image(systemName: "chevron.right")
               .font(.footnote.weight(.semibold))
               .foregroundStyle(IOSTheme.labelTertiary)
@@ -175,7 +175,7 @@ struct IOSNotificationSoundSettingsView: View {
         Text(
           copy.text(
             "Notifications use a prepared clip under 30 seconds. The full recording can play inside Salah.",
-            "تستخدم الإشعارات مقطعًا معدًا أقل من ٣٠ ثانية. يمكن تشغيل التسجيل الكامل داخل تطبيق صلاة."
+            "تستخدم الإشعارات مقطعًا قصيرًا مدته أقل من ٣٠ ثانية، ويمكن تشغيل التسجيل كاملًا داخل تطبيق صلاة."
           ))
       }
     }

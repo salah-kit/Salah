@@ -32,7 +32,11 @@ nonisolated enum IOSAccessoryCopy {
     // Isolated, so the sign stays before its digits in a right-to-left line.
     if focus.isCountUp { return Text("\u{2066}+\(duration)\u{2069}") }
     let sides = countdownSides(locale: display.locale, bundle: bundle)
-    return Text("\(Text(verbatim: sides.before))\(duration)\(Text(verbatim: sides.after))")
+    // A right-to-left isolate keeps "بعد" before the digits on a left-to-right device.
+    let rtl = display.locale.language.characterDirection == .rightToLeft
+    let (open, close) = rtl ? ("\u{2067}", "\u{2069}") : ("", "")
+    return Text(
+      "\(Text(verbatim: open + sides.before))\(duration)\(Text(verbatim: sides.after + close))")
   }
 
   @MainActor

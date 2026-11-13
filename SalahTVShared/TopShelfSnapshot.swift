@@ -147,7 +147,7 @@ nonisolated struct TopShelfSnapshot: Sendable {
     case .nextPrayer:
       lead = nextPrayerIsTomorrow ? display.labels.tomorrow : display.labels.nextPrayer
     case .today: lead = copy("Today", "اليوم")
-    case .roomDisplay: return copy("Room display", "عرض الغرفة")
+    case .roomDisplay: return copy("Room display", "شاشة المصلى")
     }
     return place.isEmpty ? lead : "\(lead) · \(place)"
   }
@@ -158,7 +158,7 @@ nonisolated struct TopShelfSnapshot: Sendable {
       guard let next = nextPrayer else { return copy("Today’s prayers", "صلوات اليوم") }
       return copy.format("%1$@ at %2$@", "%1$@ %2$@", display.name(of: next), time.time(next.time))
     case .today: return copy("Today’s prayers", "صلوات اليوم")
-    case .roomDisplay: return copy("Today’s times, all day", "أوقات اليوم طوال اليوم")
+    case .roomDisplay: return copy("Today’s times, all day", "مواقيت اليوم معروضة طوال اليوم")
     }
   }
 
@@ -166,7 +166,7 @@ nonisolated struct TopShelfSnapshot: Sendable {
   var roomDisplayNote: String {
     copy(
       "Keep the day’s prayer times on screen at home or in a musalla.",
-      "أبقِ أوقات الصلاة على الشاشة في البيت أو في المصلى.")
+      "أبقِ مواقيت الصلاة على الشاشة في البيت أو في المصلى.")
   }
 
   /// The text the system reads for a banner, and its item's title.

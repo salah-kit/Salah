@@ -58,7 +58,7 @@ struct IOSPrayerAlertsSettingsView: View {
           {
             Text(
               copy.format(
-                "%@ upcoming alerts scheduled", "تمت جدولة %@ من التنبيهات القادمة",
+                "%@ upcoming alerts scheduled", "التنبيهات المجدولة القادمة: %@",
                 copy.number(report.confirmed.count))
             )
             .accessibilityIdentifier("alerts.scheduledCount")
@@ -67,7 +67,7 @@ struct IOSPrayerAlertsSettingsView: View {
               Text(
                 copy.format(
                   "Scheduled through %@. Open Salah regularly to keep alerts up to date.",
-                  "مجدولة حتى %@. افتح تطبيق صلاة بانتظام لتحديث التنبيهات.",
+                  "التنبيهات مجدولة حتى %@. افتح التطبيق بين حين وآخر لتبقى محدّثة.",
                   day.start(in: store.timeZone).formatted(
                     Date.FormatStyle(
                       date: .abbreviated, time: .omitted, locale: store.locale,
@@ -103,17 +103,17 @@ struct IOSPrayerAlertsSettingsView: View {
 
   private func enabled(_ alerts: IOSPrayerAlertSettings) -> String {
     alerts.atTime || alerts.beforeEnabled || alerts.afterEnabled
-      ? copy.text("On", "مفعّل") : copy.text("Off", "معطّل")
+      ? copy.text("On", "تشغيل") : copy.text("Off", "إيقاف")
   }
 
   private func summary(_ alerts: IOSPrayerAlertSettings) -> String {
     var parts: [String] = []
     if alerts.atTime { parts.append(copy.sound(alerts.sound)) }
     if alerts.beforeEnabled {
-      parts.append(copy.format("%@ before", "%@ قبل", copy.minutes(alerts.beforeMinutes)))
+      parts.append(copy.format("%@ before", "قبل %@", copy.minutes(alerts.beforeMinutes)))
     }
     if alerts.afterEnabled {
-      parts.append(copy.format("%@ after", "%@ بعد", copy.minutes(alerts.afterMinutes)))
+      parts.append(copy.format("%@ after", "بعد %@", copy.minutes(alerts.afterMinutes)))
     }
     return parts.isEmpty ? copy.text("No alerts", "بلا تنبيهات") : parts.joined(separator: " · ")
   }
@@ -154,7 +154,7 @@ private struct IOSNotificationPermissionSection: View {
       Text(
         copy.text(
           "Your alert choices are saved. Allow notifications in iPhone Settings to receive them. Focus and Scheduled Summary can affect when banners appear.",
-          "تُحفظ اختيارات التنبيهات. اسمح بالإشعارات في إعدادات iPhone لاستلامها. قد يؤثر التركيز والملخص المجدول في وقت ظهور اللافتات."
+          "حُفظت اختياراتك للتنبيهات. اسمح بالإشعارات في إعدادات iPhone لتصلك. قد يؤثّر «التركيز» و«الملخص المجدول» في وقت ظهورها."
         ))
     }
   }
@@ -217,40 +217,42 @@ struct IOSPrayerAlertSettingsView: View {
       .disabled(inheritingDhuhr)
 
       Section {
-        Toggle(copy.text("Remind me before", "تذكيري قبل الموعد"), isOn: binding(\.beforeEnabled))
-          .accessibilityIdentifier("alert.\(target.identifier).before.enabled")
+        Toggle(
+          copy.text("Remind me before", "ذكّرني قبل دخول الوقت"), isOn: binding(\.beforeEnabled)
+        )
+        .accessibilityIdentifier("alert.\(target.identifier).before.enabled")
         if alerts.beforeEnabled {
           Stepper(value: binding(\.beforeMinutes), in: 1...120) {
             IOSSettingsRow(
-              title: copy.text("Minutes before", "الدقائق قبل الموعد"),
+              title: copy.text("Minutes before", "عدد الدقائق"),
               subtitle: copy.minutes(alerts.beforeMinutes))
           }
           .accessibilityIdentifier("alert.\(target.identifier).before.minutes")
           .listRowInsets(EdgeInsets(top: 9, leading: 16, bottom: 9, trailing: 16))
           .accessibilityValue(copy.number(alerts.beforeMinutes))
-          soundRow(\.beforeSound, slot: "before", detail: copy.text("Before", "قبل الموعد"))
+          soundRow(\.beforeSound, slot: "before", detail: copy.text("Before", "قبل دخول الوقت"))
         }
       } header: {
-        Text(copy.text("Before", "قبل الموعد"))
+        Text(copy.text("Before", "قبل دخول الوقت"))
       }
       .disabled(inheritingDhuhr)
 
       Section {
-        Toggle(copy.text("Remind me after", "تذكيري بعد الموعد"), isOn: binding(\.afterEnabled))
+        Toggle(copy.text("Remind me after", "ذكّرني بعد دخول الوقت"), isOn: binding(\.afterEnabled))
           .accessibilityIdentifier("alert.\(target.identifier).after.enabled")
         if alerts.afterEnabled {
           Stepper(value: binding(\.afterMinutes), in: 1...120) {
             IOSSettingsRow(
-              title: copy.text("Minutes after", "الدقائق بعد الموعد"),
+              title: copy.text("Minutes after", "عدد الدقائق"),
               subtitle: copy.minutes(alerts.afterMinutes))
           }
           .accessibilityIdentifier("alert.\(target.identifier).after.minutes")
           .listRowInsets(EdgeInsets(top: 9, leading: 16, bottom: 9, trailing: 16))
           .accessibilityValue(copy.number(alerts.afterMinutes))
-          soundRow(\.afterSound, slot: "after", detail: copy.text("After", "بعد الموعد"))
+          soundRow(\.afterSound, slot: "after", detail: copy.text("After", "بعد دخول الوقت"))
         }
       } header: {
-        Text(copy.text("After", "بعد الموعد"))
+        Text(copy.text("After", "بعد دخول الوقت"))
       } footer: {
         Text(
           copy.text(
@@ -263,7 +265,7 @@ struct IOSPrayerAlertSettingsView: View {
           Text(
             copy.text(
               "Sounds are muted. Notifications and reminders still arrive. Turn off Mute sounds to change or preview audio.",
-              "الأصوات مكتومة. تستمر الإشعارات والتذكيرات. عطّل كتم الأصوات لتغيير الصوت أو معاينته."
+              "الأصوات مكتومة، وستصلك الإشعارات والتذكيرات كالمعتاد. أوقف «كتم الأصوات» لتغيير الصوت أو معاينته."
             )
           )
           .font(.footnote)

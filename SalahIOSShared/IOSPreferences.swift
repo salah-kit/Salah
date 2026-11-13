@@ -377,7 +377,8 @@ nonisolated enum IOSCalculationMethod: Codable, Hashable, Sendable {
       switch value {
       case .muslimWorldLeague: return isArabic ? "رابطة العالم الإسلامي" : "Muslim World League"
       case .isna: return isArabic ? "أمريكا الشمالية (ISNA)" : "North America (ISNA)"
-      case .egyptian: return isArabic ? "الهيئة المصرية للمساحة" : "Egyptian General Authority"
+      case .egyptian:
+        return isArabic ? "الهيئة المصرية العامة للمساحة" : "Egyptian General Authority"
       case .ummAlQura: return isArabic ? "أم القرى، مكة المكرمة" : "Umm al-Qura, Makkah"
       case .karachi:
         return isArabic

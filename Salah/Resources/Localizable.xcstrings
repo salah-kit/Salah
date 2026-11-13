@@ -299,7 +299,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "حول صلاة"
+            "value": "حول «صلاة»"
           }
         },
         "en": {
@@ -358,7 +358,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الموقع متوقف لتطبيق صلاة"
+            "value": "خدمات الموقع متوقفة لـ«صلاة»"
           }
         },
         "en": {
@@ -618,7 +618,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "مساعدة صلاة"
+            "value": "مساعدة «صلاة»"
           }
         },
         "en": {
@@ -916,7 +916,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "آخر الأوقات المعروفة · %@"
+            "value": "آخر المواقيت المعروفة · %@"
           }
         },
         "fr": {
@@ -1262,7 +1262,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "مُعطّل"
+            "value": "إيقاف"
           }
         },
         "en": {
@@ -1321,7 +1321,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "مُفعّل"
+            "value": "تشغيل"
           }
         },
         "en": {
@@ -1438,7 +1438,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "لا تحدث اليوم"
+            "value": "غير متاح اليوم"
           }
         },
         "en": {
@@ -1788,7 +1788,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تستمر أوقات الصلاة والأذان من هنا. لإيقاف «صلاة»، افتح هذه القائمة وانقر زر الإنهاء."
+            "value": "تبقى المواقيت والأذان تعمل من شريط القائمة. لإنهاء «صلاة»، افتح هذه القائمة وانقر زر الإنهاء."
           }
         },
         "en": {
@@ -2684,7 +2684,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يستخدم «صلاة» موقعك لحساب أوقات الصلاة فقط."
+            "value": "يستخدم «صلاة» موقعك لحساب مواقيت الصلاة فقط."
           }
         },
         "en": {
@@ -2742,7 +2742,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أوقات الصلاة في مكانك"
+            "value": "مواقيت الصلاة حيثما كنت"
           }
         },
         "en": {
@@ -2800,7 +2800,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "السماح بالتنبيهات"
+            "value": "السماح بالإشعارات"
           }
         },
         "en": {
@@ -3090,7 +3090,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أوقات الصلاة، بهدوء وفي موعدها"
+            "value": "مواقيت الصلاة بدقة وهدوء"
           }
         },
         "en": {
@@ -3554,7 +3554,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أوقات الصلاة غير متوفرة لهذا الموقع."
+            "value": "مواقيت الصلاة غير متوفرة لهذا الموقع."
           }
         },
         "en": {
@@ -4129,412 +4129,6 @@
         }
       }
     },
-    "prayerRow.subtitle.postReminder": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "مضى %@ دقائق"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minutes passed"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il y a %@ minutes"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ گزر گئے"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ menit berlalu"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dakika geçti"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه گذشت"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট পেরিয়েছে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit berlalu"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.postReminder.live": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بعد الصلاة بـ%@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min after prayer"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min après la prière"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نماز کے %@ منٹ بعد"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt setelah salat"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namazdan %@ dk sonra"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه پس از نماز"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "নামাজের %@ মিনিট পরে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit selepas solat"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.postReminder.offset": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بعد %@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min after"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min après"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ بعد"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt setelahnya"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dk sonra"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه بعد"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট পরে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit selepas"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.prayerTime": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الصلاة الآن"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prayer time now"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "C'est l'heure"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اب نماز کا وقت ہے"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Waktu salat sekarang"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Namaz vakti girdi"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اکنون وقت نماز است"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "এখন নামাজের সময়"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Waktu solat sekarang"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.preReminder": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "باقي %@ دقائق"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minutes remaining"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dans %@ minutes"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ باقی ہیں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ menit tersisa"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dakika kaldı"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه مانده"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট বাকি"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit lagi"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.preReminder.live": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "متبقٍ %@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min remaining"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min restantes"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ باقی"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt tersisa"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dk kaldı"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه مانده"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট বাকি"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit lagi"
-          }
-        }
-      }
-    },
-    "prayerRow.subtitle.preReminder.offset": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "قبل %@ دقيقة"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min before"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ min avant"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ منٹ پہلے"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ mnt sebelumnya"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dk önce"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ دقیقه قبل"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ মিনিট আগে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ minit sebelum"
-          }
-        }
-      }
-    },
     "settings.adj.delayedIsha": {
       "localizations": {
         "ar": {
@@ -4634,7 +4228,7 @@
                   "two": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "دقيقتان"
+                      "value": "دقيقتين"
                     }
                   },
                   "zero": {
@@ -4761,7 +4355,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إزاحة التاريخ الهجري"
+            "value": "تعديل التاريخ الهجري"
           }
         },
         "bn": {
@@ -4819,7 +4413,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "قدّم الصلاة أو أخّرها بدقائق كاملة. تبقى دقائق الطريقة منفصلة."
+            "value": "قدّم وقت الصلاة أو أخّره بالدقائق. تبقى تعديلات الطريقة منفصلة."
           }
         },
         "en": {
@@ -5168,7 +4762,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تتبع السماء الصلاة التي أنت في وقتها."
+            "value": "يتغيّر لون السماء بحسب وقت الصلاة الحالية."
           }
         },
         "en": {
@@ -5807,7 +5401,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "خطوط العرض العالية"
+            "value": "خطوط العرض العليا"
           }
         },
         "en": {
@@ -6562,7 +6156,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الهيئة المصرية العامة"
+            "value": "الهيئة المصرية العامة للمساحة"
           }
         },
         "en": {
@@ -8535,7 +8129,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الاكتشاف"
+            "value": "تحديد الموقع"
           }
         },
         "en": {
@@ -8593,7 +8187,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "خدمات الموقع لتطبيق صلاة غير مفعلة."
+            "value": "خدمات الموقع متوقفة لـ«صلاة»."
           }
         },
         "en": {
@@ -9523,7 +9117,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يتحدّث عندما تسافر"
+            "value": "يُحدَّث تلقائيًا عند السفر"
           }
         },
         "bn": {
@@ -9813,7 +9407,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الدقائق بعدها"
+            "value": "عدد الدقائق"
           }
         },
         "en": {
@@ -9871,7 +9465,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الدقائق قبلها"
+            "value": "عدد الدقائق"
           }
         },
         "en": {
@@ -10034,7 +9628,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تنبيهات صلاة متوقفة في إعدادات النظام. فعّلها من إعدادات النظام."
+            "value": "إشعارات «صلاة» متوقفة. فعّلها من إعدادات النظام."
           }
         },
         "en": {
@@ -10092,7 +9686,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعذر طلب إذن التنبيهات. تحقق من إعدادات النظام."
+            "value": "تعذر طلب إذن الإشعارات. تحقق من إعدادات النظام."
           }
         },
         "en": {
@@ -10150,7 +9744,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تحتاج أذونات التنبيهات إلى مراجعة في إعدادات النظام."
+            "value": "راجع إذن الإشعارات في إعدادات النظام."
           }
         },
         "en": {
@@ -10440,7 +10034,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "التذكير بعد الصلاة"
+            "value": "ذكّرني بعد دخول الوقت"
           }
         },
         "en": {
@@ -10498,7 +10092,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "التذكير قبل الصلاة"
+            "value": "ذكّرني قبل دخول الوقت"
           }
         },
         "en": {
@@ -10556,7 +10150,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "بعد الصلاة"
+            "value": "بعد دخول الوقت"
           }
         },
         "en": {
@@ -10672,7 +10266,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "قبل الصلاة"
+            "value": "قبل دخول الوقت"
           }
         },
         "en": {
@@ -12007,7 +11601,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "بدون"
+            "value": "بلا صوت"
           }
         },
         "en": {
@@ -12240,7 +11834,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "بدأت الساعة %@"
+            "value": "دخل الوقت الساعة %@"
           }
         },
         "en": {
@@ -12298,7 +11892,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تبدأ الساعة %@"
+            "value": "يدخل الوقت الساعة %@"
           }
         },
         "en": {
@@ -12356,7 +11950,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أغلق هذه النافذة وتستمر أوقات الصلاة والأذان. أنهِه لإيقافها."
+            "value": "يمكنك إغلاق هذه النافذة، وتبقى المواقيت والأذان تعمل. لإيقافها، أنهِ التطبيق."
           }
         },
         "en": {

@@ -2,9 +2,9 @@
   "languages" : [
     "en-US"
   ],
-  "macOS" : "Version 27.0.1 (Build 26A434)",
+  "macOS" : "Version 27.2 (Build 26B123)",
   "macOSMajor" : 27,
   "scale" : 1,
   "timeZone" : "Asia\/Riyadh",
-  "xcodeBuild" : "27A266a"
+  "xcodeBuild" : "27B52"
 }

@@ -139,7 +139,7 @@ struct SettingsPanesTests {
         == "أم القرى للسعودية")
     #expect(
       plain(CalculationText.methodSuggestion(.egyptian, country: "مصر", locale: arabic))
-        == "الهيئة المصرية العامة لمصر")
+        == "الهيئة المصرية العامة للمساحة لمصر")
     #expect(CalculationText.methodSuggestion(.ummAlQura, country: "", locale: english) == nil)
     #expect(
       CalculationText.ruleSuggestion(.middleOfTheNight, locale: english)

@@ -49,8 +49,8 @@ nonisolated struct IOSPrayerPresentation: Sendable {
         display.text.digits(offset))
     }
     return isCountingUp
-      ? copy("Began at", "بدأت الساعة") + " " + display.timeText(of: event)
-      : copy("Begins at", "تبدأ الساعة") + " " + display.timeText(of: event)
+      ? copy("Began at", "دخل الوقت الساعة") + " " + display.timeText(of: event)
+      : copy("Begins at", "يدخل الوقت الساعة") + " " + display.timeText(of: event)
   }
 
   var countdown: String {
@@ -99,14 +99,14 @@ nonisolated struct IOSPrayerPresentation: Sendable {
   }
 
   var calculationGapMessage: String {
-    copy("Some prayer times can’t be calculated", "تعذّر حساب بعض أوقات الصلاة")
+    copy("Some prayer times can’t be calculated", "تعذّر حساب بعض مواقيت الصلاة")
   }
 
   var unavailableExplanation: String {
     if hasCalculationGaps { return calculationGapMessage }
     return copy(
       "Prayer times are unavailable for this location and date. Review calculation settings.",
-      "أوقات الصلاة غير متاحة لهذا الموقع والتاريخ. راجع إعدادات الحساب.")
+      "مواقيت الصلاة غير متاحة لهذا الموقع والتاريخ. راجع إعدادات الحساب.")
   }
 
   func missingDetail(_ reason: ScheduleGapReason) -> String {
@@ -128,7 +128,7 @@ nonisolated struct IOSPrayerPresentation: Sendable {
     else {
       return nil
     }
-    return copy("The du’ā’ after the adhan follows", "يلي الأذان الدعاء")
+    return copy("The du’ā’ after the adhan follows", "يليه الدعاء")
   }
 
   func detail(for event: PrayerEvent, live: Bool = true) -> String? {

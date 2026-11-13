@@ -193,9 +193,9 @@ struct SettingsMirrorTests {
       alertOff: "Alert off", silent: "Silent"),
     SummaryCase(
       language: "ar",
-      summary: "تنبيه مُفعّل · قبل \u{2068}١٠ د\u{2069} · بعد \u{2068}٥ د\u{2069}",
+      summary: "التنبيه مُفعّل · قبل \u{2068}١٠ د\u{2069} · بعد \u{2068}٥ د\u{2069}",
       detail: "قبل \u{2068}١٠ د\u{2069} · بعد \u{2068}٥ د\u{2069}",
-      alertOff: "تنبيه مُعطّل", silent: "صامت"),
+      alertOff: "التنبيه مُعطّل", silent: "صامت"),
     SummaryCase(
       language: "fr",
       summary: "Alerte activée · \u{2068}10 min\u{2069} avant · \u{2068}5 min\u{2069} après",

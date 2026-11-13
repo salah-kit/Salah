@@ -138,7 +138,7 @@ struct WidgetSurfaceRenderTests {
           to: directory.appendingPathComponent("stop-\(name)-\(isArabic ? "ar" : "en").png"))
       }
       let message = IOSL10n.text(
-        "Open Salah to set up prayer times", arabic: "افتح صلاة لإعداد أوقات الصلاة",
+        "Open Salah to set up prayer times", arabic: "افتح تطبيق صلاة لضبط المواقيت",
         locale: display.locale)
       try render(
         WidgetMessageContent(systemImage: "moon.stars", message: Text(verbatim: message))

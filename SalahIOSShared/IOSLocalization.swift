@@ -25,6 +25,45 @@ nonisolated enum IOSL10n {
       format: text(english, arabic: arabic, locale: locale, bundle: bundle), locale: locale,
       arguments: arguments)
   }
+
+  /// Arabic minutes after بعد or منذ, the noun in the number the count takes: "دقيقة واحدة",
+  /// "دقيقتين", "٣ دقائق", "١١ دقيقة", in the locale's digits. A `%lld` entry can't vary its
+  /// noun, and an `arabic:` literal can't carry plural variations.
+  static func arabicMinutes(_ count: Int, locale: Locale) -> String {
+    arabicCount(
+      count, one: "دقيقة واحدة", two: "دقيقتين", few: "دقائق", many: "دقيقة", other: "دقيقة",
+      locale: locale)
+  }
+
+  /// An Arabic day offset as a value, signed: "+ يوم واحد", "− يومان", "+ ٣ أيام".
+  static func arabicDayOffset(_ value: Int, locale: Locale) -> String {
+    let days = arabicCount(
+      value, one: "يوم واحد", two: "يومان", few: "أيام", many: "يومًا", other: "يوم",
+      locale: locale)
+    return value > 0 ? "+ \(days)" : value < 0 ? "− \(days)" : days
+  }
+
+  /// Arabic's count forms: the noun alone for one and two, a plural noun for 3–10, and a
+  /// singular one from 11, both after the locale's digits.
+  private static func arabicCount(
+    _ count: Int, one: String, two: String, few: String, many: String, other: String,
+    locale: Locale
+  ) -> String {
+    let magnitude = abs(count)
+    if magnitude == 1 { return one }
+    if magnitude == 2 { return two }
+    let formatter = NumberFormatter()
+    formatter.locale = locale
+    formatter.usesGroupingSeparator = false
+    let digits = formatter.string(from: NSNumber(value: magnitude)) ?? "\(magnitude)"
+    let noun =
+      switch magnitude % 100 {
+      case 3...10: few
+      case 11...99: many
+      default: other
+      }
+    return "\(digits) \(noun)"
+  }
 }
 
 nonisolated extension IOSCalculationMethod {

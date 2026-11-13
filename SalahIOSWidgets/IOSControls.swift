@@ -14,12 +14,12 @@ struct IOSMuteSoundsControl: ControlWidget {
             Text(
               verbatim: IOSL10n.text(
                 "Prayer notifications and reminders still arrive.",
-                arabic: "ستستمر تنبيهات الصلاة والتذكيرات بالوصول.", locale: value.locale)))
+                arabic: "ستصلك تنبيهات الصلاة والتذكيرات كالمعتاد.", locale: value.locale)))
       } valueLabel: { isMuted in
         Label {
           Text(
             verbatim: IOSL10n.text(
-              isMuted ? "Muted" : "Sounds on", arabic: isMuted ? "مكتوم" : "الأصوات مفعّلة",
+              isMuted ? "Muted" : "Sounds on", arabic: isMuted ? "الأصوات مكتومة" : "الأصوات مفعّلة",
               locale: value.locale))
         } icon: {
           Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
@@ -53,7 +53,7 @@ struct IOSStopAudioControl: ControlWidget {
           Text(
             verbatim: IOSL10n.text(
               value.isPlaying ? "Stop audio" : "Nothing playing",
-              arabic: value.isPlaying ? "إيقاف الصوت" : "لا يوجد صوت قيد التشغيل",
+              arabic: value.isPlaying ? "إيقاف الصوت" : "لا شيء قيد التشغيل",
               locale: value.locale))
         } icon: {
           Image(systemName: "stop.fill")

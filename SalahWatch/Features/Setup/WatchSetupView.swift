@@ -15,14 +15,14 @@ struct WatchSetupView: View {
           .font(.title2)
           .foregroundStyle(theme.accentText)
           .accessibilityHidden(true)
-        Text(verbatim: copy("Set up Salah on your iPhone", "أعدّ صلاة على جهاز iPhone"))
+        Text(verbatim: copy("Set up Salah on your iPhone", "أكمل إعداد تطبيق صلاة على iPhone"))
           .font(.headline)
           .foregroundStyle(theme.labelPrimary)
           .fixedSize(horizontal: false, vertical: true)
         Text(
           verbatim: copy(
             "Choose a place in Salah on your iPhone. Its prayer times appear here.",
-            "اختر مكانًا في تطبيق صلاة على جهاز iPhone لتظهر أوقات الصلاة هنا.")
+            "اختر مكانًا في تطبيق صلاة على جهاز iPhone لتظهر مواقيت الصلاة هنا.")
         )
         .font(.footnote)
         .foregroundStyle(theme.labelSecondary)

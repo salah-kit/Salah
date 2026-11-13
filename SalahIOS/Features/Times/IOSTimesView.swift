@@ -47,7 +47,7 @@ struct IOSTimesView: View {
       .toolbar(wideLayout && !barsAtSide ? .hidden : .visible, for: .navigationBar)
     }
     .background { IOSSkyBackground(phase: store.display?.phase ?? .neutral) }
-    .navigationTitle(copy("Times", "الأوقات"))
+    .navigationTitle(copy("Times", "المواقيت"))
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .topBarLeading) { todayButton }
@@ -84,7 +84,7 @@ struct IOSTimesView: View {
       } else if wideLayout {
         HStack {
           if !barsAtSide {
-            Text(verbatim: copy("Times", "الأوقات"))
+            Text(verbatim: copy("Times", "المواقيت"))
               .font(.largeTitle.bold())
               .accessibilityAddTraits(.isHeader)
           }
@@ -106,7 +106,7 @@ struct IOSTimesView: View {
         } description: {
           Text(
             verbatim: copy(
-              "Choose a city to see its prayer times.", "اختر مدينة لعرض أوقات الصلاة فيها."))
+              "Choose a city to see its prayer times.", "اختر مدينة لعرض مواقيت الصلاة فيها."))
         } actions: {
           Button(copy("Choose a City", "اختيار مدينة")) { showLocation() }
             .buttonStyle(.glassProminent)
@@ -172,7 +172,7 @@ struct IOSTimesView: View {
     if let display = selectedDisplay {
       IOSPrayerDayCard(
         display: display,
-        title: store.preferences.placeName ?? copy("Prayer times", "أوقات الصلاة"),
+        title: store.preferences.placeName ?? copy("Prayer times", "مواقيت الصلاة"),
         live: store.selectedDay == store.today, onAlert: store.toggleAlert(for:),
         onPlay: store.playPrayer(_:), onStop: store.stopPlayback
       )
@@ -298,12 +298,12 @@ struct IOSTimesView: View {
     IOSCard {
       ContentUnavailableView {
         Label(
-          copy("Times unavailable", "الأوقات غير متاحة"), systemImage: "clock.badge.questionmark")
+          copy("Times unavailable", "المواقيت غير متاحة"), systemImage: "clock.badge.questionmark")
       } description: {
         Text(
           verbatim: copy(
             "No prayer times are available for this date. Review calculation settings.",
-            "لا تتوفر أوقات الصلاة لهذا التاريخ. راجع إعدادات الحساب."))
+            "لا تتوفر مواقيت الصلاة لهذا التاريخ. راجع إعدادات الحساب."))
       } actions: {
         Button(copy("Calculation", "الحساب")) {
           store.handle(url: URL(string: "salah://calculation")!)
@@ -323,7 +323,7 @@ struct IOSTimesView: View {
     let location = store.preferences.placeName ?? copy("your location", "موقعك")
     return Text(
       verbatim: method + " · " + madhab + ". "
-        + copy("Times for", "الأوقات لموقع") + " " + location + ", "
+        + copy("Times for", "مواقيت") + " " + location + copy(", ", "، ")
         + (store.timeZone.localizedName(for: .generic, locale: store.locale)
           ?? store.timeZone.identifier)
     )

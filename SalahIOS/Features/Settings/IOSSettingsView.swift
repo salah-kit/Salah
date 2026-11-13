@@ -77,7 +77,7 @@ struct IOSSettingsView: View {
         Text(
           copy.text(
             "Choose Salah’s language, or follow the language set in iPhone Settings.",
-            "اختر لغة صلاة، أو اتبع اللغة المحددة في إعدادات iPhone."))
+            "اختر لغة التطبيق، أو اتبع اللغة المحددة في إعدادات iPhone."))
       }
 
       Section {
@@ -272,7 +272,7 @@ private struct IOSSettingsCategoryLabel: View {
     case .appearance: copy.text("Appearance", "المظهر")
     case .hijri: copy.text("Hijri date", "التاريخ الهجري")
     case .language: copy.text("Language", "اللغة")
-    case .about: copy.text("About Salah", "عن صلاة")
+    case .about: copy.text("About Salah", "حول صلاة")
     }
   }
 
@@ -480,7 +480,8 @@ private struct IOSAboutSettingsView: View {
         NavigationLink {
           IOSAudioLicensesSettingsView()
         } label: {
-          IOSSettingsRow(title: copy.text("Audio licenses", "تراخيص الصوت"), symbol: "waveform")
+          IOSSettingsRow(
+            title: copy.text("Audio licenses", "تراخيص التسجيلات الصوتية"), symbol: "waveform")
         }
         .accessibilityIdentifier("settings.audioLicenses")
         NavigationLink(copy.text("Privacy", "الخصوصية")) {
@@ -503,7 +504,7 @@ private struct IOSAboutSettingsView: View {
       }
     }
     .iosSettingsForm()
-    .navigationTitle(copy.text("About Salah", "عن صلاة"))
+    .navigationTitle(copy.text("About Salah", "حول صلاة"))
     .navigationBarTitleDisplayMode(.large)
   }
 
@@ -532,7 +533,7 @@ private struct IOSAudioLicensesSettingsView: View {
         }
         if let credits = URL(string: "https://github.com/salah-kit/Salah/blob/main/NOTICE") {
           Link(
-            copy.text("Full audio credits and sources", "اعتمادات الصوت ومصادره الكاملة"),
+            copy.text("Full audio credits and sources", "حقوق التسجيلات الصوتية ومصادرها"),
             destination: credits
           )
           .accessibilityIdentifier("audioLicenses.credits")
@@ -547,7 +548,7 @@ private struct IOSAudioLicensesSettingsView: View {
     }
     .background(IOSTheme.groupedBackground)
     .tint(IOSTheme.accent)
-    .navigationTitle(copy.text("Audio licenses", "تراخيص الصوت"))
+    .navigationTitle(copy.text("Audio licenses", "تراخيص التسجيلات الصوتية"))
     .navigationBarTitleDisplayMode(.inline)
     .task {
       let url =

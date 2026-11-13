@@ -97,7 +97,8 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
       let duration = PrayerDurationFormat.string(
         timerSeconds(at: date), direction: mode == .countdown ? .remaining : .elapsed,
         width: .spoken, locale: Locale(identifier: languageIdentifier))
-      return "\(prayerName), \(eyebrow), \(duration)"
+      let comma = IOSL10n.text(", ", arabic: "، ", locale: Locale(identifier: languageIdentifier))
+      return "\(prayerName)\(comma)\(eyebrow)\(comma)\(duration)"
     }
 
     /// A Live Activity never infers playback from a notification or a prayer's start.

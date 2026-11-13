@@ -102,12 +102,13 @@ struct TVTodayView: View {
   }
 
   private func keepOnScreen(_ presentation: TVPrayerPresentation) -> some View {
-    Button(presentation.copy("Keep on Screen", "إبقاء على الشاشة")) {
+    Button(presentation.copy("Keep on Screen", "إبقاء المواقيت على الشاشة")) {
       navigation.showRoomDisplay()
     }
     .accessibilityHint(
       presentation.copy(
-        "Shows the day’s times and keeps the screen on", "يعرض أوقات اليوم ويُبقي الشاشة قيد التشغيل"
+        "Shows the day’s times and keeps the screen on",
+        "يعرض مواقيت اليوم ويُبقي الشاشة قيد التشغيل"
       )
     )
     .accessibilityIdentifier("today.keepOnScreen")
@@ -159,7 +160,7 @@ struct TVUnavailableView: View {
         .font(.system(size: 80))
         .foregroundStyle(TVTheme.warning)
         .accessibilityHidden(true)
-      Text(verbatim: copy("Prayer times aren’t available", "أوقات الصلاة غير متاحة"))
+      Text(verbatim: copy("Prayer times aren’t available", "مواقيت الصلاة غير متاحة"))
         .font(.title2.bold())
       Text(
         verbatim: copy(
@@ -198,9 +199,9 @@ struct TVSourceNote {
 
   var calculatedFor: String {
     place.isEmpty
-      ? copy("Calculated on this Apple TV.", "حُسبت الأوقات على جهاز Apple TV هذا.")
+      ? copy("Calculated on this Apple TV.", "حُسبت المواقيت على جهاز Apple TV هذا.")
       : copy.format(
-        "Calculated on this Apple TV for %@.", "حُسبت الأوقات على جهاز Apple TV هذا لمدينة %@.",
+        "Calculated on this Apple TV for %@.", "حُسبت المواقيت على جهاز Apple TV هذا لمدينة %@.",
         place)
   }
 }

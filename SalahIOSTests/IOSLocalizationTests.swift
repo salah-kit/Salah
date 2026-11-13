@@ -33,6 +33,30 @@ struct IOSLocalizationTests {
       IOSL10n.text("None", arabic: "بلا تعديل", locale: locale, bundle: resources) == "بلا تعديل")
   }
 
+  /// After بعد or منذ, Arabic names one and two minutes by the noun alone, puts 3–10 in the
+  /// plural and 11–99 in the singular, in the locale's digits.
+  @Test func arabicMinutesTakeTheNounTheirCountCallsFor() {
+    let locale = AppLanguage.arabic.locale
+    for (count, phrase) in [
+      (1, "دقيقة واحدة"), (2, "دقيقتين"), (3, "٣ دقائق"), (10, "١٠ دقائق"), (11, "١١ دقيقة"),
+      (99, "٩٩ دقيقة"), (100, "١٠٠ دقيقة"), (103, "١٠٣ دقائق"), (120, "١٢٠ دقيقة"),
+    ] {
+      #expect(IOSL10n.arabicMinutes(count, locale: locale) == phrase, "\(count)")
+    }
+  }
+
+  /// A Hijri offset counts its days as Arabic does, "يوم واحد", "يومان", "٣ أيام", after its
+  /// sign.
+  @Test func arabicDayOffsetsCountTheirDaysAfterTheirSign() {
+    let locale = AppLanguage.arabic.locale
+    for (value, phrase) in [
+      (1, "+ يوم واحد"), (-1, "− يوم واحد"), (2, "+ يومان"), (-2, "− يومان"), (3, "+ ٣ أيام"),
+      (-3, "− ٣ أيام"),
+    ] {
+      #expect(IOSL10n.arabicDayOffset(value, locale: locale) == phrase, "\(value)")
+    }
+  }
+
   @Test func anUnknownKeyFallsBackToItsReadableEnglishText() {
     #expect(
       IOSL10n.text("Readable missing copy", locale: Locale(identifier: "fr"), bundle: resources)

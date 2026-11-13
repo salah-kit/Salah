@@ -63,7 +63,7 @@ struct TVAdhanView: View {
         .foregroundStyle(TVTheme.labelSecondary)
         .padding(.top, 22)
         if audio.hasQueuedDua {
-          Text(verbatim: copy("The du’a after the adhan follows", "يلي الأذان الدعاء"))
+          Text(verbatim: copy("The du’a after the adhan follows", "يليه الدعاء"))
             .font(.callout.weight(.medium))
             .foregroundStyle(TVTheme.labelSecondary)
             .padding(.top, 14)
@@ -109,10 +109,10 @@ struct TVAdhanView: View {
   private func playing(_ copy: TVCopy) -> String {
     let display = store.display
     if audio.isPlayingDua {
-      return display?.labels.playingDua ?? copy("Playing du’a", "يُتلى الدعاء")
+      return display?.labels.playingDua ?? copy("Playing du’a", "جارٍ تشغيل الدعاء")
     }
     let sound = store.preferences.tvSound(for: event.kind, observance: event.observance)
     if sound == .softTone { return TVSettingsCopy(locale: store.locale).sound(.softTone) }
-    return display?.labels.playingAdhan ?? copy("Playing adhan", "يُرفع الأذان")
+    return display?.labels.playingAdhan ?? copy("Playing adhan", "جارٍ تشغيل الأذان")
   }
 }

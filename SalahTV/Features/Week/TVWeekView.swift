@@ -154,7 +154,7 @@ struct TVWeekView: View {
         locale: store.locale) ?? zone.identifier
     return method + " "
       + copy.format(
-        "Times for %1$@, in %2$@.", "الأوقات لمدينة %1$@، بتوقيت %2$@.", note.place, zoneName)
+        "Times for %1$@, in %2$@.", "مواقيت %1$@ بتوقيت %2$@.", note.place, zoneName)
   }
 
   /// Shows the next week from its Monday, or the previous one from its Sunday, and gives

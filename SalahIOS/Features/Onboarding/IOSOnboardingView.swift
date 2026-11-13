@@ -157,15 +157,15 @@ struct IOSOnboardingView: View {
 
   private func title(_ step: IOSOnboardingStep) -> String {
     if step == .notifications, notificationDenied {
-      return text("Notifications are off", "التنبيهات متوقفة")
+      return text("Notifications are off", "الإشعارات متوقفة")
     }
     switch step {
-    case .welcome: return text("Prayer times, calm and on time", "أوقات الصلاة، بهدوء وفي موعدها")
-    case .location: return text("Times for where you are", "أوقات الصلاة في مكانك")
+    case .welcome: return text("Prayer times, calm and on time", "مواقيت الصلاة بدقة وهدوء")
+    case .location: return text("Times for where you are", "مواقيت الصلاة حيثما كنت")
     case .notifications:
       return text("How should Salah alert you?", "كيف تريد أن ينبّهك تطبيق صلاة؟")
     case .reminders: return text("Reminders before and after", "تذكير قبل الصلاة وبعدها")
-    case .calculation: return text("How times are calculated", "طريقة حساب الأوقات")
+    case .calculation: return text("How times are calculated", "طريقة حساب المواقيت")
     case .ready: return text("You’re all set", "كل شيء جاهز")
     }
   }
@@ -174,18 +174,18 @@ struct IOSOnboardingView: View {
     if step == .notifications, notificationDenied {
       return text(
         "Your prayer alerts are saved. Turn on notifications in Settings to receive them. Focus and Scheduled Summary may delay delivery.",
-        "تم حفظ تنبيهات الصلاة. فعّل التنبيهات من الإعدادات لاستلامها. قد يؤخر التركيز والملخص المجدول وصولها."
+        "حُفظت تنبيهات الصلاة. فعّل الإشعارات من الإعدادات لتصلك. قد يؤخّر «التركيز» و«الملخص المجدول» وصولها."
       )
     }
     switch step {
     case .welcome:
       return text(
         "Salah shows today’s prayers, counts down to the next, and reminds you when it’s time.",
-        "يعرض تطبيق صلاة أوقات الصلاة والوقت المتبقي للصلاة القادمة، ويذكّرك عند دخول وقتها.")
+        "يعرض تطبيق صلاة مواقيت الصلاة والوقت المتبقي للصلاة القادمة، ويذكّرك عند دخول وقتها.")
     case .location:
       return text(
         "Salah uses your location for prayer times and Qibla. Apple helps find your city and time zone.",
-        "يستخدم تطبيق صلاة موقعك لأوقات الصلاة واتجاه القبلة. تساعد Apple في تحديد مدينتك ومنطقتها الزمنية."
+        "يستخدم تطبيق صلاة موقعك لمواقيت الصلاة واتجاه القبلة. تساعد Apple في تحديد مدينتك ومنطقتها الزمنية."
       )
     case .notifications:
       return text(
@@ -257,7 +257,7 @@ struct IOSOnboardingView: View {
           openNotificationSettings()
         }
         secondary(
-          text("Continue without notifications", "المتابعة دون تنبيهات"),
+          text("Continue without notifications", "المتابعة دون إشعارات"),
           id: "onboarding.notification.continueWithout"
         ) {
           notificationDenied = false
@@ -271,7 +271,7 @@ struct IOSOnboardingView: View {
         }
       case .notifications:
         primary(
-          text("Allow Notifications", "السماح بالتنبيهات"),
+          text("Allow Notifications", "السماح بالإشعارات"),
           id: "onboarding.notification.allow", disabled: requestingNotifications
         ) { requestNotifications() }
       case .reminders:
@@ -424,14 +424,15 @@ extension IOSOnboardingView {
       return String(
         format: text(
           "For %@, %@ is suggested. You can change the method, the madhab for Asr and minute adjustments anytime.",
-          "تُقترح طريقة %@ لـ%@. يمكنك تغيير الطريقة ومذهب حساب العصر وتعديل الدقائق في أي وقت."),
-        locale: store.locale,
-        store.isArabic ? name : country, store.isArabic ? country : name)
+          "الطريقة المقترحة في %@ هي %@. يمكنك تغيير الطريقة ومذهب حساب العصر وتعديل الدقائق في أي وقت."
+        ),
+        locale: store.locale, country, name)
     }
     return String(
       format: text(
         "%@ is suggested for your location. You can change the method, the madhab for Asr and minute adjustments anytime.",
-        "تُقترح طريقة %@ لموقعك. يمكنك تغيير الطريقة ومذهب حساب العصر وتعديل الدقائق في أي وقت."),
+        "الطريقة المقترحة لموقعك هي %@. يمكنك تغيير الطريقة ومذهب حساب العصر وتعديل الدقائق في أي وقت."
+      ),
       locale: store.locale, name)
   }
 
@@ -468,7 +469,7 @@ extension IOSOnboardingView {
       text("A short adhan clip plays with each alert", "يُشغَّل مقطع قصير من الأذان مع كل تنبيه")
     case .notification: text("The usual alert sound, no adhan", "صوت التنبيه المعتاد، دون أذان")
     case .silent:
-      text("No alerts. Check the times in Salah.", "دون تنبيهات. اطّلع على الأوقات في تطبيق صلاة.")
+      text("No alerts. Check the times in Salah.", "دون تنبيهات. اطّلع على المواقيت في تطبيق صلاة.")
     }
   }
 
@@ -649,7 +650,7 @@ extension IOSOnboardingView {
     guard let event = nextPrayer, let display = store.display else {
       return text(
         "Your settings are saved. Open Salah to see the times available for your location.",
-        "تم حفظ إعداداتك. افتح تطبيق صلاة للاطلاع على الأوقات المتاحة لموقعك.")
+        "حُفظت إعداداتك. افتح تطبيق صلاة لعرض المواقيت المتاحة لموقعك.")
     }
     let interval = max(0, event.time.timeIntervalSince(store.now))
     let formatter = DateComponentsFormatter()

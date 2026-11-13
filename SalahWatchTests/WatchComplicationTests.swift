@@ -23,7 +23,7 @@ struct WatchComplicationTests {
         == "Set up Salah on your iPhone")
     #expect(
       WatchComplicationCopy.setUp(locale: AppLanguage.arabic.locale)
-        == "أعدّ صلاة على جهاز iPhone")
+        == "أكمل إعداد تطبيق صلاة على iPhone")
   }
 
   @Test func countDownFromTheWatchsOwnSchedule() throws {

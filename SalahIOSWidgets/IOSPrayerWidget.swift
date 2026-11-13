@@ -160,7 +160,7 @@ struct IOSPrayerWidgetView: View {
         message(
           title: IOSL10n.text(
             "Open Salah to set up prayer times",
-            arabic: "افتح صلاة لإعداد أوقات الصلاة", locale: locale)
+            arabic: "افتح تطبيق صلاة لضبط المواقيت", locale: locale)
         )
         .widgetURL(IOSSurfaceLink.location)
       }
@@ -169,7 +169,7 @@ struct IOSPrayerWidgetView: View {
         message(
           title: IOSL10n.text(
             "Times need updating.\nOpen Salah to refresh.",
-            arabic: "يلزم تحديث الأوقات.\nافتح صلاة للتحديث.", locale: settings.locale)
+            arabic: "يلزم التحديث.\nافتح تطبيق صلاة لتحديث المواقيت.", locale: settings.locale)
         )
         .widgetURL(IOSSurfaceLink.today)
       }
@@ -204,7 +204,7 @@ struct IOSPrayerWidgetView: View {
       message(
         title: IOSL10n.text(
           "Times unavailable.\nOpen Salah to retry.",
-          arabic: "الأوقات غير متاحة.\nافتح صلاة للمحاولة.", locale: display.locale)
+          arabic: "تعذّر عرض المواقيت.\nافتح تطبيق صلاة وأعد المحاولة.", locale: display.locale)
       )
       .widgetURL(IOSSurfaceLink.location)
     case .schedule:

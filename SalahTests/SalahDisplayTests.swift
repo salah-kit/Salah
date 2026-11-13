@@ -118,13 +118,14 @@ struct SalahDisplayTests {
 
   /// The small widget's line follows each language's word order: Turkish's "önce" means
   /// "ago", so the line says "vaktinden beri" ("since its time"), and Persian puts "از وقت"
-  /// before the name. English, Arabic and French read as before.
+  /// before the name, as Arabic's "مضى على" ("has passed since") does. English and French read
+  /// as before.
   @Test func theSinceLineFollowsTheLanguagesWordOrder() {
     let dhuhr = event(.dhuhr)
     let date = dhuhr.time.adding(minutes: 90)
     let expected: [(AppLanguage, (String, String) -> String)] = [
       (.english, { "\($0) since: \($1)" }),
-      (.arabic, { "\($0) منذ: \($1)" }),
+      (.arabic, { "مضى على \($0) \($1)" }),
       (.french, { "\($0) depuis: \($1)" }),
       (.turkish, { "\($0) vaktinden beri: \($1)" }),
       (.persian, { "از وقت \($0): \($1)" }),
@@ -140,7 +141,7 @@ struct SalahDisplayTests {
   @Test func theSpokenCountUpFollowsTheLanguagesWordOrder() {
     let spoken: [(SalahWidgetLabels, String, String, String)] = [
       (.english, "Dhuhr", "5 minutes", "Dhuhr · started 5 minutes ago"),
-      (.arabic, "الظهر", "٥ دقائق", "الظهر · منذ ٥ دقائق"),
+      (.arabic, "الظهر", "٥ دقائق", "دخل وقت الظهر منذ ٥ دقائق"),
       (.french, "Dhuhr", "5 minutes", "Dhuhr · depuis 5 minutes"),
       (.urdu, "ظہر", "۵ منٹ", "ظہر · ۵ منٹ سے"),
       (.turkish, "Öğle", "5 dakika", "Öğle vaktinden beri 5 dakika geçti"),

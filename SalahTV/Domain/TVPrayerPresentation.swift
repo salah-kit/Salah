@@ -40,8 +40,8 @@ nonisolated struct TVPrayerPresentation: Sendable {
     let start = time.time(event.time)
     var line =
       isCountingUp
-      ? copy.format("Began at %@", "بدأت الساعة %@", start)
-      : copy.format("Begins at %@", "تبدأ الساعة %@", start)
+      ? copy.format("Began at %@", "دخل الوقت الساعة %@", start)
+      : copy.format("Begins at %@", "يدخل الوقت الساعة %@", start)
     if let iqama = event.iqama {
       line += " · " + copy("Iqama", "الإقامة") + " " + time.time(iqama)
     }
@@ -84,7 +84,7 @@ nonisolated struct TVPrayerPresentation: Sendable {
     default:
       return (
         copy.format(
-          "Tone at %@ while Salah is open", "نغمة الساعة %@ ما دام تطبيق صلاة مفتوحًا",
+          "Tone at %@ while Salah is open", "تنبيه بنغمة الساعة %@ ما دام تطبيق صلاة مفتوحًا",
           time.time(event.time)), true
       )
     }
@@ -93,7 +93,7 @@ nonisolated struct TVPrayerPresentation: Sendable {
   var unavailableExplanation: String {
     copy(
       "Prayer times are unavailable for this location and date. Review the calculation settings.",
-      "أوقات الصلاة غير متاحة لهذا الموقع والتاريخ. راجع إعدادات الحساب.")
+      "مواقيت الصلاة غير متاحة لهذا الموقع والتاريخ. راجع إعدادات الحساب.")
   }
 
   /// The hero for VoiceOver: “Next prayer, Asr, begins at 3:35 PM, in 2 hours 16 minutes”.

@@ -13,10 +13,10 @@ struct TVAboutPage: View {
           copy.text("Salah for Apple TV", "صلاة لجهاز Apple TV"),
           copy.copy.format("Version %@", "الإصدار %@", version))
         section(
-          copy.text("Prayer times", "أوقات الصلاة"),
+          copy.text("Prayer times", "مواقيت الصلاة"),
           copy.text(
             "Calculated on this Apple TV with SalahKit and SalahTimes, open-source Swift packages. Salah has no account, analytics or tracking.",
-            "تُحسب على جهاز Apple TV هذا بحزمتي SalahKit وSalahTimes مفتوحتي المصدر بلغة Swift. لا حساب في صلاة ولا تحليلات ولا تتبّع."
+            "تُحسب المواقيت على جهاز Apple TV هذا بحزمتي SalahKit وSalahTimes مفتوحتي المصدر بلغة Swift. لا يتطلب التطبيق حسابًا، ولا يجمع تحليلات، ولا يتتبّعك."
           ))
         section(
           copy.text("Privacy", "الخصوصية"),
@@ -26,7 +26,7 @@ struct TVAboutPage: View {
           ))
         let credits = noticeParagraphs
         VStack(alignment: .leading, spacing: 20) {
-          section(copy.text("Audio credits", "حقوق الصوت"), credits.first ?? "")
+          section(copy.text("Audio credits", "حقوق التسجيلات الصوتية"), credits.first ?? "")
           ForEach(Array(credits.dropFirst().enumerated()), id: \.offset) { _, text in
             paragraph(text)
           }
@@ -40,7 +40,7 @@ struct TVAboutPage: View {
       .padding(.horizontal, TVMetrics.safeHorizontal)
       .padding(.vertical, TVMetrics.safeVertical)
     }
-    .navigationTitle(copy.text("About Salah", "عن صلاة"))
+    .navigationTitle(copy.text("About Salah", "حول صلاة"))
   }
 
   /// Text alone can't take focus, and tvOS scrolls by moving focus, so every section and

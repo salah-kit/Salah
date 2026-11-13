@@ -75,12 +75,14 @@ nonisolated struct TVSettingsCopy: Sendable {
   func onOff(_ value: Bool) -> String { value ? text("On", "تشغيل") : text("Off", "إيقاف") }
 
   func hijriOffset(_ value: Int) -> String {
-    value == 0
-      ? text("No adjustment", "بلا تعديل")
-      : copy.format(
-        value == 1 || value == -1 ? "%@ day" : "%@ days",
-        value == 1 || value == -1 ? "%@ يوم" : "%@ أيام",
-        (value > 0 ? "+" : "−") + number(abs(value)))
+    if value == 0 { return text("No adjustment", "بلا تعديل") }
+    if locale.language.languageCode?.identifier == "ar" {
+      return IOSL10n.arabicDayOffset(value, locale: locale)
+    }
+    return copy.format(
+      value == 1 || value == -1 ? "%@ day" : "%@ days",
+      value == 1 || value == -1 ? "%@ يوم" : "%@ أيام",
+      (value > 0 ? "+" : "−") + number(abs(value)))
   }
 
   func volume(_ value: Double) -> String {
@@ -91,7 +93,7 @@ nonisolated struct TVSettingsCopy: Sendable {
     let changed = PrayerKind.allCases.filter { adjustments.settingsMinutes(for: $0) != 0 }
     return changed.isEmpty
       ? text("None", "لا يوجد")
-      : copy.format("%@ changed", "%@ معدّلة", number(changed.count))
+      : copy.format("%@ changed", "المعدّلة: %@", number(changed.count))
   }
 }
 

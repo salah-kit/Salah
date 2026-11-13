@@ -116,7 +116,7 @@ struct MenuDropdownTextTests {
       let denied = FailureNotice(
         domain: .location, category: .terminal, messageKey: LocationFailure.denied.messageKey,
         bannerTitleKey: LocationFailure.denied.bannerTitleKey)
-      #expect(denied.bannerTitle == "الموقع متوقف لتطبيق صلاة")
+      #expect(denied.bannerTitle == "خدمات الموقع متوقفة لـ«صلاة»")
     }
   }
 

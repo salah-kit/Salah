@@ -170,11 +170,11 @@ struct WatchComplicationView: View {
 /// The complications' own wording: what to do when they can't count down.
 nonisolated enum WatchComplicationCopy {
   static func setUp(locale: Locale) -> String {
-    WatchCopy(locale: locale)("Set up Salah on your iPhone", "أعدّ صلاة على جهاز iPhone")
+    WatchCopy(locale: locale)("Set up Salah on your iPhone", "أكمل إعداد تطبيق صلاة على iPhone")
   }
 
   static func refresh(locale: Locale) -> String {
-    WatchCopy(locale: locale)("Open Salah to refresh the times", "افتح صلاة لتحديث الأوقات")
+    WatchCopy(locale: locale)("Open Salah to refresh the times", "افتح تطبيق صلاة لتحديث المواقيت")
   }
 
   /// The share of the time from the previous prayer to the next that has passed, for the

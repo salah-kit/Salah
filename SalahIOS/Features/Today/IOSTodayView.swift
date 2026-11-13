@@ -380,7 +380,7 @@ struct IOSTodayView: View {
       .tint(.primary)
       .accessibilityIdentifier("today.calculation")
       Text(
-        verbatim: copy("Calculated on this device for", "محسوبة على هذا الجهاز لموقع") + " "
+        verbatim: copy("Calculated on this device for", "حُسبت على هذا الجهاز مواقيت") + " "
           + (store.preferences.placeName ?? copy("your location", "موقعك")) + "."
       )
       .font(.footnote)
@@ -406,13 +406,13 @@ struct IOSTodayView: View {
     VStack(spacing: 20) {
       ContentUnavailableView {
         Label(
-          copy("Location is off for Salah", "الموقع غير مفعّل لصلاة"),
+          copy("Location is off for Salah", "خدمات الموقع متوقفة لتطبيق صلاة"),
           systemImage: "location.slash.fill")
       } description: {
         Text(
           verbatim: copy(
             "Allow location access, or choose a city to calculate your prayer times.",
-            "اسمح بالوصول إلى الموقع، أو اختر مدينة لحساب أوقات الصلاة."))
+            "اسمح بالوصول إلى الموقع، أو اختر مدينة لحساب مواقيت الصلاة."))
       } actions: {
         Button(copy("Open Settings", "فتح الإعدادات")) {
           openURL(URL(string: UIApplication.openSettingsURLString)!)

@@ -40,7 +40,7 @@ struct TVCitySearchView: View {
             Text(
               verbatim: copy(
                 "Times for the city are calculated on this Apple TV. The search uses Apple Maps.",
-                "تُحسب أوقات المدينة على جهاز Apple TV هذا. ويستخدم البحث خرائط Apple."))
+                "تُحسب مواقيت المدينة على جهاز Apple TV هذا. ويستخدم البحث خرائط Apple."))
           }
         }
         .accessibilityIdentifier("location.status")

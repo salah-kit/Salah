@@ -240,6 +240,7 @@ nonisolated struct IOSPrayerNotificationContent: Sendable {
     time.dateStyle = .none
     time.timeStyle = .short
     let minutes = Int(abs(alert.fireDate.timeIntervalSince(alert.event.time) / 60).rounded())
+    let isArabic = locale.language.languageCode?.identifier == "ar"
     let content = UNMutableNotificationContent()
     content.title = name
     content.subtitle = locationName
@@ -249,13 +250,21 @@ nonisolated struct IOSPrayerNotificationContent: Sendable {
         "It’s time for %@ (%@).", arabic: "حان وقت %@ (%@).", locale: locale,
         arguments: name, time.string(from: alert.event.time))
     case .before:
-      content.body = IOSL10n.format(
-        "%@ in %lld minutes, at %@.", arabic: "%@ بعد %lld دقائق، في %@.", locale: locale,
-        arguments: name, minutes, time.string(from: alert.event.time))
+      // Arabic's noun follows the count ("دقيقتين", "٣ دقائق"), which `%lld` can't vary.
+      content.body =
+        isArabic
+        ? String(
+          format: "يحين وقت %@ بعد %@، الساعة %@.", name,
+          IOSL10n.arabicMinutes(minutes, locale: locale), time.string(from: alert.event.time))
+        : IOSL10n.format(
+          "%@ in %lld minutes, at %@.", locale: locale,
+          arguments: name, minutes, time.string(from: alert.event.time))
     case .after:
-      content.body = IOSL10n.format(
-        "%@ began %lld minutes ago.", arabic: "بدأ وقت %@ منذ %lld دقائق.", locale: locale,
-        arguments: name, minutes)
+      content.body =
+        isArabic
+        ? String(format: "دخل وقت %@ منذ %@.", name, IOSL10n.arabicMinutes(minutes, locale: locale))
+        : IOSL10n.format(
+          "%@ began %lld minutes ago.", locale: locale, arguments: name, minutes)
     }
     content.sound = alert.sound.notificationSound
     content.categoryIdentifier = "salah.prayer"

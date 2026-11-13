@@ -75,7 +75,7 @@ nonisolated struct WatchQiblaPresentation: Equatable, Sendable {
     case .unavailable:
       return copy("Compass unavailable", "البوصلة غير متاحة")
     case .needsLocation:
-      return copy("The compass needs your location", "تحتاج البوصلة إلى موقعك")
+      return copy("The compass needs your location", "يلزم تحديد موقعك لتعمل البوصلة")
     case .calibrating:
       return copy("Move your device in a figure 8", "حرّك الجهاز على شكل ٨")
     case .ready:

@@ -141,7 +141,7 @@ nonisolated struct WatchPrayerPresentation: Sendable {
     switch slot {
     case .missing(let kind):
       let name = display.name(of: kind)
-      let detail = copy("Not today", "ليس اليوم")
+      let detail = copy("Not today", "غير متاح اليوم")
       return Row(
         id: kind, glyph: kind.glyphName, name: name, time: "—", detail: detail, state: .missing,
         accessibility: [name, detail].joined(separator: ", "))

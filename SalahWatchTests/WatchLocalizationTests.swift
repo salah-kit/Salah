@@ -9,7 +9,7 @@ struct WatchLocalizationTests {
   /// The watch's own text comes from its catalog, in the language chosen on the iPhone.
   @Test(
     arguments: [
-      ("en", "Set up Salah on your iPhone"), ("ar", "أعدّ صلاة على جهاز iPhone"),
+      ("en", "Set up Salah on your iPhone"), ("ar", "أكمل إعداد تطبيق صلاة على iPhone"),
       ("fr", "Configurez Salah sur votre iPhone"), ("ur", "اپنے iPhone پر Salah ترتیب دیں"),
       ("id", "Atur Salah di iPhone Anda"), ("tr", "Salah’ı iPhone’unuzda kurun"),
       ("fa", "Salah را روی iPhone خود راه‌اندازی کنید"),
@@ -17,7 +17,7 @@ struct WatchLocalizationTests {
     ])
   func watchTextIsInEveryLanguage(language: String, expected: String) {
     let copy = WatchCopy(locale: Locale(identifier: language))
-    #expect(copy("Set up Salah on your iPhone", "أعدّ صلاة على جهاز iPhone") == expected)
+    #expect(copy("Set up Salah on your iPhone", "أكمل إعداد تطبيق صلاة على iPhone") == expected)
   }
 
   /// Text the watch shares with the iPhone app reads the same on both.

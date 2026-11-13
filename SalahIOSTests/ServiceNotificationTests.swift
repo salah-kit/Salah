@@ -166,6 +166,27 @@ import Testing
     #expect(service.errorMessage != nil)
   }
 
+  /// An Arabic reminder names its minutes in the number their count takes, which a `%lld`
+  /// entry can't: "دقيقتين", "١٠ دقائق", "١٥ دقيقة".
+  @Test func arabicReminderBodiesCountTheirMinutes() {
+    var preferences = preferences()
+    preferences.language = .arabic
+    let content = IOSPrayerNotificationContent(preferences: preferences)
+    let day = CivilDay(year: 2026, month: 10, day: 6)
+    func body(_ kind: AlertKind, minutes: Int) -> String {
+      let offset = Double(kind == .before ? -minutes : minutes) * 60
+      let alert = PlannedAlert(
+        id: NotificationIdentity(namespace: "prayers", scheduleDay: day, prayer: .asr, kind: kind),
+        event: PrayerEvent(scheduleDay: day, kind: .asr, time: now),
+        fireDate: now.addingTimeInterval(offset), sound: .none)
+      return content.make(alert).body
+    }
+    #expect(body(.before, minutes: 2).hasPrefix("يحين وقت العصر بعد دقيقتين، الساعة "))
+    #expect(body(.before, minutes: 10).hasPrefix("يحين وقت العصر بعد ١٠ دقائق، الساعة "))
+    #expect(body(.after, minutes: 1) == "دخل وقت العصر منذ دقيقة واحدة.")
+    #expect(body(.after, minutes: 15) == "دخل وقت العصر منذ ١٥ دقيقة.")
+  }
+
   private func preferences() -> IOSPreferences {
     var preferences = IOSPreferences()
     preferences.location = PrayerLocation(

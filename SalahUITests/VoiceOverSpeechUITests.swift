@@ -171,8 +171,8 @@ final class VoiceOverSpeechUITests: XCTestCase {
     try assertDropdownSpeech(in: Self.english)
   }
 
-  /// The dropdown, in Arabic: the same, in Salah's Arabic, "العشاء · ساعة و١١ دقيقة
-  /// متبقّية", with Salah's Arabic role names, such as "زر" for a button.
+  /// The dropdown, in Arabic: the same, in Salah's Arabic, "العشاء · ساعة و١١ دقيقة حتى دخول
+  /// الوقت", with Salah's Arabic role names, such as "زر" for a button.
   @MainActor
   func testDropdownSaysThePrayersAndTheCountdownInArabic() throws {
     guard #available(macOS 27.0, *) else { throw XCTSkip(Self.needsMacOS27) }
@@ -363,7 +363,7 @@ extension VoiceOverSpeechUITests {
     var quitSpoken: String
     /// `SalahWidgetLabels`' words for the countdown and the count-up.
     var remaining: String
-    var since: @Sendable (_ duration: String) -> String
+    var since: @Sendable (_ prayer: String, _ duration: String) -> String
     /// What VoiceOver says for an alert toggle, by its name, while the alert is off; the
     /// toggle's name for a prayer ("Alert for Fajr"); and the words every toggle's name holds.
     var alertOff: @Sendable (_ toggle: String) -> String
@@ -377,7 +377,7 @@ extension VoiceOverSpeechUITests {
 
   static let english = Language(
     setting: "english", code: "en", locale: Locale(identifier: "en"), quit: "Quit Salah",
-    quitSpoken: "Quit Salah button", remaining: "remaining", since: { "started \($0) ago" },
+    quitSpoken: "Quit Salah button", remaining: "remaining", since: { "\($0) · started \($1) ago" },
     alertOff: { "off \($0) button" }, alertFor: { "Alert for \($0)" },
     toggleMarker: "Alert for", tomorrow: "Tomorrow")
 
@@ -387,8 +387,9 @@ extension VoiceOverSpeechUITests {
     components.numberingSystem = Locale.NumberingSystem("arab")
     return Language(
       setting: "arabic", code: "ar", locale: Locale(components: components), quit: "إنهاء صلاة",
-      quitSpoken: "إنهاء صلاة زر", remaining: "متبقّية", since: { "منذ \($0)" },
-      alertOff: { "مُعطّل \($0) زر" }, alertFor: { "تنبيه \($0)" },
+      quitSpoken: "إنهاء صلاة زر", remaining: "حتى دخول الوقت",
+      since: { "دخل وقت \($0) منذ \($1)" },
+      alertOff: { "إيقاف \($0) زر" }, alertFor: { "تنبيه \($0)" },
       toggleMarker: "تنبيه", tomorrow: "غدًا")
   }()
 
@@ -449,7 +450,7 @@ extension VoiceOverSpeechUITests {
         said.insert(
           started == nil
             ? "\(name) · \(duration) \(language.remaining)"
-            : "\(name) · \(language.since(duration))")
+            : language.since(name, duration))
       }
     }
     return said

@@ -45,7 +45,8 @@ struct IOSPrayerLiveActivity: Widget {
                   Text(
                     verbatim: localized(
                       context.shown.muteSounds ? "Muted" : "Sound on",
-                      context.shown.muteSounds ? "مكتوم" : "الصوت مفعّل", state: context.shown))
+                      context.shown.muteSounds ? "الصوت مكتوم" : "الصوت مفعّل", state: context.shown)
+                  )
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -266,7 +267,8 @@ private func spokenTimer(_ state: SalahActivityAttributes.ContentState, pause: D
   if let pause { return Text(verbatim: state.spokenLabel(at: pause)) }
   let timer = Text(
     timerInterval: state.timerInterval, countsDown: state.mode == .countdown, showsHours: true)
-  return Text("\(state.prayerName), \(state.eyebrow), \(timer)")
+  let comma = localized(", ", "، ", state: state)
+  return Text("\(state.prayerName)\(comma)\(state.eyebrow)\(comma)\(timer)")
 }
 
 private func localized(

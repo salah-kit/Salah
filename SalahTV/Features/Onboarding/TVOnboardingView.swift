@@ -22,7 +22,7 @@ struct TVOnboardingView: View {
           .padding(40)
           .background(TVTheme.accentSubtle, in: Circle())
           .accessibilityHidden(true)
-        Text(verbatim: copy("Times for where you are", "أوقات الصلاة حيث أنت"))
+        Text(verbatim: copy("Times for where you are", "مواقيت الصلاة حيثما كنت"))
           .font(.title.bold())
           .foregroundStyle(TVTheme.labelPrimary)
           .padding(.top, 40)

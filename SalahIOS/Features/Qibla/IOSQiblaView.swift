@@ -185,7 +185,9 @@ struct IOSQiblaView: View {
   }
 
   private var instruction: String {
-    guard hasLocation else { return copy("Qibla needs your location", "تحتاج القبلة إلى موقعك") }
+    guard hasLocation else {
+      return copy("Qibla needs your location", "حدّد موقعك لمعرفة اتجاه القبلة")
+    }
     guard store.qiblaBearing != nil else {
       if let distance = store.qiblaDistanceKilometers, distance < 0.001 {
         return copy("You are at the Kaaba", "أنت عند الكعبة")
@@ -249,7 +251,7 @@ struct IOSQiblaView: View {
       Text(
         verbatim: copy(
           "Hold your device flat, away from metal and magnets. The Qibla is measured from true north.",
-          "أمسك الجهاز بشكل مسطّح وبعيدًا عن المعادن والمغناطيس. يُقاس اتجاه القبلة من الشمال الحقيقي."
+          "ضع الجهاز أفقيًا بعيدًا عن المعادن والمغناطيس. يُقاس اتجاه القبلة من الشمال الحقيقي."
         )
       )
       .font(.footnote)
@@ -270,7 +272,7 @@ struct IOSQiblaView: View {
         Text(
           verbatim: copy(
             "Your location’s Qibla bearing is shown above. A true-north compass reading is not available on this device.",
-            "يظهر اتجاه القبلة لموقعك أعلاه. لا تتوفر قراءة بوصلة من الشمال الحقيقي على هذا الجهاز."
+            "اتجاه القبلة من موقعك معروض أعلاه، لكن هذا الجهاز لا يوفّر قراءة للبوصلة من الشمال الحقيقي."
           )
         )
         .font(.footnote)

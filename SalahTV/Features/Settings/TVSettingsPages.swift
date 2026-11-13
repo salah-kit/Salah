@@ -98,7 +98,7 @@ struct TVSettingsPage: View {
     case .recommended:
       copy.text(
         "Seventh of the night above 48°; middle of the night elsewhere",
-        "سُبع الليل بعد ٤٨°؛ ومنتصف الليل فيما عدا ذلك")
+        "سُبع الليل فوق خط العرض ٤٨°، ومنتصف الليل دونه")
     case .middleOfTheNight:
       copy.text("Limit twilight to half the night", "تحديد الشفق بنصف الليل")
     case .seventhOfTheNight:
@@ -108,7 +108,7 @@ struct TVSettingsPage: View {
     case .disabled:
       copy.text(
         "Some events may not occur at high latitudes",
-        "قد لا تحدث بعض المواقيت في خطوط العرض العليا")
+        "قد يتعذّر تحديد بعض المواقيت في خطوط العرض العليا")
     }
   }
 }
@@ -174,7 +174,7 @@ struct TVLocationSettingsPage: View {
     let copy = TVSettingsCopy(locale: store.locale)
     List {
       if let current = store.preferences.location {
-        Section(copy.text("Times for", "الأوقات لمدينة")) {
+        Section(copy.text("Times for", "المواقيت لمدينة")) {
           Text(verbatim: TVPlaceName(location: current, locale: store.locale).full)
             .foregroundStyle(.secondary)
         }
@@ -281,7 +281,7 @@ struct TVMethodPage: View {
         }
       }
     }
-    .navigationTitle(copy.text("Method", "الطريقة"))
+    .navigationTitle(copy.text("Method", "طريقة الحساب"))
     .frame(maxWidth: 1120)
     .defaultFocus($focused, preferences.method)
   }

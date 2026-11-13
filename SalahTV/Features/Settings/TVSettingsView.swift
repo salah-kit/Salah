@@ -53,8 +53,8 @@ struct TVSettingsView: View {
       Section(copy.text("Place", "المكان")) {
         row(.location, copy.text("Location", "الموقع"), value: preferences.location?.name)
       }
-      Section(copy.text("Prayer times", "أوقات الصلاة")) {
-        row(.method, copy.text("Method", "الطريقة"), value: copy.method(preferences))
+      Section(copy.text("Prayer times", "مواقيت الصلاة")) {
+        row(.method, copy.text("Method", "طريقة الحساب"), value: copy.method(preferences))
         row(
           .madhab, copy.text("Asr (madhab)", "العصر (المذهب)"),
           value: copy.madhab(preferences.madhab))
@@ -101,7 +101,7 @@ struct TVSettingsView: View {
           value: copy.hijriOffset(preferences.hijriOffset))
       }
       Section {
-        row(.about, copy.text("About Salah", "عن صلاة"), value: nil)
+        row(.about, copy.text("About Salah", "حول صلاة"), value: nil)
       }
     }
     .contentMargins(.top, 150, for: .scrollContent)
@@ -149,7 +149,7 @@ struct TVSettingsView: View {
   }
 
   private func prayersSummary(_ copy: TVSettingsCopy) -> String {
-    copy.copy.format("%@ on", "%@ مفعّلة", copy.number(store.preferences.tvSoundsOn))
+    copy.copy.format("%@ on", "المفعّلة: %@", copy.number(store.preferences.tvSoundsOn))
   }
 
   private static func route(for item: TVSettingsItem) -> TVSettingsRoute {
@@ -209,11 +209,11 @@ struct TVSettingsDetailPanel: View {
             "اختر مدينة، أو استخدم موقع جهاز Apple TV هذا مرة واحدة.")
           : copy.copy.format(
             "Times for %@. Choose a city, or use this Apple TV’s location once.",
-            "الأوقات لمدينة %@. اختر مدينة، أو استخدم موقع جهاز Apple TV هذا مرة واحدة.", place)
+            "المواقيت لمدينة %@. اختر مدينة، أو استخدم موقع جهاز Apple TV هذا مرة واحدة.", place)
       )
     case .method:
       return (
-        "globe", copy.text("Method", "الطريقة"),
+        "globe", copy.text("Method", "طريقة الحساب"),
         copy.text(
           "How Fajr and Isha are calculated. Automatic follows the method used in the country.",
           "طريقة حساب الفجر والعشاء. التلقائي يتبع الطريقة المعتمدة في البلد.")
@@ -237,7 +237,7 @@ struct TVSettingsDetailPanel: View {
         "slider.horizontal.3", copy.text("Adjustments", "التعديلات"),
         copy.text(
           "Move a prayer’s time by minutes, to match your mosque.",
-          "حرّك وقت صلاة بالدقائق ليوافق مسجدك.")
+          "قدّم وقت الصلاة أو أخّره بالدقائق ليوافق مسجدك.")
       )
     case .ramadanIsha:
       return (
@@ -252,14 +252,14 @@ struct TVSettingsDetailPanel: View {
         "speaker.wave.2.fill", copy.text("Adhan on this Apple TV", "الأذان على جهاز Apple TV هذا"),
         copy.text(
           "The adhan plays at each prayer while Salah is open. Apple TV can’t play it when Salah is closed.",
-          "يُرفع الأذان عند كل صلاة ما دام تطبيق صلاة مفتوحًا. لا يستطيع Apple TV تشغيله وصلاة مغلق.")
+          "يُشغَّل الأذان عند كل صلاة ما دام تطبيق صلاة مفتوحًا، ولا يمكن تشغيله والتطبيق مغلق.")
       )
     case .prayers:
       return (
         "bell", copy.text("Prayers", "الصلوات"),
         copy.text(
           "Choose the sound for each prayer, or turn one off.",
-          "اختر صوت كل صلاة، أو أوقف إحداها.")
+          "اختر صوتًا لكل صلاة، أو أوقف صوتها.")
       )
     case .dua:
       return (
@@ -272,7 +272,7 @@ struct TVSettingsDetailPanel: View {
         "speaker.3", copy.text("Volume", "مستوى الصوت"),
         copy.text(
           "How loud Salah plays the adhan, under the TV’s own volume.",
-          "مستوى صوت الأذان في صلاة، ضمن مستوى صوت التلفاز.")
+          "مستوى صوت الأذان في التطبيق، ضمن مستوى صوت التلفاز.")
       )
     case .appearance:
       return (
@@ -285,7 +285,7 @@ struct TVSettingsDetailPanel: View {
         "character.bubble", copy.text("Language", "اللغة"),
         copy.text(
           "The language of Salah’s names, dates and digits.",
-          "لغة الأسماء والتواريخ والأرقام في صلاة.")
+          "لغة الأسماء والتواريخ والأرقام في التطبيق.")
       )
     case .timeOfDay:
       return (
@@ -299,14 +299,14 @@ struct TVSettingsDetailPanel: View {
         "calendar", copy.text("Hijri date", "التاريخ الهجري"),
         copy.text(
           "Umm al-Qura, moved by up to three days to match a local moon sighting.",
-          "أم القرى، مع تحريك حتى ثلاثة أيام ليوافق رؤية الهلال المحلية.")
+          "تقويم أم القرى، ويمكن تعديله حتى ثلاثة أيام وفق رؤية الهلال المحلية.")
       )
     case .about:
       return (
-        "info.circle", copy.text("About Salah", "عن صلاة"),
+        "info.circle", copy.text("About Salah", "حول صلاة"),
         copy.text(
           "The version, the sources of the times and the adhan recordings, and privacy.",
-          "الإصدار، ومصادر الأوقات وتسجيلات الأذان، والخصوصية.")
+          "الإصدار، ومصادر المواقيت وتسجيلات الأذان، والخصوصية.")
       )
     }
   }

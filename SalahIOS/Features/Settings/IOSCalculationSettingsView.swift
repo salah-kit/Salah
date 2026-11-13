@@ -21,7 +21,7 @@ struct IOSCalculationSettingsView: View {
         NavigationLink {
           IOSAllMethodsSettingsView()
         } label: {
-          IOSSettingsRow(title: copy.text("All 14 methods", "جميع الطرق الـ ١٤"))
+          IOSSettingsRow(title: copy.text("All 14 methods", "جميع الطرق (١٤)"))
         }
         .accessibilityIdentifier("method.all")
         NavigationLink {
@@ -34,7 +34,7 @@ struct IOSCalculationSettingsView: View {
         Text(
           copy.text(
             "Automatic uses a country suggestion when available; otherwise your chosen method stays. You can always choose manually.",
-            "يستخدم الوضع التلقائي اقتراح البلد عند توفره؛ وإلا تبقى طريقتك المختارة. يمكنك الاختيار يدويًا دائمًا."
+            "في الوضع التلقائي تُعتمد الطريقة المستخدمة في بلدك إن توفّرت، وإلا تبقى طريقتك الحالية. ويمكنك الاختيار يدويًا في أي وقت."
           ))
       }
       Section(copy.text("Asr (madhab)", "العصر (المذهب)")) {
@@ -57,7 +57,7 @@ struct IOSCalculationSettingsView: View {
         Text(
           copy.text(
             "Above 48°, Recommended uses the seventh of the night for Fajr and Isha.",
-            "بعد خط عرض ٤٨°، يستخدم الخيار الموصى به سُبع الليل للفجر والعشاء."))
+            "فوق خط العرض ٤٨°، يستخدم الخيار الموصى به سُبع الليل للفجر والعشاء."))
       }
     }
     .iosSettingsForm()
@@ -223,7 +223,7 @@ struct IOSHighLatitudeSettingsView: View {
     case .recommended:
       copy.text(
         "Seventh of the night above 48°; middle of the night elsewhere",
-        "سُبع الليل بعد ٤٨°؛ ومنتصف الليل فيما عدا ذلك")
+        "سُبع الليل فوق خط العرض ٤٨°، ومنتصف الليل دونه")
     case .middleOfTheNight:
       copy.text("Limit twilight to half the night", "تحديد الشفق بنصف الليل")
     case .seventhOfTheNight:
@@ -233,7 +233,7 @@ struct IOSHighLatitudeSettingsView: View {
     case .disabled:
       copy.text(
         "Some events may not occur at high latitudes",
-        "قد لا تحدث بعض المواقيت في خطوط العرض العليا")
+        "قد يتعذّر تحديد بعض المواقيت في خطوط العرض العليا")
     }
   }
 }
@@ -318,7 +318,7 @@ struct IOSAdjustmentsSettingsView: View {
         Text(
           copy.text(
             "Shift a prayer by whole minutes, from −60 to +60. The method’s own minutes stay separate, so changing yours never erases them.",
-            "قدّم أو أخّر الصلاة بدقائق كاملة من −٦٠ إلى +٦٠. تبقى دقائق الطريقة منفصلة، فلا يؤدي تعديلك إلى حذفها."
+            "قدّم وقت الصلاة أو أخّره بالدقائق، من −٦٠ إلى +٦٠. تبقى تعديلات الطريقة منفصلة، فلا يمحوها تعديلك."
           ))
       }
       IOSHijriSettingsSection()
@@ -412,8 +412,9 @@ private struct IOSHijriSettingsSection: View {
     let description =
       offset == 0
       ? copy.text("no offset", "بلا تعديل")
-      : copy.format(
-        "%@ days", "%@ أيام", (offset > 0 ? "+" : "") + copy.number(offset))
+      : copy.isArabic
+        ? IOSL10n.arabicDayOffset(offset, locale: store.locale)
+        : copy.format("%@ days", "%@ أيام", (offset > 0 ? "+" : "") + copy.number(offset))
     return "\(formatter.string(from: date)) · \(description)"
   }
 }

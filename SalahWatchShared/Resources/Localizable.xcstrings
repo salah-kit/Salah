@@ -190,7 +190,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "اختر مكانًا في تطبيق صلاة على جهاز iPhone لتظهر أوقات الصلاة هنا."
+            "value": "اختر مكانًا في تطبيق صلاة على جهاز iPhone لتظهر مواقيت الصلاة هنا."
           }
         },
         "fr": {
@@ -898,7 +898,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ليس اليوم"
+            "value": "غير متاح اليوم"
           }
         },
         "fr": {
@@ -1016,7 +1016,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "افتح صلاة لتحديث الأوقات"
+            "value": "افتح تطبيق صلاة لتحديث المواقيت"
           }
         },
         "fr": {
@@ -1311,7 +1311,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "أعدّ صلاة على جهاز iPhone"
+            "value": "أكمل إعداد تطبيق صلاة على iPhone"
           }
         },
         "fr": {
@@ -1488,7 +1488,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تحتاج البوصلة إلى موقعك"
+            "value": "يلزم تحديد موقعك لتعمل البوصلة"
           }
         },
         "fr": {
@@ -1547,7 +1547,7 @@
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "الصلاة القادمة وعدّها التنازلي."
+            "value": "الصلاة القادمة والوقت المتبقي لها."
           }
         },
         "fr": {
