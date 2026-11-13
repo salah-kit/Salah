@@ -359,7 +359,7 @@ struct IOSQiblaView: View {
     previousHeading = value
   }
 
-  private func showLocation() { store.handle(url: URL(string: "salah://location")!) }
+  private func showLocation() { store.showLocation() }
 
   private func requestLocation() {
     if !hasLocation { store.updatePreferences { $0.useCurrentLocation = true } }

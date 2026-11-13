@@ -278,8 +278,10 @@ nonisolated struct IOSAudioMetadata: Equatable, Sendable {
 /// Starts and ends the audio session, ending it off the main actor.
 ///
 /// Deactivating the session waits for the system's audio to settle, which has taken seconds.
-/// Stop returns at once and the session ends on a queue of its own. Playback that starts
-/// before then keeps its session: an ending asked for earlier is dropped.
+/// Stop returns at once and the session ends on a queue of its own. Nothing on the main actor
+/// waits for that: playback that starts meanwhile activates the session itself, an ending
+/// asked for before it is dropped, and one already under way activates the session again
+/// when it finds playback started behind it.
 nonisolated final class IOSAudioSessionGate: Sendable {
   static let system = IOSAudioSessionGate(
     setActive: { active in
@@ -291,7 +293,7 @@ nonisolated final class IOSAudioSessionGate: Sendable {
   private static let queue = DispatchQueue(label: "io.github.salah-kit.Salah.audio-session")
   private let setActive: @Sendable (Bool) throws -> Void
   private let later: @Sendable (@escaping @Sendable () -> Void) -> Void
-  /// Held while the session changes, so a start and an ending never interleave.
+  /// Guards the count only, never a call into the session.
   private let lock = NSLock()
   nonisolated(unsafe) private var activations = 0
 
@@ -304,19 +306,17 @@ nonisolated final class IOSAudioSessionGate: Sendable {
   }
 
   func activate() throws {
-    try lock.withLock {
-      activations += 1
-      try setActive(true)
-    }
+    lock.withLock { activations += 1 }
+    try setActive(true)
   }
 
   func deactivateLater() {
     let seen = lock.withLock { activations }
     later { [self] in
-      lock.withLock {
-        guard activations == seen else { return }
-        try? setActive(false)
-      }
+      guard lock.withLock({ activations }) == seen else { return }
+      try? setActive(false)
+      // Playback started while the session was ending: it needs the session back.
+      if lock.withLock({ activations }) != seen { try? setActive(true) }
     }
   }
 }

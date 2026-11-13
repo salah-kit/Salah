@@ -281,7 +281,8 @@ nonisolated struct IOSLocationCopy: Sendable {
       location.latitude, positive: ("%@° N", "%@° شمالًا"), negative: ("%@° S", "%@° جنوبًا"))
     let longitude = coordinate(
       location.longitude, positive: ("%@° E", "%@° شرقًا"), negative: ("%@° W", "%@° غربًا"))
-    let separator = locale.language.languageCode?.identifier == "ar" ? "، " : ", "
+    let arabicScript = ["ar", "fa", "ur"].contains(locale.language.languageCode?.identifier ?? "")
+    let separator = arabicScript ? "، " : ", "
     return latitude + separator + longitude + " · " + timeZoneName(location.timeZone)
   }
 

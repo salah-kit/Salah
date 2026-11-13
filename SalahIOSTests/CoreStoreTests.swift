@@ -301,8 +301,9 @@ struct CoreStoreTests {
     #expect(store.showsLocation)
     #expect(store.selectedTab == .times)
     #expect(store.settingsPath.isEmpty)
-    store.showsLocation = false
+    // A link closes the sheet, so its destination isn't left underneath.
     store.handle(url: try #require(URL(string: "salah://location")))
+    #expect(!store.showsLocation)
     #expect(store.selectedTab == .settings)
     #expect(store.settingsPath == [.location])
   }
@@ -335,6 +336,8 @@ struct CoreStoreTests {
     let south = PrayerLocation(
       latitude: -33.8688, longitude: -70.6693, timeZone: TimeZone(identifier: "America/Santiago")!)
     #expect(english.detail(of: south).hasPrefix("33.8688° S, 70.6693° W · "))
+    let urdu = IOSLocationCopy(locale: AppLanguage.urdu.locale, bundle: bundle)
+    #expect(urdu.detail(of: Self.makkah).contains("، "))
     let turkish = IOSLocationCopy(locale: AppLanguage.turkish.locale, bundle: bundle)
     #expect(turkish.detail(of: Self.makkah).hasPrefix("21,4225° K, 39,8262° D · "))
   }

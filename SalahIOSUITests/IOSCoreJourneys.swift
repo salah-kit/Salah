@@ -282,7 +282,7 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
       tap(tab, in: app)
       let bar = require("nowPlaying.bar", in: app)
       XCTAssertTrue(require("nowPlaying.stop", in: app).isHittable, "Stop is reachable on \(tab)")
-      XCTAssertLessThanOrEqual(bar.frame.maxY, tabBar.frame.maxY)
+      XCTAssertLessThan(bar.frame.midY, tabBar.frame.minY, "The bar sits above the tab bar")
       XCTAssertGreaterThan(bar.frame.width, 200, "The bar is not an empty capsule on \(tab)")
     }
     capture("iPhone-English-Settings-Now-Playing", in: app)

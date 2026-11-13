@@ -268,6 +268,8 @@ final class IOSAppStore {
 
   func handle(url: URL) {
     guard url.scheme?.lowercased() == "salah" else { return }
+    // A link's destination is never left under the Location sheet.
+    showsLocation = false
     let host = url.host?.lowercased()
     let path = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased()
     let destination = host == "settings" && !path.isEmpty ? path : (host ?? path)

@@ -192,24 +192,37 @@ struct ServicePolicyTests {
   }
 
   /// Ending the audio session has taken seconds, and Stop waited for it on the main actor
-  /// (https://github.com/salah-kit/Salah/issues/88). Stop now returns at once and the session
-  /// ends afterwards.
-  @Test @MainActor func stopReturnsBeforeTheAudioSessionEnds() {
+  /// (https://github.com/salah-kit/Salah/issues/88). Stop now hands the ending to a queue,
+  /// and neither a second Stop nor new playback waits for an ending under way.
+  @Test @MainActor func stopNeverWaitsForTheAudioSessionToEnd() throws {
     let log = ServiceSessionLog()
+    let ending = DispatchSemaphore(value: 0)
+    let release = DispatchSemaphore(value: 0)
+    let queue = DispatchQueue(label: "SalahIOSTests.audio-session")
     let gate = IOSAudioSessionGate(
       setActive: { active in
-        if !active { Thread.sleep(forTimeInterval: 2) }
+        if !active {
+          ending.signal()
+          release.wait()
+        }
         log.record(active ? "on" : "off")
       },
-      later: { work in log.defer(work) })
+      later: { work in queue.async(execute: work) })
     let audio = IOSAudioService(files: temporaryFiles(), session: gate)
-    var stopped = 0
-    audio.onPlaybackChanged = { if !$0 { stopped += 1 } }
+    try gate.activate()
+    audio.stop()
+    ending.wait()
+    // The session is ending now and will not finish until released.
     let started = Date()
     audio.stop()
+    try gate.activate()
     #expect(Date().timeIntervalSince(started) < 0.5)
-    #expect(log.events.isEmpty)
-    #expect(log.pending == 1)
+    release.signal()
+    release.signal()
+    queue.sync {}
+    // Playback that started during the ending has its session back, and the second Stop's
+    // ending, asked for before that playback, was dropped.
+    #expect(log.events == ["on", "on", "off", "on"])
   }
 
   /// Playback that starts before a deferred ending runs keeps its session.
