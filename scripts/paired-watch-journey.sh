@@ -14,6 +14,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+source scripts/identity.sh
 if [[ $# -lt 2 ]]; then
   echo "usage: $0 <iPhone UDID> <Watch UDID> [derived data path]" >&2
   exit 2
@@ -32,10 +33,10 @@ trap shutdown EXIT
 
 xcodebuild build -jobs 4 -project Salah.xcodeproj -scheme SalahIOS \
   -destination "id=$phone" -derivedDataPath "$derived_path" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 xcodebuild build-for-testing -jobs 4 -project Salah.xcodeproj -scheme SalahWatchUITests \
   -destination "id=$watch" -derivedDataPath "$derived_path" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 
 xcrun simctl boot "$phone" 2>/dev/null || true
 xcrun simctl boot "$watch" 2>/dev/null || true
@@ -43,14 +44,14 @@ xcrun simctl bootstatus "$phone" -b
 xcrun simctl bootstatus "$watch" -b
 xcrun simctl list pairs | grep -B1 -A2 "$watch"
 
-xcrun simctl uninstall "$watch" io.github.salah-kit.Salah.iOS.watchkitapp 2>/dev/null || true
-xcrun simctl uninstall "$phone" io.github.salah-kit.Salah.iOS 2>/dev/null || true
+xcrun simctl uninstall "$watch" "$bundle_identifier.iOS.watchkitapp" 2>/dev/null || true
+xcrun simctl uninstall "$phone" "$bundle_identifier.iOS" 2>/dev/null || true
 xcrun simctl install "$phone" "$derived_path/Build/Products/Debug-iphonesimulator/SalahIOS.app"
 xcrun simctl install "$watch" "$derived_path/Build/Products/Debug-watchsimulator/SalahWatch.app"
 
 # Salah on the iPhone, set up in Makkah from its fixture, sends the preferences once its
 # session is active, and stays open to answer the watch's request.
-xcrun simctl launch "$phone" io.github.salah-kit.Salah.iOS \
+xcrun simctl launch "$phone" "$bundle_identifier.iOS" \
   -salah.ios.testSuite paired -salah.ios.reset true -salah.ios.fixture true \
   -salah.ios.skipOnboarding true
 sleep 10

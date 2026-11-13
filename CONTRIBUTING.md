@@ -79,11 +79,24 @@ No signing team is committed. `Config/Shared.xcconfig` includes your own
 
 ```sh
 cp Config/Local.xcconfig.example Config/Local.xcconfig
-# then set DEVELOPMENT_TEAM = <your team ID> in Config/Local.xcconfig
+# then, in Config/Local.xcconfig:
+#   DEVELOPMENT_TEAM = <your team ID>
+#   APP_BUNDLE_IDENTIFIER = <a bundle identifier of your own, like com.yourname.Salah>
+#   APP_GROUP_IDENTIFIER = <an App Group of your own, like group.com.yourname.Salah>
 ```
 
+Apple registers a bundle identifier and an App Group to one team, and the ones in
+`Config/Shared.xcconfig` (the identifiers in the table above) are registered to Salah's
+maintainers' team, so a build signed with another team needs its own. `APP_BUNDLE_IDENTIFIER`
+is the Mac app's; every other target's follows it, as `com.yourname.Salah.iOS` follows
+`com.yourname.Salah`. The build writes `APP_GROUP_IDENTIFIER` into each target's
+entitlements and into the `AppGroupIdentifier` key of its Info.plist, where the code reads
+it (`SalahWidgetConstants.appGroupID`), so an app and its extensions always open the same
+group. Simulator builds and the tests need neither setting, and the scripts in `scripts/`
+build under Salah's own identifiers whatever yours are.
+
 With a team, Xcode signs automatically; add `-allowProvisioningUpdates` to command-line
-builds so it can register the bundle identifiers and the App Group. Sign with a team to
+builds so it can register your bundle identifiers and your App Group. Sign with a team to
 run the app: the App Group it shares with its widget comes from your team's provisioning
 profile.
 
@@ -105,7 +118,7 @@ profile. Simulator apps are signed ad hoc so their App Group entitlements are av
 they are not distribution builds. Install an iOS 26 or later simulator runtime through
 Xcode's Components settings.
 The app's App Group and Time Sensitive notification entitlements are generated from
-its `project.yml` declaration; keep the widget's App Group identifier matching.
+its `project.yml` declaration; the widget's entitlements name the same build setting.
 Run the shared CI entry point from the repository root:
 
 ```sh
@@ -160,8 +173,9 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug 
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on a physical device, configure your team in `Config/Local.xcconfig` and use
-`-allowProvisioningUpdates`. Enable the existing App Group for the app and extension.
+To run on a physical device, set your team and your own identifiers in
+`Config/Local.xcconfig` ([Signing](#signing)) and use `-allowProvisioningUpdates`, which
+registers them and enables your App Group for the app and extension.
 App Store distribution needs a paid membership; device notification delivery, compass
 accuracy and system scheduling should also be checked on the intended device. Follow
 the steps in [#65](https://github.com/salah-kit/Salah/issues/65), or
@@ -216,8 +230,9 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahTV -configuration Debug \
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on an Apple TV, configure your team in `Config/Local.xcconfig`, use
-`-allowProvisioningUpdates`, and enable the App Group for the app and the extension.
+To run on an Apple TV, set your team and your own identifiers in `Config/Local.xcconfig`
+([Signing](#signing)) and use `-allowProvisioningUpdates`, which registers them and enables
+your App Group for the app and the extension.
 Sound through a television, the screen saver and the Siri Remote need a real device:
 follow [#69](https://github.com/salah-kit/Salah/issues/69) and record the commit,
 the Apple TV model, the tvOS version and what you observed. The
@@ -291,9 +306,10 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahWatch -configuration Debu
   CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
 ```
 
-To run on an Apple Watch, configure your team in `Config/Local.xcconfig`, run the `SalahIOS`
-scheme on the paired iPhone with `-allowProvisioningUpdates`, and enable the App Group for
-the watch app and its complications. The compass, sound through the watch's speaker,
+To run on an Apple Watch, set your team and your own identifiers in `Config/Local.xcconfig`
+([Signing](#signing)), and run the `SalahIOS` scheme on the paired iPhone with
+`-allowProvisioningUpdates`, which registers them and enables your App Group for the watch
+app and its complications. The compass, sound through the watch's speaker,
 notifications forwarded from the iPhone and complications on a real face need a watch:
 follow [#77](https://github.com/salah-kit/Salah/issues/77) and record the commit, the watch
 and iPhone models, their system versions and what you observed. The [watchOS validation

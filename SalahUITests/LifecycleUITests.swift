@@ -175,7 +175,11 @@ final class LifecycleUITests: XCTestCase {
 
   // MARK: - Helpers
 
-  static let bundleIdentifier = "io.github.salah-kit.Salah"
+  /// The bundle identifier of the app under test, which the build writes into the test
+  /// bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
+  static let bundleIdentifier =
+    Bundle(for: LifecycleUITests.self).object(forInfoDictionaryKey: "AppBundleIdentifier")
+    as? String ?? "io.github.salah-kit.Salah"
 
   @MainActor
   private func launch() -> XCUIApplication {

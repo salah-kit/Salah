@@ -3,6 +3,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+source scripts/identity.sh
 derived_path="${SALAH_TVOS_DERIVED_DATA:-.derived/tvos}"
 run_stamp="$(date +%Y%m%d-%H%M%S)-$$"
 results="$derived_path/Results/$run_stamp"
@@ -12,10 +13,13 @@ mkdir -p "$results"
 # build additionally catches SDK and extension integration that is device-specific.
 xcodebuild build -jobs 4 -project Salah.xcodeproj -scheme SalahTV -configuration Release \
   -destination 'generic/platform=tvOS' -derivedDataPath "$derived_path" \
-  CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM=
+  CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM= "${identity[@]}"
 app="$derived_path/Build/Products/Release-appletvos/SalahTV.app"
 test -d "$app/PlugIns/SalahTVTopShelf.appex"
 test -f "$app/NOTICE"
+# Both bundles carry Salah's identifier and name the App Group their code reads.
+python3 scripts/check-identity.py "$app_group" "$app=$bundle_identifier.tvOS" \
+  "$app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
 # actool succeeds silently without the brand assets, so check the app names them.
 test "$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon raw -o - "$app/Info.plist")" \
   = "App Icon"
@@ -44,7 +48,7 @@ xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTV \
   -parallel-testing-enabled NO -collect-test-diagnostics never \
   -derivedDataPath "$derived_path" \
   -resultBundlePath "$results/Unit.xcresult" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
   -destination "platform=tvOS Simulator,id=$simulator_id" \
   -only-testing:SalahTVUITests/TVCoreJourneys \
@@ -52,7 +56,7 @@ xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
   -parallel-testing-enabled NO -collect-test-diagnostics never \
   -derivedDataPath "$derived_path" \
   -resultBundlePath "$results/Journeys.xcresult" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 
 # Xcode embeds these simulated entitlements in the simulator executables; their ad-hoc
 # code signatures can legitimately have an empty entitlement dictionary. The app writes
@@ -61,18 +65,11 @@ intermediates="$derived_path/Build/Intermediates.noindex/Salah.build/Debug-apple
 cp "$intermediates/SalahTV.build/SalahTV.app-Simulated.xcent" "$results/AppEntitlements.plist"
 cp "$intermediates/SalahTVTopShelf.build/SalahTVTopShelf.appex-Simulated.xcent" \
   "$results/TopShelfEntitlements.plist"
-python3 - "$results/AppEntitlements.plist" "$results/TopShelfEntitlements.plist" <<'PY'
-import plistlib
-import sys
-
-for path in sys.argv[1:]:
-    with open(path, "rb") as source:
-        entitlements = plistlib.load(source)
-    if "group.io.github.salah-kit.Salah.shared" not in entitlements.get(
-        "com.apple.security.application-groups", []
-    ):
-        sys.exit(f"{path} is missing the shared App Group entitlement.")
-PY
+simulator_app="$derived_path/Build/Products/Debug-appletvsimulator/SalahTV.app"
+python3 scripts/check-identity.py "$app_group" \
+  "$results/AppEntitlements.plist" "$results/TopShelfEntitlements.plist" \
+  "$simulator_app=$bundle_identifier.tvOS" \
+  "$simulator_app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
 
 # Each permission journey resets Salah's location authorization, so it answers a fresh
 # system alert, and finds the simulated location set above.
@@ -82,15 +79,15 @@ xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
   -parallel-testing-enabled NO -collect-test-diagnostics never \
   -derivedDataPath "$derived_path" \
   -resultBundlePath "$results/Permissions.xcresult" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 
 # Exercise production composition with its own defaults and no Debug fixture or
 # test-preferences overrides, after a fresh install of this task's app.
-xcrun simctl uninstall "$simulator_id" io.github.salah-kit.Salah.tvOS
+xcrun simctl uninstall "$simulator_id" "$bundle_identifier.tvOS"
 xcodebuild test -jobs 4 -project Salah.xcodeproj -scheme SalahTVUITests \
   -destination "platform=tvOS Simulator,id=$simulator_id" \
   -only-testing:SalahTVUITests/TVProductionJourneys \
   -parallel-testing-enabled NO -collect-test-diagnostics never \
   -derivedDataPath "$derived_path" \
   -resultBundlePath "$results/Production.xcresult" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
