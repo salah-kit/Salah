@@ -91,9 +91,11 @@ counting toward an old prayer. Widget links route into the appropriate app desti
 [`IOSActivityCoordinator`](../SalahIOS/Data/Activities/IOSActivityCoordinator.swift)
 starts relevant prayer Live Activities while the app is foregrounded. Activity content
 contains its own validity deadline. iOS suspends the app in the background, so past that
-deadline the activity shows what stays true without an update: the prayer as begun, and a
-count-up from its time that the system keeps running. The app ends a passed prayer's
-activity when it next runs, in the foreground or on a background refresh. A dismissed prayer is not immediately recreated. Playing state requires an
+deadline the activity shows what stays true without an update: the place, the prayer and
+its time, with a count-up from that time that the system keeps running when the prayer
+has begun. The app ends a passed prayer's activity when it next runs, in the foreground
+or on a background refresh that can read the preferences. A dismissed prayer is not
+immediately recreated. Playing state requires an
 actual user-started playback session. Compact presentations show status; Stop is an
 interactive action in the presentations that support it.
 

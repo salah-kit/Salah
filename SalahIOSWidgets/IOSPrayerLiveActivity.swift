@@ -145,6 +145,8 @@ private struct IOSActivityHeading: View {
   var body: some View {
     VStack(alignment: centered ? .center : .leading, spacing: 0) {
       Text(verbatim: state.eyebrow)
+        // A stale activity names its place here.
+        .privacySensitive(state.eyebrow == state.place)
         .font(.caption.weight(.semibold))
         .foregroundStyle(
           state.mode == .justStarted

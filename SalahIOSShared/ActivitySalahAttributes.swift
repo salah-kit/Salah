@@ -42,14 +42,14 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
     /// A countdown goes stale at its prayer's time, and a count-up or an adhan played at the
     /// prayer's time within the 15 minutes after it: the prayer has begun, so the activity
     /// counts up from its time, which the system keeps running. It says where, not "now",
-    /// because it can stay on the Lock Screen for hours. Any other playback (a reminder
+    /// because it can stay on the Lock Screen for hours. Any other playback (a sound played
     /// before its prayer, an adhan replayed later) has nothing left to count: the activity
     /// keeps the prayer and its time.
     var stale: Self {
       var state = self
       state.updatedAt = validUntil
       state.eyebrow = place
-      // The prayer's span, or the sound's, is over: a full bar. A reminder played before
+      // The prayer's span, or the sound's, is over: a full bar. A sound played before
       // its prayer goes stale before that prayer's time.
       let end = min(prayerTime, validUntil)
       state.progressStart = end.addingTimeInterval(-1)
@@ -57,7 +57,7 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
       let sinceThePrayer = validUntil.timeIntervalSince(prayerTime)
       if sinceThePrayer >= 0, sinceThePrayer <= Self.countUpWindow {
         state.mode = .justStarted
-        state.validUntil = prayerTime.addingTimeInterval(Self.staleCountUp)
+        state.validUntil = validUntil.addingTimeInterval(Self.staleCountUp)
       } else {
         state.mode = .ended
       }
@@ -66,8 +66,9 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
 
     /// How long after its time a prayer counts up.
     static let countUpWindow: TimeInterval = 15 * 60
-    /// iOS ends a Live Activity eight hours after it starts and can keep it on the Lock Screen
-    /// four hours more, so a stale count-up never reaches its end on screen.
+    /// How long past going stale a count-up runs. iOS ends a Live Activity eight hours after
+    /// it starts and can keep it on the Lock Screen four hours more, so the count-up never
+    /// reaches its end on screen.
     static let staleCountUp: TimeInterval = 12 * 60 * 60
 
     /// A snapshot's progress. Live rendering uses the bounded dates to advance without app wakes.

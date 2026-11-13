@@ -39,7 +39,7 @@ subscription.
   Dynamic Island, and Control Center controls for mute and Stop. Widgets calculate
   their own schedule from shared settings. Setup, unavailable and stale widget states
   explain when to open the app, without showing an old countdown. A Live Activity the
-  app can't update counts up from its prayer's time instead.
+  app can't update shows its prayer, and counts up from its time once it has begun.
 
 The iOS app is available as source in the Unreleased changes. There is no App Store
 listing or installable iOS download yet. See [Installation](#installation) to run a

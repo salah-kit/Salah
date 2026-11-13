@@ -155,6 +155,9 @@ struct WidgetActivityTests {
     #expect(state.timerInterval.upperBound == prayer.time.addingTimeInterval(15 * 60))
     let stale = state.stale
     #expect(stale.mode == .justStarted && stale.eyebrow == state.place)
+    // Twelve hours from going stale, which is no earlier than the activity's request.
+    #expect(stale.timerInterval.lowerBound == prayer.time)
+    #expect(stale.timerInterval.upperBound == state.validUntil.addingTimeInterval(12 * 60 * 60))
     #expect(stale.timerSeconds(at: prayer.time.addingTimeInterval(40 * 60)) == 40 * 60)
     #expect(stale.clockValue(at: prayer.time.addingTimeInterval(40 * 60)) == "0:40:00")
   }
@@ -177,7 +180,7 @@ struct WidgetActivityTests {
     #expect(stale.timerInterval.lowerBound == prayer.time)
   }
 
-  /// A sound played away from its prayer's time (a reminder before it, an adhan replayed
+  /// A sound played away from its prayer's time (before it, or an adhan replayed
   /// hours later) leaves nothing to count: the stale activity keeps the prayer and stops.
   @Test(arguments: [-20 * 60, 3 * 60 * 60] as [TimeInterval])
   func stalePlaybackAwayFromThePrayersTimeEnds(offset: TimeInterval) throws {
@@ -185,7 +188,7 @@ struct WidgetActivityTests {
     let prayer = try event(.asr, settings: settings)
     let startedAt = prayer.time.addingTimeInterval(offset)
     let session = IOSPlaybackSession(
-      playback: SalahPlayback(event: prayer, slot: offset < 0 ? .preReminder : .alert),
+      playback: SalahPlayback(event: prayer, slot: .alert),
       startedAt: startedAt, duration: 4 * 60)
     let display = SalahDisplay(
       date: startedAt.addingTimeInterval(30), settings: settings, schedule: settings.schedule)
