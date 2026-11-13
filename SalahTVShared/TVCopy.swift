@@ -27,7 +27,7 @@ nonisolated struct TVTimeText: Sendable {
 
   /// The locale's short time, bidi-isolated: "3:35 PM", "٣:٣٥ م".
   func time(_ date: Date) -> String {
-    text.timeFormatter().string(from: date).bidiIsolated
+    text.clockTime(date).bidiIsolated
   }
 
   /// The time without its day period, for a large numeral: "11:40".

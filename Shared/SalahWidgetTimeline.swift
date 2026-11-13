@@ -21,6 +21,15 @@ nonisolated struct SalahWidgetEntry: Sendable {
 
   var date: Date
   var content: Content
+  /// The moment an example entry's timers stand still at; `nil` for a live entry, whose
+  /// timers run. The widget gallery's sample shows one fixed moment whenever it's drawn.
+  var stillAt: Date?
+
+  init(date: Date, content: Content, stillAt: Date? = nil) {
+    self.date = date
+    self.content = content
+    self.stillAt = stillAt
+  }
 }
 
 /// The widget's timeline, as plain values a test can inspect: a pure function of the
@@ -45,6 +54,24 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   /// promptly; the builder ends at the first omitted change and reloads halfway.
   static let entryLimit = 48
 
+  /// How often a timeline takes a new entry, and how many it may hold.
+  ///
+  /// WidgetKit draws every entry several times over before it shows the first, so the entry
+  /// count is what a person waits for after adding a widget or changing a setting.
+  struct Cadence: Equatable, Sendable {
+    var strategy: RefreshStrategy
+    var entryLimit: Int
+
+    /// For faces that draw the moment as static content, such as a gauge or the sun's place
+    /// on its arc: the countdown cadence, up to `SalahWidgetTimeline.entryLimit` entries.
+    static let steps = Cadence(
+      strategy: SalahWidgetTimeline.strategy, entryLimit: SalahWidgetTimeline.entryLimit)
+
+    /// For faces whose countdown and progress run by themselves: an entry only where the
+    /// state changes, which a dozen cover for most of a day.
+    static let stateChanges = Cadence(strategy: .stateChanges, entryLimit: 12)
+  }
+
   /// The entries, in date order.
   var entries: [SalahWidgetEntry]
   /// When to ask for the next timeline.
@@ -52,23 +79,25 @@ nonisolated struct SalahWidgetTimeline: Sendable {
   /// SalahWidgets' timeline the entries came from; `nil` while the widget waits for setup
   /// or when the timeline couldn't be planned.
   var planned: PrayerTimeline?
+  /// The cadence the entries were planned at, which also bounds them once playback is applied.
+  var cadence: Cadence = .steps
 
   /// The timeline from `now`.
   ///
   /// Without settings, one setup entry and no reload until the app saves its settings.
-  /// With settings, the extension builds its own schedule and SalahWidgets' steps
-  /// timeline over the default 48-hour horizon, capped at `entryLimit`: an entry
-  /// wherever the state changes, the steps between them, an expired entry where the
-  /// archive ends, and a reload halfway there.
+  /// With settings, the extension builds its own schedule and SalahWidgets' timeline
+  /// over the default 48-hour horizon at `cadence`, capped at its entry limit: an entry
+  /// wherever the state changes, the cadence's steps between them, an expired entry where
+  /// the archive ends, and a reload halfway there.
   /// What's playing shows in the entries while it can still be playing.
   /// The builder includes civil-day boundaries so the listed day turns over with the date.
-  static func make(settings: SalahSettings?, playback: SalahPlayback?, now: Date)
-    -> SalahWidgetTimeline
-  {
+  static func make(
+    settings: SalahSettings?, playback: SalahPlayback?, now: Date, cadence: Cadence = .steps
+  ) -> SalahWidgetTimeline {
     guard let settings else {
       return SalahWidgetTimeline(
         entries: [SalahWidgetEntry(date: now, content: .setupNeeded)], reload: .never,
-        planned: nil)
+        planned: nil, cadence: cadence)
     }
     let schedule = settings.schedule
     let zone = settings.location.timeZone
@@ -88,15 +117,15 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     let planned: PrayerTimeline
     do {
       planned = try PrayerTimelineBuilder(
-        schedule: schedule, policy: SalahDisplay.policy, strategy: strategy,
-        includeDayBoundaries: true, limit: entryLimit
+        schedule: schedule, policy: SalahDisplay.policy, strategy: cadence.strategy,
+        includeDayBoundaries: true, limit: cadence.entryLimit
       ).timeline(from: now)
     } catch {
       // Only an invalid horizon or strategy fails; show that the times need refreshing
       // until the app reloads the widget, as SalahWidgets' own WidgetKit timeline does.
       return SalahWidgetTimeline(
         entries: [SalahWidgetEntry(date: now, content: .expired(settings))], reload: .never,
-        planned: nil)
+        planned: nil, cadence: cadence)
     }
 
     var entries: [SalahWidgetEntry] = []
@@ -111,7 +140,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       }
     }
     return SalahWidgetTimeline(
-      entries: entries, reload: .after(planned.reloadDate), planned: planned
+      entries: entries, reload: .after(planned.reloadDate), planned: planned, cadence: cadence
     ).applyingPlayback(playback)
   }
 
@@ -156,10 +185,11 @@ nonisolated struct SalahWidgetTimeline: Sendable {
     // An expiry between cadence dates can add one entry when there were no
     // duplicate Stop entries to remove. End at the first omitted change rather
     // than exceeding the archive bound or hiding a missing schedule update.
-    if published.count > Self.entryLimit {
-      let cutoff = published[Self.entryLimit - 1].date
+    let entryLimit = cadence.entryLimit
+    if published.count > entryLimit {
+      let cutoff = published[entryLimit - 1].date
       published =
-        Array(published.prefix(Self.entryLimit - 1))
+        Array(published.prefix(entryLimit - 1))
         + [SalahWidgetEntry(date: cutoff, content: .expired(settings))]
       planned.validUntil = cutoff
       planned.reloadDate = first.date.addingTimeInterval(cutoff.timeIntervalSince(first.date) / 2)
@@ -175,7 +205,7 @@ nonisolated struct SalahWidgetTimeline: Sendable {
       }
     }
     return SalahWidgetTimeline(
-      entries: published, reload: .after(planned.reloadDate), planned: planned)
+      entries: published, reload: .after(planned.reloadDate), planned: planned, cadence: cadence)
   }
 }
 

@@ -8557,6 +8557,65 @@
         }
       }
     },
+    "Makkah": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Makkah"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مكة المكرمة"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La Mecque"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مکہ مکرمہ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Makkah"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mekke"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مکه"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মক্কা"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Makkah"
+          }
+        }
+      }
+    },
     "Method": {
       "extractionState": "manual",
       "localizations": {
@@ -18351,61 +18410,61 @@
         }
       }
     },
-    "in": {
+    "in %@": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "in"
+            "value": "in %@"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "بعد"
+            "value": "بعد %@"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "dans"
+            "value": "dans %@"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "میں"
+            "value": "%@ میں"
           }
         },
         "id": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "dalam"
+            "value": "dalam %@"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "sonra"
+            "value": "%@ sonra"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "تا"
+            "value": "تا %@ دیگر"
           }
         },
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "পরে"
+            "value": "%@ পর"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "dalam"
+            "value": "dalam %@"
           }
         }
       }

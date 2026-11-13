@@ -819,7 +819,7 @@ nonisolated struct PrayerAlertContent: Sendable {
   /// Foundation isolates each argument.
   private func body(of alert: PlannedAlert, name: String, offset: Int) -> String {
     let locale = bodyLocale
-    let time = text.timeFormatter().string(from: alert.event.time)
+    let time = text.clockTime(alert.event.time)
     let resource: LocalizedStringResource
     switch alert.kind {
     case .atTime:

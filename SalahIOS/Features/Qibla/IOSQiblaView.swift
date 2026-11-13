@@ -163,7 +163,7 @@ struct IOSQiblaView: View {
         showLocation()
       } label: {
         Label(
-          store.preferences.location?.name ?? copy("Your location", "موقعك"),
+          store.preferences.placeName ?? copy("Your location", "موقعك"),
           systemImage: "location.fill"
         )
         .font(.subheadline.weight(.semibold))

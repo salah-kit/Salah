@@ -79,6 +79,30 @@ struct PrayerPresentationTests {
     #expect(presentation.display.slots.contains(.event(asr)))
   }
 
+  /// The next row's countdown is one catalog entry, so each language places the time itself:
+  /// Turkish, Bengali and Urdu put their word after it.
+  @Test(
+    arguments: [
+      (AppLanguage.english, "in ", ""), (.arabic, "بعد ", ""), (.french, "dans ", ""),
+      (.persian, "تا ", " دیگر"), (.indonesian, "dalam ", ""), (.malay, "dalam ", ""),
+      (.turkish, "", " sonra"), (.urdu, "", " میں"), (.bengali, "", " পর"),
+    ])
+  func nextRowCountdownFollowsEachLanguagesWordOrder(
+    language: AppLanguage, before: String, after: String
+  ) throws {
+    var settings = try Self.settings()
+    settings.language = language
+    let day = CivilDay(year: 2026, month: 6, day: 2)
+    let asr = try #require(settings.schedule.day(day).day?[.asr])
+    let remaining: TimeInterval = 2 * 3_600 + 16 * 60
+    let display = SalahDisplay(
+      date: asr.time.addingTimeInterval(-remaining), settings: settings,
+      schedule: settings.schedule)
+    let presentation = IOSPrayerPresentation(
+      display: display, bundle: Bundle(for: PrayerPresentationResources.self))
+    #expect(presentation.detail(for: asr) == before + display.text.duration(remaining) + after)
+  }
+
   @Test func turnInstructionsUseTheShortestArcAcrossNorth() {
     #expect(IOSQiblaPresentation.shortestTurn(from: 359, to: 1) == 2)
     #expect(IOSQiblaPresentation.shortestTurn(from: 1, to: 359) == -2)
@@ -158,3 +182,5 @@ struct PrayerPresentationTests {
     return try #require(preferences.mirror)
   }
 }
+
+private final class PrayerPresentationResources: NSObject {}

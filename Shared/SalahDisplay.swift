@@ -126,7 +126,7 @@ nonisolated struct SalahDisplay: Sendable {
   func name(of event: PrayerEvent) -> String { names.name(of: event) }
   func name(of kind: PrayerKind) -> String { names.name(of: kind) }
   func timeText(of event: PrayerEvent) -> String {
-    text.timeFormatter().string(from: event.time).bidiIsolated
+    text.clockTime(event.time).bidiIsolated
   }
   func alerts(for event: PrayerEvent) -> PrayerAlerts { settings.alerts(for: event) }
   func reminderDetail(for event: PrayerEvent) -> String? {

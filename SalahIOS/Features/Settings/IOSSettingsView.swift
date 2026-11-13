@@ -279,7 +279,7 @@ private struct IOSSettingsCategoryLabel: View {
   private var value: String? {
     switch destination {
     case .location:
-      store.preferences.location?.name ?? copy.text("Choose a city", "اختر مدينة")
+      store.preferences.placeName ?? copy.text("Choose a city", "اختر مدينة")
     case .calculation: store.preferences.method.title(locale: store.locale)
     case .madhab:
       store.preferences.madhab == .hanafi

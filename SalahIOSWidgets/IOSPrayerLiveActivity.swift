@@ -188,15 +188,15 @@ private struct IOSActivityTimer: View {
             countsDown: state.mode == .countdown, showsHours: true)
         }
       } else {
-        HStack(spacing: 0) {
-          if state.mode == .justStarted { Text(verbatim: "+") }
-          if let pause {
-            Text(verbatim: state.clockValue(at: pause))
-          } else {
-            Text(
-              timerInterval: timerRange,
-              countsDown: state.mode == .countdown, showsHours: true)
-          }
+        let reading =
+          pause.map { Text(verbatim: state.clockValue(at: $0)) }
+          ?? Text(
+            timerInterval: timerRange, countsDown: state.mode == .countdown, showsHours: true)
+        if state.mode == .justStarted {
+          // One run, read left to right, so the sign stays before its digits in Arabic.
+          Text("\u{2066}+\(reading)\u{2069}")
+        } else {
+          reading
         }
       }
     }
@@ -241,15 +241,11 @@ private struct IOSActivityProgress: View {
           }
         }
       } else {
-        ProgressView(timerInterval: state.progressStart...state.progressEnd, countsDown: false) {
-          EmptyView()
-        } currentValueLabel: {
-          EmptyView()
-        }
+        IOSRunningProgress(
+          span: state.progressStart...state.progressEnd,
+          tint: AnyShapeStyle(state.phase.colors(isDark: true).tint.color))
       }
     }
-    .progressViewStyle(.linear)
-    .tint(state.phase.colors(isDark: true).tint.color)
     .frame(height: 4)
     .accessibilityHidden(true)
   }
@@ -293,9 +289,12 @@ private func localized(
 /// Every Live Activity region receives Salah's chosen language, not the host process language.
 struct IOSActivityEnvironment: ViewModifier {
   let state: SalahActivityAttributes.ContentState
+  /// The device's direction, which the activity replaces with its language's.
+  @Environment(\.layoutDirection) private var hostDirection
 
   func body(content: Content) -> some View {
     content
+      .environment(\.hostLayoutDirection, hostDirection)
       .environment(\.colorScheme, .dark)
       .environment(\.locale, Locale(identifier: state.languageIdentifier))
       .environment(\.timeZone, TimeZone(identifier: state.timeZoneIdentifier) ?? .current)

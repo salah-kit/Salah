@@ -87,9 +87,6 @@ the bundled macOS adhan recordings ([NOTICE](../NOTICE)).
   for Salah alone in Settings. The Apple TV app does the same.
 - [#75]: a permission journey fails on some Macs, where the simulator's Settings puts
   Salah's row under its search field.
-- [#79]: in Turkish, Bengali and Urdu, the next prayer's countdown puts the word for "in"
-  before the time, where it belongs after it: in the Today list, and in the Lock Screen's
-  inline and rectangular widgets. The Apple Watch app and its complications share it.
 
 ### Before a release
 
@@ -189,6 +186,5 @@ Store record, and distribution signing covers its bundle identifiers,
 [#74]: https://github.com/salah-kit/Salah/issues/74
 [#75]: https://github.com/salah-kit/Salah/issues/75
 [#77]: https://github.com/salah-kit/Salah/issues/77
-[#79]: https://github.com/salah-kit/Salah/issues/79
 [#82]: https://github.com/salah-kit/Salah/issues/82
 [#86]: https://github.com/salah-kit/Salah/issues/86

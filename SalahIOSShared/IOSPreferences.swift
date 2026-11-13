@@ -6,6 +6,8 @@ import SalahTimes
 /// The app-owned choices shared with the iOS extension. A new install has no location.
 nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
   var location: PrayerLocation?
+  /// The saved place's name in the languages Salah has shown it in.
+  var placeNames: IOSPlaceNames?
   var recentLocations: [PrayerLocation] = []
   var useCurrentLocation = false
   var method: IOSCalculationMethod = .automatic
@@ -66,9 +68,48 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
   /// 120 minutes after Maghrib in Ramadan. Qatar's, the other interval Isha, keeps 90.
   var offersDelayedIsha: Bool { method != .custom && resolvedMethod == .ummAlQura }
 
+  /// The language code place names are kept under: the selected language's, or the
+  /// device's when Salah follows it.
+  var placeLanguageCode: String {
+    language.locale.language.languageCode?.identifier ?? "en"
+  }
+
+  /// The place's name in the selected language once Salah has looked it up, and as it was
+  /// saved until then.
+  var placeName: String? {
+    guard let location else { return nil }
+    return placeNames?.name(of: location, languageCode: placeLanguageCode) ?? location.name
+  }
+
+  /// Whether the place still needs a name in the selected language. The geocoder answered
+  /// in the device's language when the place was saved, so that language needs no lookup.
+  func needsPlaceName(deviceLanguageCode: String?) -> Bool {
+    guard let location, placeLanguageCode != deviceLanguageCode else { return false }
+    return placeNames?.name(of: location, languageCode: placeLanguageCode) == nil
+  }
+
+  /// Keeps `name` for `location` in a language. A name that arrives after the person chose
+  /// another place is dropped, and a new place starts a new set of names.
+  mutating func setPlaceName(_ name: String, languageCode: String, for place: PrayerLocation) {
+    let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard let location, IOSPlaceNames.isSamePlace(location, place), !name.isEmpty else { return }
+    var names =
+      placeNames.flatMap { $0.belongs(to: location) ? $0 : nil }
+      ?? IOSPlaceNames(latitude: location.latitude, longitude: location.longitude)
+    names.names[languageCode] = name
+    placeNames = names
+  }
+
+  /// The saved location, named in the selected language for the surfaces outside the app.
+  var namedLocation: PrayerLocation? {
+    guard var location else { return nil }
+    location.name = placeName
+    return location
+  }
+
   /// No mirror is published until the user grants a fix or chooses a city.
   var mirror: SalahSettings? {
-    guard let location else { return nil }
+    guard let location = namedLocation else { return nil }
     return SalahSettings(
       location: location, calculation: calculation, language: language, appearance: appearance,
       followsTimeOfDay: followsTimeOfDay, silentMode: muteSounds, hijriOffset: hijriOffset,
@@ -96,6 +137,10 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
     {
       result.location = nil
       result.onboardingCompleted = false
+    }
+    // Names looked up for a place the person has since left label nothing.
+    if let names = result.placeNames, result.location.map(names.belongs(to:)) != true {
+      result.placeNames = nil
     }
     result.customFajrAngle = Self.angle(customFajrAngle, fallback: 18)
     result.customIshaAngle = Self.angle(customIshaAngle, fallback: 17.5)
@@ -129,6 +174,7 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
   /// A Control Center mute change therefore survives an unrelated calculation edit.
   mutating func mergeChanges(from before: Self, to after: Self) {
     if before.location != after.location { location = after.location }
+    if before.placeNames != after.placeNames { placeNames = after.placeNames }
     if before.recentLocations != after.recentLocations { recentLocations = after.recentLocations }
     if before.useCurrentLocation != after.useCurrentLocation {
       useCurrentLocation = after.useCurrentLocation
@@ -177,7 +223,8 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
 
 nonisolated extension IOSPreferences {
   private enum CodingKeys: String, CodingKey {
-    case location, recentLocations, useCurrentLocation, method, automaticFallbackMethod
+    case location, placeNames, recentLocations, useCurrentLocation, method
+    case automaticFallbackMethod
     case madhab, highLatitudeRule
     case automaticHighLatitude, customFajrAngle, customIshaAngle, adjustments
     case delayedIshaInRamadan, hijriOffset, language, appearance, followsTimeOfDay
@@ -190,6 +237,7 @@ nonisolated extension IOSPreferences {
     self.init()
     let values = try decoder.container(keyedBy: CodingKeys.self)
     location = try values.decodeIfPresent(PrayerLocation.self, forKey: .location)
+    placeNames = try values.decodeIfPresent(IOSPlaceNames.self, forKey: .placeNames)
     recentLocations =
       try values.decodeIfPresent([PrayerLocation].self, forKey: .recentLocations) ?? recentLocations
     useCurrentLocation =
@@ -236,6 +284,29 @@ nonisolated extension IOSPreferences {
       ?? values.contains(.jumuahAlerts)
     onboardingCompleted =
       try values.decodeIfPresent(Bool.self, forKey: .onboardingCompleted) ?? onboardingCompleted
+  }
+}
+
+/// One place's names by language code.
+///
+/// A geocoder names a place in the language it's asked in, and the saved location holds one
+/// name. The names carry their place's coordinates, so they never label another place.
+nonisolated struct IOSPlaceNames: Codable, Equatable, Sendable {
+  var latitude: Double
+  var longitude: Double
+  var names: [String: String] = [:]
+
+  /// The same saved place, not merely a nearby one: a new fix or city starts over.
+  static func isSamePlace(_ first: PrayerLocation, _ second: PrayerLocation) -> Bool {
+    first.latitude == second.latitude && first.longitude == second.longitude
+  }
+
+  func belongs(to location: PrayerLocation) -> Bool {
+    latitude == location.latitude && longitude == location.longitude
+  }
+
+  func name(of location: PrayerLocation, languageCode: String) -> String? {
+    belongs(to: location) ? names[languageCode] : nil
   }
 }
 

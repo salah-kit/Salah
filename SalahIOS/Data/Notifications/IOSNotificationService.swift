@@ -227,7 +227,7 @@ nonisolated struct IOSPrayerNotificationContent: Sendable {
 
   init(preferences: IOSPreferences) {
     locale = preferences.language.locale
-    locationName = preferences.location?.name ?? ""
+    locationName = preferences.placeName ?? ""
     timeZone = preferences.location?.timeZone ?? .current
   }
 

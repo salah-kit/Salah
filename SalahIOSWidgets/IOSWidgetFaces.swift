@@ -101,6 +101,13 @@ nonisolated enum WidgetMetrics {
   static func stopDiameter(side: CGFloat) -> CGFloat { side * 0.83 }
   /// The medium face's hairline between the hero and the times.
   static let mediumHairlineHeight: CGFloat = 128
+  /// The space between the large face's header, hero, progress bar and times.
+  static let largeSpacing: CGFloat = 9
+  /// A row of the large face's times: 32 points where the widget is tall enough, and an
+  /// even share of what's left where it isn't.
+  static let largeRowHeight: CGFloat = 32
+  /// A prayer glyph's box in the large face's rows.
+  static let largeRowGlyphSide: CGFloat = 16
 }
 
 extension View {
@@ -209,47 +216,67 @@ nonisolated struct WidgetHero {
   }
 }
 
+/// Reads a face's hero as one element: "Next prayer, Asr, 3:35 PM, 2:16:00", with the
+/// countdown running as it does on screen, rather than as four separate fragments.
+private struct WidgetHeroAccessibility: ViewModifier {
+  let hero: WidgetHero
+  let display: SalahDisplay
+  @Environment(\.salahTimerPause) private var pause
+
+  func body(content: Content) -> some View {
+    content
+      .accessibilityElement(children: .ignore)
+      .accessibilityLabel(
+        Text(
+          "\(hero.eyebrow), \(IOSAccessoryCopy.accessibilityLabel(display: display, pause: pause))"
+        ))
+  }
+}
+
+extension View {
+  fileprivate func heroAccessibility(_ hero: WidgetHero, display: SalahDisplay) -> some View {
+    modifier(WidgetHeroAccessibility(hero: hero, display: display))
+  }
+}
+
 /// The live countdown, or the count-up after a prayer began: `2:16:00`, `+0:04:00`.
 private struct WidgetTimer: View {
   let hero: WidgetHero
   let date: Date
   let size: CGFloat
   let style: WidgetStyle
+  /// The large face sets the timer at the end of the name's line. A live timer takes all
+  /// the width it's offered, so its text is aligned inside that width too.
+  var trailing = false
   @Environment(\.salahTimerPause) private var pause
   @Environment(\.locale) private var locale
 
   var body: some View {
-    Group {
-      if hero.kind == .justStarted {
-        HStack(spacing: 0) {
-          Text(verbatim: "+")
-          if let pause {
-            still(pause.timeIntervalSince(hero.event.time))
-          } else {
-            Text(
-              timerInterval: hero.event.time...hero.event.time.addingTimeInterval(86_400),
-              countsDown: false, showsHours: true)
-          }
-        }
-        .foregroundStyle(style.mark)
-      } else {
-        Group {
-          if let pause {
-            still(hero.event.time.timeIntervalSince(pause))
-          } else {
-            Text(
-              timerInterval: date...max(date, hero.event.time), countsDown: true,
-              showsHours: true)
-          }
-        }
-        .foregroundStyle(style.accent)
-        .widgetAccentable()
-      }
+    reading
+      .foregroundStyle(hero.kind == .justStarted ? style.mark : style.accent)
+      .widgetAccentable(hero.kind != .justStarted)
+      .font(.system(size: size, weight: .semibold, design: .rounded).monospacedDigit())
+      .lineLimit(1)
+      .minimumScaleFactor(0.6)
+      .multilineTextAlignment(trailing ? .trailing : .leading)
+      .frame(maxWidth: trailing ? .infinity : nil, alignment: trailing ? .trailing : .leading)
+      .lineBox(lineHeight)
+  }
+
+  private var reading: Text {
+    if hero.kind == .justStarted {
+      let elapsed =
+        pause.map { still($0.timeIntervalSince(hero.event.time)) }
+        ?? Text(
+          timerInterval: hero.event.time...hero.event.time.addingTimeInterval(86_400),
+          countsDown: false, showsHours: true)
+      // One run, read left to right: the sign stays before its digits in Arabic too, and
+      // beside them when the line is set at the face's trailing edge.
+      return Text("\u{2066}+\(elapsed)\u{2069}")
     }
-    .font(.system(size: size, weight: .semibold, design: .rounded).monospacedDigit())
-    .lineLimit(1)
-    .minimumScaleFactor(0.6)
-    .lineBox(lineHeight)
+    return pause.map { still(hero.event.time.timeIntervalSince($0)) }
+      ?? Text(
+        timerInterval: date...max(date, hero.event.time), countsDown: true, showsHours: true)
   }
 
   /// The countdown's line height: 34 for the 28-point timer, 28 for the 22-point one.
@@ -361,6 +388,7 @@ private struct SmallFace: View {
       .padding(.horizontal, 16)
       .padding(.vertical, 15)
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+      .heroAccessibility(hero, display: display)
     } else {
       WidgetUnknownFace(display: display, style: style)
     }
@@ -391,6 +419,7 @@ private struct MediumFace: View {
             WidgetTimer(hero: hero, date: display.date, size: 22, style: style)
             WidgetFooter(hero: hero, style: style)
           }
+          .heroAccessibility(hero, display: display)
         } else {
           WidgetUnknownFace(display: display, style: style)
         }
@@ -406,13 +435,15 @@ private struct MediumFace: View {
   }
 }
 
+/// The large face: the date and place, the next prayer with its countdown at the end of the
+/// name's line, the progress to it, and the day's six times with their glyphs and full times.
 private struct LargeFace: View {
   let display: SalahDisplay
   let hero: WidgetHero?
   let style: WidgetStyle
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 9) {
+    VStack(alignment: .leading, spacing: WidgetMetrics.largeSpacing) {
       WidgetHeader(display: display, style: style)
       if let hero {
         VStack(alignment: .leading, spacing: 1) {
@@ -421,20 +452,24 @@ private struct LargeFace: View {
               kind: hero.event.kind, observance: hero.event.observance, side: 22, style: style)
             WidgetEyebrow(hero: hero, style: style)
           }
-          Text(verbatim: hero.name)
-            .font(.system(size: 28, weight: .bold))
-            .foregroundStyle(style.primary)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .lineBox(34)
-          WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
+          HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(verbatim: hero.name)
+              .font(.system(size: 28, weight: .bold))
+              .foregroundStyle(style.primary)
+              .lineLimit(1)
+              .minimumScaleFactor(0.7)
+              .lineBox(34)
+              .layoutPriority(1)
+            WidgetTimer(hero: hero, date: display.date, size: 28, style: style, trailing: true)
+          }
           WidgetFooter(hero: hero, style: style)
         }
+        .heroAccessibility(hero, display: display)
         WidgetProgress(display: display, style: style)
       } else {
         WidgetUnknownFace(display: display, style: style)
       }
-      WidgetTimes(display: display, rowHeight: 26, nameSize: 15, style: style)
+      WidgetTimes.large(display: display, style: style)
     }
     .topAligned()
     .padding(.horizontal, 16)
@@ -457,6 +492,7 @@ private struct ExtraLargeFace: View {
           .foregroundStyle(hero.kind == .justStarted ? style.mark : style.secondary)
           .lineLimit(1)
           .lineBox(16)
+          .accessibilityHidden(true)
         HStack(alignment: .firstTextBaseline, spacing: 12) {
           Text(verbatim: hero.name)
             .font(.system(size: 28, weight: .bold))
@@ -467,6 +503,7 @@ private struct ExtraLargeFace: View {
           WidgetTimer(hero: hero, date: display.date, size: 28, style: style)
             .frame(width: 170, alignment: .leading)
         }
+        .heroAccessibility(hero, display: display)
       } else {
         WidgetUnknownFace(display: display, style: style)
       }
@@ -565,21 +602,68 @@ private struct WidgetHeader: View {
         .lineBox(16)
         .privacySensitive()
     }
-    .accessibilityElement(children: .combine)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(
+      Text(verbatim: "\(header.hijriDay) \(header.hijriMonth) \(year), \(header.location)"))
+  }
+}
+
+extension EnvironmentValues {
+  /// The layout direction the system gave the widget or activity, before the face took its
+  /// own language's.
+  @Entry var hostLayoutDirection: LayoutDirection = .leftToRight
+}
+
+/// The system's timer progress bar, filling from the face's leading edge.
+///
+/// The system draws this bar itself, between timeline entries, in the device's layout
+/// direction, whatever the view's environment says. Salah's language can read the other way,
+/// so the bar is mirrored when the two differ: with Salah in Arabic on an English iPhone it
+/// fills from the right, as the rest of the face reads.
+struct IOSRunningProgress: View {
+  let span: ClosedRange<Date>
+  let tint: AnyShapeStyle
+  @Environment(\.layoutDirection) private var direction
+  @Environment(\.hostLayoutDirection) private var hostDirection
+
+  var body: some View {
+    ProgressView(timerInterval: span, countsDown: false) {
+      EmptyView()
+    } currentValueLabel: {
+      EmptyView()
+    }
+    .progressViewStyle(.linear)
+    .tint(tint)
+    .scaleEffect(x: Self.isMirrored(face: direction, host: hostDirection) ? -1 : 1, y: 1)
+  }
+
+  /// Whether the system's bar must be mirrored to fill from the face's leading edge.
+  nonisolated static func isMirrored(face: LayoutDirection, host: LayoutDirection) -> Bool {
+    face != host
   }
 }
 
 /// Progress from the previous prayer to the next, in the time of day's mark.
+///
+/// The bar fills by itself between timeline entries, as the countdown above it runs. A
+/// still face, such as the gallery's sample, draws the moment's fraction instead.
 nonisolated struct WidgetProgress: View {
   let display: SalahDisplay
   let style: WidgetStyle
+  @Environment(\.salahTimerPause) private var pause
 
   var body: some View {
-    GeometryReader { proxy in
-      ZStack(alignment: .leading) {
-        Capsule().fill(style.track)
-        Capsule().fill(style.mark)
-          .frame(width: proxy.size.width * Self.fraction(of: display))
+    Group {
+      if pause == nil, let span = Self.span(of: display), span.upperBound > display.date {
+        IOSRunningProgress(span: span, tint: style.mark)
+      } else {
+        GeometryReader { proxy in
+          ZStack(alignment: .leading) {
+            Capsule().fill(style.track)
+            Capsule().fill(style.mark)
+              .frame(width: proxy.size.width * Self.fraction(of: display))
+          }
+        }
       }
     }
     .frame(height: 4)
@@ -588,23 +672,29 @@ nonisolated struct WidgetProgress: View {
 
   /// From the prayer one is in to the next. While that prayer plays, from it to the listed
   /// one after it, so Stop looks the same when later times are unavailable. A prayer played
-  /// at another time leaves the bar to the real time.
-  static func fraction(of display: SalahDisplay) -> CGFloat {
+  /// at another time leaves the bar to the real time. `nil` when there's no next time, or
+  /// none after the one before it.
+  static func span(of display: SalahDisplay) -> ClosedRange<Date>? {
     let start: Date
     let end: Date
     let events = display.listedDay?.events ?? []
     if let playing = display.playingPrayer,
       events.last(where: { $0.time <= display.date })?.id == playing.id
     {
-      guard let next = events.first(where: { $0.time > playing.time }) else { return 0 }
+      guard let next = events.first(where: { $0.time > playing.time }) else { return nil }
       (start, end) = (playing.time, next.time)
     } else {
-      guard let state = display.prayerState, let next = state.next else { return 0 }
+      guard let state = display.prayerState, let next = state.next else { return nil }
       (start, end) = (state.previous?.time ?? display.date, next.time)
     }
-    let span = end.timeIntervalSince(start)
-    guard span > 0 else { return 0 }
-    return CGFloat(min(max(display.date.timeIntervalSince(start) / span, 0), 1))
+    return end > start ? start...end : nil
+  }
+
+  /// How much of the span has passed at the display's moment, from 0 to 1.
+  static func fraction(of display: SalahDisplay) -> CGFloat {
+    guard let span = span(of: display) else { return 0 }
+    let length = span.upperBound.timeIntervalSince(span.lowerBound)
+    return CGFloat(min(max(display.date.timeIntervalSince(span.lowerBound) / length, 0), 1))
   }
 }
 
@@ -618,13 +708,32 @@ nonisolated struct WidgetTimes: View {
   /// The extra-large face's rows: 17-point full times ("4:11 AM"), wider insets and
   /// corners, and the next row's time in semibold too.
   var isExtraLarge = false
+  /// The large face's rows: each prayer's glyph before its name, the time with its day
+  /// period, and a height that gives way when the widget is shorter than the design's.
+  var isLarge = false
 
   enum Role { case passed, current, next, upcoming }
+
+  /// The large face's rows.
+  static func large(display: SalahDisplay, style: WidgetStyle) -> WidgetTimes {
+    WidgetTimes(
+      display: display, rowHeight: WidgetMetrics.largeRowHeight, nameSize: 15, style: style,
+      isLarge: true)
+  }
 
   var body: some View {
     VStack(spacing: 0) {
       ForEach(rows, id: \.event.id) { row in
-        HStack(spacing: isExtraLarge ? 8 : 6) {
+        HStack(spacing: isExtraLarge || isLarge ? 8 : 6) {
+          if isLarge {
+            PrayerGlyph(kind: row.event.kind, observance: row.event.observance)
+              .font(
+                .system(
+                  size: WidgetMetrics.glyphFontSize(side: WidgetMetrics.largeRowGlyphSide))
+              )
+              .frame(
+                width: WidgetMetrics.largeRowGlyphSide, height: WidgetMetrics.largeRowGlyphSide)
+          }
           Text(verbatim: display.name(of: row.event))
             .font(.system(size: nameSize, weight: isStrong(row.role) ? .semibold : .regular))
             .lineLimit(1)
@@ -639,30 +748,35 @@ nonisolated struct WidgetTimes: View {
               .monospacedDigit()
             )
             .lineLimit(1)
-            // The smaller faces drop the day period; VoiceOver says it: "5:03 AM".
-            .accessibilityLabel(
-              Text(verbatim: display.text.timeFormatter().string(from: row.event.time)))
         }
         .foregroundStyle(color(row.role))
         .padding(.horizontal, isExtraLarge ? 10 : 6)
-        .frame(height: rowHeight)
+        .frame(minHeight: isLarge ? 0 : rowHeight, maxHeight: rowHeight)
         .background {
           if row.role == .next {
             RoundedRectangle(cornerRadius: isExtraLarge ? 10 : 7, style: .continuous)
               .fill(style.track)
           }
         }
-        .accessibilityElement(children: .combine)
+        // One element and one label a row: the smaller faces drop the day period, and
+        // VoiceOver says it: "Fajr, 5:03 AM".
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: Self.accessibilityLabel(of: row.event, in: display)))
       }
     }
   }
 
+  /// What VoiceOver reads for a row: the prayer and its time with the day period.
+  static func accessibilityLabel(of event: PrayerEvent, in display: SalahDisplay) -> String {
+    "\(display.name(of: event)), \(display.text.clockTime(event.time))"
+  }
+
   private func isStrong(_ role: Role) -> Bool { role == .current || role == .next }
 
-  /// "4:11" in the rows, or "4:11 AM" in the extra-large face's.
+  /// "4:11" in the small and medium faces' rows; "4:11 AM" in the large and extra-large
+  /// ones, which have the room.
   private func timeText(_ time: Date) -> String {
-    isExtraLarge
-      ? display.text.timeFormatter().string(from: time) : display.text.compactTime(time)
+    isExtraLarge || isLarge ? display.text.clockTime(time) : display.text.compactTime(time)
   }
 
   private func color(_ role: Role) -> AnyShapeStyle {
@@ -805,18 +919,18 @@ struct WidgetStopContent: View {
           hero(side: 40, titleSize: 20, style: style)
         }
       case .large:
-        VStack(alignment: .leading, spacing: 9) {
+        VStack(alignment: .leading, spacing: WidgetMetrics.largeSpacing) {
           WidgetHeader(display: display, style: style)
           hero(side: 40, titleSize: 20, style: style)
           WidgetProgress(display: display, style: style)
-          WidgetTimes(display: display, rowHeight: 26, nameSize: 15, style: style)
+          WidgetTimes.large(display: display, style: style)
         }
         .topAligned()
         .padding(.horizontal, 16)
         .padding(.vertical, 15)
       }
     }
-    .accessibilityElement(children: .combine)
+    .accessibilityElement(children: .ignore)
     .accessibilityLabel(Text(verbatim: "\(prayerName). \(display.labels.tapToStop)"))
   }
 

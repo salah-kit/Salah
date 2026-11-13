@@ -29,6 +29,6 @@ struct PrayerDisplayFormatter {
   }
 
   func fullTime(for date: Date) -> String {
-    text.timeFormatter().string(from: date).bidiIsolated
+    text.clockTime(date).bidiIsolated
   }
 }

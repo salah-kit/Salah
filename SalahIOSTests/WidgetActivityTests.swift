@@ -1,7 +1,9 @@
 import Foundation
 import SalahCore
 import SalahUI
+import SwiftUI
 import Testing
+import WidgetKit
 
 @Suite("iOS widget and activity boundaries")
 struct WidgetActivityTests {
@@ -367,6 +369,294 @@ struct WidgetActivityTests {
       !coordinator.dismissals.contains(SalahActivityAttributes.eventID(for: playing), at: now))
   }
 
+  /// WidgetKit draws every entry of a timeline before it shows the first, so a newly added
+  /// widget waits on its placeholder for all of them. The faces that count down and fill
+  /// their bar by themselves take an entry only where what they show changes.
+  @Test func selfRunningFacesPlanADozenEntriesAtStateChangesOnly() throws {
+    for family in [WidgetFamily.systemSmall, .systemMedium, .systemLarge] {
+      #expect(IOSPrayerWidgetProvider.cadence(for: family) == .stateChanges, "\(family)")
+    }
+    for family in [
+      WidgetFamily.systemExtraLarge, .accessoryInline, .accessoryCircular, .accessoryRectangular,
+    ] {
+      #expect(IOSPrayerWidgetProvider.cadence(for: family) == .steps, "\(family)")
+    }
+    #expect(SalahWidgetTimeline.Cadence.stateChanges.entryLimit == 12)
+
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let now = asr.time.addingTimeInterval(-(2 * 3_600 + 16 * 60))
+    let live = IOSSurfaceTimeline.make(
+      settings: settings, session: nil, now: now, cadence: .stateChanges)
+    let stepped = IOSSurfaceTimeline.make(settings: settings, session: nil, now: now)
+    #expect(live.entries.count == 12)
+    #expect(stepped.entries.count == SalahWidgetTimeline.entryLimit)
+    #expect(live.cadence == .stateChanges)
+
+    // What a face shows without its timers: the focus, its tone, the listed day and the rows.
+    func shown(_ entry: SalahWidgetEntry) -> [String] {
+      guard case .schedule(let display) = entry.content else { return ["expired"] }
+      return [
+        display.focus.map { "\($0.event.id) \($0.isCountUp)" } ?? "none",
+        "\(display.prayerState?.isApproaching == true)",
+        "\(String(describing: display.listedDay?.day))",
+        "\(WidgetTimes.rows(of: display).map { "\($0.event.id) \($0.role)" })",
+      ]
+    }
+    let faces = live.entries.map(shown)
+    #expect(zip(faces, faces.dropFirst()).allSatisfy { $0 != $1 })
+    // The stepped cadence repeats one face many times over, which is the work this avoids.
+    let steppedFaces = stepped.entries.map(shown)
+    #expect(zip(steppedFaces, steppedFaces.dropFirst()).contains { $0 == $1 })
+    // A quarter of the entries still last longer, and the timeline reloads halfway through.
+    let end = try #require(live.entries.last).date
+    #expect(end > (try #require(stepped.entries.last).date))
+    #expect(end.timeIntervalSince(now) >= 8 * 3_600)
+    guard case .expired = try #require(live.entries.last).content else {
+      Issue.record("A timeline cut at its entry limit must end by asking for a refresh")
+      return
+    }
+    guard case .after(let reload) = live.reload else {
+      Issue.record("A planned timeline asks for its successor")
+      return
+    }
+    #expect(reload > now && reload < end)
+  }
+
+  /// A playing prayer's Stop face and the schedule after it fit the same dozen entries.
+  @Test func playbackKeepsASelfRunningTimelineInsideItsEntryLimit() throws {
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: asr, slot: .alert), startedAt: asr.time, duration: 90)
+    let timeline = IOSSurfaceTimeline.make(
+      settings: settings, session: session, now: asr.time, cadence: .stateChanges)
+    #expect(timeline.entries.count <= 12)
+    guard case .schedule(let first) = try #require(timeline.entries.first).content else {
+      Issue.record("Expected the computed schedule")
+      return
+    }
+    #expect(first.playback == session.playback)
+    #expect(timeline.entries.contains { $0.date == session.expiresAt })
+  }
+
+  /// The gallery asks for its preview while a person scrolls through the sizes: it gets the
+  /// sample day at once, without waiting for anything Salah saved.
+  @Test func galleryPreviewIsTheSampleDayAndReadsNothingSaved() throws {
+    let bundle = Bundle(for: WidgetProviderResources.self)
+    let entry = IOSPrayerWidgetProvider.snapshot(
+      isPreview: true, now: Date(timeIntervalSince1970: 0),
+      loadSettings: {
+        Issue.record("The gallery's preview must not read saved settings")
+        return nil
+      },
+      loadSession: {
+        Issue.record("The gallery's preview must not read what's playing")
+        return nil
+      }, bundle: bundle)
+    // 2 June 2026, 1:19 PM in Makkah, standing still: Asr at 3:35 PM is 2:16:00 away.
+    #expect(entry.date == IOSWidgetSample.date)
+    #expect(entry.stillAt == IOSWidgetSample.date)
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = try #require(TimeZone(identifier: "Asia/Riyadh"))
+    #expect(
+      calendar.dateComponents([.year, .month, .day, .hour, .minute], from: entry.date)
+        == DateComponents(year: 2026, month: 6, day: 2, hour: 13, minute: 19))
+    guard case .schedule(let display) = entry.content else {
+      Issue.record("The sample is a whole day's schedule")
+      return
+    }
+    let focus = try #require(display.focus)
+    #expect(focus.event.kind == .asr && !focus.isCountUp)
+    #expect(focus.event.time.timeIntervalSince(entry.date) == 2 * 3_600 + 16 * 60)
+    #expect(display.listedDay?.events.count == 6)
+    #expect(display.playback == nil)
+    #expect(display.settings.location.timeZone.identifier == "Asia/Riyadh")
+  }
+
+  /// The sample's place reads in the language its words do.
+  @Test(arguments: [
+    (AppLanguage.english, "Makkah"), (.arabic, "مكة المكرمة"), (.french, "La Mecque"),
+    (.turkish, "Mekke"), (.persian, "مکه"), (.urdu, "مکہ مکرمہ"), (.bengali, "মক্কা"),
+    (.indonesian, "Makkah"), (.malay, "Makkah"),
+  ])
+  func samplePlaceIsNamedInTheWidgetsLanguage(language: AppLanguage, name: String) throws {
+    let settings = try #require(
+      IOSWidgetSample.settings(
+        language: language, bundle: Bundle(for: WidgetProviderResources.self)))
+    #expect(settings.location.name == name)
+    #expect(settings.language == language)
+  }
+
+  /// A placed widget shows a person's own schedule, or the setup face: never the sample.
+  @Test func placedWidgetSnapshotIsTheSavedScheduleOrSetup() throws {
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: asr, slot: .alert), startedAt: asr.time, duration: 90)
+    let empty = IOSPrayerWidgetProvider.snapshot(
+      isPreview: false, now: asr.time, loadSettings: { nil }, loadSession: { session })
+    guard case .setupNeeded = empty.content else {
+      Issue.record("Without saved settings a placed widget asks for setup")
+      return
+    }
+    #expect(empty.date == asr.time && empty.stillAt == nil)
+    let placed = IOSPrayerWidgetProvider.snapshot(
+      isPreview: false, now: asr.time, loadSettings: { settings }, loadSession: { session })
+    guard case .schedule(let display) = placed.content else {
+      Issue.record("Saved settings give a placed widget its schedule")
+      return
+    }
+    #expect(placed.date == asr.time && placed.stillAt == nil)
+    #expect(display.settings.location.name == "Makkah")
+    #expect(display.playback == session.playback)
+  }
+
+  /// A formatter costs far more to make than to use, and a timeline draws every row of every
+  /// entry several times over. Making one per row is what slowed the archive down.
+  @Test func aTimelinesClockTimesAndDigitsShareTheirFormatters() throws {
+    let settings = try settings()
+    let events = try #require(
+      settings.schedule.day(CivilDay(year: 2026, month: 6, day: 2)).day?.events)
+    let cache = SalahFormatterCache()
+    var text = SalahText(locale: settings.locale, timeZone: settings.location.timeZone)
+    text.formatters = cache
+    for _ in 0..<SalahWidgetTimeline.entryLimit {
+      for event in events {
+        #expect(!text.compactTime(event.time).isEmpty)
+        #expect(!text.clockTime(event.time).isEmpty)
+        #expect(text.digits(16, minimumDigits: 2) == "16")
+      }
+    }
+    // One clock formatter, the day period's beside it, and one for the digits.
+    #expect(cache.creations == 3)
+    let asr = try event(.asr, settings: settings)
+    #expect(text.clockTime(asr.time) == text.timeFormatter().string(from: asr.time))
+    #expect(text.clockTime(asr.time) == "3:35\u{202F}PM")
+    #expect(text.compactTime(asr.time) == "\u{2068}3:35\u{2069}")
+    // Another zone gets formatters of its own.
+    var london = text
+    london.timeZone = try #require(TimeZone(identifier: "Europe/London"))
+    #expect(london.clockTime(asr.time) == "1:35\u{202F}PM")
+    #expect(cache.creations == 5)
+  }
+
+  /// The large face's rows show the time with its day period; VoiceOver reads the same for
+  /// the smaller faces, whose rows drop it.
+  @Test func rowsReadThePrayerAndItsFullTime() throws {
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let display = SalahDisplay(
+      date: asr.time.addingTimeInterval(-600), settings: settings, schedule: settings.schedule)
+    #expect(WidgetTimes.accessibilityLabel(of: asr, in: display) == "Asr, 3:35\u{202F}PM")
+  }
+
+  /// The bar runs from the prayer one is in to the next, and stops being drawn as a running
+  /// bar once that span has passed.
+  @Test func progressSpansThePrayerOneIsInToTheNext() throws {
+    let settings = try settings()
+    let dhuhr = try event(.dhuhr, settings: settings)
+    let asr = try event(.asr, settings: settings)
+    let now = asr.time.addingTimeInterval(-(2 * 3_600 + 16 * 60))
+    let display = SalahDisplay(date: now, settings: settings, schedule: settings.schedule)
+    #expect(WidgetProgress.span(of: display) == dhuhr.time...asr.time)
+    #expect(
+      WidgetProgress.fraction(of: display)
+        == CGFloat(now.timeIntervalSince(dhuhr.time) / asr.time.timeIntervalSince(dhuhr.time)))
+  }
+
+  /// The system draws its timer progress bar in the device's direction whatever the face's
+  /// environment says, so the face mirrors it exactly when its own language reads the other way.
+  @Test func runningProgressIsMirroredOnlyWhenTheFaceAndTheDeviceReadOppositeWays() {
+    #expect(IOSRunningProgress.isMirrored(face: .rightToLeft, host: .leftToRight))
+    #expect(IOSRunningProgress.isMirrored(face: .leftToRight, host: .rightToLeft))
+    #expect(!IOSRunningProgress.isMirrored(face: .rightToLeft, host: .rightToLeft))
+    #expect(!IOSRunningProgress.isMirrored(face: .leftToRight, host: .leftToRight))
+    #expect(EnvironmentValues().hostLayoutDirection == .leftToRight)
+  }
+
+  /// A person who swipes the activity away on the Lock Screen sees it again the next time
+  /// they open Salah. While Salah stays open, or wakes in the background, it stays away.
+  @Test @MainActor func aDismissedActivityStartsAgainOnReturningToSalah() async throws {
+    let suite = "SalahIOSTests.returning.\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suite))
+    defer { defaults.removePersistentDomain(forName: suite) }
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    let now = asr.time.addingTimeInterval(-10 * 60)
+    let state = try #require(
+      SalahActivityAttributes.ContentState(
+        display: SalahDisplay(date: now, settings: settings, schedule: settings.schedule)))
+    let eventID = SalahActivityAttributes.eventID(for: state)
+    var dismissals = IOSActivityDismissals(defaults: defaults)
+    dismissals.insert(eventID, until: IOSActivityDismissals.deadline(for: state), now: now)
+
+    var requested: [String] = []
+    let coordinator = IOSActivityCoordinator(
+      now: { now }, loadPlaybackSession: { nil },
+      lifecycle: IOSActivityLifecycle(
+        activities: { [] }, end: { _ in },
+        request: { state in
+          requested.append(SalahActivityAttributes.eventID(for: state))
+          return nil
+        }), defaults: defaults)
+    // Still open, and refreshing every half minute: the dismissal holds.
+    await coordinator.refresh(settings: settings, isForeground: true)
+    #expect(requested.isEmpty)
+    // Woken in the background: nothing starts, and the dismissal is kept.
+    await coordinator.refresh(settings: settings, isForeground: false, returning: true)
+    #expect(requested.isEmpty)
+    #expect(coordinator.dismissals.contains(eventID, at: now))
+    // Back in Salah: the approaching prayer's activity starts again.
+    await coordinator.refresh(settings: settings, isForeground: true, returning: true)
+    #expect(requested == [eventID])
+    #expect(!coordinator.dismissals.contains(eventID, at: now))
+    #expect(!IOSActivityDismissals(defaults: defaults).contains(eventID, at: now))
+  }
+
+  /// Returning to Salah outside a prayer's window starts nothing: only a near or current
+  /// prayer has an activity.
+  @Test @MainActor func returningStartsNoActivityFarFromAPrayer() async throws {
+    let suite = "SalahIOSTests.returningFar.\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suite))
+    defer { defaults.removePersistentDomain(forName: suite) }
+    let settings = try settings()
+    let asr = try event(.asr, settings: settings)
+    var requested = 0
+    let coordinator = IOSActivityCoordinator(
+      now: { asr.time.addingTimeInterval(-2 * 3_600) }, loadPlaybackSession: { nil },
+      lifecycle: IOSActivityLifecycle(
+        activities: { [] }, end: { _ in },
+        request: { _ in
+          requested += 1
+          return nil
+        }), defaults: defaults)
+    await coordinator.refresh(settings: settings, isForeground: true, returning: true)
+    #expect(requested == 0)
+  }
+
+  /// A new language shows on the Live Activity before the notifications are rescheduled, which
+  /// takes longer; a newer change stops the older one from scheduling them again.
+  @Test @MainActor func aChangedPreferenceReachesTheActivityBeforeTheNotifications() async {
+    var order: [String] = []
+    await IOSSurfaceRefresh(
+      activity: { order.append("activity") }, notifications: { order.append("notifications") }
+    ).run()
+    #expect(order == ["activity", "notifications"])
+
+    order = []
+    let superseded = Task { @MainActor in
+      await IOSSurfaceRefresh(
+        activity: {
+          order.append("activity")
+          withUnsafeCurrentTask { $0?.cancel() }
+        }, notifications: { order.append("notifications") }
+      ).run()
+    }
+    await superseded.value
+    #expect(order == ["activity"])
+  }
+
   @Test func sunriseDoesNotBecomeAPrayerActivity() throws {
     let settings = try settings()
     let sunrise = try event(.sunrise, settings: settings)
@@ -376,3 +666,5 @@ struct WidgetActivityTests {
     #expect(SalahActivityAttributes.ContentState(display: display) == nil)
   }
 }
+
+private final class WidgetProviderResources: NSObject {}

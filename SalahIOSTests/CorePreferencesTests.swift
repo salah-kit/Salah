@@ -53,6 +53,137 @@ struct CorePreferencesTests {
       preferences.calculation.parameters.ramadanIsha == .interval(minutes: 120, hijriDayOffset: 0))
   }
 
+  /// The geocoder names a place in the device's language. In another language Salah keeps
+  /// the name it looked up, and the widgets, the activity and notifications read it.
+  @Test func aPlaceIsNamedInTheSelectedLanguageOnceLookedUp() throws {
+    var preferences = IOSPreferences()
+    let cairo = try #require(TimeZone(identifier: "Africa/Cairo"))
+    let place = PrayerLocation(
+      latitude: 30.0444, longitude: 31.2357, timeZone: cairo, countryCode: "EG",
+      name: "Sheikh Zayed")
+    preferences.location = place
+    preferences.language = .arabic
+    #expect(preferences.placeLanguageCode == "ar")
+    #expect(preferences.placeName == "Sheikh Zayed")
+    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
+    // The device already answers in Arabic: the saved name is the Arabic one.
+    #expect(!preferences.needsPlaceName(deviceLanguageCode: "ar"))
+
+    preferences.setPlaceName(" الشيخ زايد ", languageCode: "ar", for: place)
+    #expect(preferences.placeName == "الشيخ زايد")
+    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.mirror?.location.name == "الشيخ زايد")
+    #expect(IOSPrayerNotificationContent(preferences: preferences).locationName == "الشيخ زايد")
+    // The saved location keeps what the geocoder gave it.
+    #expect(preferences.location?.name == "Sheikh Zayed")
+
+    // Each language has its own name; one that wasn't looked up reads as saved.
+    preferences.language = .french
+    #expect(preferences.placeName == "Sheikh Zayed")
+    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
+    preferences.setPlaceName("Cheikh Zayed", languageCode: "fr", for: place)
+    #expect(preferences.mirror?.location.name == "Cheikh Zayed")
+    preferences.language = .arabic
+    #expect(preferences.mirror?.location.name == "الشيخ زايد")
+    preferences.language = .english
+    #expect(preferences.mirror?.location.name == "Sheikh Zayed")
+    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+
+    // The names survive a round trip, and an older save without them still decodes.
+    let decoded = try JSONDecoder().decode(
+      IOSPreferences.self, from: JSONEncoder().encode(preferences))
+    #expect(decoded.placeNames == preferences.placeNames)
+    #expect(try JSONDecoder().decode(IOSPreferences.self, from: Data("{}".utf8)).placeNames == nil)
+  }
+
+  /// A name belongs to the place it was looked up for. A late answer for a place the person
+  /// has left is dropped, and a new place never shows the old one's name.
+  @Test func placeNamesNeverLabelAnotherPlace() throws {
+    var preferences = IOSPreferences()
+    let cairo = try #require(TimeZone(identifier: "Africa/Cairo"))
+    let riyadh = try #require(TimeZone(identifier: "Asia/Riyadh"))
+    let zayed = PrayerLocation(
+      latitude: 30.0444, longitude: 31.2357, timeZone: cairo, countryCode: "EG",
+      name: "Sheikh Zayed")
+    let makkah = PrayerLocation(
+      latitude: 21.4225, longitude: 39.8262, timeZone: riyadh, countryCode: "SA", name: "Makkah")
+    preferences.language = .arabic
+    preferences.location = zayed
+    preferences.setPlaceName("الشيخ زايد", languageCode: "ar", for: zayed)
+
+    preferences.location = makkah
+    #expect(preferences.placeName == "Makkah")
+    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.normalized().placeNames == nil)
+    // The lookup for the old place answers late.
+    preferences.setPlaceName("الشيخ زايد", languageCode: "ar", for: zayed)
+    #expect(preferences.placeName == "Makkah")
+    preferences.setPlaceName("مكة المكرمة", languageCode: "ar", for: makkah)
+    #expect(preferences.placeName == "مكة المكرمة")
+    #expect(preferences.placeNames?.names == ["ar": "مكة المكرمة"])
+    // An empty answer changes nothing, and without a place there's nothing to name.
+    preferences.setPlaceName("  ", languageCode: "ar", for: makkah)
+    #expect(preferences.placeName == "مكة المكرمة")
+    preferences.location = nil
+    #expect(preferences.placeName == nil)
+    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.normalized().placeNames == nil)
+
+    // Another process's edit keeps the names this one looked up, and the reverse.
+    var stored = IOSPreferences()
+    stored.location = makkah
+    var before = stored
+    before.language = .arabic
+    var after = before
+    after.setPlaceName("مكة المكرمة", languageCode: "ar", for: makkah)
+    stored.muteSounds = true
+    stored.mergeChanges(from: before, to: after)
+    #expect(stored.muteSounds)
+    #expect(stored.placeNames?.names == ["ar": "مكة المكرمة"])
+  }
+
+  /// A new language changes the words on every widget and control, so all of them reload at
+  /// once; any other setting reloads the surfaces that show it; nothing reloads unchanged.
+  @Test @MainActor func aLanguageChangeReloadsEveryWidgetAndControl() throws {
+    var preferences = IOSPreferences()
+    preferences.language = .english
+    preferences.location = PrayerLocation(
+      latitude: 21.4225, longitude: 39.8262,
+      timeZone: try #require(TimeZone(identifier: "Asia/Riyadh")), countryCode: "SA",
+      name: "Makkah")
+    var saved: SalahSettings?
+    var events: [String] = []
+    let publisher = IOSWidgetPublisher(
+      system: IOSWidgetPublisher.System(
+        load: { saved },
+        save: { settings, kinds in
+          guard settings != saved else { return false }
+          saved = settings
+          events.append("save reloading \(kinds)")
+          return true
+        },
+        reloadAllTimelines: { events.append("all timelines") },
+        reloadControls: { events.append("control \($0)") },
+        reloadAllControls: { events.append("all controls") }))
+    let kind = SalahWidgetConstants.prayerTimesWidgetKind
+
+    #expect(try publisher.publish(try #require(preferences.mirror)))
+    #expect(events == ["save reloading [\"\(kind)\"]", "control \(IOSControlKind.muteSounds)"])
+    events = []
+    #expect(try !publisher.publish(try #require(preferences.mirror)))
+    #expect(events.isEmpty)
+
+    preferences.language = .arabic
+    #expect(try publisher.publish(try #require(preferences.mirror)))
+    #expect(events == ["save reloading []", "all timelines", "all controls"])
+    #expect(saved?.language == .arabic)
+
+    events = []
+    preferences.muteSounds = true
+    #expect(try publisher.publish(try #require(preferences.mirror)))
+    #expect(events == ["save reloading [\"\(kind)\"]", "control \(IOSControlKind.muteSounds)"])
+  }
+
   @Test func normalizationCoversCorruptControlValuesAndEveryEvent() {
     var preferences = IOSPreferences()
     preferences.hijriOffset = 200

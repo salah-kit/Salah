@@ -169,7 +169,7 @@ struct IOSTimesView: View {
     if let display = selectedDisplay {
       IOSPrayerDayCard(
         display: display,
-        title: store.preferences.location?.name ?? copy("Prayer times", "أوقات الصلاة"),
+        title: store.preferences.placeName ?? copy("Prayer times", "أوقات الصلاة"),
         live: store.selectedDay == store.today, onAlert: store.toggleAlert(for:),
         onPlay: store.playPrayer(_:)
       )
@@ -317,7 +317,7 @@ struct IOSTimesView: View {
         locale: store.locale)
     let madhab =
       store.preferences.madhab == .hanafi ? copy("Hanafi", "حنفي") : copy("Shafi’i", "شافعي")
-    let location = store.preferences.location?.name ?? copy("your location", "موقعك")
+    let location = store.preferences.placeName ?? copy("your location", "موقعك")
     return Text(
       verbatim: method + " · " + madhab + ". "
         + copy("Times for", "الأوقات لموقع") + " " + location + ", "
@@ -421,7 +421,7 @@ struct IOSTimesView: View {
         let event = events.first { $0.kind == kind }
         let name = event.map(store.names.name(of:)) ?? store.names.name(of: kind)
         return name + " "
-          + (event.map { text.timeFormatter().string(from: $0.time) }
+          + (event.map { text.clockTime($0.time) }
             ?? copy("not available", "غير متاح"))
       }).joined(separator: ", ")
   }

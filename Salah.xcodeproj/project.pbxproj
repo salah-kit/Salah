@@ -576,6 +576,7 @@
 		AC5F650B9115310318973F5F /* SalahCalculation in Frameworks */ = {isa = PBXBuildFile; productRef = 0EB6A01889D4DB99CCA78B29 /* SalahCalculation */; };
 		AD80B4E13EDBC0059B8BD613 /* TVPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51D63FE776DBC99C2029E794 /* TVPresentationTests.swift */; };
 		AE02E296314B01966F564575 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C88E765F5240DE41E421627B /* Localizable.xcstrings */; };
+		AEAAF7E304D5C434E463A812 /* IOSPlaceNamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C423034B2A87AB60FD457E45 /* IOSPlaceNamer.swift */; };
 		AED30D272FAD7AB7AF76C357 /* PrayerPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E085A216A4ADD2DA07753E34 /* PrayerPresentationTests.swift */; };
 		AF0E18FD75309D88ABDA78DB /* SalahPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC9425CA109F270DAFBAC0A /* SalahPlayback.swift */; };
 		AF2585DF98B63A19143D808E /* TVProductionJourneys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA8CF5E5C3A4A954FB7DE89 /* TVProductionJourneys.swift */; };
@@ -684,9 +685,11 @@
 		D211AF7166744405FA74DCDC /* SalahPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359B166C89F23825A5922A3 /* SalahPrayerWidget.swift */; };
 		D2F34F6FC4368F498C16FA5C /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC4F5BD4EAD2824F887E886 /* TodayView.swift */; };
 		D2F93590C499C2990A1FC62F /* SalahWidgetConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD961191847B459803C37A27 /* SalahWidgetConstants.swift */; };
+		D319F21A203461147F599A4F /* IOSPlaceNamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C423034B2A87AB60FD457E45 /* IOSPlaceNamer.swift */; };
 		D37F2A1FFAEDD8A1DDFAE9E4 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2216A82E7E46728E75358ADD /* Localizable.xcstrings */; };
 		D38292CDC73B55D5CB76E9E3 /* SoundPickerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7FDC206871EA9045D3E864 /* SoundPickerRow.swift */; };
 		D39BA290D795D4E28CD1A921 /* IOSQiblaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A58B6B432555BCDFD97270 /* IOSQiblaView.swift */; };
+		D44FE849066452C0F7C93853 /* IOSWidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC83C3D2E48C4E9BF94E0B82 /* IOSWidgetPublisher.swift */; };
 		D46484F6F5A72BA1B1543255 /* IntentAudioControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = D285C36E456E5443ABFBB592 /* IntentAudioControls.swift */; };
 		D56B3725E3C05D38A154A076 /* ActivitySalahAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E352F329E876BE7CCDD8C698 /* ActivitySalahAttributes.swift */; };
 		D58FCB4486335A5B9B073372 /* IOSWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379459567A45882AC83CE8AE /* IOSWidgetsBundle.swift */; };
@@ -758,6 +761,7 @@
 		E88788693396385C93694C5C /* SalahUI in Frameworks */ = {isa = PBXBuildFile; productRef = 19D6802963AE1B1FDCC61CC3 /* SalahUI */; };
 		E8C3C8E06CACC71D444DF284 /* IOSAppRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD4AA58FAAEBB2274C6FCC /* IOSAppRuntime.swift */; };
 		E992F574BE00602768045000 /* MenuBarPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D6EDF019EACB924BC6CA07 /* MenuBarPreview.swift */; };
+		E9B7FA0C18E06A282FD25866 /* IOSWidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC83C3D2E48C4E9BF94E0B82 /* IOSWidgetPublisher.swift */; };
 		EA166348BD14F046ABF6B301 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E30B931692641AE03F4B1A61 /* Assets.xcassets */; };
 		EAC2A6B5A328E846263FE157 /* FailureCategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD969F5A2FFFD7F6BB7E5CD6 /* FailureCategoryTests.swift */; };
 		EB27306288986758EFDEAFBB /* SalahPrayerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28837E4AF194675AAF562303 /* SalahPrayerSource.swift */; };
@@ -1209,6 +1213,7 @@
 		C1D6EDF019EACB924BC6CA07 /* MenuBarPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPreview.swift; sourceTree = "<group>"; };
 		C2D5979BC76C58EBD7F34DE5 /* TVNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVNavigationTests.swift; sourceTree = "<group>"; };
 		C316F5DF076C516CA2C245EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C423034B2A87AB60FD457E45 /* IOSPlaceNamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSPlaceNamer.swift; sourceTree = "<group>"; };
 		C497FF12B04A9BAF4380A287 /* IOSLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSLocationService.swift; sourceTree = "<group>"; };
 		C56A7BACC2303019D64B6BEC /* Adhan-Alafasy.m4a */ = {isa = PBXFileReference; path = "Adhan-Alafasy.m4a"; sourceTree = "<group>"; };
 		C6AA0132B344E5E89BD675F3 /* AppSupportActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSupportActions.swift; sourceTree = "<group>"; };
@@ -1253,6 +1258,7 @@
 		DAE02CDA4F7B5C0852723849 /* TVWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWeekView.swift; sourceTree = "<group>"; };
 		DB0EFE7DDA9A724FDF705576 /* SalahDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalahDisplay.swift; sourceTree = "<group>"; };
 		DC2EF5142F2449BE5437C026 /* TVCoreJourneys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVCoreJourneys.swift; sourceTree = "<group>"; };
+		DC83C3D2E48C4E9BF94E0B82 /* IOSWidgetPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSWidgetPublisher.swift; sourceTree = "<group>"; };
 		DCDCE5AFA80F855EB8DD449B /* PreferenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeys.swift; sourceTree = "<group>"; };
 		DDE9830CD3E9DDBD805C86BD /* Salah.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Salah.entitlements; sourceTree = "<group>"; };
 		DFB07057F508AEF2CAFC2BFD /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
@@ -1697,6 +1703,7 @@
 				A18FD9A65B0B2D7A47790F45 /* IOSCitySearchService.swift */,
 				C497FF12B04A9BAF4380A287 /* IOSLocationService.swift */,
 				A4CA9765C696C459DFB89606 /* IOSMapLocation.swift */,
+				C423034B2A87AB60FD457E45 /* IOSPlaceNamer.swift */,
 			);
 			path = Location;
 			sourceTree = "<group>";
@@ -2359,6 +2366,7 @@
 				26BC941AA5AB577D1BE51742 /* Location */,
 				CF252F7F92463BA8A19E5132 /* Notifications */,
 				D65185D25FFA0CF4E29E68E3 /* Watch */,
+				EF3FCFC2652272808FC23D69 /* Widgets */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -2560,6 +2568,14 @@
 				EDF31FA813FCF26B7F80C5E9 /* AudioPlaybackController.swift */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		EF3FCFC2652272808FC23D69 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				DC83C3D2E48C4E9BF94E0B82 /* IOSWidgetPublisher.swift */,
+			);
+			path = Widgets;
 			sourceTree = "<group>";
 		};
 		F0718792249B6E6563D0F8FC /* Salah */ = {
@@ -4016,6 +4032,7 @@
 				F1E13500C73E3E175437FE45 /* IOSNotificationService.swift in Sources */,
 				5B65515F00210D27923036DF /* IOSOnboardingArtwork.swift in Sources */,
 				F28DC7C757B91B877A3569F3 /* IOSOnboardingView.swift in Sources */,
+				D319F21A203461147F599A4F /* IOSPlaceNamer.swift in Sources */,
 				1211E5D80B4C443B6F6E64B0 /* IOSPrayerAlertsSettingsView.swift in Sources */,
 				5209B9C5A27C67F3820E3A66 /* IOSPrayerHero.swift in Sources */,
 				8CA8EA31FA2A2F500AB17ED1 /* IOSPrayerPresentation.swift in Sources */,
@@ -4034,6 +4051,7 @@
 				500117011232EA9855B739A4 /* IOSTimesView.swift in Sources */,
 				CA04A904BD1FAF40D4FEB2D0 /* IOSTodayView.swift in Sources */,
 				6DF35DE85745FE0A6867ABE9 /* IOSWatchSync.swift in Sources */,
+				E9B7FA0C18E06A282FD25866 /* IOSWidgetPublisher.swift in Sources */,
 				D46484F6F5A72BA1B1543255 /* IntentAudioControls.swift in Sources */,
 				DD9DE3AD181336004A8AA857 /* SalahDisplay.swift in Sources */,
 				6FE37495DF50C71F33ECB863 /* SalahIOSApp.swift in Sources */,
@@ -4080,6 +4098,7 @@
 				A3EA632BD663977403A1B248 /* IOSNotificationService.swift in Sources */,
 				9F4B02409F80388A7B41B835 /* IOSOnboardingArtwork.swift in Sources */,
 				96E15DE4AB81EBA9CBE9F1DD /* IOSOnboardingView.swift in Sources */,
+				AEAAF7E304D5C434E463A812 /* IOSPlaceNamer.swift in Sources */,
 				73516113F3F257758A3187A7 /* IOSPrayerAlertsSettingsView.swift in Sources */,
 				41BA9B4F95DBBAD3CFA5E33B /* IOSPrayerHero.swift in Sources */,
 				EF114CE274F8D82AE98525DA /* IOSPrayerLiveActivity.swift in Sources */,
@@ -4101,6 +4120,7 @@
 				3E0486C726011D57A1573393 /* IOSTodayView.swift in Sources */,
 				B89535F486D7AD2DDC7D5BB6 /* IOSWatchSync.swift in Sources */,
 				446549EBE184C6205A138D3B /* IOSWidgetFaces.swift in Sources */,
+				D44FE849066452C0F7C93853 /* IOSWidgetPublisher.swift in Sources */,
 				2C7F8CE180AE7B44874CC1A3 /* IOSWidgetSunArc.swift in Sources */,
 				078FC89E983820E1A6D9C649 /* IntentAudioControls.swift in Sources */,
 				DEF0D32F90CB0FEA5D07A396 /* PrayerGlyph.swift in Sources */,

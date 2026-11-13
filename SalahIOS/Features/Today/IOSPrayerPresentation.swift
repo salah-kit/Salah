@@ -6,16 +6,20 @@ import SalahUI
 /// No prayer selection, fallback time, or location policy lives in the view layer.
 nonisolated struct IOSPrayerScreenCopy: Sendable {
   let locale: Locale
+  /// The bundle holding the String Catalog: the running app's, unless a test reads its own.
+  var bundle: Bundle = .main
 
   func callAsFunction(_ english: String, _ arabic: String) -> String {
-    IOSL10n.text(english, arabic: arabic, locale: locale)
+    IOSL10n.text(english, arabic: arabic, locale: locale, bundle: bundle)
   }
 }
 
 nonisolated struct IOSPrayerPresentation: Sendable {
   let display: SalahDisplay
+  /// The bundle holding the String Catalog: the running app's, unless a test reads its own.
+  var bundle: Bundle = .main
 
-  var copy: IOSPrayerScreenCopy { IOSPrayerScreenCopy(locale: display.locale) }
+  var copy: IOSPrayerScreenCopy { IOSPrayerScreenCopy(locale: display.locale, bundle: bundle) }
   var event: PrayerEvent? { display.playback?.event ?? display.focus?.event }
   var isCountingUp: Bool { display.playback == nil && display.focus?.isCountUp == true }
   var isApproaching: Bool {
@@ -133,7 +137,8 @@ nonisolated struct IOSPrayerPresentation: Sendable {
       switch state.status(of: event) {
       case .next:
         let interval = compactRemaining(event.time.timeIntervalSince(display.date))
-        pieces.append(copy("in", "بعد") + " " + interval)
+        // One catalog entry places the time: "in 2:16", "بعد ٢:١٦", "2:16 sonra".
+        pieces.append(String(format: copy("in %@", "بعد %@"), interval))
       case .justStarted:
         pieces.append(elapsedPhrase(display.date.timeIntervalSince(event.time)))
       case .passed where state.previous?.id == event.id:
@@ -144,7 +149,7 @@ nonisolated struct IOSPrayerPresentation: Sendable {
     if let iqama = event.iqama {
       pieces.append(
         copy("Iqama", "الإقامة") + " "
-          + display.text.timeFormatter().string(from: iqama).bidiIsolated)
+          + display.text.clockTime(iqama).bidiIsolated)
     }
     return pieces.isEmpty ? nil : pieces.joined(separator: " · ")
   }

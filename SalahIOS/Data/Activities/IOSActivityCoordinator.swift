@@ -12,18 +12,32 @@ nonisolated struct IOSActivityPublication: Sendable {
 @MainActor struct IOSActivityLifecycle {
   var activities: () -> [Activity<SalahActivityAttributes>]
   var end: ([Activity<SalahActivityAttributes>]) async -> Void
+  /// Asks the system for an activity showing `state`; `nil` when Live Activities are off.
+  var request: Request = { _ in nil }
+
+  typealias Request = (SalahActivityAttributes.ContentState) throws
+    -> Activity<SalahActivityAttributes>?
 
   static var system: Self {
     Self(
       activities: { Activity<SalahActivityAttributes>.activities },
       end: { activities in
         for activity in activities { await activity.end(nil, dismissalPolicy: .immediate) }
+      },
+      request: { state in
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return nil }
+        return try Activity.request(
+          attributes: SalahActivityAttributes(
+            eventID: SalahActivityAttributes.eventID(for: state)),
+          content: ActivityContent(state: state, staleDate: state.validUntil), pushType: nil)
       })
   }
 }
 
-/// The prayers whose activity the person dismissed. They stay in the app's own defaults until
-/// each one's activity window closes, so a relaunch within the window doesn't recreate one.
+/// The prayers whose activity the person dismissed. Each holds until its activity window
+/// closes or the person comes back to Salah from the background, whichever is first: Salah
+/// doesn't put a swiped-away activity back while it stays open or wakes in the background, and
+/// opening Salah again shows the current prayer's activity as it does on any other visit.
 @MainActor struct IOSActivityDismissals {
   static let key = "Salah.iOS.dismissedActivities.v1"
   private let defaults: UserDefaults
@@ -100,7 +114,12 @@ final class IOSActivityCoordinator {
       state: state, isApproaching: display.prayerState?.isApproaching == true)
   }
 
-  func refresh(settings: SalahSettings?, isForeground: Bool) async {
+  /// Brings the activity in line with the schedule and what's playing.
+  ///
+  /// `returning` marks the refresh that follows a launch or a return from the background.
+  /// It forgets the current prayer's dismissal, so the activity a person swiped away on the
+  /// Lock Screen starts again when they next open Salah, while Live Activities stay allowed.
+  func refresh(settings: SalahSettings?, isForeground: Bool, returning: Bool = false) async {
     revision &+= 1
     let mine = revision
     guard let publication = publication(settings: settings) else {
@@ -116,9 +135,11 @@ final class IOSActivityCoordinator {
     }
     if let activity {
       if activity.activityState == .dismissed || activity.activityState == .ended {
-        dismissals.insert(
-          activity.attributes.eventID, until: IOSActivityDismissals.deadline(for: state),
-          now: now())
+        if !returning {
+          dismissals.insert(
+            activity.attributes.eventID, until: IOSActivityDismissals.deadline(for: state),
+            now: now())
+        }
         self.activity = nil
         lastPublished = nil
       } else if Self.shouldPublish(state, after: lastPublished) {
@@ -130,6 +151,7 @@ final class IOSActivityCoordinator {
         guard mine == revision else { return }
       }
     }
+    if returning, isForeground { dismissals.remove(eventID) }
     guard activity == nil, isForeground, !dismissals.contains(eventID, at: state.updatedAt)
     else { return }
     let relevant = state.mode != .countdown || publication.isApproaching
@@ -172,12 +194,9 @@ final class IOSActivityCoordinator {
   }
 
   private func request(_ state: SalahActivityAttributes.ContentState) {
-    guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
     do {
-      activity = try Activity.request(
-        attributes: SalahActivityAttributes(eventID: SalahActivityAttributes.eventID(for: state)),
-        content: ActivityContent(state: state, staleDate: state.validUntil), pushType: nil)
-      lastPublished = state
+      activity = try lifecycle.request(state)
+      if activity != nil { lastPublished = state }
       lastError = nil
     } catch {
       lastError = error.localizedDescription

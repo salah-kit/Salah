@@ -7,6 +7,22 @@ import SwiftUI
 import UIKit
 import WidgetKit
 
+/// The order a changed preference reaches the surfaces outside the app.
+///
+/// The Live Activity is on screen now, so a new language or setting reaches it first. The
+/// notifications take longer to schedule and aren't seen until they fire.
+@MainActor struct IOSSurfaceRefresh {
+  var activity: () async -> Void
+  var notifications: () async -> Void
+
+  /// A newer change cancels this one before its notifications are scheduled twice.
+  func run() async {
+    await activity()
+    guard !Task.isCancelled else { return }
+    await notifications()
+  }
+}
+
 /// The composition root owns side effects. Views and domain state never construct system services.
 @MainActor @Observable
 final class IOSAppRuntime {
@@ -18,10 +34,16 @@ final class IOSAppRuntime {
   let activities: IOSActivityCoordinator
   let watch: IOSWatchSync
   private(set) var widgetError: String?
+  @ObservationIgnored private let widgets = IOSWidgetPublisher()
+  @ObservationIgnored private let placeNamer: any IOSPlaceNaming
+  @ObservationIgnored private var placeNameTask: Task<Void, Never>?
   @ObservationIgnored private var refreshTask: Task<Void, Never>?
   @ObservationIgnored private var stopObservation: DarwinSignal.Observation?
   @ObservationIgnored private var preferencesObservation: DarwinSignal.Observation?
   @ObservationIgnored private var foreground = false
+  /// Whether the next activation follows a launch or a stay in the background, rather than a
+  /// moment under Control Center or a system alert.
+  @ObservationIgnored private var returning = true
   @ObservationIgnored private let isTesting: Bool
   static let refreshIdentifier = "io.github.salah-kit.Salah.iOS.refresh"
 
@@ -34,6 +56,7 @@ final class IOSAppRuntime {
     activities = IOSActivityCoordinator()
     watch = IOSWatchSync()
     isTesting = configuration.isTesting
+    placeNamer = configuration.isTesting ? IOSFixturePlaceNamer() : IOSMapKitPlaceNamer()
     connect()
     // iOS can launch Salah in the background for the watch's request, before any scene.
     watch.send(store.preferences)
@@ -87,15 +110,22 @@ final class IOSAppRuntime {
     if store.preferences.useCurrentLocation { location.requestLocation() }
     await notifications.refreshAuthorization()
     publishSettings()
+    namePlace()
     watch.send(store.preferences)
+    // Coming back to Salah shows its activity again, even one the person swiped away. The
+    // scene can leave the foreground while this waits.
+    let returning = returning
+    self.returning = false
+    await activities.refresh(
+      settings: store.settings, isForeground: foreground, returning: returning)
     await refreshNotifications()
-    // The scene can leave the foreground while this waits.
-    await activities.refresh(settings: store.settings, isForeground: foreground)
     submitBackgroundRefresh()
   }
 
-  func deactivate() {
+  /// `inBackground` is false while the scene is only inactive, under Control Center or an alert.
+  func deactivate(inBackground: Bool = true) {
     foreground = false
+    if inBackground { returning = true }
     location.stopHeading()
     citySearch.cancel()
     submitBackgroundRefresh()
@@ -125,13 +155,39 @@ final class IOSAppRuntime {
     audio.setVolume(store.preferences.playbackVolume)
     if !store.preferences.useCurrentLocation { location.cancelLocation() }
     publishSettings()
+    namePlace()
     watch.send(store.preferences)
     refreshTask?.cancel()
     refreshTask = Task { [weak self] in
       guard let self else { return }
-      await refreshNotifications()
-      guard !Task.isCancelled else { return }
-      await activities.refresh(settings: store.settings, isForeground: foreground)
+      await IOSSurfaceRefresh(
+        activity: {
+          await self.activities.refresh(
+            settings: self.store.settings, isForeground: self.foreground)
+        },
+        notifications: { await self.refreshNotifications() }
+      ).run()
+    }
+  }
+
+  /// Looks the saved place's name up in Salah's language when it differs from the device's,
+  /// once for each place and language. Offline, the saved name stays until a later change or
+  /// return to the app asks again.
+  private func namePlace() {
+    let preferences = store.preferences
+    guard let location = preferences.location,
+      preferences.needsPlaceName(deviceLanguageCode: IOSPreferences.deviceLanguageCode)
+    else { return }
+    let languageCode = preferences.placeLanguageCode
+    let locale = preferences.language.locale
+    placeNameTask?.cancel()
+    placeNameTask = Task { [weak self] in
+      guard let self, let name = await self.placeNamer.name(of: location, in: locale),
+        !Task.isCancelled
+      else { return }
+      self.store.updatePreferences {
+        $0.setPlaceName(name, languageCode: languageCode, for: location)
+      }
     }
   }
 
@@ -144,9 +200,7 @@ final class IOSAppRuntime {
     // and when the stored settings can't be read, the published ones are still the user's.
     guard let settings = store.settings else { return }
     do {
-      let changed = try SharedValue.settings.save(
-        settings, reloading: [SalahWidgetConstants.prayerTimesWidgetKind])
-      if changed { ControlCenter.shared.reloadControls(ofKind: IOSControlKind.muteSounds) }
+      try widgets.publish(settings)
       widgetError = nil
     } catch {
       widgetError = String(describing: error)

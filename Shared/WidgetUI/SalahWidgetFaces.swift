@@ -627,7 +627,7 @@ nonisolated struct WidgetTimes: View {
             .lineLimit(1)
             // The smaller faces drop the day period; VoiceOver says it: "5:03 AM".
             .accessibilityLabel(
-              Text(verbatim: display.text.timeFormatter().string(from: row.event.time)))
+              Text(verbatim: display.text.clockTime(row.event.time)))
         }
         .foregroundStyle(color(row.role))
         .padding(.horizontal, isExtraLarge ? 10 : 6)
@@ -648,7 +648,7 @@ nonisolated struct WidgetTimes: View {
   /// "4:11" in the rows, or "4:11 AM" in the extra-large face's.
   private func timeText(_ time: Date) -> String {
     isExtraLarge
-      ? display.text.timeFormatter().string(from: time) : display.text.compactTime(time)
+      ? display.text.clockTime(time) : display.text.compactTime(time)
   }
 
   private func color(_ role: Role) -> AnyShapeStyle {

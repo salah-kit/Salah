@@ -414,65 +414,6 @@
         }
       }
     },
-    "in": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "in"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "بعد"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "dans"
-          }
-        },
-        "ur": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "میں"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "dalam"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "sonra"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "تا"
-          }
-        },
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "পরে"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "dalam"
-          }
-        }
-      }
-    },
     "in %@": {
       "extractionState": "manual",
       "localizations": {

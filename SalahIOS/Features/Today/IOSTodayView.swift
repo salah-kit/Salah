@@ -379,7 +379,7 @@ struct IOSTodayView: View {
       .accessibilityIdentifier("today.calculation")
       Text(
         verbatim: copy("Calculated on this device for", "محسوبة على هذا الجهاز لموقع") + " "
-          + (store.preferences.location?.name ?? copy("your location", "موقعك")) + "."
+          + (store.preferences.placeName ?? copy("your location", "موقعك")) + "."
       )
       .font(.footnote)
       .foregroundStyle(IOSTheme.labelSecondary)

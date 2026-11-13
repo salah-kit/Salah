@@ -124,11 +124,14 @@ struct WidgetSurfaceRenderTests {
         (.large, CGSize(width: 349.67, height: 365), "large"),
       ] {
         let stop = try #require(WidgetStopContent(display: playingDisplay, size: size))
+        // The large face's running bar is the system's timer progress view, which only a
+        // widget host draws; paused, the face draws the moment's fraction.
         try render(
           stop.background(WidgetSky(phase: playingDisplay.phase))
             .environment(\.colorScheme, .light)
             .environment(\.locale, display.locale)
-            .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight),
+            .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
+            .environment(\.salahTimerPause, playingAt),
           size: dimensions,
           to: directory.appendingPathComponent("stop-\(name)-\(isArabic ? "ar" : "en").png"))
       }
@@ -244,12 +247,19 @@ struct WidgetSurfaceRenderTests {
     }
   }
 
-  @Test func accessoryCountdownCopyUsesTheSelectedLanguageInsteadOfDirection() {
+  /// The countdown's words come from the selected language, never from the layout direction, and
+  /// its one catalog entry says which side of the time they go: Turkish, Bengali and Urdu put
+  /// theirs after it.
+  @Test func accessoryCountdownCopyPutsTheTimeWhereTheSelectedLanguageDoes() {
     let bundle = Bundle(for: WidgetResourceProbe.self)
-    for (language, expected) in [("ar", "بعد"), ("fa", "تا"), ("ur", "میں"), ("fr", "dans")] {
-      #expect(
-        IOSAccessoryCopy.countdownPrefix(locale: Locale(identifier: language), bundle: bundle)
-          == expected)
+    for (language, before, after) in [
+      ("en", "in ", ""), ("ar", "بعد ", ""), ("fa", "تا ", " دیگر"), ("fr", "dans ", ""),
+      ("tr", "", " sonra"), ("ur", "", " میں"), ("bn", "", " পর"),
+    ] {
+      let sides = IOSAccessoryCopy.countdownSides(
+        locale: Locale(identifier: language), bundle: bundle)
+      #expect(sides.before == before, "\(language)")
+      #expect(sides.after == after, "\(language)")
     }
   }
 

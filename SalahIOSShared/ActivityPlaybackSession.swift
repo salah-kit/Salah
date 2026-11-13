@@ -36,21 +36,24 @@ nonisolated extension SharedValue where Value == IOSPlaybackSession {
 
 /// Overlays actual user playback on the reusable schedule without applying macOS alert-time expiry.
 nonisolated enum IOSSurfaceTimeline {
-  static func make(settings: SalahSettings?, session: IOSPlaybackSession?, now: Date)
-    -> SalahWidgetTimeline
-  {
-    let normal = SalahWidgetTimeline.make(settings: settings, playback: nil, now: now)
+  static func make(
+    settings: SalahSettings?, session: IOSPlaybackSession?, now: Date,
+    cadence: SalahWidgetTimeline.Cadence = .steps
+  ) -> SalahWidgetTimeline {
+    let normal = SalahWidgetTimeline.make(
+      settings: settings, playback: nil, now: now, cadence: cadence)
     return applying(session: session, to: normal, now: now)
   }
 
   /// A Stop during schedule calculation must be observed before publishing a new archive.
   static func makeForPublication(
-    settings: SalahSettings?, now: Date, loadSession: () -> IOSPlaybackSession?,
-    planSchedule: (SalahSettings?, Date) -> SalahWidgetTimeline = {
-      SalahWidgetTimeline.make(settings: $0, playback: nil, now: $1)
-    }
+    settings: SalahSettings?, now: Date, cadence: SalahWidgetTimeline.Cadence = .steps,
+    loadSession: () -> IOSPlaybackSession?,
+    planSchedule: ((SalahSettings?, Date) -> SalahWidgetTimeline)? = nil
   ) -> SalahWidgetTimeline {
-    let normal = planSchedule(settings, now)
+    let normal =
+      planSchedule?(settings, now)
+      ?? SalahWidgetTimeline.make(settings: settings, playback: nil, now: now, cadence: cadence)
     return applying(session: loadSession(), to: normal, now: now)
   }
 
@@ -78,10 +81,11 @@ nonisolated enum IOSSurfaceTimeline {
           )))
       published += normal.entries.filter { $0.date > end }
     }
-    if published.count > SalahWidgetTimeline.entryLimit {
-      let cut = published[SalahWidgetTimeline.entryLimit - 1].date
+    let entryLimit = normal.cadence.entryLimit
+    if published.count > entryLimit {
+      let cut = published[entryLimit - 1].date
       published =
-        Array(published.prefix(SalahWidgetTimeline.entryLimit - 1))
+        Array(published.prefix(entryLimit - 1))
         + [SalahWidgetEntry(date: cut, content: .expired(display.settings))]
     }
     let reload: SalahWidgetTimeline.Reload
@@ -90,6 +94,7 @@ nonisolated enum IOSSurfaceTimeline {
     } else {
       reload = normal.reload
     }
-    return SalahWidgetTimeline(entries: published, reload: reload, planned: normal.planned)
+    return SalahWidgetTimeline(
+      entries: published, reload: reload, planned: normal.planned, cadence: normal.cadence)
   }
 }

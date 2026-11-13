@@ -12,6 +12,9 @@ nonisolated struct SalahText: Sendable {
   var locale: Locale
   /// The time zone clock times are read in: the location's, not the device's.
   var timeZone: TimeZone
+  /// Where the clock and digit formatters are kept: the shared cache, unless a test counts
+  /// its own.
+  var formatters: SalahFormatterCache = .shared
 
   /// The language code the hand-written tables key on (`SalahWidgetLabels`,
   /// `LocalizedTimeUnit`).
@@ -24,22 +27,36 @@ nonisolated struct SalahText: Sendable {
 
   /// A clock time without its day period, bidi-isolated, for the menu bar: "4:11".
   func compactTime(_ date: Date) -> String {
-    let formatter = timeFormatter()
-    let periodFormatter = DateFormatter()
-    periodFormatter.dateFormat = "a"
-    periodFormatter.locale = formatter.locale
-    periodFormatter.timeZone = timeZone
+    let (time, period) = formatters.clock(locale: locale, timeZone: timeZone) {
+      ($0.time.string(from: date), $0.period.string(from: date))
+    }
     let periodTrimCharacters = CharacterSet.whitespacesAndNewlines
       .union(CharacterSet(charactersIn: "\u{00A0}\u{202F}"))
 
-    return formatter.string(from: date)
-      .replacingOccurrences(of: periodFormatter.string(from: date), with: "")
+    return
+      time
+      .replacingOccurrences(of: period, with: "")
       .trimmingCharacters(in: periodTrimCharacters)
       .bidiIsolated
   }
 
-  /// The locale's short clock format for app-owned strings and compact status text.
+  /// A clock time in the locale's short format: "4:11 AM", "٤:١١ ص".
+  ///
+  /// Every row of every widget entry asks for one, so the formatter behind it is made once
+  /// for the locale and the zone and reused.
+  func clockTime(_ date: Date) -> String {
+    formatters.clock(locale: locale, timeZone: timeZone) {
+      $0.time.string(from: date)
+    }
+  }
+
+  /// The locale's short clock format for app-owned strings and compact status text. Each
+  /// call makes a formatter of the caller's own; `clockTime(_:)` formats with a shared one.
   func timeFormatter() -> DateFormatter {
+    Self.makeTimeFormatter(locale: locale, timeZone: timeZone)
+  }
+
+  fileprivate static func makeTimeFormatter(locale: Locale, timeZone: TimeZone) -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateStyle = .none
     formatter.timeStyle = .short
@@ -64,11 +81,9 @@ nonisolated struct SalahText: Sendable {
 
   /// An integer in the locale's digits, without grouping.
   func digits(_ value: Int, minimumDigits: Int = 1) -> String {
-    let formatter = NumberFormatter()
-    formatter.locale = locale
-    formatter.minimumIntegerDigits = minimumDigits
-    formatter.usesGroupingSeparator = false
-    return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    formatters.digits(locale: locale, minimumDigits: minimumDigits) {
+      $0.string(from: NSNumber(value: value))
+    } ?? "\(value)"
   }
 
   /// Minutes with the language's unit, bidi-isolated: "10m", "١٠ د", "10 min".
@@ -153,6 +168,81 @@ nonisolated struct SalahText: Sendable {
     formatter.timeZone = timeZone
     formatter.dateTemplate = template
     return formatter.string(from: start, to: end)
+  }
+}
+
+/// The formatters behind `SalahText`'s clock times and digits, made once for each locale
+/// and zone.
+///
+/// Creating a `DateFormatter` opens ICU's data for its locale, which costs far more than
+/// formatting with it. A widget timeline draws every row of every entry several times over,
+/// so a formatter per call made WidgetKit's archiving slow enough to leave a placed widget
+/// on its placeholder. Formatting runs under the cache's lock, one caller at a time.
+nonisolated final class SalahFormatterCache: @unchecked Sendable {
+  static let shared = SalahFormatterCache()
+
+  /// The clock formatters for one locale and zone.
+  struct Clock {
+    /// The locale's short time: "4:11 AM".
+    let time: DateFormatter
+    /// The day period alone, which `compactTime(_:)` removes: "AM".
+    let period: DateFormatter
+  }
+
+  private struct ClockKey: Hashable {
+    let locale: Locale
+    let timeZone: TimeZone
+  }
+
+  private struct DigitsKey: Hashable {
+    let locale: Locale
+    let minimumDigits: Int
+  }
+
+  /// A person's languages and places are few; past this the cache starts over rather than
+  /// growing with every locale a long-running app ever showed.
+  private static let capacity = 32
+
+  private let lock = NSLock()
+  private var clocks: [ClockKey: Clock] = [:]
+  private var numbers: [DigitsKey: NumberFormatter] = [:]
+  private var created = 0
+
+  /// How many formatters the cache has made, for the tests that hold it to one per key.
+  var creations: Int { lock.withLock { created } }
+
+  func clock<Value>(locale: Locale, timeZone: TimeZone, _ format: (Clock) -> Value) -> Value {
+    lock.withLock {
+      let key = ClockKey(locale: locale, timeZone: timeZone)
+      if let clock = clocks[key] { return format(clock) }
+      let time = SalahText.makeTimeFormatter(locale: locale, timeZone: timeZone)
+      let period = DateFormatter()
+      period.dateFormat = "a"
+      period.locale = time.locale
+      period.timeZone = timeZone
+      let clock = Clock(time: time, period: period)
+      if clocks.count >= Self.capacity { clocks.removeAll() }
+      clocks[key] = clock
+      created += 2
+      return format(clock)
+    }
+  }
+
+  func digits<Value>(locale: Locale, minimumDigits: Int, _ format: (NumberFormatter) -> Value)
+    -> Value
+  {
+    lock.withLock {
+      let key = DigitsKey(locale: locale, minimumDigits: minimumDigits)
+      if let formatter = numbers[key] { return format(formatter) }
+      let formatter = NumberFormatter()
+      formatter.locale = locale
+      formatter.minimumIntegerDigits = minimumDigits
+      formatter.usesGroupingSeparator = false
+      if numbers.count >= Self.capacity { numbers.removeAll() }
+      numbers[key] = formatter
+      created += 1
+      return format(formatter)
+    }
   }
 }
 

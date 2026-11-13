@@ -20,15 +20,18 @@ nonisolated enum IOSAccessoryCopy {
     return Text("\(glyph) \(display.name(of: focus.event)) \(clock)")
   }
 
-  /// A single run keeps the prefix and digits on the same baseline and scaling factor.
+  /// A single run keeps the words and digits on the same baseline and scaling factor. The
+  /// countdown's catalog entry places the time, so each language keeps its own order: "in 2:16",
+  /// "بعد ٢:١٦", "2:16 sonra". A live timer can't be formatted into a string, so it goes between
+  /// the entry's two sides.
   @MainActor
   static func clockText(
     display: SalahDisplay, focus: SalahDisplay.Focus, pause: Date? = nil, bundle: Bundle = .main
   ) -> Text {
     let duration = timer(display: display, focus: focus, pause: pause)
     if focus.isCountUp { return Text("+\(duration)") }
-    let prefix = countdownPrefix(locale: display.locale, bundle: bundle)
-    return Text("\(prefix) \(duration)")
+    let sides = countdownSides(locale: display.locale, bundle: bundle)
+    return Text("\(Text(verbatim: sides.before))\(duration)\(Text(verbatim: sides.after))")
   }
 
   @MainActor
@@ -71,7 +74,13 @@ nonisolated enum IOSAccessoryCopy {
       "\(display.name(of: focus.event)), \(display.timeText(of: focus.event)), \(duration)")
   }
 
-  static func countdownPrefix(locale: Locale, bundle: Bundle = .main) -> String {
-    IOSL10n.text("in", locale: locale, bundle: bundle)
+  /// What the locale's "in %@" entry puts before and after the time: "in " and nothing in
+  /// English, nothing and " sonra" in Turkish.
+  static func countdownSides(locale: Locale, bundle: Bundle = .main) -> (
+    before: String, after: String
+  ) {
+    let format = IOSL10n.text("in %@", arabic: "بعد %@", locale: locale, bundle: bundle)
+    guard let time = format.range(of: "%@") else { return (format + " ", "") }
+    return (String(format[..<time.lowerBound]), String(format[time.upperBound...]))
   }
 }

@@ -27,7 +27,7 @@ struct SalahIOSApp: App {
             await runtime.activate()
             await runtime.runClock()
           } else {
-            runtime.deactivate()
+            runtime.deactivate(inBackground: scenePhase == .background)
           }
         }
         .onReceive(
