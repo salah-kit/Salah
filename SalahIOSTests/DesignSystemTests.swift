@@ -55,17 +55,21 @@ struct DesignSystemTests {
       let pixels = try Self.pixels(of: image)
       // The 112-point icon is centered in the 220-point artwork; this is its sky below the arch.
       let offset = (160 * image.width + 110) * 4
-      let (red, blue, alpha) = (Int(pixels[offset]), Int(pixels[offset + 2]), pixels[offset + 3])
-      #expect(alpha == 255, "The icon must draw an opaque sky, not an empty image.")
+      let (red, green, blue) = (
+        Int(pixels[offset]), Int(pixels[offset + 1]), Int(pixels[offset + 2])
+      )
+      #expect(pixels[offset + 3] == 255, "The icon must draw an opaque sky, not an empty image.")
+      // Both skies are burgundy: dusk.900 near the bottom in dark, dusk.600 in light.
       switch scheme {
       case .dark:
         #expect(
-          blue - red > 25 && red < 70,
-          "Dark draws Salah.icon's dark night sky, not the light dusk (red \(red), blue \(blue)).")
+          red - blue > 25 && red < 110,
+          "Dark draws Salah.icon's dark burgundy sky, not the light one (red \(red), blue \(blue))."
+        )
       default:
         #expect(
-          red - blue > 30 && red > 150,
-          "Light draws Salah.icon's dusk at the horizon (red \(red), blue \(blue)).")
+          red - blue > 30 && red > 150 && green < 100 && blue < 110,
+          "Light draws Salah.icon's burgundy horizon (red \(red), green \(green), blue \(blue)).")
       }
     }
   }

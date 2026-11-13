@@ -3,9 +3,9 @@
 <g id="sky">
 <defs>
 <linearGradient id="sky-sky" x1="0" y1="0" x2="0" y2="1024" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#161932"/>
-  <stop offset="0.58" stop-color="#3C426E"/>
-  <stop offset="1" stop-color="#CC7379"/>
+  <stop offset="0" stop-color="#320E12"/>
+  <stop offset="0.58" stop-color="#6D3036"/>
+  <stop offset="1" stop-color="#AE5A60"/>
 </linearGradient>
 </defs>
 <rect x="-64" y="-64" width="1152" height="1152" fill="url(#sky-sky)"/>

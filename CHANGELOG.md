@@ -73,8 +73,8 @@ All notable changes to this project are documented here. The format follows
   Apple TV and Apple Watch apps write what their extensions read again when they next
   open. The iPhone and iPad app keeps its preferences in that container too, so an iPhone
   or iPad set up with a build from an earlier commit starts at setup again.
-- The app icon is the design system's: a gold arch and crescent on the evening sky, with
-  dark and tinted versions for macOS's icon styles.
+- The app icon is the design system's: a gold arch and crescent on a burgundy sky, on
+  every platform, with dark, tinted and clear versions where the system has them.
 - Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first
   time a note says so. Quit Salah, the power button in the dropdown and the button on
   Today, turns Salah off: it removes the alerts Salah scheduled, so nothing alerts until

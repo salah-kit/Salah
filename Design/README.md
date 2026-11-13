@@ -366,6 +366,12 @@ rendering. To edit one, open it in the SF Symbols app and export the template ag
 with light, dark, tinted and clear appearances, and a round icon for watchOS. Open it in Icon
 Composer to view or edit it.
 
+It shows a gold mihrab with a crescent inside, a lamp's glow and a lattice, on a burgundy sky.
+The light sky runs from dusk.950 at the top through dusk.800 to dusk.600 at the horizon; the
+dark sky from black through dusk.950 to dusk.900. The ramps are the primitives in
+`tokens/primitives.json`. Tinted and clear appearances hide the sky and lattice, so only the
+mihrab and crescent show there.
+
 To use it in an app target, add `Salah.icon` to the target and set the target's app icon
 name (`ASSETCATALOG_COMPILER_APPICON_NAME`) to `Salah`. Xcode compiles the icon and
 generates flat images for older system versions.
@@ -428,7 +434,7 @@ its own brand assets in `SalahTV/Assets.xcassets`: an icon of five layers (Cresc
 Mihrab, Glow, Texture and Sky, front to back) at 400 × 240 pt for the Home Screen and
 1280 × 768 px for the App Store, and the static Top Shelf images at 1920 × 720 and
 2320 × 720 pt. The layers are drawn on the library's tvOS page from the square icon's
-arch, crescent and evening sky. `AppIcon/tvOS/` holds each layer's SVG at the Home Screen
+arch, crescent and burgundy sky. `AppIcon/tvOS/` holds each layer's SVG at the Home Screen
 icon's 2x size; the back layer, Sky, is opaque, as tvOS requires. After editing a layer,
 render the assets again. The script needs `rsvg-convert` (librsvg) and `ffmpeg`:
 
