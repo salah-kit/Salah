@@ -77,6 +77,9 @@ the bundled macOS adhan recordings ([NOTICE](../NOTICE)).
   - background refresh across days;
   - widgets, Live Activities and the Dynamic Island at a real prayer boundary.
 - [#28]: StandBy's real widget size.
+- [#93]: the widget gallery and a newly placed widget, a language change reaching the widgets,
+  the Live Activity's bar direction and its return after a swipe, Stop on the first tap, and
+  the bar above the tab bar on iOS 26.0.
 
 ### Follow-ups
 
@@ -188,3 +191,4 @@ Store record, and distribution signing covers its bundle identifiers,
 [#77]: https://github.com/salah-kit/Salah/issues/77
 [#82]: https://github.com/salah-kit/Salah/issues/82
 [#86]: https://github.com/salah-kit/Salah/issues/86
+[#93]: https://github.com/salah-kit/Salah/issues/93
