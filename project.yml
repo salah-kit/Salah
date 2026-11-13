@@ -714,7 +714,7 @@ targets:
         LD_RUNPATH_SEARCH_PATHS:
           ["$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks"]
         MARKETING_VERSION: 1.1.2
-        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_IDENTIFIER).tvOS.TopShelf
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_IDENTIFIER).TopShelf
         PRODUCT_NAME: $(TARGET_NAME)
         REGISTER_APP_GROUPS: YES
         SKIP_INSTALL: YES
