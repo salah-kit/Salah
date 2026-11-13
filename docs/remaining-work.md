@@ -57,6 +57,8 @@ Each row needs one kind of equipment, so one sitting can cover it. Most Mac chec
   still need measuring on a Mac.
 - The VoiceOver findings listed in [#17]'s comments: check each against the current app, and
   fix the ones that still happen.
+- [#82]: Xcode signs the UI tests' runner with a team's wildcard provisioning profile, which
+  grants no App Group, so the two alert tests would have nothing to read on such a team.
 
 ### Before a release
 
@@ -188,4 +190,5 @@ Store record, and distribution signing covers its bundle identifiers,
 [#75]: https://github.com/salah-kit/Salah/issues/75
 [#77]: https://github.com/salah-kit/Salah/issues/77
 [#79]: https://github.com/salah-kit/Salah/issues/79
+[#82]: https://github.com/salah-kit/Salah/issues/82
 [#86]: https://github.com/salah-kit/Salah/issues/86

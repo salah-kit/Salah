@@ -333,7 +333,10 @@ Two of them change an alert in Settings → Notifications and wait for its minut
 move a prayer about two minutes ahead with Salah's own adjustments, turn its alert on
 (the Alafasy adhan then plays at that minute) or off (nothing plays). They read what the
 app publishes in its App Group, as the widget does, so the test runner is signed with
-your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). It builds
+your team into the same App Group (`SalahUITests/SalahUITests.entitlements`). When your
+team has a wildcard provisioning profile, Xcode signs the runner with it, and that profile
+grants no App Group, so macOS would keep the runner out of the group and those two tests
+couldn't read it ([#82](https://github.com/salah-kit/Salah/issues/82)). The runner builds
 and launches the app, so it needs your team in `Config/Local.xcconfig`. UI testing on
 macOS runs in Automation Mode; the first time, macOS may ask an administrator to allow it
 (`automationmodetool` shows whether it will). A full run takes about 15 minutes: the two
