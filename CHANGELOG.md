@@ -168,6 +168,10 @@ All notable changes to this project are documented here. The format follows
   line, Turkish read "Öğle önce" ("Öğle ago") and Persian put "از" after the name. For
   VoiceOver in the dropdown, English, Indonesian and Malay said "since 5 minutes", Turkish
   "önce", and Persian, Urdu and Bengali put their word on the wrong side of the time.
+- A Mac build's widget extension is granted the App Group by its own provisioning profile.
+  Xcode could sign it with a team's wildcard profile, which grants no group, and macOS keeps
+  a process signed that way out of the group's container, where the widget reads what Salah
+  mirrors.
 
 ### Pending
 

@@ -292,6 +292,10 @@ targets:
         MARKETING_VERSION: 1.1.2
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.Widgets
         PRODUCT_NAME: $(TARGET_NAME)
+        # macOS keeps a process out of a `group.` App Group's container unless its
+        # provisioning profile grants the group, so the app, this extension and the stop
+        # harness register it.
+        REGISTER_APP_GROUPS: YES
         SDKROOT: macosx
         SKIP_INSTALL: YES
         STRING_CATALOG_GENERATE_SYMBOLS: YES
@@ -352,7 +356,9 @@ targets:
   # Drives the real app (XCUITest). It builds and launches the app, which opens its App
   # Group, so it needs a signing team (Config/Local.xcconfig) and has its own scheme: the
   # Salah scheme's tests never build the app. Its runner is signed with the team into the
-  # same App Group, sandboxed, so the alert tests can read what the app publishes there.
+  # same App Group, sandboxed, so the alert tests can read what the app publishes there;
+  # Xcode gives the runner a team's wildcard profile when there is one, which grants no
+  # group (https://github.com/salah-kit/Salah/issues/82).
   SalahUITests:
     type: bundle.ui-testing
     platform: macOS
@@ -414,6 +420,7 @@ targets:
         MARKETING_VERSION: 1.1.2
         PRODUCT_BUNDLE_IDENTIFIER: io.github.salah-kit.Salah.StopHarness
         PRODUCT_NAME: $(TARGET_NAME)
+        REGISTER_APP_GROUPS: YES
         SDKROOT: macosx
         SKIP_INSTALL: YES
         SWIFT_APPROACHABLE_CONCURRENCY: YES
