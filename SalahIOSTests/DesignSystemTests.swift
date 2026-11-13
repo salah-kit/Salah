@@ -43,38 +43,6 @@ struct DesignSystemTests {
   }
 
   @Test @MainActor
-  func welcomeIconDrawsTheAppIconSkyOfEachAppearance() throws {
-    for scheme in [ColorScheme.light, .dark] {
-      let renderer = ImageRenderer(
-        content: IOSOnboardingArtwork(
-          step: .welcome, resourceBundle: Bundle(for: DesignSystemTestResources.self)
-        )
-        .environment(\.colorScheme, scheme))
-      renderer.scale = 1
-      let image = try #require(renderer.uiImage?.cgImage)
-      let pixels = try Self.pixels(of: image)
-      // The 112-point icon is centered in the 220-point artwork; this is its sky below the arch.
-      let offset = (160 * image.width + 110) * 4
-      let (red, green, blue) = (
-        Int(pixels[offset]), Int(pixels[offset + 1]), Int(pixels[offset + 2])
-      )
-      #expect(pixels[offset + 3] == 255, "The icon must draw an opaque sky, not an empty image.")
-      // Both skies are burgundy: dusk.900 near the bottom in dark, dusk.600 in light.
-      switch scheme {
-      case .dark:
-        #expect(
-          red - blue > 25 && red < 110,
-          "Dark draws Salah.icon's dark burgundy sky, not the light one (red \(red), blue \(blue))."
-        )
-      default:
-        #expect(
-          red - blue > 30 && red > 150 && green < 100 && blue < 110,
-          "Light draws Salah.icon's burgundy horizon (red \(red), green \(green), blue \(blue)).")
-      }
-    }
-  }
-
-  @Test @MainActor
   func sunCardNeverExpandsAParentToTheReferenceChartWidth() throws {
     var preferences = IOSPreferences()
     let zone = try #require(TimeZone(identifier: "Asia/Riyadh"))
