@@ -433,8 +433,9 @@ tvOS draws an app icon as a stack of layers that shift with focus, so the Apple 
 its own brand assets in `SalahTV/Assets.xcassets`: an icon of five layers (Crescent,
 Mihrab, Glow, Texture and Sky, front to back) at 400 × 240 pt for the Home Screen and
 1280 × 768 px for the App Store, and the static Top Shelf images at 1920 × 720 and
-2320 × 720 pt. The layers are drawn on the library's tvOS page from the square icon's
-arch, crescent and burgundy sky. `AppIcon/tvOS/` holds each layer's SVG at the Home Screen
+2320 × 720 pt. The layers are components in the "Apple TV icon layers" frame on the library's App Icon
+page, drawn from the square icon's arch, crescent and burgundy sky; the tvOS page's static
+Top Shelf image is built from instances of Sky, Glow, Mihrab and Crescent. `AppIcon/tvOS/` holds each layer's SVG at the Home Screen
 icon's 2x size; the back layer, Sky, is opaque, as tvOS requires. After editing a layer,
 render the assets again. The script needs `rsvg-convert` (librsvg) and `ffmpeg`:
 
