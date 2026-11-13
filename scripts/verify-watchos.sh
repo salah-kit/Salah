@@ -65,7 +65,7 @@ import sys
 for path in sys.argv[1:]:
     with open(path, "rb") as source:
         entitlements = plistlib.load(source)
-    if "group.io.github.salah-kit.Salah" not in entitlements.get(
+    if "group.io.github.salah-kit.Salah.shared" not in entitlements.get(
         "com.apple.security.application-groups", []
     ):
         sys.exit(f"{path} is missing the shared App Group entitlement.")

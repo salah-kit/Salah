@@ -21,7 +21,7 @@ struct IdentityTests {
       as? [String: Any]
     let groups = entitlements?["com.apple.security.application-groups"] as? [String]
     #expect(groups == [SalahWidgetConstants.appGroupID])
-    #expect(SalahWidgetConstants.appGroupID == "group.io.github.salah-kit.Salah")
+    #expect(SalahWidgetConstants.appGroupID == "group.io.github.salah-kit.Salah.shared")
   }
 
   /// The names the app and the extension exchange are Salah's own.

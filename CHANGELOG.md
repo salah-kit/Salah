@@ -62,6 +62,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The App Group the app shares with its widgets, and on iOS with its watch app, is
+  `group.io.github.salah-kit.Salah.shared` on every platform; a build signed with your
+  team registers it, as before. The Mac app writes the widgets' mirror again when it next
+  opens. An iPhone or iPad build keeps its preferences in that container, so one built
+  from an earlier commit starts at setup again.
 - The app icon is the design system's: a gold arch and crescent on the evening sky, with
   dark and tinted versions for macOS's icon styles.
 - Closing the window, ⌘Q included, keeps Salah running in the menu bar, and the first
