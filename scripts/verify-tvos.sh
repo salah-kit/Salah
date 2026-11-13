@@ -19,7 +19,7 @@ test -d "$app/PlugIns/SalahTVTopShelf.appex"
 test -f "$app/NOTICE"
 # Both bundles carry Salah's identifier and name the App Group their code reads.
 python3 scripts/check-identity.py "$app_group" "$app=$bundle_identifier" \
-  "$app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
+  "$app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.TopShelf"
 # actool succeeds silently without the brand assets, so check the app names them.
 test "$(plutil -extract CFBundleIcons.CFBundlePrimaryIcon raw -o - "$app/Info.plist")" \
   = "App Icon"
@@ -69,7 +69,7 @@ simulator_app="$derived_path/Build/Products/Debug-appletvsimulator/SalahTV.app"
 python3 scripts/check-identity.py "$app_group" \
   "$results/AppEntitlements.plist" "$results/TopShelfEntitlements.plist" \
   "$simulator_app=$bundle_identifier" \
-  "$simulator_app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.tvOS.TopShelf"
+  "$simulator_app/PlugIns/SalahTVTopShelf.appex=$bundle_identifier.TopShelf"
 
 # Each permission journey resets Salah's location authorization, so it answers a fresh
 # system alert, and finds the simulated location set above.
