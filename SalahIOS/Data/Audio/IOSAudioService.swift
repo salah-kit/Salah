@@ -103,7 +103,10 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
     _ sound: IOSSound, volume: Double, duaAfter: Bool = false,
     locale: Locale = .current
   ) {
-    stop()
+    // What was playing stops, but its session carries over to what starts now: ending it
+    // here would race the new playback's own start.
+    halt()
+    defer { if !isPlaying { session.deactivateLater() } }
     errorMessage = nil
     self.volume = Self.clampedVolume(volume)
     playbackLocale = locale
@@ -128,6 +131,14 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
   }
 
   func stop() {
+    halt()
+    // Ending the session can take seconds. Stop has already happened for the person, so the
+    // session ends behind the main actor's back.
+    session.deactivateLater()
+  }
+
+  /// Stops the sound and clears what's playing, leaving the audio session as it is.
+  private func halt() {
     hasQueuedDua = false
     duaTimeoutTask?.cancel()
     duaTimeoutTask = nil
@@ -142,9 +153,6 @@ final class IOSAudioService: NSObject, AVAudioPlayerDelegate,
     expectedPlaybackEnd = nil
     MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     updatePlayback(false)
-    // Ending the session can take seconds. Stop has already happened for the person, so the
-    // session ends behind the main actor's back.
-    session.deactivateLater()
   }
 
   private func start(_ sound: IOSSound, queueDua: Bool) {
@@ -278,10 +286,9 @@ nonisolated struct IOSAudioMetadata: Equatable, Sendable {
 /// Starts and ends the audio session, ending it off the main actor.
 ///
 /// Deactivating the session waits for the system's audio to settle, which has taken seconds.
-/// Stop returns at once and the session ends on a queue of its own. Nothing on the main actor
-/// waits for that: playback that starts meanwhile activates the session itself, an ending
-/// asked for before it is dropped, and one already under way activates the session again
-/// when it finds playback started behind it.
+/// Stop asks for the ending and returns at once; the session ends on a queue of its own. A
+/// start and an ending never overlap, so playback is never left without its session: a start
+/// waits out an ending already under way, and an ending asked for before a start is dropped.
 nonisolated final class IOSAudioSessionGate: Sendable {
   static let system = IOSAudioSessionGate(
     setActive: { active in
@@ -293,8 +300,10 @@ nonisolated final class IOSAudioSessionGate: Sendable {
   private static let queue = DispatchQueue(label: "io.github.salah-kit.Salah.audio-session")
   private let setActive: @Sendable (Bool) throws -> Void
   private let later: @Sendable (@escaping @Sendable () -> Void) -> Void
-  /// Guards the count only, never a call into the session.
-  private let lock = NSLock()
+  /// Guards the count only, so asking for an ending never waits.
+  private let count = NSLock()
+  /// Held while the session changes.
+  private let session = NSLock()
   nonisolated(unsafe) private var activations = 0
 
   init(
@@ -306,17 +315,17 @@ nonisolated final class IOSAudioSessionGate: Sendable {
   }
 
   func activate() throws {
-    lock.withLock { activations += 1 }
-    try setActive(true)
+    count.withLock { activations += 1 }
+    try session.withLock { try setActive(true) }
   }
 
   func deactivateLater() {
-    let seen = lock.withLock { activations }
+    let seen = count.withLock { activations }
     later { [self] in
-      guard lock.withLock({ activations }) == seen else { return }
-      try? setActive(false)
-      // Playback started while the session was ending: it needs the session back.
-      if lock.withLock({ activations }) != seen { try? setActive(true) }
+      session.withLock {
+        guard count.withLock({ activations }) == seen else { return }
+        try? setActive(false)
+      }
     }
   }
 }

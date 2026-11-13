@@ -225,7 +225,8 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
     capture("iPhone-English-Qibla-Location-Recovery", in: app)
     tap("qibla.chooseCity", in: app)
     selectCity("Makkah, Saudi Arabia", matching: "Makkah", in: app)
-    tap("tab.qibla", in: app)
+    // Location opened over Qibla, so closing it is all it takes to be back.
+    tap("location.done", in: app)
     require("qibla.heading", in: app)
     XCTAssertFalse(element("qibla.chooseCity", in: app).exists)
     journey.relaunch()

@@ -192,9 +192,9 @@ struct ServicePolicyTests {
   }
 
   /// Ending the audio session has taken seconds, and Stop waited for it on the main actor
-  /// (https://github.com/salah-kit/Salah/issues/88). Stop now hands the ending to a queue,
-  /// and neither a second Stop nor new playback waits for an ending under way.
-  @Test @MainActor func stopNeverWaitsForTheAudioSessionToEnd() throws {
+  /// (https://github.com/salah-kit/Salah/issues/88). Stop now hands the ending to a queue and
+  /// returns, even while an earlier ending is still under way.
+  @Test(.timeLimit(.minutes(1))) @MainActor func stopNeverWaitsForTheAudioSessionToEnd() throws {
     let log = ServiceSessionLog()
     let ending = DispatchSemaphore(value: 0)
     let release = DispatchSemaphore(value: 0)
@@ -210,19 +210,33 @@ struct ServicePolicyTests {
       later: { work in queue.async(execute: work) })
     let audio = IOSAudioService(files: temporaryFiles(), session: gate)
     try gate.activate()
-    audio.stop()
-    ending.wait()
-    // The session is ending now and will not finish until released.
     let started = Date()
     audio.stop()
-    try gate.activate()
     #expect(Date().timeIntervalSince(started) < 0.5)
+    ending.wait()
+    // The session is ending now and will not finish until released.
+    let again = Date()
+    audio.stop()
+    #expect(Date().timeIntervalSince(again) < 0.5)
+    #expect(log.events == ["on"])
     release.signal()
     release.signal()
     queue.sync {}
-    // Playback that started during the ending has its session back, and the second Stop's
-    // ending, asked for before that playback, was dropped.
-    #expect(log.events == ["on", "on", "off", "on"])
+    #expect(log.events == ["on", "off", "off"])
+  }
+
+  /// Starting another sound keeps the session the first one had: no ending is asked for
+  /// that could land on the new playback.
+  @Test @MainActor func playingAnotherSoundAsksForNoSessionEnding() {
+    let log = ServiceSessionLog()
+    let gate = IOSAudioSessionGate(
+      setActive: { log.record($0 ? "on" : "off") }, later: { work in log.defer(work) })
+    let audio = IOSAudioService(files: temporaryFiles(), session: gate)
+    audio.play(.none, volume: 0)
+    // Nothing started, so the session it might have held is released.
+    #expect(log.pending == 1)
+    log.runPending()
+    #expect(log.events == ["off"])
   }
 
   /// Playback that starts before a deferred ending runs keeps its session.

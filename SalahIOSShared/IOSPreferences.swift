@@ -396,7 +396,6 @@ nonisolated enum IOSCalculationMethod: Codable, Hashable, Sendable {
   }
 }
 
-/// Notification and foreground sounds are independent. A custom value names a managed file.
 /// What happens at each prayer's time, chosen once for every prayer during setup.
 nonisolated enum IOSAlertMode: String, CaseIterable, Sendable {
   /// A notification that plays a short adhan clip.
@@ -451,6 +450,7 @@ nonisolated extension IOSPreferences {
   }
 }
 
+/// Notification and foreground sounds are independent. A custom value names a managed file.
 nonisolated enum IOSSound: Codable, Hashable, Sendable {
   case adhan
   case fajrAdhan

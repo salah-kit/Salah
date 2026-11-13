@@ -121,6 +121,10 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
     selectCity("Makkah, Saudi Arabia", matching: "Makkah", in: app)
 
     XCTAssertEqual(require("onboarding.progress", in: app).label, "Step 3 of 6")
+    // Back to Location keeps the city, and goes on with it.
+    back(in: app)
+    require("onboarding.location.chooseCity", in: app)
+    tap("onboarding.location.continue", in: app)
     XCTAssertTrue(
       require("onboarding.notification.notification", in: app).isSelected,
       "Notification is chosen until the person picks another")

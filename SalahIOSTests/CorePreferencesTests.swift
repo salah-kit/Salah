@@ -120,7 +120,10 @@ struct CorePreferencesTests {
       #expect(!alerts.atTime && !alerts.beforeEnabled && !alerts.afterEnabled)
     }
     #expect(preferences.alerts(for: .asr).beforeMinutes == 20)
-    #expect(preferences.mirror == nil || preferences.mirror?.alerts[.asr]?.alert == false)
+    preferences.location = PrayerLocation(
+      latitude: 21.4225, longitude: 39.8262, timeZone: TimeZone(identifier: "Asia/Riyadh")!)
+    #expect(preferences.mirror?.alerts[.asr]?.alert == false)
+    #expect(preferences.mirror?.alerts[.asr]?.beforeMinutes == nil)
     preferences.notifications[.asr]?.atTime = true
     #expect(preferences.hasEnabledAlerts)
   }

@@ -268,8 +268,6 @@ final class IOSAppStore {
 
   func handle(url: URL) {
     guard url.scheme?.lowercased() == "salah" else { return }
-    // A link's destination is never left under the Location sheet.
-    showsLocation = false
     let host = url.host?.lowercased()
     let path = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased()
     let destination = host == "settings" && !path.isEmpty ? path : (host ?? path)
@@ -290,6 +288,8 @@ final class IOSAppStore {
       settingsNavigationRequestID = UUID()
     default: return
     }
+    // A link's destination is never left under the Location sheet.
+    showsLocation = false
     if destination == "times",
       let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
       let date = components.queryItems?.first(where: { $0.name == "date" })?.value,

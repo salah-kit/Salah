@@ -226,6 +226,14 @@ struct IOSOnboardingView: View {
         primary(text("Continue", "متابعة"), id: "onboarding.continue") {
           advance(to: .location)
         }
+      case .location where store.preferences.location != nil && !waitingForLocation:
+        // Back from a later step: the place chosen before is kept, and goes on from here.
+        primary(text("Continue", "متابعة"), id: "onboarding.location.continue") {
+          advance(to: .notifications)
+        }
+        secondary(text("Choose a City", "اختيار مدينة"), id: "onboarding.location.chooseCity") {
+          chooseCity()
+        }
       case .location:
         primary(
           text("Allow Location Access", "السماح بالوصول إلى الموقع"),
