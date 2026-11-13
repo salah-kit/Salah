@@ -4,7 +4,8 @@
 usage: check-identity.py <App Group> (<bundle>=<bundle identifier> | <entitlements>)...
 
 A bundle's Info.plist must hold that bundle identifier, and name the App Group in the key
-the shared code reads. An entitlements file must grant the App Group.
+the shared code reads. An entitlements file must grant the App Group. Pass tvOS extensions
+at their embedded paths so their identifier can be checked against the containing app.
 """
 
 import plistlib
@@ -39,7 +40,8 @@ def problems(group, arguments):
             if group not in load(argument).get(GROUPS, []):
                 yield f"{argument} doesn't grant the App Group {group}."
             continue
-        info = load(info_plist(Path(bundle)))
+        bundle_path = Path(bundle)
+        info = load(info_plist(bundle_path))
         built = info.get("CFBundleIdentifier")
         if built != identifier:
             yield f"{bundle} is {built}, not {identifier}." if built else (
@@ -50,6 +52,20 @@ def problems(group, arguments):
             yield f"{bundle} names the App Group {named}, not {group}." if named else (
                 f"{bundle} names no App Group, not {group}."
             )
+        # tvOS accepts exactly one identifier component after the containing app's
+        # prefix. A build can succeed with a longer suffix, but installation fails.
+        platforms = info.get("CFBundleSupportedPlatforms", [])
+        if bundle_path.suffix == ".appex" and any(
+            platform in platforms for platform in ("AppleTVOS", "AppleTVSimulator")
+        ):
+            parent = load(info_plist(bundle_path.parent.parent)).get("CFBundleIdentifier")
+            prefix = f"{parent}."
+            suffix = built[len(prefix):] if isinstance(built, str) and built.startswith(prefix) else ""
+            if not suffix or "." in suffix:
+                yield (
+                    f"{bundle} must use a single-component suffix after its containing "
+                    f"app identifier {parent}."
+                )
 
 
 if __name__ == "__main__":

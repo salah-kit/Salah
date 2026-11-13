@@ -33,7 +33,7 @@ match `project.yml`.
 | `SalahIOSTests` | iOS logic and adapter tests (the `SalahIOS` scheme) |
 | `SalahIOSUITests` | Journeys through the running iOS app (their own scheme) |
 | `SalahTV` | The Apple TV app (`com.omarkhaled.salah`) |
-| `SalahTVTopShelf` | The Top Shelf extension (`com.omarkhaled.salah.tvOS.TopShelf`) |
+| `SalahTVTopShelf` | The Top Shelf extension (`com.omarkhaled.salah.TopShelf`) |
 | `SalahTVTests` | tvOS logic tests (the `SalahTV` scheme) |
 | `SalahTVUITests` | Journeys through the running Apple TV app (their own scheme) |
 | `SalahWatch` | The Apple Watch app, inside the iPhone app (`com.omarkhaled.salah.watchkitapp`) |

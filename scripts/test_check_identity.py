@@ -22,10 +22,12 @@ class CheckIdentityTests(unittest.TestCase):
         self.addCleanup(scratch.cleanup)
         self.root = Path(scratch.name)
 
-    def bundle(self, name, identifier, group=GROUP, mac=False):
+    def bundle(self, name, identifier, group=GROUP, mac=False, platforms=None):
         info = self.root / name / ("Contents/Info.plist" if mac else "Info.plist")
-        info.parent.mkdir(parents=True)
+        info.parent.mkdir(parents=True, exist_ok=True)
         values = {"CFBundleIdentifier": identifier}
+        if platforms is not None:
+            values["CFBundleSupportedPlatforms"] = platforms
         if group:
             values["AppGroupIdentifier"] = group
         # Xcode writes a device bundle's Info.plist in the binary format.
@@ -58,6 +60,38 @@ class CheckIdentityTests(unittest.TestCase):
         self.assertEqual(
             self.check(f"{app}={APP}"), (1, "", f"{app} is com.omarkhaled.salah, not {APP}.")
         )
+
+    def test_tvos_extension_has_one_component_after_its_containing_app(self):
+        for platform in ("AppleTVOS", "AppleTVSimulator"):
+            with self.subTest(platform=platform):
+                app = self.bundle("SalahTV.app", APP, platforms=[platform])
+                extension = self.bundle(
+                    "SalahTV.app/PlugIns/TopShelf.appex", f"{APP}.TopShelf", platforms=[platform]
+                )
+                self.assertEqual(
+                    self.check(f"{app}={APP}", f"{extension}={APP}.TopShelf"), (0, "", "")
+                )
+
+    def test_tvos_rejects_a_nested_or_wrong_extension_suffix_even_when_expected(self):
+        self.bundle("SalahTV.app", APP, platforms=["AppleTVOS"])
+        for identifier in (f"{APP}.tvOS.TopShelf", "com.example.Other.TopShelf", APP, f"{APP}."):
+            with self.subTest(identifier=identifier):
+                extension = self.bundle(
+                    "SalahTV.app/PlugIns/TopShelf.appex", identifier, platforms=["AppleTVOS"]
+                )
+                self.assertEqual(
+                    self.check(f"{extension}={identifier}"),
+                    (1, "", f"{extension} must use a single-component suffix after its "
+                     f"containing app identifier {APP}."),
+                )
+
+    def test_ios_keeps_its_supported_multi_component_extension_suffix(self):
+        self.bundle("SalahIOS.app", APP, platforms=["iPhoneSimulator"])
+        extension = self.bundle(
+            "SalahIOS.app/PlugIns/Widgets.appex", f"{APP}.iOS.Widgets",
+            platforms=["iPhoneSimulator"],
+        )
+        self.assertEqual(self.check(f"{extension}={APP}.iOS.Widgets"), (0, "", ""))
 
     def test_a_bundle_that_names_another_group_or_none_fails(self):
         other = self.bundle("Other.app", APP, group="group.com.omarkhaled.salah")

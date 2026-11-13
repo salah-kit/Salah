@@ -141,7 +141,15 @@ nonisolated final class IOSPermissionJourneys: XCTestCase {
         XCTAssertTrue(
           appsPage.exists || appsPage.waitForExistence(timeout: 10),
           "The measured fallback must reach the Apps list.\n\(settings.debugDescription)")
-        captureSystem("System-Settings-Apps-List-For-Salah")
+        // The floating search field can cover the app row while XCTest still reports
+        // that row as hittable. Filtering keeps the exact bundle row clear of it.
+        let search = settings.searchFields["Search Apps"].firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10), settings.debugDescription)
+        if (search.value as? String) != "Salah" {
+          search.tap()
+          search.typeText("Salah")
+        }
+        captureSystem("System-Settings-Apps-Search-For-Salah")
         tap(Self.appBundleIdentifier, in: settings)
       }
       XCTAssertTrue(
