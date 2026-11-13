@@ -31,12 +31,3 @@ import SalahCore
     return IOSL10n.text("Makkah", arabic: "مكة المكرمة", locale: locale)
   }
 }
-
-nonisolated extension IOSPreferences {
-  /// The language the device answers geocoding requests in.
-  static var deviceLanguageCode: String? {
-    Locale.preferredLanguages.first.flatMap {
-      Locale(identifier: $0).language.languageCode?.identifier
-    }
-  }
-}

@@ -65,13 +65,11 @@ struct CorePreferencesTests {
     preferences.language = .arabic
     #expect(preferences.placeLanguageCode == "ar")
     #expect(preferences.placeName == "Sheikh Zayed")
-    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
-    // The device already answers in Arabic: the saved name is the Arabic one.
-    #expect(!preferences.needsPlaceName(deviceLanguageCode: "ar"))
+    #expect(preferences.needsPlaceName)
 
     preferences.setPlaceName(" الشيخ زايد ", languageCode: "ar", for: place)
     #expect(preferences.placeName == "الشيخ زايد")
-    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(!preferences.needsPlaceName)
     #expect(preferences.mirror?.location.name == "الشيخ زايد")
     #expect(IOSPrayerNotificationContent(preferences: preferences).locationName == "الشيخ زايد")
     // The saved location keeps what the geocoder gave it.
@@ -80,20 +78,70 @@ struct CorePreferencesTests {
     // Each language has its own name; one that wasn't looked up reads as saved.
     preferences.language = .french
     #expect(preferences.placeName == "Sheikh Zayed")
-    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.needsPlaceName)
     preferences.setPlaceName("Cheikh Zayed", languageCode: "fr", for: place)
     #expect(preferences.mirror?.location.name == "Cheikh Zayed")
     preferences.language = .arabic
     #expect(preferences.mirror?.location.name == "الشيخ زايد")
     preferences.language = .english
     #expect(preferences.mirror?.location.name == "Sheikh Zayed")
-    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.needsPlaceName)
 
     // The names survive a round trip, and an older save without them still decodes.
     let decoded = try JSONDecoder().decode(
       IOSPreferences.self, from: JSONEncoder().encode(preferences))
     #expect(decoded.placeNames == preferences.placeNames)
     #expect(try JSONDecoder().decode(IOSPreferences.self, from: Data("{}".utf8)).placeNames == nil)
+  }
+
+  /// A fix never lands on the same coordinates twice. The next fix of the same place keeps
+  /// the names already looked up, so opening Salah asks for none again; another place starts
+  /// over. The geocoder's own answer is the name in the device's language.
+  @Test func aNewFixOfTheSamePlaceKeepsItsNames() throws {
+    let cairo = try #require(TimeZone(identifier: "Africa/Cairo"))
+    func fix(_ latitude: Double, _ longitude: Double, name: String) -> PrayerLocation {
+      PrayerLocation(
+        latitude: latitude, longitude: longitude, timeZone: cairo, countryCode: "EG", name: name)
+    }
+    var saved = IOSPreferences()
+    saved.language = .arabic
+    var first = saved
+    first.location = fix(30.0444, 31.2357, name: "Sheikh Zayed")
+    first.settlePlaceNames(after: saved, deviceLanguageCode: "en")
+    #expect(first.placeNames?.names == ["en": "Sheikh Zayed"])
+    #expect(first.needsPlaceName)
+    first.setPlaceName("الشيخ زايد", languageCode: "ar", for: try #require(first.location))
+    #expect(!first.needsPlaceName)
+
+    var second = first
+    second.location = fix(30.0449, 31.2351, name: "Sheikh Zayed")
+    second.settlePlaceNames(after: first, deviceLanguageCode: "en")
+    second = second.normalized()
+    #expect(second.placeName == "الشيخ زايد")
+    #expect(!second.needsPlaceName)
+    #expect(second.placeNames?.latitude == 30.0449)
+
+    // The same edit again, or one that leaves the place alone, changes nothing.
+    var untouched = second
+    untouched.muteSounds.toggle()
+    untouched.settlePlaceNames(after: second, deviceLanguageCode: "fr")
+    #expect(untouched.placeNames == second.placeNames)
+
+    var moved = second
+    moved.location = fix(30.0131, 31.2089, name: "Giza")
+    moved.settlePlaceNames(after: second, deviceLanguageCode: "en")
+    #expect(moved.placeNames?.names == ["en": "Giza"])
+    #expect(moved.placeName == "Giza")
+    #expect(moved.needsPlaceName)
+
+    // A device that now answers in Arabic names the next place in Arabic at once.
+    var arabicDevice = moved
+    arabicDevice.location = fix(30.0444, 31.2357, name: "الشيخ زايد")
+    arabicDevice.settlePlaceNames(after: moved, deviceLanguageCode: "ar")
+    #expect(!arabicDevice.needsPlaceName)
+    // A place saved while the device answered in English still gets its Arabic name.
+    moved.language = .system
+    #expect(moved.placeNames?.names["ar"] == nil)
   }
 
   /// A name belongs to the place it was looked up for. A late answer for a place the person
@@ -113,7 +161,7 @@ struct CorePreferencesTests {
 
     preferences.location = makkah
     #expect(preferences.placeName == "Makkah")
-    #expect(preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(preferences.needsPlaceName)
     #expect(preferences.normalized().placeNames == nil)
     // The lookup for the old place answers late.
     preferences.setPlaceName("الشيخ زايد", languageCode: "ar", for: zayed)
@@ -126,7 +174,7 @@ struct CorePreferencesTests {
     #expect(preferences.placeName == "مكة المكرمة")
     preferences.location = nil
     #expect(preferences.placeName == nil)
-    #expect(!preferences.needsPlaceName(deviceLanguageCode: "en"))
+    #expect(!preferences.needsPlaceName)
     #expect(preferences.normalized().placeNames == nil)
 
     // Another process's edit keeps the names this one looked up, and the reverse.

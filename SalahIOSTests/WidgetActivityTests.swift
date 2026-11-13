@@ -551,8 +551,7 @@ struct WidgetActivityTests {
     #expect(WidgetTimes.accessibilityLabel(of: asr, in: display) == "Asr, 3:35\u{202F}PM")
   }
 
-  /// The bar runs from the prayer one is in to the next, and stops being drawn as a running
-  /// bar once that span has passed.
+  /// The bar runs from the prayer one is in to the next.
   @Test func progressSpansThePrayerOneIsInToTheNext() throws {
     let settings = try settings()
     let dhuhr = try event(.dhuhr, settings: settings)

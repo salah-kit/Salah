@@ -81,11 +81,30 @@ nonisolated struct IOSPreferences: Codable, Equatable, Sendable {
     return placeNames?.name(of: location, languageCode: placeLanguageCode) ?? location.name
   }
 
-  /// Whether the place still needs a name in the selected language. The geocoder answered
-  /// in the device's language when the place was saved, so that language needs no lookup.
-  func needsPlaceName(deviceLanguageCode: String?) -> Bool {
-    guard let location, placeLanguageCode != deviceLanguageCode else { return false }
+  /// Whether the place still needs a name in the selected language.
+  var needsPlaceName: Bool {
+    guard let location else { return false }
     return placeNames?.name(of: location, languageCode: placeLanguageCode) == nil
+  }
+
+  /// Settles the names when an edit changed the saved place.
+  ///
+  /// The geocoder named the new place in the device's language, so that name is kept under
+  /// that language. A new fix of the place Salah already followed, which the geocoder names
+  /// the same, keeps the names looked up before: a fix never lands on the same coordinates
+  /// twice, and each one would otherwise ask for every name again.
+  mutating func settlePlaceNames(after previous: IOSPreferences, deviceLanguageCode: String?) {
+    guard let location, previous.location != location else { return }
+    var names = IOSPlaceNames(latitude: location.latitude, longitude: location.longitude)
+    if let old = previous.location, let kept = previous.placeNames, kept.belongs(to: old),
+      IOSPlaceNames.isSameNamedPlace(old, location)
+    {
+      names.names = kept.names
+    }
+    if let deviceLanguageCode, let name = location.name, !name.isEmpty {
+      names.names[deviceLanguageCode] = name
+    }
+    placeNames = names
   }
 
   /// Keeps `name` for `location` in a language. A name that arrives after the person chose
@@ -287,6 +306,15 @@ nonisolated extension IOSPreferences {
   }
 }
 
+nonisolated extension IOSPreferences {
+  /// The language the device answers geocoding requests in.
+  static var deviceLanguageCode: String? {
+    Locale.preferredLanguages.first.flatMap {
+      Locale(identifier: $0).language.languageCode?.identifier
+    }
+  }
+}
+
 /// One place's names by language code.
 ///
 /// A geocoder names a place in the language it's asked in, and the saved location holds one
@@ -296,9 +324,19 @@ nonisolated struct IOSPlaceNames: Codable, Equatable, Sendable {
   var longitude: Double
   var names: [String: String] = [:]
 
-  /// The same saved place, not merely a nearby one: a new fix or city starts over.
+  /// The same saved place, not merely a nearby one.
   static func isSamePlace(_ first: PrayerLocation, _ second: PrayerLocation) -> Bool {
     first.latitude == second.latitude && first.longitude == second.longitude
+  }
+
+  /// Two fixes of one place: the geocoder gave both the same name in the same zone, a short
+  /// way apart.
+  static func isSameNamedPlace(_ first: PrayerLocation, _ second: PrayerLocation) -> Bool {
+    guard let name = first.name, !name.isEmpty, name == second.name,
+      first.timeZone.identifier == second.timeZone.identifier
+    else { return false }
+    return abs(first.latitude - second.latitude) < 0.5
+      && abs(first.longitude - second.longitude) < 0.5
   }
 
   func belongs(to location: PrayerLocation) -> Bool {

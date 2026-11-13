@@ -29,7 +29,8 @@ nonisolated enum IOSAccessoryCopy {
     display: SalahDisplay, focus: SalahDisplay.Focus, pause: Date? = nil, bundle: Bundle = .main
   ) -> Text {
     let duration = timer(display: display, focus: focus, pause: pause)
-    if focus.isCountUp { return Text("+\(duration)") }
+    // Isolated, so the sign stays before its digits in a right-to-left line.
+    if focus.isCountUp { return Text("\u{2066}+\(duration)\u{2069}") }
     let sides = countdownSides(locale: display.locale, bundle: bundle)
     return Text("\(Text(verbatim: sides.before))\(duration)\(Text(verbatim: sides.after))")
   }

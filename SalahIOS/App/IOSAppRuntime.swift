@@ -114,8 +114,8 @@ final class IOSAppRuntime {
     watch.send(store.preferences)
     // Coming back to Salah shows its activity again, even one the person swiped away. The
     // scene can leave the foreground while this waits.
-    let returning = returning
-    self.returning = false
+    let returning = returning && foreground
+    if foreground { self.returning = false }
     await activities.refresh(
       settings: store.settings, isForeground: foreground, returning: returning)
     await refreshNotifications()
@@ -170,14 +170,12 @@ final class IOSAppRuntime {
     }
   }
 
-  /// Looks the saved place's name up in Salah's language when it differs from the device's,
+  /// Looks the saved place's name up in Salah's language when no name is kept for it yet,
   /// once for each place and language. Offline, the saved name stays until a later change or
   /// return to the app asks again.
   private func namePlace() {
     let preferences = store.preferences
-    guard let location = preferences.location,
-      preferences.needsPlaceName(deviceLanguageCode: IOSPreferences.deviceLanguageCode)
-    else { return }
+    guard let location = preferences.location, preferences.needsPlaceName else { return }
     let languageCode = preferences.placeLanguageCode
     let locale = preferences.language.locale
     placeNameTask?.cancel()

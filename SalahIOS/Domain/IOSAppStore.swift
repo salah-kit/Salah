@@ -123,6 +123,8 @@ final class IOSAppStore {
   func updatePreferences(_ change: (inout IOSPreferences) -> Void) {
     var changed = preferences
     change(&changed)
+    changed.settlePlaceNames(
+      after: preferences, deviceLanguageCode: IOSPreferences.deviceLanguageCode)
     changed = changed.normalized()
     guard changed != preferences else { return }
     let previousToday = today

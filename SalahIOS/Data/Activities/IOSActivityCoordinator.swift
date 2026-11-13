@@ -135,7 +135,7 @@ final class IOSActivityCoordinator {
     }
     if let activity {
       if activity.activityState == .dismissed || activity.activityState == .ended {
-        if !returning {
+        if !(returning && isForeground) {
           dismissals.insert(
             activity.attributes.eventID, until: IOSActivityDismissals.deadline(for: state),
             now: now())
