@@ -299,7 +299,10 @@ final class IOSAppRuntime {
         let work = Task { @MainActor in
           self.store.refresh()
           // Ends an activity whose prayer has passed; a background wake never starts one.
-          await self.activities.refresh(settings: self.store.settings, isForeground: false)
+          // Without settings (preferences it couldn't read) it leaves the activity alone.
+          if let settings = self.store.settings {
+            await self.activities.refresh(settings: settings, isForeground: false)
+          }
           await self.refreshNotifications()
           self.publishSettings()
           self.watch.send(self.store.preferences)

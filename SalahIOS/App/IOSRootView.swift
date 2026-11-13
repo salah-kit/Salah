@@ -78,7 +78,7 @@ struct IOSRootView: View {
         NavigationStack { IOSTimesView() }.iosNowPlayingInset()
       } label: {
         Label(
-          IOSL10n.text("Times", arabic: "الأوقات", locale: store.locale),
+          IOSL10n.text("Times", arabic: "المواقيت", locale: store.locale),
           systemImage: "list.bullet"
         )
         .accessibilityIdentifier("tab.times")

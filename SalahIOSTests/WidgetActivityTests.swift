@@ -133,12 +133,13 @@ struct WidgetActivityTests {
       schedule: settings.schedule)
     let state = try #require(SalahActivityAttributes.ContentState(display: display))
     let stale = state.stale
-    #expect(stale.mode == .justStarted)
-    #expect(stale.eyebrow == display.labels.now)
+    #expect(stale.mode == .justStarted && stale.showsTimer)
+    // Where, not "now" or "next prayer": the activity can stay for hours.
+    #expect(stale.eyebrow == state.place && !state.place.isEmpty)
     #expect(stale.prayerName == state.prayerName && stale.prayerTimeText == state.prayerTimeText)
     // The system's timer runs from the prayer's time for as long as iOS keeps the activity.
     #expect(stale.timerInterval.lowerBound == prayer.time)
-    #expect(stale.timerInterval.upperBound == prayer.time.addingTimeInterval(8 * 60 * 60))
+    #expect(stale.timerInterval.upperBound == prayer.time.addingTimeInterval(12 * 60 * 60))
     let later = prayer.time.addingTimeInterval(27 * 60 + 41)
     #expect(stale.timerSeconds(at: later) == 27 * 60 + 41)
     #expect(stale.progress(at: later) == 1)
@@ -153,20 +154,51 @@ struct WidgetActivityTests {
     let state = try #require(SalahActivityAttributes.ContentState(display: display))
     #expect(state.timerInterval.upperBound == prayer.time.addingTimeInterval(15 * 60))
     let stale = state.stale
-    #expect(stale.mode == .justStarted && stale.eyebrow == state.eyebrow)
+    #expect(stale.mode == .justStarted && stale.eyebrow == state.place)
     #expect(stale.timerSeconds(at: prayer.time.addingTimeInterval(40 * 60)) == 40 * 60)
     #expect(stale.clockValue(at: prayer.time.addingTimeInterval(40 * 60)) == "0:40:00")
   }
 
-  @Test func staleStateSpeaksArabicWhenSalahDoes() throws {
-    var settings = try settings()
-    settings.language = .arabic
+  /// An adhan played at its prayer's time ends inside the count-up window, so its stale
+  /// activity counts up like the prayer's own.
+  @Test func staleAdhanAtThePrayersTimeCountsUpFromThePrayer() throws {
+    let settings = try settings()
     let prayer = try event(.asr, settings: settings)
+    let playingAt = prayer.time.addingTimeInterval(60)
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: prayer, slot: .alert), startedAt: prayer.time,
+      duration: 4 * 60)
+    let display = SalahDisplay(date: playingAt, settings: settings, schedule: settings.schedule)
+    let playing = try #require(
+      SalahActivityAttributes.ContentState(display: display, playbackSession: session))
+    #expect(playing.mode == .playing)
+    let stale = playing.stale
+    #expect(stale.mode == .justStarted)
+    #expect(stale.timerInterval.lowerBound == prayer.time)
+  }
+
+  /// A sound played away from its prayer's time (a reminder before it, an adhan replayed
+  /// hours later) leaves nothing to count: the stale activity keeps the prayer and stops.
+  @Test(arguments: [-20 * 60, 3 * 60 * 60] as [TimeInterval])
+  func stalePlaybackAwayFromThePrayersTimeEnds(offset: TimeInterval) throws {
+    let settings = try settings()
+    let prayer = try event(.asr, settings: settings)
+    let startedAt = prayer.time.addingTimeInterval(offset)
+    let session = IOSPlaybackSession(
+      playback: SalahPlayback(event: prayer, slot: offset < 0 ? .preReminder : .alert),
+      startedAt: startedAt, duration: 4 * 60)
     let display = SalahDisplay(
-      date: prayer.time.addingTimeInterval(-10 * 60), settings: settings,
-      schedule: settings.schedule)
-    let state = try #require(SalahActivityAttributes.ContentState(display: display))
-    #expect(state.stale.eyebrow == "الآن")
+      date: startedAt.addingTimeInterval(30), settings: settings, schedule: settings.schedule)
+    let playing = try #require(
+      SalahActivityAttributes.ContentState(display: display, playbackSession: session))
+    #expect(playing.mode == .playing)
+    let stale = playing.stale
+    #expect(stale.mode == .ended && !stale.showsTimer)
+    #expect(stale.eyebrow == playing.place)
+    #expect(stale.progress(at: playing.validUntil) == 1)
+    #expect(stale.timerInterval.lowerBound <= stale.timerInterval.upperBound)
+    let spoken = stale.spokenLabel(at: playing.validUntil)
+    #expect(spoken == "\(playing.prayerName), \(playing.prayerTimeText)")
   }
 
   @Test func justStartedCountsUpOnlyWithinThePrayerWindow() throws {

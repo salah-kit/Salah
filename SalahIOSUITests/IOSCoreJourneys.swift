@@ -363,9 +363,9 @@ nonisolated final class IOSCoreJourneys: XCTestCase {
     back(in: app)
 
     tap("tab.times", in: app)
-    XCTAssertEqual(require("tab.times", in: app).label, "الأوقات")
+    XCTAssertEqual(require("tab.times", in: app).label, "المواقيت")
     require("times.date", in: app)
-    assertTitleShowsOnce("الأوقات", in: app, named: "Times")
+    assertTitleShowsOnce("المواقيت", in: app, named: "Times")
 
     tap("tab.today", in: app)
     tap("today.location", in: app)

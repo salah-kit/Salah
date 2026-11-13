@@ -6,7 +6,8 @@ import SalahUI
 /// The single prayer a Live Activity follows. Values stay independent of the app process.
 nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
   struct ContentState: Codable, Hashable, Sendable {
-    enum Mode: String, Codable, Sendable { case countdown, justStarted, playing }
+    /// `ended` is never published: it is what a stale playback becomes (see `stale`).
+    enum Mode: String, Codable, Sendable { case countdown, justStarted, playing, ended }
 
     var mode: Mode
     var prayerKind: PrayerKind
@@ -36,34 +37,38 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
 
     /// What a stale activity shows. iOS suspends Salah in the background, so nothing updates or
     /// ends the activity when `validUntil` passes; iOS only tells the extension that the content
-    /// is stale. This state needs no further update to stay true: the prayer's own time, and a
-    /// timer the system keeps running. A countdown goes stale at its prayer's time and a
-    /// count-up 15 minutes after it, so both count up from the prayer's time. Only a reminder
-    /// played before its prayer goes stale ahead of it, and counts down to it.
+    /// is stale, once. This state needs no further update to stay true.
+    ///
+    /// A countdown goes stale at its prayer's time, and a count-up or an adhan played at the
+    /// prayer's time within the 15 minutes after it: the prayer has begun, so the activity
+    /// counts up from its time, which the system keeps running. It says where, not "now",
+    /// because it can stay on the Lock Screen for hours. Any other playback (a reminder
+    /// before its prayer, an adhan replayed later) has nothing left to count: the activity
+    /// keeps the prayer and its time.
     var stale: Self {
-      let labels = SalahWidgetLabels.localized(
-        forLanguageCode: Locale(identifier: languageIdentifier).language.languageCode?.identifier)
       var state = self
       state.updatedAt = validUntil
-      if validUntil < prayerTime {
-        state.mode = .countdown
-        state.eyebrow = labels.nextPrayer
-        state.validUntil = prayerTime
-        state.progressStart = min(progressStart, validUntil)
-        state.progressEnd = prayerTime
-      } else {
+      state.eyebrow = place
+      // The prayer's span, or the sound's, is over: a full bar. A reminder played before
+      // its prayer goes stale before that prayer's time.
+      let end = min(prayerTime, validUntil)
+      state.progressStart = end.addingTimeInterval(-1)
+      state.progressEnd = end
+      let sinceThePrayer = validUntil.timeIntervalSince(prayerTime)
+      if sinceThePrayer >= 0, sinceThePrayer <= Self.countUpWindow {
         state.mode = .justStarted
-        state.eyebrow = labels.now
         state.validUntil = prayerTime.addingTimeInterval(Self.staleCountUp)
-        // The prayer's span is over: a full bar.
-        state.progressStart = prayerTime.addingTimeInterval(-1)
-        state.progressEnd = prayerTime
+      } else {
+        state.mode = .ended
       }
       return state
     }
 
-    /// iOS removes a Live Activity nobody ends eight hours after it started.
-    static let staleCountUp: TimeInterval = 8 * 60 * 60
+    /// How long after its time a prayer counts up.
+    static let countUpWindow: TimeInterval = 15 * 60
+    /// iOS ends a Live Activity eight hours after it starts and can keep it on the Lock Screen
+    /// four hours more, so a stale count-up never reaches its end on screen.
+    static let staleCountUp: TimeInterval = 12 * 60 * 60
 
     /// A snapshot's progress. Live rendering uses the bounded dates to advance without app wakes.
     func progress(at date: Date) -> Double {
@@ -93,11 +98,16 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
           .locale(Locale(identifier: languageIdentifier)))
     }
 
+    /// Whether the activity counts toward or from its prayer. A playback has a Stop button
+    /// in the timer's place, and an ended one has nothing to count.
+    var showsTimer: Bool { mode == .countdown || mode == .justStarted }
+
     func spokenLabel(at date: Date) -> String {
+      let comma = IOSL10n.text(", ", arabic: "، ", locale: Locale(identifier: languageIdentifier))
+      guard mode != .ended else { return "\(prayerName)\(comma)\(prayerTimeText)" }
       let duration = PrayerDurationFormat.string(
         timerSeconds(at: date), direction: mode == .countdown ? .remaining : .elapsed,
         width: .spoken, locale: Locale(identifier: languageIdentifier))
-      let comma = IOSL10n.text(", ", arabic: "، ", locale: Locale(identifier: languageIdentifier))
       return "\(prayerName)\(comma)\(eyebrow)\(comma)\(duration)"
     }
 
@@ -123,6 +133,7 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
       nextPrayerName = display.prayerState?.nextPrayer.map { display.name(of: $0) }
       nextPrayerTime = display.prayerState?.nextPrayer.map { display.timeText(of: $0) }
       switch mode {
+      case .ended: return nil
       case .playing:
         if let playback {
           if playback.isDua {
@@ -146,7 +157,7 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
         progressEnd = validUntil
       case .justStarted:
         eyebrow = display.labels.now
-        validUntil = event.time.addingTimeInterval(15 * 60)
+        validUntil = event.time.addingTimeInterval(Self.countUpWindow)
         progressStart = event.time
         progressEnd = validUntil
       case .countdown:

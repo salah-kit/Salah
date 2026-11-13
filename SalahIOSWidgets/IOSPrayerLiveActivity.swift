@@ -25,7 +25,7 @@ struct IOSPrayerLiveActivity: Widget {
         }
         DynamicIslandExpandedRegion(.trailing) {
           Group {
-            if context.shown.mode != .playing {
+            if context.shown.showsTimer {
               IOSActivityTimer(state: context.shown, compact: false)
                 .foregroundStyle(activityAccent)
             }
@@ -106,7 +106,7 @@ struct IOSActivityCard: View {
         Spacer(minLength: 4)
         if state.mode == .playing {
           IOSActivityStopButton(state: state, compact: true)
-        } else {
+        } else if state.showsTimer {
           IOSActivityTimer(state: state, compact: false)
             .foregroundStyle(state.mode == .justStarted ? phase.text.color : Color.white)
         }
@@ -265,6 +265,9 @@ private struct IOSActivityStopButton: View {
 
 private func spokenTimer(_ state: SalahActivityAttributes.ContentState, pause: Date?) -> Text {
   if let pause { return Text(verbatim: state.spokenLabel(at: pause)) }
+  guard state.showsTimer || state.mode == .playing else {
+    return Text(verbatim: state.spokenLabel(at: state.updatedAt))
+  }
   let timer = Text(
     timerInterval: state.timerInterval, countsDown: state.mode == .countdown, showsHours: true)
   let comma = localized(", ", "، ", state: state)
@@ -365,7 +368,7 @@ struct IOSActivityCompactTrailing: View {
   let isLimitedInWidth: Bool
 
   var body: some View {
-    if isLimitedInWidth {
+    if isLimitedInWidth || state.mode == .ended {
       EmptyView()
     } else {
       IOSActivityTimer(state: state, compact: true)

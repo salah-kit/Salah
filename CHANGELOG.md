@@ -112,6 +112,9 @@ All notable changes to this project are documented here. The format follows
     Ramadan switch says what it does.
 - Salah's default place, Makkah, is named in the app's language everywhere, "مكة المكرمة"
   in Arabic, until a location or a chosen city replaces it.
+- Salah's Arabic reads as Arabic rather than as translated English, on every platform:
+  prayer times are "مواقيت الصلاة", a prayer's time "enters" ("ذكّرني قبل دخول الوقت"), the
+  app is named «صلاة» in its own sentences, and switches read "تشغيل" and "إيقاف".
 
 - Document the release process in CONTRIBUTING, and point contributors to the checks that
   need a real Mac or a native speaker, which are open `help wanted` issues.

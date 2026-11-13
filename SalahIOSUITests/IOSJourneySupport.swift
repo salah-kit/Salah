@@ -49,7 +49,7 @@ extension XCTestCase {
     // UIKit's tab button. Query that real system control by its localized label.
     let tabLabels: [String: [String]] = [
       "tab.today": ["Today", "اليوم"],
-      "tab.times": ["Times", "الأوقات"],
+      "tab.times": ["Times", "المواقيت"],
       "tab.qibla": ["Qibla", "القبلة"],
       "tab.settings": ["Settings", "الإعدادات"],
     ]
