@@ -155,14 +155,19 @@ The [privacy policy](docs/privacy.md) covers it.
 
 Build it with Xcode 27 on macOS. The app runs on macOS 14 or later.
 
-1. Clone the repo and add your signing team. The app shares an App Group with its widget,
-   so it needs a team to run; a free Apple Developer account works.
+1. Clone the repo, and add your signing team and identifiers of your own. The app shares
+   an App Group with its widget, so it needs a team to run; a free Apple Developer account
+   works. Apple registers a bundle identifier and an App Group to one team, so your build
+   needs its own.
 
    ```sh
    git clone https://github.com/salah-kit/Salah.git
    cd Salah
    cp Config/Local.xcconfig.example Config/Local.xcconfig
-   # Edit Config/Local.xcconfig: DEVELOPMENT_TEAM = <your team ID>
+   # Edit Config/Local.xcconfig:
+   #   DEVELOPMENT_TEAM = <your team ID>
+   #   APP_BUNDLE_IDENTIFIER = <a bundle identifier of your own, like com.yourname.Salah>
+   #   APP_GROUP_IDENTIFIER = <an App Group of your own, like group.com.yourname.Salah>
    ```
 
 2. Build a release copy:
@@ -192,7 +197,8 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahIOS -configuration Debug 
 To run it, open `Salah.xcodeproj`, choose the `SalahIOS` scheme and an iPhone or iPad
 simulator, then Run. [CONTRIBUTING.md](CONTRIBUTING.md#ios-and-ipados) covers the command-line
 simulator journeys and unsigned device build. Installing on a physical device needs
-your local signing configuration; App Store distribution needs a paid membership.
+your team and identifiers of your own in `Config/Local.xcconfig`, as the Mac app does; App
+Store distribution needs a paid membership.
 
 ### Apple TV
 
@@ -209,8 +215,8 @@ xcodebuild build -project Salah.xcodeproj -scheme SalahTV -configuration Debug \
 
 To run it, open `Salah.xcodeproj`, choose the `SalahTV` scheme and an Apple TV simulator,
 then Run. [CONTRIBUTING.md](CONTRIBUTING.md#tvos) covers the command-line simulator
-journeys and the unsigned device build. Installing on an Apple TV needs your local signing
-configuration.
+journeys and the unsigned device build. Installing on an Apple TV needs your team and
+identifiers of your own in `Config/Local.xcconfig`, as the Mac app does.
 
 ### Apple Watch
 

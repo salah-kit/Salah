@@ -12,10 +12,16 @@ import Foundation
 /// `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` would otherwise make them
 /// MainActor-isolated and unreachable from that context.
 nonisolated enum SalahWidgetConstants {
-  /// Enable this App Group on BOTH targets (Signing & Capabilities ▸ App Groups):
-  /// - Salah
-  /// - SalahWidgetsExtension
-  static let appGroupID = "group.io.github.salah-kit.Salah.shared"
+  /// The App Group an app shares with its extensions.
+  ///
+  /// The build writes `APP_GROUP_IDENTIFIER` (Config/Shared.xcconfig, or your own in
+  /// Config/Local.xcconfig) into each target's entitlements and into the
+  /// `AppGroupIdentifier` key of its Info.plist, where this reads it, so the code and the
+  /// entitlements always name the same group. A process without the key, such as the unit
+  /// tests' runner, gets Salah's own.
+  static let appGroupID =
+    Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String
+    ?? "group.io.github.salah-kit.Salah.shared"
 
   static let prayerTimesWidgetKind = "io.github.salah-kit.Salah.widgets.prayerTimes"
   /// The settings mirror (`SalahSettings`). The version is in the key: a change to the

@@ -62,6 +62,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Signing Salah with your own team takes two more lines in `Config/Local.xcconfig`:
+  `APP_BUNDLE_IDENTIFIER` and `APP_GROUP_IDENTIFIER`, a bundle identifier and an App Group
+  of your own. Apple registers each identifier to one team, so only the team that holds
+  Salah's own could sign a build before. Every target's bundle identifier follows the
+  first, and each app and its extensions read the second. Simulator builds need neither.
 - The App Group each app shares with its own extensions is
   `group.io.github.salah-kit.Salah.shared` on every platform: the widgets on Mac, iPhone
   and iPad, the Top Shelf on Apple TV and the complications on Apple Watch. The Mac,

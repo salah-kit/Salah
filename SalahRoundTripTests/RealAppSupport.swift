@@ -15,6 +15,12 @@ enum Products {
   static var harness: URL {
     directory.appending(path: "SalahStopHarness.app/Contents/MacOS/SalahStopHarness")
   }
+  /// The app's bundle identifier, which is also its log subsystem. The build writes it into
+  /// this test bundle's Info.plist (`APP_BUNDLE_IDENTIFIER`).
+  nonisolated static var appBundleIdentifier: String {
+    Bundle(for: LogRecorder.self).object(forInfoDictionaryKey: "AppBundleIdentifier") as? String
+      ?? "io.github.salah-kit.Salah"
+  }
 }
 
 /// One line of the app's log: `log stream`'s JSON for a message of Salah's subsystem.
@@ -50,7 +56,7 @@ nonisolated final class LogRecorder: @unchecked Sendable {
     process.executableURL = URL(fileURLWithPath: "/usr/bin/log")
     process.arguments = [
       "stream", "--style", "ndjson", "--level", "info", "--predicate",
-      #"subsystem == "io.github.salah-kit.Salah""#,
+      #"subsystem == "\#(Products.appBundleIdentifier)""#,
     ]
     process.standardOutput = pipe
     process.standardError = FileHandle.nullDevice
@@ -139,7 +145,7 @@ final class RunningApp {
   /// A signal, as `quit()` sends, needs no Apple Event and so no consent.
   static func quitOthers() {
     let running = NSRunningApplication.runningApplications(
-      withBundleIdentifier: "io.github.salah-kit.Salah"
+      withBundleIdentifier: Products.appBundleIdentifier
     ).map(\.processIdentifier)
     // A Salah an earlier run left frozen (SIGSTOP) must run again to take the signal.
     for pid in running {

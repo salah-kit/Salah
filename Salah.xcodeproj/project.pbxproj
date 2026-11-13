@@ -4199,7 +4199,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -4226,7 +4226,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -4243,6 +4243,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahIOSUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4250,7 +4251,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -4270,6 +4271,7 @@
 				CODE_SIGN_ENTITLEMENTS = SalahUITests/SalahUITests.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -4277,7 +4279,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -4300,7 +4302,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -4323,7 +4325,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SUPPORTED_PLATFORMS = "watchos watchsimulator";
@@ -4344,6 +4346,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahRoundTripTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -4351,7 +4354,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahRoundTripTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)RoundTripTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -4373,14 +4376,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWatch/Info.plist;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "io.github.salah-kit.Salah.iOS";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(APP_BUNDLE_IDENTIFIER).iOS";
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -4416,7 +4419,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
@@ -4444,7 +4447,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.TopShelf";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.TopShelf";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = appletvos;
@@ -4475,7 +4478,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -4503,7 +4506,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
@@ -4533,7 +4536,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = appletvos;
@@ -4565,7 +4568,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -4599,7 +4602,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
@@ -4628,7 +4631,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SUPPORTED_PLATFORMS = "watchos watchsimulator";
@@ -4725,7 +4728,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
@@ -4746,6 +4749,7 @@
 				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahStopHarness/Info.plist;
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4753,7 +4757,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.StopHarness";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).StopHarness";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
@@ -4771,6 +4775,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahRoundTripTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -4778,7 +4783,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahRoundTripTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)RoundTripTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -4796,6 +4801,7 @@
 				CURRENT_PROJECT_VERSION = 4;
 				ENABLE_APP_SANDBOX = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahStopHarness/Info.plist;
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4803,7 +4809,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.StopHarness";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).StopHarness";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
@@ -4828,7 +4834,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -4862,7 +4868,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
@@ -4890,7 +4896,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
@@ -4918,7 +4924,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -4949,7 +4955,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -4982,7 +4988,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = appletvos;
@@ -5013,7 +5019,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -5050,7 +5056,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -5076,7 +5082,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -5104,14 +5110,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SalahWatch/Info.plist;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "io.github.salah-kit.Salah.iOS";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(APP_BUNDLE_IDENTIFIER).iOS";
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -5134,6 +5140,7 @@
 				CODE_SIGN_ENTITLEMENTS = SalahUITests/SalahUITests.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -5141,7 +5148,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.SalahUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER)UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -5166,7 +5173,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.Widgets";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
@@ -5198,7 +5205,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.tvOS.TopShelf";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).tvOS.TopShelf";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = appletvos;
@@ -5286,7 +5293,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -5320,7 +5327,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
@@ -5342,6 +5349,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalahIOSUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5349,7 +5357,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.github.salah-kit.Salah.iOS.UITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).iOS.UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -7,6 +7,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+source scripts/identity.sh
 derived_path="${1:-.derived/smartstack}"
 results="$derived_path/Results/$(date +%Y%m%d-%H%M%S)-$$"
 mkdir -p "$results"
@@ -30,7 +31,7 @@ TEST_RUNNER_SALAH_WATCH_SMART_STACK=1 xcodebuild test -jobs 4 -project Salah.xco
   -only-testing:SalahWatchUITests/WatchSmartStackJourneys \
   -parallel-testing-enabled NO -collect-test-diagnostics never \
   -derivedDataPath "$derived_path" -resultBundlePath "$results/SmartStack.xcresult" \
-  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM=
+  CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= "${identity[@]}"
 
 xcrun simctl spawn "$simulator_id" log show --style compact --start "$started" \
   --predicate 'subsystem == "io.github.salah-kit.Salah.iOS.watchkitapp.Widgets"' \
