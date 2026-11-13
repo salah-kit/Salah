@@ -173,8 +173,8 @@ final class IOSAppRuntime {
   }
 
   /// Looks the saved place's name up in Salah's language when no name is kept for it yet,
-  /// once for each place and language. Offline, the saved name stays until a later change or
-  /// return to the app asks again.
+  /// once for each place and language. Offline, the saved name stays until another place or
+  /// language, or a return to the app, asks again.
   private func namePlace() {
     var seeded = store.preferences
     seeded.seedPlaceNames(deviceLanguageCode: IOSPreferences.deviceLanguageCode)

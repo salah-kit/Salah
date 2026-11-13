@@ -107,7 +107,7 @@ extension XCTestCase {
       swipe(up: false, alongside: target, in: app)
       waitUntilStill(target)
     }
-    // The same holds under a search field or tab bar floating over the end of a list: the tap
+    // The same holds under a search field floating over the end of a list: the tap
     // reaches the bar until the list scrolls the row clear of it.
     for _ in 0..<3 where isUnderBottomBar(target, in: app) {
       swipe(up: true, alongside: target, in: app)
@@ -167,18 +167,17 @@ extension XCTestCase {
     }
   }
 
-  /// The bar's glass reaches past the frame it reports, so the row keeps a margin from it. A
-  /// control inside the bar is not under it.
+  /// Whether a tap at the row's middle would reach a search field floating over the end of its
+  /// list. The field's glass reaches past the frame it reports, so the middle keeps a margin.
   @MainActor
   private func isUnderBottomBar(_ target: XCUIElement, in app: XCUIApplication) -> Bool {
     guard target.exists, target.elementType != .searchField else { return false }
     let frame = target.frame
+    let middle = CGPoint(x: frame.midX, y: frame.midY)
     let lowerHalf = app.windows.firstMatch.frame.midY
-    return [app.searchFields, app.tabBars].flatMap { $0.allElementsBoundByIndex }
-      .map { $0.frame }
-      .contains {
-        $0.minY > lowerHalf && $0.insetBy(dx: 0, dy: -28).intersects(frame) && !$0.contains(frame)
-      }
+    return app.searchFields.allElementsBoundByIndex.map { $0.frame }.contains {
+      $0.minY > lowerHalf && $0.insetBy(dx: 0, dy: -12).contains(middle) && !$0.contains(frame)
+    }
   }
 
   @MainActor
