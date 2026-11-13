@@ -135,7 +135,10 @@ struct ServicePolicyTests {
     #expect(IOSAudioMetadata(locale: arabic, isDua: true).artist == "صلاة")
   }
 
-  @Test(.timeLimit(.minutes(1))) @MainActor
+  /// Plays through the real audio session, player and speech synthesizer. The limit leaves
+  /// room for a hosted simulator, where stopping the du’a has stalled for over a minute
+  /// while the audio session ended (https://github.com/salah-kit/Salah/issues/88).
+  @Test(.timeLimit(.minutes(5))) @MainActor
   func nativePlaybackPublishesLocalizedDuaAndIgnoresAnOldSpeechCompletion() async throws {
     let files = temporaryFiles()
     let directory = files.audioDirectory.deletingLastPathComponent()
