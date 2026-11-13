@@ -86,14 +86,16 @@ struct WidgetSurfaceRenderTests {
     for isArabic in [false, true] {
       let display = try display(isArabic: isArabic)
       let state = try #require(SalahActivityAttributes.ContentState(display: display))
-      for isStale in [false, true] {
-        try render(
-          IOSActivityCard(state: state, isStale: isStale)
-            .environment(\.salahTimerPause, display.date),
-          size: CGSize(width: 374, height: 86),
-          to: directory.appendingPathComponent(
-            "activity-\(isStale ? "stale" : "countdown")-\(isArabic ? "ar" : "en").png"))
-      }
+      try render(
+        IOSActivityCard(state: state).environment(\.salahTimerPause, display.date),
+        size: CGSize(width: 374, height: 86),
+        to: directory.appendingPathComponent("activity-countdown-\(isArabic ? "ar" : "en").png"))
+      // Stale: what the card shows 27 minutes after the prayer, with Salah suspended since.
+      try render(
+        IOSActivityCard(state: state.stale)
+          .environment(\.salahTimerPause, state.prayerTime.addingTimeInterval(27 * 60)),
+        size: CGSize(width: 374, height: 86),
+        to: directory.appendingPathComponent("activity-stale-\(isArabic ? "ar" : "en").png"))
       let dhuhr = try #require(display.listedDay?[.dhuhr])
       let startedDisplay = SalahDisplay(
         date: dhuhr.time.addingTimeInterval(4 * 60), settings: display.settings,
@@ -181,8 +183,8 @@ struct WidgetSurfaceRenderTests {
     ] {
       for isStale in [false, true] {
         let renderer = ImageRenderer(
-          content: IOSActivityLimitedIsland(state: state, isStale: isStale)
-            .environment(\.salahTimerPause, date))
+          content: IOSActivityLimitedIsland(state: isStale ? state.stale : state)
+            .environment(\.salahTimerPause, isStale ? state.validUntil : date))
         renderer.scale = 2
         let image = try #require(renderer.uiImage)
         #expect(image.size.width <= 28.5 && image.size.height <= 28.5, "\(name): \(image.size)")
@@ -197,7 +199,7 @@ struct WidgetSurfaceRenderTests {
       }
       // With limited width only the leading view shows; the trailing one draws nothing.
       let trailing = ImageRenderer(
-        content: IOSActivityCompactTrailing(state: state, isStale: false, isLimitedInWidth: true)
+        content: IOSActivityCompactTrailing(state: state, isLimitedInWidth: true)
           .environment(\.salahTimerPause, date))
       #expect(trailing.uiImage == nil || trailing.uiImage?.size == .zero)
     }

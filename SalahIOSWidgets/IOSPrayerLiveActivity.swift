@@ -8,44 +8,44 @@ import WidgetKit
 struct IOSPrayerLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: SalahActivityAttributes.self) { context in
-      IOSActivityCard(state: context.state, isStale: context.isStale)
+      IOSActivityCard(state: context.shown)
         .activityBackgroundTint(.clear)
         .activitySystemActionForegroundColor(.white)
         .widgetURL(IOSSurfaceLink.activity)
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.leading) {
-          IOSActivityGlyph(state: context.state, side: 34)
-            .modifier(IOSActivityEnvironment(state: context.state))
+          IOSActivityGlyph(state: context.shown, side: 34)
+            .modifier(IOSActivityEnvironment(state: context.shown))
         }
         DynamicIslandExpandedRegion(.center) {
-          IOSActivityHeading(state: context.state, isStale: context.isStale, centered: true)
+          IOSActivityHeading(state: context.shown, centered: true)
             .padding(.top, 12)
-            .modifier(IOSActivityEnvironment(state: context.state))
+            .modifier(IOSActivityEnvironment(state: context.shown))
         }
         DynamicIslandExpandedRegion(.trailing) {
           Group {
-            if !context.isStale && context.state.mode != .playing {
-              IOSActivityTimer(state: context.state, compact: false)
+            if context.shown.mode != .playing {
+              IOSActivityTimer(state: context.shown, compact: false)
                 .foregroundStyle(activityAccent)
             }
           }
-          .modifier(IOSActivityEnvironment(state: context.state))
+          .modifier(IOSActivityEnvironment(state: context.shown))
         }
         DynamicIslandExpandedRegion(.bottom) {
           Group {
-            if context.state.mode == .playing && !context.isStale {
-              IOSActivityStopButton(state: context.state)
+            if context.shown.mode == .playing {
+              IOSActivityStopButton(state: context.shown)
             } else {
               VStack(spacing: 10) {
-                IOSActivityProgress(state: context.state, isStale: context.isStale)
+                IOSActivityProgress(state: context.shown)
                 HStack {
-                  Text(verbatim: context.state.place).privacySensitive()
+                  Text(verbatim: context.shown.place).privacySensitive()
                   Spacer()
                   Text(
                     verbatim: localized(
-                      context.state.muteSounds ? "Muted" : "Sound on",
-                      context.state.muteSounds ? "مكتوم" : "الصوت مفعّل", state: context.state))
+                      context.shown.muteSounds ? "Muted" : "Sound on",
+                      context.shown.muteSounds ? "مكتوم" : "الصوت مفعّل", state: context.shown))
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -53,32 +53,31 @@ struct IOSPrayerLiveActivity: Widget {
               .padding(.horizontal, 4)
             }
           }
-          .modifier(IOSActivityEnvironment(state: context.state))
+          .modifier(IOSActivityEnvironment(state: context.shown))
         }
       } compactLeading: {
         IOSActivityIslandWidthReader { isLimitedInWidth in
           if isLimitedInWidth {
-            IOSActivityLimitedIsland(state: context.state, isStale: context.isStale)
+            IOSActivityLimitedIsland(state: context.shown)
           } else {
-            IOSActivityGlyph(state: context.state, side: 22)
+            IOSActivityGlyph(state: context.shown, side: 22)
           }
         }
-        .modifier(IOSActivityEnvironment(state: context.state))
+        .modifier(IOSActivityEnvironment(state: context.shown))
       } compactTrailing: {
         IOSActivityIslandWidthReader { isLimitedInWidth in
-          IOSActivityCompactTrailing(
-            state: context.state, isStale: context.isStale, isLimitedInWidth: isLimitedInWidth)
+          IOSActivityCompactTrailing(state: context.shown, isLimitedInWidth: isLimitedInWidth)
         }
-        .modifier(IOSActivityEnvironment(state: context.state))
+        .modifier(IOSActivityEnvironment(state: context.shown))
       } minimal: {
         IOSActivityIslandWidthReader { isLimitedInWidth in
           if isLimitedInWidth {
-            IOSActivityLimitedIsland(state: context.state, isStale: context.isStale)
+            IOSActivityLimitedIsland(state: context.shown)
           } else {
-            IOSActivityGlyph(state: context.state, side: 22)
+            IOSActivityGlyph(state: context.shown, side: 22)
           }
         }
-        .modifier(IOSActivityEnvironment(state: context.state))
+        .modifier(IOSActivityEnvironment(state: context.shown))
       }
       .widgetURL(IOSSurfaceLink.activity)
       .keylineTint(activityAccent)
@@ -89,29 +88,29 @@ struct IOSPrayerLiveActivity: Widget {
   private var activityAccent: Color { SalahPalette(isDark: true).accentFill.color }
 }
 
+extension ActivityViewContext<SalahActivityAttributes> {
+  /// The state to draw: the published one, or what stays true of it once it is stale.
+  fileprivate var shown: SalahActivityAttributes.ContentState { isStale ? state.stale : state }
+}
+
 /// Shared state rendering keeps Lock Screen and Dynamic Island descriptions consistent.
 struct IOSActivityCard: View {
   let state: SalahActivityAttributes.ContentState
-  var isStale = false
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       HStack(spacing: 10) {
         IOSActivityGlyph(state: state, side: 36)
-        IOSActivityHeading(state: state, isStale: isStale)
+        IOSActivityHeading(state: state)
         Spacer(minLength: 4)
-        if isStale {
-          Text("\(localized("Updated", "حُدّث", state: state)) \(state.updatedAt, style: .time)")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        } else if state.mode == .playing {
+        if state.mode == .playing {
           IOSActivityStopButton(state: state, compact: true)
         } else {
           IOSActivityTimer(state: state, compact: false)
             .foregroundStyle(state.mode == .justStarted ? phase.text.color : Color.white)
         }
       }
-      IOSActivityProgress(state: state, isStale: isStale)
+      IOSActivityProgress(state: state)
     }
     .padding(.horizontal, 18)
     .padding(.vertical, 16)
@@ -120,7 +119,6 @@ struct IOSActivityCard: View {
         colors: [phase.skyTop.color, phase.skyBottom.color], startPoint: .top, endPoint: .bottom)
     }
     .modifier(IOSActivityEnvironment(state: state))
-    .opacity(isStale ? 0.85 : 1)
   }
 
   private var phase: SalahPhase.Colors { state.phase.colors(isDark: true) }
@@ -141,29 +139,21 @@ private struct IOSActivityGlyph: View {
 
 private struct IOSActivityHeading: View {
   let state: SalahActivityAttributes.ContentState
-  var isStale = false
   var centered = false
 
   var body: some View {
     VStack(alignment: centered ? .center : .leading, spacing: 0) {
-      Text(
-        verbatim: isStale
-          ? localized("Update needed", "بحاجة إلى تحديث", state: state) : state.eyebrow
-      )
-      .font(.caption.weight(.semibold))
-      .foregroundStyle(
-        state.mode == .justStarted && !isStale
-          ? state.phase.colors(isDark: true).text.color
-          : SalahPalette(isDark: true).labelSecondary.color)
-      Text(
-        verbatim: isStale
-          ? localized("Refresh in Salah", "حدّث في صلاة", state: state)
-          : "\(state.prayerName) · \(state.prayerTimeText)"
-      )
-      .font(.headline)
-      .foregroundStyle(.white)
-      .lineLimit(1)
-      .minimumScaleFactor(0.8)
+      Text(verbatim: state.eyebrow)
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(
+          state.mode == .justStarted
+            ? state.phase.colors(isDark: true).text.color
+            : SalahPalette(isDark: true).labelSecondary.color)
+      Text(verbatim: "\(state.prayerName) · \(state.prayerTimeText)")
+        .font(.headline)
+        .foregroundStyle(.white)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
     }
     .accessibilityElement(children: .combine)
   }
@@ -227,17 +217,16 @@ private struct IOSActivityTimer: View {
 
 private struct IOSActivityProgress: View {
   let state: SalahActivityAttributes.ContentState
-  var isStale = false
   @Environment(\.salahTimerPause) private var pause
 
   var body: some View {
     Group {
-      if isStale || pause != nil {
+      if let pause {
         GeometryReader { proxy in
           ZStack(alignment: .leading) {
             Capsule().fill(SalahPalette(isDark: true).fillSecondary.color)
             Capsule().fill(state.phase.colors(isDark: true).tint.color)
-              .frame(width: proxy.size.width * state.progress(at: pause ?? state.updatedAt))
+              .frame(width: proxy.size.width * state.progress(at: pause))
           }
         }
       } else {
@@ -325,19 +314,18 @@ private struct IOSActivityIslandWidth<Content: View>: View {
 }
 
 /// The limited-width island's only view: progress toward the prayer, or through the playing
-/// sound, around its glyph. Stale content keeps its last progress and asks for a refresh.
+/// sound, around its glyph.
 struct IOSActivityLimitedIsland: View {
   let state: SalahActivityAttributes.ContentState
-  var isStale = false
   @Environment(\.salahTimerPause) private var pause
 
   var body: some View {
     ZStack {
-      if isStale || pause != nil {
+      if let pause {
         Circle().strokeBorder(SalahPalette(isDark: true).fillSecondary.color, lineWidth: 3)
         Circle()
           .inset(by: 1.5)
-          .trim(from: 0, to: state.progress(at: pause ?? state.updatedAt))
+          .trim(from: 0, to: state.progress(at: pause))
           .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
           .rotationEffect(.degrees(-90))
       } else {
@@ -353,20 +341,11 @@ struct IOSActivityLimitedIsland: View {
     }
     .frame(width: 28, height: 28)
     .accessibilityElement(children: .ignore)
-    .accessibilityLabel(isStale ? Text(verbatim: staleLabel) : spokenTimer(state, pause: pause))
-  }
-
-  private var staleLabel: String {
-    localized("Update needed", "بحاجة إلى تحديث", state: state) + ", "
-      + localized("Refresh in Salah", "حدّث في صلاة", state: state)
+    .accessibilityLabel(spokenTimer(state, pause: pause))
   }
 
   @ViewBuilder private var symbol: some View {
-    if isStale {
-      Image(systemName: "arrow.clockwise")
-        .font(.system(size: 11, weight: .semibold))
-        .foregroundStyle(SalahPalette(isDark: true).labelSecondary.color)
-    } else if state.mode == .playing {
+    if state.mode == .playing {
       Image(systemName: "speaker.wave.2.fill")
         .font(.system(size: 10, weight: .semibold))
         .foregroundStyle(tint)
@@ -381,14 +360,11 @@ struct IOSActivityLimitedIsland: View {
 /// With limited width only the leading view shows, so the trailing view stays empty.
 struct IOSActivityCompactTrailing: View {
   let state: SalahActivityAttributes.ContentState
-  let isStale: Bool
   let isLimitedInWidth: Bool
 
   var body: some View {
     if isLimitedInWidth {
       EmptyView()
-    } else if isStale {
-      Image(systemName: "arrow.clockwise").foregroundStyle(.secondary)
     } else {
       IOSActivityTimer(state: state, compact: true)
         .foregroundStyle(SalahPalette(isDark: true).accentFill.color)

@@ -37,8 +37,9 @@ subscription.
   longer files are rejected. The optional spoken du'a can add up to two minutes.
 - **System surfaces.** Home Screen and Lock Screen widgets, prayer Live Activities,
   Dynamic Island, and Control Center controls for mute and Stop. Widgets calculate
-  their own schedule from shared settings. Setup, unavailable and stale states explain
-  when to open the app, without showing an old countdown.
+  their own schedule from shared settings. Setup, unavailable and stale widget states
+  explain when to open the app, without showing an old countdown. A Live Activity the
+  app can't update counts up from its prayer's time instead.
 
 The iOS app is available as source in the Unreleased changes. There is no App Store
 listing or installable iOS download yet. See [Installation](#installation) to run a

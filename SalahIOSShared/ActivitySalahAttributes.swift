@@ -31,8 +31,39 @@ nonisolated struct SalahActivityAttributes: ActivityAttributes, Sendable {
       Locale(identifier: languageIdentifier).language.characterDirection == .rightToLeft
     }
 
-    /// At a validity boundary the surface asks for an update instead of counting indefinitely.
+    /// Whether the content still describes the moment. Past `validUntil` the activity is stale.
     func isValid(at date: Date) -> Bool { date < validUntil }
+
+    /// What a stale activity shows. iOS suspends Salah in the background, so nothing updates or
+    /// ends the activity when `validUntil` passes; iOS only tells the extension that the content
+    /// is stale. This state needs no further update to stay true: the prayer's own time, and a
+    /// timer the system keeps running. A countdown goes stale at its prayer's time and a
+    /// count-up 15 minutes after it, so both count up from the prayer's time. Only a reminder
+    /// played before its prayer goes stale ahead of it, and counts down to it.
+    var stale: Self {
+      let labels = SalahWidgetLabels.localized(
+        forLanguageCode: Locale(identifier: languageIdentifier).language.languageCode?.identifier)
+      var state = self
+      state.updatedAt = validUntil
+      if validUntil < prayerTime {
+        state.mode = .countdown
+        state.eyebrow = labels.nextPrayer
+        state.validUntil = prayerTime
+        state.progressStart = min(progressStart, validUntil)
+        state.progressEnd = prayerTime
+      } else {
+        state.mode = .justStarted
+        state.eyebrow = labels.now
+        state.validUntil = prayerTime.addingTimeInterval(Self.staleCountUp)
+        // The prayer's span is over: a full bar.
+        state.progressStart = prayerTime.addingTimeInterval(-1)
+        state.progressEnd = prayerTime
+      }
+      return state
+    }
+
+    /// iOS removes a Live Activity nobody ends eight hours after it started.
+    static let staleCountUp: TimeInterval = 8 * 60 * 60
 
     /// A snapshot's progress. Live rendering uses the bounded dates to advance without app wakes.
     func progress(at date: Date) -> Double {

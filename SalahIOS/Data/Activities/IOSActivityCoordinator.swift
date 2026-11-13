@@ -74,8 +74,8 @@ nonisolated struct IOSActivityPublication: Sendable {
 }
 
 /// Starts only a relevant foreground prayer activity and maintains its bounded state.
-/// Background suspension is expected: staleDate makes the extension show recovery rather
-/// than promising updates the process cannot deliver.
+/// Background suspension is expected: past its staleDate the extension shows what stays true
+/// of the prayer without Salah, rather than a countdown the process can no longer update.
 @MainActor
 final class IOSActivityCoordinator {
   private var activity: Activity<SalahActivityAttributes>?
